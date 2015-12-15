@@ -1,0 +1,9 @@
+# TeX files
+*.aux
+*.log
+*.toc
+    # glossaries dependencies
+*.glg
+*.glo
+*.gls
+*.xdy

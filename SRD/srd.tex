@@ -1,0 +1,59 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{times}
+\usepackage[cm]{fullpage}
+\usepackage[parfill]{parskip}
+\usepackage[xindy]{glossaries}
+\usepackage[french]{babel}
+\usepackage{lmodern}
+
+\title{Software Requirement Document : Wizard Poker}
+\author{Verhelst Théo \and Reynouard Alexis \and Petit Robin \and Muranovic Allan \and Gueniffey Stanislas \and Berrewaerts Jonathan \and Baudoux Nicolas}
+
+\input{glossaire.tex}
+
+\makeglossary
+
+\begin{document}
+
+\pagenumbering{Roman}
+\maketitle
+\tableofcontents
+\newpage
+\pagenumbering{arabic}
+
+\section{Introduction}
+    \subsection{But du projet}
+        L'objectif visé par ce projet est la réalisation d'une application client-serveur en C/C++. L'application visée est un jeu de carte (appelé
+        \textit{Wizard Poker}) tour à tour et multijoueurs en réseau. Elle est destinée à tout type de public, \textit{open source}, libre de droit %licence à définir
+        et à but non commercial. C'est un projet académique
+
+        Pour ce faire, notre équipe, composée de sept personnes, dispose de trois phases de développement qui dureront approximativement 4 semaines chacune :
+        \begin{itemize}
+            \item la première portera uniquement sur la création du squelette respectant toutes les demandes effectuées par les client ;
+            \item la deuxième phase concernera l'implémentation en console uniquement ;
+            \item et enfin la troisième ajoutera l'interface graphique.
+        \end{itemize}
+
+    \subsection{Glossaire}  % doit s'agrandir avec le temps
+        \printglossaries
+
+    \subsection{Historique}
+        % à voir
+
+\section{Besoins de l'utilisateur}
+    \subsection{Exigences fonctionnelles}
+    \subsection{Exigences non-fonctionnelles}
+    \subsection{Exigences de domaine}
+
+\section{Besoins du système}
+    \subsection{Exigences fonctionnelles}
+    \subsection{Exigences non-fonctionnelles}
+    \subsection{Design et fonctionnement du système}
+
+\section{Index}
+    % à générer automatiquement avec LaTeX
+
+\end{document}
