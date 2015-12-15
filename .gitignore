@@ -7,3 +7,6 @@
 *.glo
 *.gls
 *.xdy
+
+# remove pdf too
+*.pdf
