@@ -8,6 +8,9 @@
 \usepackage[xindy]{glossaries}
 \usepackage[french]{babel}
 \usepackage{lmodern}
+\usepackage{graphicx}
+
+\graphicspath{{"Diagrammes UML/"}}
 
 \title{Software Requirement Document : Wizard Poker}
 \author{Verhelst Théo \and Reynouard Alexis \and Petit Robin \and Muranovic Allan \and Gueniffey Stanislas \and Berrewaerts Jonathan \and Baudoux Nicolas}
@@ -41,16 +44,52 @@
         \printglossaries
 
     \subsection{Historique}
-        % à voir
+        \begin{itemize}
+            \item[11/12/2015] réunion et squelette du SRD (équipe).
+        \end{itemize}
 
 \section{Besoins de l'utilisateur}
+    L'utilisateur de l'application, à savoir le joueur, a un certain nombre de besoins. Ces derniers doivent être satisfaits afin de garantir un confort d'utilisation
+    maximal. En utilisant l'application, le joueur \textbf{doit} avoir la possibilité de :
+
+    \begin{itemize}
+        \item créer un compte utilisateur ;
+        \item créer un \gls{deck} ou en modifier un pré-existant ;
+        \item consulter les cartes dont il dispose ;
+        \item consulter les \glspl{deck} dont il dispose ;
+        \item ajouter un joueur existant en ami ;
+        \item discuter avec un ami ;
+        \item \textbf{\gls{facultatif} :} discuter avec plusieurs amis simultanément ;
+        \item affronter un adversaire aléatoire ;
+        \item défier un joueur de sa liste d'amis ;
+        \item consulter le classement des joueurs.
+    \end{itemize}
+
     \subsection{Exigences fonctionnelles}
+        % à exprimer à l'aide de schémas UML
+        \begin{center}\includegraphics[scale=0.6]{UseCase1_Main.png}\end{center}
+
     \subsection{Exigences non-fonctionnelles}
+        L'application \textbf{doit} tourner sur Linux (salles 008 et 007 du NO.4) et fonctionner en réseau (\textit{a priori} avec clients
+        et serveurs sur des machines séparées).
+
     \subsection{Exigences de domaine}
+        Les exigences implicites au domaine du jeu sont les suivante :
+
+        \begin{itemize}
+            \item l'application doit être accessible à tout utilisateur potentiel ;
+            \item l'application doit être \textit{amusante} donc équilibrée ;
+            \item \textbf{\gls{facultatif} : } empêcher la triche dans la mesure du possible.
+        \end{itemize}
 
 \section{Besoins du système}
     \subsection{Exigences fonctionnelles}
+        Dans un premier temps, l'application \textbf{doit} tourner en ligne de commande et doit, dans un second temps adopter une interface
+        graphique. De plus, l'application doit être développée en C++.
+
     \subsection{Exigences non-fonctionnelles}
+        Le système \textbf{doit} être maintenable et pensé dans l'optique d'une future adaptation avec interface graphique.
+
     \subsection{Design et fonctionnement du système}
 
 \section{Index}
