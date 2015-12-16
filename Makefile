@@ -1,13 +1,13 @@
-all:
+srd:
 	make -C SRD/
 
-clean:
+srd-clean:
 	make -C SRD/ clean
 
-cleanbak:
+srd-cleanbak:
 	make -C SRD/ cleanbak
 
-mrproper: clean cleanbak
+srd-mrproper: srd-clean srd-cleanbak
 	make -C SRD/ mrproper
 
-.PHONY: all clean cleanbak mrproper
+.PHONY: srd srd-clean srd-cleanbak srd-mrproper
