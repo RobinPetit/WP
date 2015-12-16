@@ -14,6 +14,7 @@
 
 \title{Software Requirement Document : Wizard Poker}
 \author{Verhelst Théo \and Reynouard Alexis \and Petit Robin \and Muranovic Allan \and Gueniffey Stanislas \and Berrewaerts Jonathan \and Baudoux Nicolas}
+\date{année académique 2015-2016}
 
 \input{glossaire.tex}
 
@@ -29,9 +30,9 @@
 
 \section{Introduction}
     \subsection{But du projet}
-        L'objectif visé par ce projet est la réalisation d'une application client-serveur en C/C++. L'application visée est un jeu de carte (appelé
-        \textit{Wizard Poker}) tour à tour et multijoueurs en réseau. Elle est destinée à tout type de public, \textit{open source}, libre de droit %licence à définir
-        et à but non commercial. C'est un projet académique
+        L'objectif visé par ce projet d'année de BA2 en informatique est la réalisation d'une application client-serveur en C/C++. L'application visée est
+        un jeu de carte (appelé \textit{Wizard Poker}) tour à tour et multijoueurs en réseau. Elle est destinée à tout type de public, \textit{open source}
+        libre de droit et à but non commercial. C'est un projet académique.  % licence à définir.
 
         Pour ce faire, notre équipe, composée de sept personnes, dispose de trois phases de développement qui dureront approximativement 4 semaines chacune :
         \begin{itemize}
@@ -40,7 +41,19 @@
             \item et enfin la troisième ajoutera l'interface graphique.
         \end{itemize}
 
-    \subsection{Glossaire}  % doit s'agrandir avec le temps
+        \subsubsection{Description du Wizard Poker}
+            Le Wizard Poker est un jeu de cartes dans lequel deux joueurs s'affrontent en \gls{duel} au tour par tour. Chaque joueur a son propre \gls{deck}
+            choisi parmi sa collection de cartes. Au début de chaque duel, les deux joueurs ont le même nombre de points de vie (à savoir 20) et piochent 5
+            cartes de leur \gls{deck}. Chacun à leur tour, les joueurs invoquent des cartes à l'aide des points d'énergie qu'ils reçoivent à chaque début de tour.
+            Les cartes peuvent soit attaquer l'adversaire (directement ses points de vie ou alors les cartes invoquées par l'adversaire), soit avoir
+            un effet \textit{spécial}\footnote{Par exemple : invoquer une carte au hasard, redonner de la vie, augmenter l'attaque, etc.}. Lorsqu'une carte
+            arrive à la fin de sa période d'existence (points de vie de la carte arrivés à 0, sort détruisant ladite carte, effet terminé, etc.), elle est
+            défaussée, c'est-à-dire qu'elle est envoyée dans la \gls{fosse}. Lorsqu'une carte est dans la fosse (également appelé cimetière), elle
+            peut éventuellement être réutilisée à l'aide de sorts particuliers par exemple. Une carte défaussée n'est pas perdue, elle reste :
+            à la fin de la partie, les joueurs ont les mêmes cartes qu'au début de la partie si ce n'est que le gagnant a reçu une carte supplémentaire
+            suite à sa victoire. La partie s'arrête lorsqu'un des deux joueurs a un nombre inférieur ou égal à 0 points de vie ou a passé 10 tours sans carte en main.
+
+    \subsection{Glossaire}  % doit s'agrandir avec le temps (automatiquement)
         \printglossaries
 
     \subsection{Historique}
@@ -106,7 +119,7 @@
         \begin{itemize}
             \item l'application doit être accessible à tout utilisateur potentiel ;
             \item l'application doit être \textit{amusante} donc équilibrée ;
-            \item \textbf{\gls{facultatif} : } empêcher la triche dans la mesure du possible.
+            \item \textbf{\gls{facultatif} : } empêcher la triche dans la mesure du possible ;
         \end{itemize}
 
 \section{Besoins du système}
