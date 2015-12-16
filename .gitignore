@@ -11,5 +11,9 @@
 *.slm
 *.slg
 
+# backup files
+*.default
+*~
+
 # remove pdf too
 *.pdf
