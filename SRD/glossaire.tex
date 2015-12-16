@@ -1,20 +1,29 @@
-\newglossaryentry{facultatif} {
-    name={facultatif},
-    description={Non-requis explicitement ou implicitement par le client mais qui pourra être implémenté par la suite.}
-}
+% si on ne précise pas le sort explicitement, il n'est pas content... Ça me gonfle donc je laisse comme ça pour l'instant...
 
-\newglossaryentry{deck} {
-    name={deck},
-    description={Paquet d'exactement 20 cartes de jeu ne comprenant pas plus de deux fois la même carte.}
-}
-
-\newglossaryentry{duel} {
+\newglossaryentry{duel}{
+    type=glossary,
     name={duel},
-    description={Affrontement entre deux utilisateurs se solvant en la victoire de l'un des deux joueurs.}
+    description={Affrontement entre deux utilisateurs se solvant en la victoire de l'un des deux joueurs},
+    sort=2
 }
 
-\newglossaryentry{fosse} {
+\newglossaryentry{facultatif}{
+    type=glossary,
+    name={facultatif},
+    description={Non-requis explicitement ou implicitement par le client mais qui pourra être implémenté par la suite},
+    sort=3
+}
+
+\newglossaryentry{deck}{
+    type=glossary,
+    name={deck},
+    description={Paquet d'exactement 20 cartes de jeu ne comprenant pas plus de deux fois la même carte},
+    sort=1
+}
+
+\newglossaryentry{fosse}{
+    type=glossary,
     name={fosse},
-    description={\textit{Pseudo-lieu} du plateau où sont stockées les cartes ayant servi et étant arrivées en fin de vie.}
+    description={\textit{Pseudo-lieu} du plateau où sont stockées les cartes ayant servi et étant arrivées en fin de vie},
+    sort=4
 }
-

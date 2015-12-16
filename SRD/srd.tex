@@ -16,9 +16,19 @@
 \author{Verhelst Théo \and Reynouard Alexis \and Petit Robin \and Muranovic Allan \and Gueniffey Stanislas \and Berrewaerts Jonathan \and Baudoux Nicolas}
 \date{année académique 2015-2016}
 
+\newglossary[glg]{glossary}{slm}{sbl}{Glossaire}
 \input{glossaire.tex}
+\makeglossaries
 
-\makeglossary
+\newglossarystyle{noIndex} {
+    \renewenvironment{theglossary}
+    {\vspace{-1.7em} 
+    \begin{longtable}{@{}p{0.15\textwidth}@{}p{0.85\textwidth}}}
+    {\end{longtable}}
+    \renewcommand*{\glossaryheader}{}
+    \renewcommand*{\glsgroupheading}[1]{}
+    \renewcommand*{\glossaryentryfield}[5]{\textbf{\glstarget{##1}{##2}} & ##3. \\}
+}
 
 \begin{document}
 
@@ -49,12 +59,12 @@
             un effet \textit{spécial}\footnote{Par exemple : invoquer une carte au hasard, redonner de la vie, augmenter l'attaque, etc.}. Lorsqu'une carte
             arrive à la fin de sa période d'existence (points de vie de la carte arrivés à 0, sort détruisant ladite carte, effet terminé, etc.), elle est
             défaussée, c'est-à-dire qu'elle est envoyée dans la \gls{fosse}. Lorsqu'une carte est dans la fosse (également appelé cimetière), elle
-            peut éventuellement être réutilisée à l'aide de sorts particuliers par exemple. Une carte défaussée n'est pas perdue, elle reste :
+            peut éventuellement être réutilisée à l'aide de sorts particuliers par exemple. Une carte défaussée n'est pas perdue, elle reste propriété du joueur :
             à la fin de la partie, les joueurs ont les mêmes cartes qu'au début de la partie si ce n'est que le gagnant a reçu une carte supplémentaire
             suite à sa victoire. La partie s'arrête lorsqu'un des deux joueurs a un nombre inférieur ou égal à 0 points de vie ou a passé 10 tours sans carte en main.
 
     \subsection{Glossaire}  % doit s'agrandir avec le temps (automatiquement)
-        \printglossaries
+        \printglossary[type=glossary,style=noIndex,title=Glossaire]
 
     \subsection{Historique}
         \begin{itemize}
@@ -97,7 +107,7 @@
             \begin{center}\includegraphics[scale=0.5]{Model1_DecksManagement.png}\end{center}
 
         \subsubsection{Début de partie}
-            \begin{center}\includegraphics[scale=0.35]{Collaboration2_StartDuel.png}\end{center}
+            \begin{center}\includegraphics[scale=0.45]{Collaboration2_StartDuel.png}\end{center}
 
             \begin{description}
                 \item[Description] un joueur connecté peut défier un ami ou demander un duel contre un adversaire aléatoire ;
@@ -119,7 +129,7 @@
         \begin{itemize}
             \item l'application doit être accessible à tout utilisateur potentiel ;
             \item l'application doit être \textit{amusante} donc équilibrée ;
-            \item \textbf{\gls{facultatif} : } empêcher la triche dans la mesure du possible ;
+            \item \textbf{\gls{facultatif} : } empêcher la triche dans la mesure du possible.
         \end{itemize}
 
 \section{Besoins du système}
