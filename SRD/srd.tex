@@ -6,6 +6,7 @@
 \usepackage[cm]{fullpage}
 \usepackage[parfill]{parskip}
 \usepackage[xindy]{glossaries}
+\usepackage{glossary-mcols}
 \usepackage[french]{babel}
 \usepackage{lmodern}
 \usepackage{graphicx}
@@ -22,12 +23,22 @@
 
 \newglossarystyle{noIndex} {
     \renewenvironment{theglossary}
-    {\vspace{-1.7em} 
+    {\vspace{-4em} 
     \begin{longtable}{@{}p{0.15\textwidth}@{}p{0.85\textwidth}}}
     {\end{longtable}}
     \renewcommand*{\glossaryheader}{}
     \renewcommand*{\glsgroupheading}[1]{}
     \renewcommand*{\glossaryentryfield}[5]{\textbf{\glstarget{##1}{##2}} & ##3. \\}
+}
+
+\newglossarystyle{Index} {
+    \renewenvironment{theglossary}
+    {\vspace{-4em} 
+    \begin{longtable}{@{}p{0.15\textwidth}@{}p{0.85\textwidth}}}
+    {\end{longtable}}
+    \renewcommand*{\glossaryheader}{}
+    \renewcommand*{\glsgroupheading}[1]{}
+    \renewcommand*{\glossaryentryfield}[5]{\textbf{\glstarget{##1}{##2}} & ##5. \\}
 }
 
 \begin{document}
@@ -64,7 +75,7 @@
             suite à sa victoire. La partie s'arrête lorsqu'un des deux joueurs a un nombre inférieur ou égal à 0 points de vie ou a passé 10 tours sans carte en main.
 
     \subsection{Glossaire}  % doit s'agrandir avec le temps (automatiquement)
-        \printglossary[type=glossary,style=noIndex,title=Glossaire]
+        \printglossary[type=glossary, style=noIndex, title=]
 
     \subsection{Historique}
         \begin{itemize}
@@ -146,6 +157,6 @@
         \begin{center}\includegraphics[scale=0.5]{Model2_Classes.png}\end{center}
 
 \section{Index}
-    % à générer automatiquement avec LaTeX
+        \printglossary[type=glossary, style=Index, title=]
 
 \end{document}
