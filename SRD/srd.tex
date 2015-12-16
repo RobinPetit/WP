@@ -45,7 +45,9 @@
 
     \subsection{Historique}
         \begin{itemize}
-            \item[11/12/2015] réunion et squelette du SRD (équipe).
+            \item[11/12/2015] réunion et squelette du SRD (équipe) ;
+            \item[15/12/2015] création des diagrammes UML (équipe UML) ;  % à expliciter !!
+            \item[15/12/2015] rédaction de la version propre du SRD (?).
         \end{itemize}
 
 \section{Besoins de l'utilisateur}
@@ -66,12 +68,37 @@
     \end{itemize}
 
     \subsection{Exigences fonctionnelles}
-        % à exprimer à l'aide de schémas UML
-        \begin{center}\includegraphics[scale=0.6]{UseCase1_Main.png}\end{center}
+        \subsubsection{Possibilités d'actions de l'utilisateur}
+            \begin{center}\includegraphics[scale=0.6]{UseCase1_Main.png}\end{center}
+
+        \subsubsection{Création d'un compte}
+            \begin{center}\includegraphics[scale=0.6]{Collaboration1_SignIn.png}\end{center}
+
+            \begin{description}
+                \item[Description] L'utilisateur peut créer un compte à l'aide d'un identifiant unique (son pseudo) et d'un mot de passe associé ;
+                \item[Pré-condition] l'utilisateur doit être connecté au serveur ;
+                \item[Post-condition] Soit la demande est acceptée (identifiant admissible), soit la demande est rejetée (identifiant non-admissible ou déjà utilisé).
+            \end{description}
+
+        \subsubsection{Gestion des \glspl{deck}}
+            \begin{center}\includegraphics[scale=0.5]{Model1_DecksManagement.png}\end{center}
+
+        \subsubsection{Début de partie}
+            \begin{center}\includegraphics[scale=0.35]{Collaboration2_StartDuel.png}\end{center}
+
+            \begin{description}
+                \item[Description] un joueur connecté peut défier un ami ou demander un duel contre un adversaire aléatoire ;
+                \item[Pré-condition] chaque utilisateur doit être identifié et connecté à son compte ;
+                \item[Post-condition] un joueur aura perdu, l'autre aura gagné\footnote{Le gagnant reçoit une carte aléatoire à ajouter à son \gls{deck}.}.
+            \end{description}
 
     \subsection{Exigences non-fonctionnelles}
         L'application \textbf{doit} tourner sur Linux (salles 008 et 007 du NO.4) et fonctionner en réseau (\textit{a priori} avec clients
         et serveurs sur des machines séparées).
+
+        De plus, l'utilisateur doit pouvoir discuter par messages à n'importe quel moment de l'exécution de l'application : tant pendant
+        qu'il gère ses amis, ses cartes ou pendant qu'il est en \gls{duel}. Ces discutions ne peuvent se faire avec un joueur
+        n'étant pas ami de l'utilisateur.
 
     \subsection{Exigences de domaine}
         Les exigences implicites au domaine du jeu sont les suivante :
@@ -91,6 +118,9 @@
         Le système \textbf{doit} être maintenable et pensé dans l'optique d'une future adaptation avec interface graphique.
 
     \subsection{Design et fonctionnement du système}
+        La structure du programme est résumée dans les classes suivantes (servant également de \textit{pseudo-squelette de code}) :
+
+        \begin{center}\includegraphics[scale=0.5]{Model2_Classes.png}\end{center}
 
 \section{Index}
     % à générer automatiquement avec LaTeX
