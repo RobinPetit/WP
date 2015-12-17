@@ -10,6 +10,7 @@
 \usepackage[french]{babel}
 \usepackage{lmodern}
 \usepackage{graphicx}
+\usepackage[bottom]{footmisc}  % notes de bas de page réellement en bas de page
 
 \graphicspath{{"Diagrammes UML/"}}
 
@@ -80,9 +81,10 @@
 
     \subsection{Historique}
         \begin{itemize}
-            \item[11/12/2015] réunion et squelette du SRD (équipe) ;
-            \item[15/12/2015] création des diagrammes UML (équipe UML) ;  % à expliciter !!
-            \item[15/12/2015] rédaction de la version propre du SRD (?).
+            \item[11/12/2015] réunion (équipe complète) ;
+            \item[11/12/2015] squelette du SRD (équipe SRD) ;
+            \item[15/12/2015] création des diagrammes UML (équipe UML) ;
+            \item[15/12/2015] rédaction de la version propre du SRD (Robin).
         \end{itemize}
 
 \section{Besoins de l'utilisateur}
@@ -104,14 +106,14 @@
 
     \subsection{Exigences fonctionnelles}
         \subsubsection{Possibilités d'actions de l'utilisateur}
-            \begin{center}\includegraphics[scale=0.6]{UseCase1_Main.png}\end{center}
+            \begin{center}\includegraphics[scale=0.5]{UseCase1_Main.png}\end{center}
 
         \subsubsection{Création d'un compte}
             \begin{center}\includegraphics[scale=0.6]{Collaboration1_SignIn.png}\end{center}
 
             \begin{description}
-                \item[Description] L'utilisateur peut créer un compte à l'aide d'un identifiant unique (son pseudo) et d'un mot de passe associé ;
-                \item[Pré-condition] l'utilisateur doit être connecté au serveur ;
+                \item[Description] L'utilisateur peut créer un compte à l'aide d'un identifiant unique (son pseudo) et d'un mot de passe associé.
+                \item[Pré-condition] L'utilisateur doit être connecté au serveur.
                 \item[Post-condition] Soit la demande est acceptée (identifiant admissible), soit la demande est rejetée (identifiant non-admissible ou déjà utilisé).
             \end{description}
 
@@ -122,16 +124,16 @@
             \begin{center}\includegraphics[scale=0.45]{Collaboration2_StartDuel.png}\end{center}
 
             \begin{description}
-                \item[Description] un joueur connecté peut défier un ami ou demander un duel contre un adversaire aléatoire ;
-                \item[Pré-condition] chaque utilisateur doit être identifié et connecté à son compte ;
-                \item[Post-condition] un joueur aura perdu, l'autre aura gagné\footnote{Le gagnant reçoit une carte aléatoire à ajouter à son \gls{deck}.}.
+                \item[Description] Un joueur connecté peut défier un ami ou demander un duel contre un adversaire aléatoire.
+                \item[Pré-condition] Chaque utilisateur doit être identifié et connecté à son compte.
+                \item[Post-condition] Un joueur aura perdu, l'autre aura gagné\footnote{Le gagnant reçoit une carte aléatoire à ajouter à son \gls{deck}.}.
             \end{description}
 
         \subsubsection{Détail d'un tour}
             \begin{center}\includegraphics[scale=0.6]{Collaboration3_RoundDetails.png}\end{center}
 
     \subsection{Exigences non-fonctionnelles}
-        L'application \textbf{doit} tourner sur Linux (salles 008 et 009 du NO.4) et fonctionner en réseau (\textit{a priori} avec clients
+        L'application \textbf{doit} tourner sur Linux Debian (salles 008 et 009 du NO.4) et fonctionner en réseau (\textit{a priori} avec clients
         et serveurs sur des machines séparées).
 
         De plus, l'utilisateur doit pouvoir discuter par messages à n'importe quel moment de l'exécution de l'application : tant pendant
@@ -139,12 +141,12 @@
         n'étant pas ami de l'utilisateur.
 
     \subsection{Exigences de domaine}
-        Les exigences implicites au domaine du jeu sont les suivante :
+        Les exigences implicites au domaine du jeu sont les suivantes et sont \textbf{\glslink{facultatif}{facultatives}} :
 
         \begin{itemize}
-            \item \textbf{\gls{facultatif} : } l'application doit être accessible à tout utilisateur potentiel ;
-            \item \textbf{\gls{facultatif} : } l'application doit être \textit{amusante} donc équilibrée ;
-            \item \textbf{\gls{facultatif} : } empêcher la triche dans la mesure du possible.
+            \item l'application doit être accessible à tout utilisateur potentiel ;
+            \item l'application doit être \textit{amusante} donc équilibrée ;
+            \item empêcher la triche dans la mesure du possible.
         \end{itemize}
 
 \section{Besoins du système}
