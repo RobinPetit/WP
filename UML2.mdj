@@ -3483,19 +3483,19 @@
 									"showShadow": true,
 									"containerChangeable": false,
 									"containerExtending": false,
-									"left": 207,
+									"left": 198,
 									"top": 584,
-									"width": 245,
+									"width": 159,
 									"height": 13,
 									"autoResize": false,
-									"alpha": 1.408068755751767,
-									"distance": 135.79396157414365,
+									"alpha": 1.3086763077177297,
+									"distance": 84.8999411071645,
 									"hostEdge": {
 										"$ref": "AAAAAAFRsCnG9gOf2Zw="
 									},
 									"edgePosition": 1,
 									"underline": false,
-									"text": "Si points d'énergie <= 0 ou passe son tour",
+									"text": "Si je joueur  passe son tour",
 									"horizontalAlignment": 2,
 									"verticalAlignment": 5
 								},
@@ -3624,9 +3624,9 @@
 									"showShadow": true,
 									"containerChangeable": false,
 									"containerExtending": false,
-									"left": 24,
+									"left": 63,
 									"top": 208,
-									"width": 277,
+									"width": 198,
 									"height": 13,
 									"autoResize": false,
 									"alpha": 0.11635515771935448,
@@ -3636,7 +3636,7 @@
 									},
 									"edgePosition": 1,
 									"underline": false,
-									"text": "Si points d'énergie > 0 et ne passe pas son tour",
+									"text": "Si le joueur ne passe pas son tour",
 									"horizontalAlignment": 2,
 									"verticalAlignment": 5
 								},
@@ -4520,7 +4520,7 @@
 					"_parent": {
 						"$ref": "AAAAAAFRr/LnKntK3LA="
 					},
-					"name": "Si points d'énergie <= 0 ou passe son tour",
+					"name": "Si je joueur  passe son tour",
 					"source": {
 						"$ref": "AAAAAAFRsCmOYAOTNFY="
 					},
@@ -4535,7 +4535,7 @@
 					"_parent": {
 						"$ref": "AAAAAAFRr/LnKntK3LA="
 					},
-					"name": "Si points d'énergie > 0 et ne passe pas son tour",
+					"name": "Si le joueur ne passe pas son tour",
 					"source": {
 						"$ref": "AAAAAAFRsCmOYAOTNFY="
 					},
