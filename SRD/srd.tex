@@ -53,8 +53,8 @@
 \section{Introduction}
     \subsection{But du projet}
         L'objectif visé par ce projet d'année de BA2 en sciences informatiques est la réalisation d'une application client-serveur en C/C++. L'application visée est
-        un jeu de carte (appelé \textit{Wizard Poker}) tour à tour et multijoueurs en réseau. Elle est destinée à tout type de public, \textit{open source}
-        libre de droit et à but non commercial. C'est un projet académique.  % licence à définir.
+        un jeu de carte (appelé \textit{Wizard Poker}) au tour par tour et multijoueurs en réseau. Elle est destinée à tous types de public, \textit{open source},
+        libre de droit et à but non commercial. C'est un projet académique.  % licence à définir. % REFORMULER: on dirait que c'est le public qui est open-source
 
         Pour ce faire, notre équipe, composée de sept personnes, dispose de trois phases de développement qui dureront approximativement 4 semaines chacune :
         \begin{itemize}
@@ -66,9 +66,9 @@
         \subsubsection{Description du Wizard Poker}
             Le Wizard Poker est un jeu de cartes dans lequel deux joueurs s'affrontent en \gls{duel} au tour par tour. Chaque joueur a son propre \gls{deck}
             choisi parmi sa collection de cartes. Au début de chaque duel, les deux joueurs ont le même nombre de points de vie (à savoir 20) et piochent 5
-            cartes de leur \gls{deck}. Chacun à leur tour, les joueurs invoquent des cartes à l'aide des points d'énergie qu'ils reçoivent à chaque début de tour.
-            Les cartes peuvent soit attaquer l'adversaire (directement ses points de vie ou alors les cartes invoquées par l'adversaire), soit avoir
-            un effet \textit{spécial}\footnote{Par exemple : invoquer une carte au hasard, redonner de la vie, augmenter l'attaque, etc.}. Lorsqu'une carte
+			cartes de leur \gls{deck}. Chacun à leur tour, les joueurs invoquent des cartes à l'aide des points d'énergie qu'ils reçoivent à chaque début de tour.
+            Les cartes peuvent soit attaquer l'adversaire (en diminuant directement les points de vie de l'adversaire ou ceux d'une carte invoquée par l'adversaire), soit
+			avoir un effet \textit{spécial}\footnote{Par exemple : \gls{invoquer} une carte au hasard, redonner de la vie, augmenter l'attaque, etc.}. Lorsqu'une carte
             arrive à la fin de sa période d'existence (points de vie de la carte arrivés à 0, sort détruisant ladite carte, effet terminé, etc.), elle est
             défaussée, c'est-à-dire qu'elle est envoyée dans la \gls{fosse}. Lorsqu'une carte est dans la fosse (également appelé cimetière), elle
             peut éventuellement être réutilisée à l'aide de sorts particuliers par exemple. Une carte défaussée n'est pas perdue, elle reste propriété du joueur :
