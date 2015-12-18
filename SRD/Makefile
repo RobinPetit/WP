@@ -1,6 +1,8 @@
 all: view
+	$(wildcard Diagrammes_UML/*)
 
-srd.pdf: srd.tex
+# Faudrait eviter les espaces dans les noms de fichier
+srd.pdf: srd.tex $(wildcard Diagrammes_UML/*)
 	pdflatex srd.tex
 	(${HOME}/texmf/scripts/glossaries/makeglossaries $(subst .tex,,$<) || makeglossaries $(subst .tex,,$<))
 	pdflatex srd.tex
