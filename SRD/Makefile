@@ -1,5 +1,4 @@
 all: view
-	$(wildcard Diagrammes_UML/*)
 
 # Faudrait eviter les espaces dans les noms de fichier
 srd.pdf: srd.tex $(wildcard Diagrammes_UML/*)
