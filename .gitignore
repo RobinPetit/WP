@@ -17,3 +17,5 @@
 
 # remove pdf too
 *.pdf
+
+build/
