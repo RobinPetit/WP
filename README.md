@@ -17,13 +17,22 @@ When you want to contribute, here is an idea of the usual workflow:
     git pull
 	git checkout -b nameOfYourModifications
 	# Do things in you local branch
-	git add *filesThatYouJustModified*
+	git add filesThatYouJustModified.cpp
 	git commit
 	# Do more commits...
-	git push
+	git push --set-upstream origin nameOfYourModifications # The first push
+	git push # The following pushes do not need to add the local branch to origin
 
 Then open a pull request on GitHub for the branch nameOfYourModifications,
-and if you coworker(s) agree(s), merge it (with the GitHub interface, for example).
+and if you coworker(s) agree(s), merge it (with the GitHub interface, for example).  
+**Note:** if the changes in the working directory form a logical unit (all the changes
+fix/improve the same feature), then the following command can be useful:
+
+    git commit -a
+
+It adds all changes to the stagging area (`git add`) and then commits.
+But if you did multiple changes that are unrelated (e.g. fix a doc typo and add a method)
+then do two separated commits.
 
 
 ## Remarks on Debriefing 1
@@ -36,6 +45,17 @@ Here is the remarks I noted while the debriefing on Tuesday 02/02/2016 :
 + write preconditions and postconditions for **every** use cases diagrams ;
 + in the gameplay diagram, the case when the monster does not die is missing;
 + ambiguity of the class *Compte* ;
+
+## Commit formatting
+
+A commit should start with a title beginning that is  a short explanation
+(52 characters maximum, if possible) of the change, then a blank line,
+then some paragraphes that explain the *how* and the *why* of the change
+(above all the *why*), if the change is not trivial.
+The explanations lines should have a length of maximum 72 characters.  
+**Note:** if you are using Vim as default command-line text editor,
+Vim will help you to follow these rules with automatic colors and
+line wraps.
 
 ## Proposal of coding conventions
 Comments starting by `//~` are not meant to be in
