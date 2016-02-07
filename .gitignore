@@ -19,7 +19,7 @@ CMakeFiles/
 **/CMakeFiles/
 # Or files
 *.cmake
-**/*.cmake
+#**/*.cmake -> Find* scripts need to be added to the repo !
 CMakeCache.txt
 
 # Do not track executable files
