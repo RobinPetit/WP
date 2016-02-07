@@ -15,6 +15,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -DNDEBUG")
 
 # Tell to cmake to explore src/ to build both the server and the client
 add_subdirectory(src)
+add_subdirectory(SRD)
 
 # Create an executable from the object compiled in src/
 # add_executable(${PROJECT_NAME} "$<TARGET_OBJECTS:WP>")

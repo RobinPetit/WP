@@ -1,16 +1,3 @@
-# TeX files
-*.aux
-*.log
-*.toc
-    # glossaries dependencies
-*.glg
-*.glo
-*.gls
-*.xdy
-*.sbl
-*.slm
-*.slg
-
 # backup files
 *.default
 *~
@@ -21,9 +8,7 @@
 build/
 
 # Only keep sources and diagrams for SRD
-SRD/*
-!SRD/*.tex
-!SRD/Diagrams
+SRD/bin/
 
 # Keep only CMakeLists files and do not take Makefiles
 Makefile
