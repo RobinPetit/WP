@@ -2,24 +2,38 @@
 Wizard Poker
 
 ## Compilation
-Il est préférable de faire un « out-of-source build »:
+
+It is better to do an out-of-source build:
 
     mkdir build && cd build
 	cmake ..
 	make
 
 
-## Remarques générales
+## Usual workflow
 
-Pour les commits, ne pas faire de push sur la branche *master* mais tout faire sur une branche locale et faire une PR sur *master*.
+When you want to contribute, here is an idea of the usual workflow:
 
-## Remarques Débriefing 1
+    git pull
+	git checkout -b nameOfYourModifications
+	# Do things in you local branch
+	git add *filesThatYouJustModified*
+	git commit
+	# Do more commits...
+	git push
 
-Voici les remarques que j'ai notées suite à l'entretien de mardi 02/02/2016 :
+Then open a pull request on GitHub for the branch nameOfYourModifications,
+and if you coworker(s) agree(s), merge it (with the GitHub interface, for example).
 
-+ le SRD n'est pas complet et trop court ;
-+ la mise en page laisse à désirer (faire page de garde et revoir la mise en page pas assez « pro ») ;
-+ concernant le diagramme de gestion du deck, il faut expliciter la notion de deck par défaut qui n'est pas un deck vide ;
-+ rédiger les préconditions et postconditions pour **tous** les use cases diagrams ;
-+ dans le diagramme sur le déroulement du jeu, il manque le cas où le monstre visé ne meurt pas ;
-+ ambiguïté de la classe *Compte* ;
+
+## Remarks on Debriefing 1
+
+Here is the remarks I noted while the debriefing on Tuesday 02/02/2016 :
+
++ the SRD is not complete and too short ;
++ the formatting have to be improved (rewrite the flyleaf) ;
++ in the deck management diagram, explain the notion of default deck (which is not empty);
++ write preconditions and postconditions for **every** use cases diagrams ;
++ in the gameplay diagram, the case when the monster does not die is missing;
++ ambiguity of the class *Compte* ;
+
