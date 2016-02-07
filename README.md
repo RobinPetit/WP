@@ -37,3 +37,149 @@ Here is the remarks I noted while the debriefing on Tuesday 02/02/2016 :
 + in the gameplay diagram, the case when the monster does not die is missing;
 + ambiguity of the class *Compte* ;
 
+## Proposal of coding conventions
+Comments starting by `//~` are not meant to be in
+the final code, they are just indicative.  
+Comments starting by `///` are Doxygen documentation.
+This is not mandatory, but this is good practice.  
+In order to be able to compile preprocessor directives
+like `#include "MyClass.hpp"` in source files (.cpp),
+you have to tell you compiler to add the `include` directory
+to the list of directories to be searched for header files
+(e.g. `-I include/` on g++).  
+The prefix `WP_` for header guards can be changed, this is
+just a proposal.
+
+* include/MyClass.hpp
+    
+
+    #ifndef WP_MYCLASS_HPP
+    #define WP_MYCLASS_HPP
+
+    //~ Standard headers first
+    #include <string>
+    //~ Then external libs
+    #include <SFML/Graphics.hpp>
+    //~ Finally project headers, only the ones that can't be forward-declared
+	//~ Never forward-declare standard classes, and forward-declare when the
+	//~ declaration is "relatively" trivial. Do not structure your code
+	//~ to forward-declare when this is usually not possible
+    #include "MyOtherClass.hpp"
+    
+    //~ No trailing dot on regular comments (saving a keystroke is good)
+    // Forward declarations
+    class IncompleteClass;
+    
+    //~ But trailing dot on docstrings
+    //~ (they are meant to be formatted as document or web page)
+    /// Brief explanation of the class.
+    class MyClass : public MyOtherClass
+    {
+        //~ Four spaces as indentation
+        public:
+            /// Constructor.
+            /// \param myInt An useful integer.
+            //~ Explicit specifier to avoid implicit conversion from int to MyClass
+			// \TODO Things to do in the future.
+            MyClass(int myInt=42) explicit;
+
+            /// Constructor.
+            /// \param arg Another useful constructor argument.
+			// \FIXME Bug to fix as soon as possible.
+            MyClass(const IncompleteClass& arg) explicit;
+
+            /// Destructor.
+            virtual ~MyClass() = default;
+
+            /// Getter.
+            /// \return myInt.
+            int getMyInt() const;
+            
+            /// Setter.
+            /// \param newMyInt The new value of myInt.
+            void setMyInt(int newMyInt);
+
+        private://~ Use protected only when this is meant to be redefined by subclasses
+            //~ Docstring alignment is not mandatory but is pretty
+            int m_myInt;        ///< An useful integer.
+            std::string m_myStr;///< A good C++ string.
+    };
+
+    #endif//WP_MYCLASS_HPP
+    //~ Trailling new line
+    
+
+
+* src/MyClass.cpp
+    
+
+    #include <algorithm>
+    #include <SFML/Window.hpp>
+    #include "IncompleteClass.hpp"
+    #include "MyClass.hpp"//~ The corresponding header at last.
+
+    //~ Not `using namespace std;`!
+    MyClass::MyClass(int myInt):
+        MyOtherClass(3),
+        m_myInt(myInt),
+        m_myStr("LULZ")
+    {
+        //~ Use algorithms and standard features whenever possible!
+        auto it = std::find(m_myStr.cbegin(), m_myStr.cend(), "Z");
+        if(it == m_myStr.cend())
+            std::cout << "Z not found in m_myStr!\n";//~ std::endl is not always necessary
+
+        //Locally use a namespace can be useful sometimes
+        using namespace std::placeholders;
+        const std::string var{"X"};
+        //~ I said whenever possible, everything is possible with STL!
+        it = std::find_if(m_myStr.cbegin(), m_myStr.cend(), std::bind(checkWithTwoArgs, _1, var));
+        if(it == m_myStr.cend())
+            std::cout << "checkWithTwoArgs return true for none of the characters of m_myStr and var\n";
+    }
+
+    MyClass::MyClass(const IncompleteClass& arg):
+        MyOtherClass(arg.getInt() / 2),
+        m_myInt(arg.getInt()),
+        m_myStr(arg.getStr())
+    {
+        float var{0.5f};//Comment on same line if short enough
+        for(std::size_t i{0}; i < m_myStr.size(); ++i)
+            //But if the explanation comment is too long, write it on the previous line
+            if(m_myInt > 42)
+                doSomething();
+            else
+                var -= var / 2.f;
+
+        do
+        {
+            var *= 1.42f;
+            doSomething();
+        } while(var > 5.f);
+
+        switch(m_myInt)
+        {
+            case 0:
+                inCaseOfZero();
+                break;
+
+            case 1:
+                inCaseOfOne();
+                break;
+
+            default:
+                inDefaultCase();
+        }
+    }
+
+    MyClass::getMyInt() const
+    {
+        return m_myInt();
+    }
+
+    MyClass::setMyInt(int newMyInt)
+    {
+        m_myInt = newMyInt;
+    }
+
+
