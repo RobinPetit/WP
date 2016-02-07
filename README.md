@@ -26,7 +26,7 @@ When you want to contribute, here is an idea of the usual workflow:
 ```
 
 Then open a pull request on GitHub for the branch nameOfYourModifications,
-and if you coworker(s) agree(s), merge it (with the GitHub interface, for example).  
+and if you coworker(s) agree(s), let your coworker(s) merge it (with the GitHub interface, for example).  
 **Note:** if the changes in the working directory form a logical unit (all the changes
 fix/improve the same feature), then the following command can be useful:
 
@@ -36,7 +36,7 @@ fix/improve the same feature), then the following command can be useful:
 
 It adds all changes to the stagging area (`git add`) and then commits.
 But if you did multiple changes that are unrelated (e.g. fix a doc typo and add a method)
-then do two separated commits.
+,then do two separated commits.
 
 
 ## Remarks on Debriefing 1
@@ -44,7 +44,7 @@ then do two separated commits.
 Here is the remarks I noted while the debriefing on Tuesday 02/02/2016 :
 
 + the SRD is not complete and too short ;
-+ the formatting have to be improved (rewrite the flyleaf) ;
++ the formatting has to be improved (rewrite the flyleaf) ;
 + in the deck management diagram, explain the notion of default deck (which is not empty);
 + write preconditions and postconditions for **every** use cases diagrams ;
 + in the gameplay diagram, the case when the monster does not die is missing;
@@ -52,7 +52,7 @@ Here is the remarks I noted while the debriefing on Tuesday 02/02/2016 :
 
 ## Commit formatting
 
-A commit should start with a title beginning that is  a short explanation
+A commit should start with a title that is  a short explanation
 (52 characters maximum, if possible) of the change, then a blank line,
 then some paragraphes that explain the *how* and the *why* of the change
 (above all the *why*), if the change is not trivial.
@@ -63,14 +63,9 @@ line wraps.
 
 ## Proposal of coding conventions
 Comments starting by `//~` are not meant to be in
-the final code, they are just indicative.  
+the final code, they are just indicative about the coding conventions.  
 Comments starting by `///` are Doxygen documentation.
 This is not mandatory, but this is good practice.  
-In order to be able to compile preprocessor directives
-like `#include "MyClass.hpp"` in source files (.cpp),
-you have to tell you compiler to add the `include` directory
-to the list of directories to be searched for header files
-(e.g. `-I include/` on g++).  
 The prefix `WP_` for header guards can be changed, this is
 just a proposal.
 
