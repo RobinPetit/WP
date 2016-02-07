@@ -1,3 +1,25 @@
+# TeX files
+*.aux
+*.log
+*.toc
+    # glossaries dependencies
+*.glg
+*.glo
+*.gls
+*.xdy
+*.sbl
+*.slm
+*.slg
+
+# backup files
+*.default
+*~
+
+# remove pdf too
+*.pdf
+
+build/
+
 # Only keep sources and diagrams for SRD
 SRD/*
 !SRD/*.tex
