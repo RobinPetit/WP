@@ -17,6 +17,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -DNDEBUG")
 add_subdirectory(src)
 add_subdirectory(SRD)
 
-# Create an executable from the object compiled in src/
-# add_executable(${PROJECT_NAME} "$<TARGET_OBJECTS:WP>")
+# Move the executables created in src/client/ and src/server/
+# to the root build directory
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
