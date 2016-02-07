@@ -14,6 +14,7 @@ It is better to do an out-of-source build:
 
 When you want to contribute, here is an idea of the usual workflow:
 
+```bash
     git pull
 	git checkout -b nameOfYourModifications
 	# Do things in you local branch
@@ -22,13 +23,16 @@ When you want to contribute, here is an idea of the usual workflow:
 	# Do more commits...
 	git push --set-upstream origin nameOfYourModifications # The first push
 	git push # The following pushes do not need to add the local branch to origin
+```
 
 Then open a pull request on GitHub for the branch nameOfYourModifications,
 and if you coworker(s) agree(s), merge it (with the GitHub interface, for example).  
 **Note:** if the changes in the working directory form a logical unit (all the changes
 fix/improve the same feature), then the following command can be useful:
 
+```
     git commit -a
+```
 
 It adds all changes to the stagging area (`git add`) and then commits.
 But if you did multiple changes that are unrelated (e.g. fix a doc typo and add a method)
@@ -71,8 +75,8 @@ The prefix `WP_` for header guards can be changed, this is
 just a proposal.
 
 * include/MyClass.hpp
-    
 
+```
     #ifndef WP_MYCLASS_HPP
     #define WP_MYCLASS_HPP
 
@@ -127,12 +131,12 @@ just a proposal.
 
     #endif//WP_MYCLASS_HPP
     //~ Trailling new line
-    
+```
 
 
 * src/MyClass.cpp
-    
 
+```
     #include <algorithm>
     #include <SFML/Window.hpp>
     #include "IncompleteClass.hpp"
@@ -201,5 +205,5 @@ just a proposal.
     {
         m_myInt = newMyInt;
     }
-
+```
 
