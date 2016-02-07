@@ -29,12 +29,7 @@ add_latex_document(
 		USE_GLOSSARY
 	)
 
-#add_custom_command(
-#		TARGET pdf
-#		POST_BUILD
-#		COMMAND "cp build/srd.pdf ./srd.pdf"
-#	)
 add_custom_command(TARGET srd_pdf POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy
-                       build/srd.pdf
-                       ./srd.pdf)
+                       ${PROJECT_SOURCE_DIR}/SRD/build/srd.pdf
+                       ${PROJECT_SOURCE_DIR}/srd.pdf)
