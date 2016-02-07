@@ -76,7 +76,7 @@ just a proposal.
 
 * include/MyClass.hpp
 
-```
+```cpp
     #ifndef WP_MYCLASS_HPP
     #define WP_MYCLASS_HPP
 
@@ -136,7 +136,7 @@ just a proposal.
 
 * src/MyClass.cpp
 
-```
+```cpp
     #include <algorithm>
     #include <SFML/Window.hpp>
     #include "IncompleteClass.hpp"
