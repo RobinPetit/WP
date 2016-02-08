@@ -1,7 +1,6 @@
-set(SOURCES
-	"main.cpp"
-	)
+# Build client
+add_subdirectory(client)
 
-#Make a library with all the project sources
-add_library(WP OBJECT ${SOURCES})
+# Build server
+add_subdirectory(server)
 
