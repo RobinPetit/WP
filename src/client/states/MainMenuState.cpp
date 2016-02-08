@@ -1,6 +1,8 @@
-#include <client/states/MainMenuState.hpp>
+#include <iostream>
+#include "client/states/MainMenuState.hpp"
 
-MainMenuState::MainMenuState()
+MainMenuState::MainMenuState(StateStack& stateStack):
+	AbstractState(stateStack)
 {
 }
 
@@ -9,16 +11,14 @@ void MainMenuState::draw()
 	std::cout << "Hi, this is the main menu, what do you want to do?\n";
 }
 
-bool MainMenuState::update()
+void MainMenuState::update()
 {
-	return true;
 }
 
-bool MainMenuState::handleEvent()
+void MainMenuState::handleEvent()
 {
 	std::string input;
 	std::getline(std::cin, input);
 	//Handle input...
-	return false;
 }
 

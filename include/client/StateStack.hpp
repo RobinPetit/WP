@@ -1,7 +1,7 @@
 #ifndef _STATE_STACK_CLIENT_HPP
 #define _STATE_STACK_CLIENT_HPP
 
-#include <vector>
+#include <stack>
 #include <memory>
 #include <SFML/System.hpp>
 
@@ -26,44 +26,29 @@ class StateStack : private sf::NonCopyable
 		/// Call the handleEvent() function of the top of the stack.
 		void handleEvent();
 
-		/// Add a new state of the templated type on the pending list, and construct it as soon as possible.
-		/// The construction and deletion of state is delayed because some states can ask
-		/// their StateStack to push or pop states while the StateStack is iterating over the states,
-		/// resulting in modification of the structure being iterated. By delaying these operations,
-		/// we ensure that we modify the stack only when this is possible.
+		/// Add a new state of the template type to the stack.
 		/// \tparam StateType The type of the state to construct.
-		/// \param args Arguments that will be forwarded to the constructor of the state.
-		/// There can be zero, one or more arguments of any types.
-		template <typename StateType, typename ... Args>
-		void pushState(Args&& ... args);
+		template <typename StateType>
+		void push();
 
 		/// Delete the top state as soon as possible.
-		void popState();
+		void pop();
 
 		/// Delete all the states as soon as possible.
-		void clearStates();
+		void clear();
 
 		/// Check if the stack is empty or not.
 		/// \return True if the stack is empty, false otherwise.
 		bool isEmpty() const;
 
 	private:
-		/// Remove states that need to be removed, constructs others states, ...
-		void applyPendingChanges();
-
-		std::vector<std::unique_ptr<AbstractState>> m_stack;///< Array of pointers to the states.
-		std::vector<std::function<void()>> m_pendingList;   ///< List of all changes to do in the next update.
+		std::stack<std::unique_ptr<AbstractState>> _stack;
 };
 
-template <typename StateType, typename ... Args>
-void StateStack::pushState(Args&& ... args)
+template <typename StateType>
+void StateStack::push()
 {
-	m_pendingList.push_back([this, args...]
-	{
-		//No perfect forwarding is done here because the arguments
-		//needs to be copied in order to be stored in the lambda
-		m_stack.push_back(std::unique_ptr<AbstractState>(new StateType(args...)));
-	});
+	_stack.emplace(new StateType(*this));
 }
 
 #endif// _STATE_STACK_CLIENT_HPP

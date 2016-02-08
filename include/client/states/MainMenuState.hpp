@@ -2,7 +2,7 @@
 #define _MAIN_MENU_STATE_CLIENT_HPP
 
 #include <memory>
-#include <client/AbstractState.hpp>
+#include "client/AbstractState.hpp"
 
 // Forward declarations
 class StateStack;
@@ -11,7 +11,7 @@ class StateStack;
 class MainMenuState : public AbstractState
 {
 	public:
-        /// Default constructor.
+        /// Constructor.
 		MainMenuState(StateStack& stateStack);
 
         /// The drawing function.
@@ -21,7 +21,7 @@ class MainMenuState : public AbstractState
 
         /// The logic update function.
         /// \return Return true if the state under this one in the stack must be also updated.
-		virtual bool update() override;
+		virtual void update() override;
 
         /// The event handling function.
 		virtual void handleEvent() override;

@@ -1,11 +1,16 @@
-#include <TheLostGirl/AbstractState.hpp>
+#include "client/AbstractState.hpp"
 
-void AbstractState::requestStackPop()
+AbstractState::AbstractState(StateStack& stateStack):
+	_stateStack{stateStack}
 {
-	_stateStack.popState();
 }
 
-void AbstractState::requestStateClear()
+void AbstractState::stackPop()
 {
-	_stateStack.clearStates();
+	_stateStack.pop();
+}
+
+void AbstractState::stackClear()
+{
+	_stateStack.clear();
 }

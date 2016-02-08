@@ -5,7 +5,7 @@ set(SOURCES
 	"StateStack.cpp"
 	"states/MainMenuState.cpp"
 	# sockets
-	"sockets/Connection.cpp"
+	#~"sockets/Connection.cpp"
 	)
 
 set(CLIENT_NAME "${PROJECT_NAME}_client")

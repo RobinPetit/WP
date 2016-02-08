@@ -2,7 +2,7 @@
 #define _ABSTRACT_STATE_CLIENT_HPP
 
 #include <memory>
-#include <client/StateStack.hpp>
+#include "client/StateStack.hpp"
 
 /// Base class for the various states.
 /// A state is basically a screen of the application, such as a menu,
@@ -10,13 +10,13 @@
 /// informations of its parts of the application.
 /// In order to make a state, you must inherit from this class
 /// and implement the pure virtual members.
-/// Do not instanciate yourself a state, use StateStack or
-/// AbstactState::requestStatePush() instead.
+/// Do not instanciate yourself a state, use
+/// AbstactState::statePush() instead.
 class AbstractState
 {
 	public:
 		/// Constructor.
-		/// \param stateStack The current StateStack that holds this state.
+		/// \param stateStack The stack that manages this state.
 		AbstractState(StateStack& stateStack);
 
 		/// Destructor.
@@ -29,37 +29,32 @@ class AbstractState
         /// The logic update function.
         /// This function do damages calculations, sending messages to server, etc...
         /// \return Return true if the state under this one in the stack must be also updated.
-		virtual bool update() = 0;
+		virtual void update() = 0;
 
         /// The event handling function.
 		/// This method get the user input and do things with it.
 		virtual void handleEvent() = 0;
 
 	protected:
-		/// Add the given state to the pending queue, and construct it as soon as possible.
-		/// The construction and deletion of state is delayed because some states can ask
-		/// their StateStack to push or pop states while the StateStack is iterating over the states,
-		/// resulting in modification of the structure being iterated. By delaying these operations,
-		/// we ensure that we modify the stack only when this is possible.
+		/// Add a new state to the stack.
 		/// \tparam The type of state to create.
-		/// \param args Arguments to forward to the state constructor.
-		template<typename T, typename ... Args>
-		void requestStackPush(Args&&... args);
+		template<typename StateType>
+		void stackPush();
 
-		/// Delete the top state as soon as possible.
-		void requestStackPop();
+		/// Delete the top state.
+		void stackPop();
 
-		/// Delete all the states as soon as possible.
-		void requestStateClear();
-	
+		/// Delete all the states.
+		void stackClear();
+
 	private:
 		StateStack& _stateStack;
 };
 
-template<typename StateType, typename ... Args>
-void AbstractState::requestStackPush(Args&&... args)
+template<typename StateType>
+void AbstractState::stackPush()
 {
-	_stateStack.pushState<StateType>(std::forward<Args>(args)...);
+	_stateStack.push<StateType>();
 }
 
 #endif// _ABSTRACT_STATE_CLIENT_HPP

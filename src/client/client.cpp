@@ -1,15 +1,15 @@
 #include "client/StateStack.hpp"
-#include "clients/states/MainMenuState.hpp"
+#include "client/states/MainMenuState.hpp"
 
 int main()
 {
 	StateStack s;
-	s.pushState<MainMenuState>();
-	while(true)
+	s.push<MainMenuState>();
+	while(not s.isEmpty())
 	{
+		s.draw();
 		s.handleEvent();
 		s.update();
-		s.draw();
 	}
 	return 0;
 }

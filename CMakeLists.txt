@@ -12,7 +12,3 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -DNDEBUG")
 
 # Tell to cmake to explore src/
 add_subdirectory(src)
-
-# Create an executable from the object compiled in src/
-add_executable(${PROJECT_NAME} "$<TARGET_OBJECTS:WP>")
-
