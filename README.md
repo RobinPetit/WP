@@ -36,25 +36,25 @@ fix/improve the same feature), then the following command can be useful:
 
 It adds all changes to the stagging area (`git add`) and then commits.
 But if you did multiple changes that are unrelated (e.g. fix a doc typo and add a method)
-,then do two separated commits.
+,then do separated commits.
 
 
 ## Remarks on Debriefing 1
 
-Here is the remarks I noted while the debriefing on Tuesday 02/02/2016 :
+Here are the remarks I noted while the debriefing on Tuesday 02/02/2016 :
 
-+ the SRD is not complete and too short ;
-+ the formatting has to be improved (rewrite the flyleaf) ;
++ the SRD is not complete and too short;
++ the formatting has to be improved (rewrite the flyleaf);
 + in the deck management diagram, explain the notion of default deck (which is not empty);
-+ write preconditions and postconditions for **every** use cases diagrams ;
-+ in the gameplay diagram, the case when the monster does not die is missing;
-+ ambiguity of the class *Compte* ;
++ write preconditions and postconditions for **every** use case diagram;
++ in the gameplay diagram, the case where the monster does not die is missing;
++ ambiguity of the class *Compte*.
 
 ## Commit formatting
 
-A commit should start with a title that is  a short explanation
+A commit should start with a title that is a short explanation
 (52 characters maximum, if possible) of the change, then a blank line,
-then some paragraphes that explain the *how* and the *why* of the change
+then some paragraphs that explain the *how* and the *why* of the change
 (above all the *why*), if the change is not trivial.
 The explanations lines should have a length of maximum 72 characters.  
 **Note:** if you are using Vim as default command-line text editor,
