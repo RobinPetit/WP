@@ -14,14 +14,9 @@ class MainMenuState : public AbstractState
         /// Constructor.
 		MainMenuState(StateStack& stateStack);
 
-        /// The drawing function.
-        /// \return virtual void
-        /// It must do all things related to printing stuff on the screen.
-		virtual void draw() override;
-
-        /// The logic update function.
-        /// \return Return true if the state under this one in the stack must be also updated.
-		virtual void update() override;
+        /// The display function.
+        /// It must do all things related to drawing or printing stuff on the screen.
+		virtual void display() override;
 
         /// The event handling function.
 		virtual void handleEvent() override;

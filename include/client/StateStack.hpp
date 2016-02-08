@@ -17,24 +17,21 @@ class StateStack : private sf::NonCopyable
 		/// This declarations is here in order to avoid a warning about inlining.
 		~StateStack() = default;
 
-		/// Call the update() function of all the states in the stack.
-		void update();
+		/// Call the display() function of the top state.
+		void display();
 
-		/// Call the draw() function of all the states in the stack.
-		void draw();
-
-		/// Call the handleEvent() function of the top of the stack.
+		/// Call the handleEvent() function of the top state.
 		void handleEvent();
 
-		/// Add a new state of the template type to the stack.
+		/// Add a new state of the template type to the top of the stack.
 		/// \tparam StateType The type of the state to construct.
 		template <typename StateType>
 		void push();
 
-		/// Delete the top state as soon as possible.
+		/// Delete the top state.
 		void pop();
 
-		/// Delete all the states as soon as possible.
+		/// Delete all the states.
 		void clear();
 
 		/// Check if the stack is empty or not.

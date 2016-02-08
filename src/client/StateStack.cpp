@@ -1,14 +1,9 @@
 #include "client/AbstractState.hpp"
 #include "client/StateStack.hpp"
 
-void StateStack::update()
+void StateStack::display()
 {
-	_stack.top()->update();
-}
-
-void StateStack::draw()
-{
-	_stack.top()->draw();
+	_stack.top()->display();
 }
 
 void StateStack::handleEvent()

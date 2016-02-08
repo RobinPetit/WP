@@ -10,8 +10,7 @@
 /// informations of its parts of the application.
 /// In order to make a state, you must inherit from this class
 /// and implement the pure virtual members.
-/// Do not instanciate yourself a state, use
-/// AbstactState::statePush() instead.
+/// Do not instanciate yourself a state, use AbstactState::statePush() instead.
 class AbstractState
 {
 	public:
@@ -22,14 +21,9 @@ class AbstractState
 		/// Destructor.
 		virtual ~AbstractState() = default;
 
-        /// The drawing function.
-        /// It must do all things related to drawing stuff on the screen.
-		virtual void draw() = 0;
-
-        /// The logic update function.
-        /// This function do damages calculations, sending messages to server, etc...
-        /// \return Return true if the state under this one in the stack must be also updated.
-		virtual void update() = 0;
+        /// The display function.
+        /// It must do all things related to drawing or printing stuff on the screen.
+		virtual void display() = 0;
 
         /// The event handling function.
 		/// This method get the user input and do things with it.
