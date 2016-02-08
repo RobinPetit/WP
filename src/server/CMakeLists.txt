@@ -1,5 +1,7 @@
 set(SOURCES
 	"server.cpp"
+	# sockets
+	"sockets/Server.cpp"
 	)
 
 set(SERVER_NAME "${PROJECT_NAME}_server")
