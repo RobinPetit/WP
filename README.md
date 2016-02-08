@@ -66,14 +66,18 @@ Comments starting by `//~` are not meant to be in
 the final code, they are just indicative about the coding conventions.  
 Comments starting by `///` are Doxygen documentation.
 This is not mandatory, but this is good practice.  
-The prefix `WP_` for header guards can be changed, this is
+The header huard is written as follow: an underscore,
+then the name of the class (or the file) in uppercase with an underscore
+separating each word, then `[_CLIENT_HPP|_SERVER_HPP|_COMMON_HPP]`
+depending the directory of the file.
+The header guards can be changed, this is
 just a proposal.
 
 * include/MyClass.hpp
 
 ```cpp
-    #ifndef WP_MYCLASS_HPP
-    #define WP_MYCLASS_HPP
+    #ifndef _MYCLASS_CLIENT_HPP
+    #define _MYCLASS_CLIENT_HPP
 
     //~ Standard headers first
     #include <string>
@@ -124,7 +128,7 @@ just a proposal.
             std::string m_myStr;///< A good C++ string.
     };
 
-    #endif//WP_MYCLASS_HPP
+    #endif//_MYCLASS_CLIENT_HPP
     //~ Trailling new line
 ```
 
