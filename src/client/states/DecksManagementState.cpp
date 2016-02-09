@@ -37,7 +37,7 @@ void DecksManagementState::handleEvent()
 
 void DecksManagementState::backMainMenu()
 {
-	stackPop();
+    stackPop();
 }
 
 

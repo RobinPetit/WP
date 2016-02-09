@@ -37,7 +37,7 @@ void CardsCollectionState::handleEvent()
 
 void CardsCollectionState::backMainMenu()
 {
-	stackPop();
+    stackPop();
 }
 
 

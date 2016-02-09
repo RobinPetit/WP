@@ -37,7 +37,7 @@ void LadderState::handleEvent()
 
 void LadderState::backMainMenu()
 {
-	stackPop();
+    stackPop();
 }
 
 

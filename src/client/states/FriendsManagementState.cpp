@@ -37,7 +37,7 @@ void FriendsManagementState::handleEvent()
 
 void FriendsManagementState::backMainMenu()
 {
-	stackPop();
+    stackPop();
 }
 
 
