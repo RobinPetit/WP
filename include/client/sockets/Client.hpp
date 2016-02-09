@@ -5,18 +5,19 @@
 #include <string>
 #include <vector>
 
-class Connection
+class Client
 {
 public:
-	Connection(const std::string& name);
+	Client(const std::string& name);
 
-	bool connect(const sf::IpAddress& address, int port);
+	bool connectToServer(const sf::IpAddress& address, int port);
 	bool startConversation(const std::string& playerName);
 
 private:
 	sf::TcpSocket _socket;
 	std::string _name;
 	std::vector<std::string> _currentConversations;
+	bool _isConnected;
 };
 
 #endif // _CONNECTION_HPP_

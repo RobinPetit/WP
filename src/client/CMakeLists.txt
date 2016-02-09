@@ -1,7 +1,7 @@
 set(SOURCES
 		"client.cpp"
 		# sockets
-		"sockets/Connection.cpp"
+		"sockets/Client.cpp"
 		# common
 		"../common/sockets/TransferType.cpp"
 	)
