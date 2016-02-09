@@ -7,9 +7,8 @@ int main()
 	s.push<MainMenuState>();
 	while(not s.isEmpty())
 	{
-		s.draw();
+		s.display();
 		s.handleEvent();
-		s.update();
 	}
 	return 0;
 }
