@@ -13,16 +13,16 @@ public:
 	bool start(const unsigned short listenerPort);
 
 private:
-	/* attributes */
+	// attributes
 	std::unordered_map<std::string, sf::TcpSocket *> _clients;
 	sf::TcpListener _listener;
 	sf::SocketSelector _socketSelector;
 	bool _done;
 
-	/* private methods */
+	// private methods
 	void takeConnection();
 	void receiveData();
 	void handleChatRequest(sf::Packet& packet, sf::TcpSocket& client);
 };
 
-#endif /* _SERVER_HPP_ */
+#endif // _SERVER_HPP_

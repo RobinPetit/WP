@@ -19,4 +19,4 @@ private:
 	std::vector<std::string> _currentConversations;
 };
 
-#endif /* _CONNECTION_HPP_ */
+#endif // _CONNECTION_HPP_

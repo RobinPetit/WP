@@ -2,12 +2,11 @@
     server entry point
 **/
 
-/* std C++ headers */
-/* SFML headers */
+// SFML headers
 #include <SFML/Network.hpp>
-/* WizardPoker common headers */
+// WizardPoker common headers
 #include <common/constants.hpp>
-/* WizardPoker server headers */
+// WizardPoker server headers
 #include <server/Server.hpp>
 
 int main()
