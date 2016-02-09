@@ -28,3 +28,4 @@ bin/
 # Add your IDE's temporary files extension here
 	# code::blocks
 *.cbp
+*.layout
