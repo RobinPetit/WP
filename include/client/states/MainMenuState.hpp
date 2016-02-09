@@ -3,9 +3,9 @@
 
 #include "client/AbstractState.hpp"
 #include <vector>
-#include <utility>
+#include <utility>// std::pair
 #include <string>
-#include <functional>
+#include <functional>// std::function
 
 // Forward declarations
 class StateStack;
@@ -33,10 +33,10 @@ class MainMenuState : public AbstractState
 
         void findGame();
         void manageDecks();
-		void seeCollection();
-		void goToChat();
-		void seeLadder();
-		void addFriend();
+        void seeCollection();
+        void goToChat();
+        void seeLadder();
+        void addFriend();
         void logOut();
 
         std::vector<std::pair<std::string, std::function<void()>>> _actions;///< All actions doable in the menu.

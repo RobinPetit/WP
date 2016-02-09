@@ -36,16 +36,20 @@ void MainMenuState::display()
 
 void MainMenuState::handleEvent()
 {
-    // Get a number from the user input
-    std::string input;
-    std::getline(std::cin, input);
-    const int intInput{std::stoi(input) - 1};
-
-    if(intInput >= 0 and intInput < _actions.size())
+    try
+    {
+        // Get a number from the user input
+        std::string input;
+        std::getline(std::cin, input);
+        const int intInput{std::stoi(input) - 1};
         // Call the method at index intInput
-        _actions[intInput].second();
-    else
+        // std::vector::at throws std::out_of_range if intInput is out of bounds
+        _actions.at(intInput).second();
+    }
+    catch(const std::logic_error& e)
+    {
         std::cout << "Wrong input!\n";
+    }
 }
 
 void MainMenuState::findGame()
