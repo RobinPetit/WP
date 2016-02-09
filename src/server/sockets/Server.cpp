@@ -16,7 +16,6 @@ bool Server::start(const unsigned short listenerPort)
 	if(_listener.listen(listenerPort) != sf::Socket::Done)
 		return UNABLE_TO_LISTEN;
 	_socketSelector.add(_listener);
-	sf::TcpSocket *newClient(nullptr);
 	while(!_done)
 	{
 		/* if no socket is ready, wait again */
