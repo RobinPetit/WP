@@ -15,4 +15,3 @@ bool Connection::connect(const sf::IpAddress& address, int port)
 	/* do not forget the '\0' character */
 	return _socket.send(_name.c_str(), _name.size()+1) == sf::Socket::Done;
 }
-
