@@ -1,7 +1,9 @@
 set(SOURCES
-	"client.cpp"
-	# sockets
-	"sockets/Connection.cpp"
+		"client.cpp"
+		# sockets
+		"sockets/Connection.cpp"
+		# common
+		"../common/sockets/TransferType.cpp"
 	)
 
 set(CLIENT_NAME "${PROJECT_NAME}_client")

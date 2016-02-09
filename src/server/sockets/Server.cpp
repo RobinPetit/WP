@@ -1,6 +1,7 @@
 #include <server/Server.hpp>
 #include <common/constants.hpp>
 #include <server/ErrorCode.hpp>
+#include <common/sockets/TransferType.hpp>
 
 #include <iostream>
 
@@ -63,10 +64,40 @@ void Server::receiveData()
 			sf::Packet packet;
 			if(client.receive(packet) == sf::Socket::Done)
 			{
-				std::cout << "Data is received" << std::endl;
-				/* handle received data */
+				TransferType type;
+				packet >> type;
+				switch(type)
+				{
+				case TransferType::CHAT_PLAYER_IP:
+					std::cout << "a player wants to chat" << std::endl;
+					handleChatRequest(packet, client);
+					break;
+				default:
+					std::cerr << "Error: unknown code " << static_cast<int>(type) << std::endl;
+					break;
+				}
 			}
 		}
 	}
+}
+
+void Server::handleChatRequest(sf::Packet& packet, sf::TcpSocket& client)
+{
+	sf::Packet response;
+	response << TransferType::CHAT_PLAYER_IP;
+	std::string playerName;
+	packet >> playerName;
+	sf::TcpSocket *socket(nullptr);
+	try
+	{
+		socket = _clients.at(playerName);
+		response << socket->getRemoteAddress().toInteger();
+	}
+	catch(std::out_of_range& e)
+	{
+		std::cout << e.what() << "\nplayer does not exist!";
+		response << static_cast<sf::Uint32>(0);
+	}
+	client.send(response);
 }
 

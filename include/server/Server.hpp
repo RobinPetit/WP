@@ -22,6 +22,7 @@ private:
 	/* private methods */
 	void takeConnection();
 	void receiveData();
+	void handleChatRequest(sf::Packet& packet, sf::TcpSocket& client);
 };
 
 #endif /* _SERVER_HPP_ */
