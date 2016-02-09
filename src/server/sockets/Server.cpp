@@ -4,6 +4,7 @@
 #include <common/sockets/TransferType.hpp>
 
 #include <iostream>
+#include <algorithm>
 
 Server::Server():
 	_clients(),
@@ -55,11 +56,16 @@ void Server::takeConnection()
 void Server::receiveData()
 {
 	/* first find which socket it is */
-	for(auto it = _clients.begin(); it != _clients.end(); ++it)
+	auto it = std::find_if(_clients.begin(), _clients.end(), [this](const auto& pair)
 	{
-		sf::TcpSocket& client = *(it->second);  /* get the value */
-		/* if it is the right socket */
-		if(_socketSelector.isReady(client))
+		return _socketSelector.isReady(*pair.second);
+	});
+
+	if(it != _clients.end())
+	{
+		sf::Packet packet;
+		sf::TcpSocket& client(*it->second);
+		if(client.receive(packet) == sf::Socket::Done)
 		{
 			sf::Packet packet;
 			if(client.receive(packet) == sf::Socket::Done)

@@ -38,3 +38,4 @@ bool Connection::startConversation(const std::string& playerName)
 	std::cout << "player IP is " << playerIP << std::endl;
 	return true;
 }
+
