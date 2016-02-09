@@ -10,7 +10,7 @@ class Server
 public:
 	Server();
 
-	bool start(const unsigned short listenerPort);
+	int start(const unsigned short listenerPort);
 
 private:
 	// attributes
