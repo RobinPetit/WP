@@ -6,7 +6,10 @@ MainMenuState::MainMenuState(StateStack& stateStack):
 {
     addAction("Find a game", &MainMenuState::findGame);
     addAction("Manage your decks", &MainMenuState::manageDecks);
-    addAction("Change your account settings", &MainMenuState::changeAccountSettings);
+    addAction("See your collection of cards", &MainMenuState::seeCollection);
+    addAction("Go to chat", &MainMenuState::goToChat);
+    addAction("Add a friend", &MainMenuState::addFriend);
+    addAction("See ladder", &MainMenuState::seeLadder);
     addAction("Log out", &MainMenuState::logOut);
 }
 
@@ -55,9 +58,24 @@ void MainMenuState::manageDecks()
     std::cout << "So, let's manage your decks...\n";
 }
 
-void MainMenuState::changeAccountSettings()
+void MainMenuState::seeCollection()
 {
-    std::cout << "So, let's change some settings...\n";
+    std::cout << "So, let's see your cards...\n";
+}
+
+void MainMenuState::goToChat()
+{
+    std::cout << "So, let's talk to someone's else...\n";
+}
+
+void MainMenuState::seeLadder()
+{
+    std::cout << "So, let's see the ladder...\n";
+}
+
+void MainMenuState::addFriend()
+{
+    std::cout << "So, let's meet new people...\n";
 }
 
 void MainMenuState::logOut()

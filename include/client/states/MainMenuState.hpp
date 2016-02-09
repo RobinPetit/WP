@@ -33,7 +33,10 @@ class MainMenuState : public AbstractState
 
         void findGame();
         void manageDecks();
-        void changeAccountSettings();
+		void seeCollection();
+		void goToChat();
+		void seeLadder();
+		void addFriend();
         void logOut();
 
         std::vector<std::pair<std::string, std::function<void()>>> _actions;///< All actions doable in the menu.
