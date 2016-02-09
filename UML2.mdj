@@ -4538,19 +4538,19 @@
 									"showShadow": true,
 									"containerChangeable": false,
 									"containerExtending": false,
-									"left": 643,
-									"top": 250,
-									"width": 33,
+									"left": 527,
+									"top": 232,
+									"width": 306,
 									"height": 13,
 									"autoResize": false,
-									"alpha": 1.5707963267948966,
-									"distance": 15,
+									"alpha": -0.2795693697655015,
+									"distance": 19.924858845171276,
 									"hostEdge": {
 										"$ref": "AAAAAAFSvJ5KjIsjzXI="
 									},
 									"edgePosition": 1,
 									"underline": false,
-									"text": "Sinon",
+									"text": "Si le monstre n'est pas mort et pas d'attaque du héro",
 									"horizontalAlignment": 2,
 									"verticalAlignment": 5
 								},
@@ -5652,7 +5652,7 @@
 					"_parent": {
 						"$ref": "AAAAAAFRr/LnKntK3LA="
 					},
-					"name": "Sinon",
+					"name": "Si le monstre n'est pas mort et pas d'attaque du héro",
 					"source": {
 						"$ref": "AAAAAAFRr/7TJXxy07w="
 					},
