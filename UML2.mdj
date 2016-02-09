@@ -2545,7 +2545,7 @@
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "Baisse des points de vie du héro adverse",
+											"text": "Baisse des points de vie du héros adverse",
 											"horizontalAlignment": 2,
 											"verticalAlignment": 5
 										},
@@ -4538,9 +4538,9 @@
 									"showShadow": true,
 									"containerChangeable": false,
 									"containerExtending": false,
-									"left": 527,
+									"left": 524,
 									"top": 232,
-									"width": 306,
+									"width": 313,
 									"height": 13,
 									"autoResize": false,
 									"alpha": -0.2795693697655015,
@@ -4550,7 +4550,7 @@
 									},
 									"edgePosition": 1,
 									"underline": false,
-									"text": "Si le monstre n'est pas mort et pas d'attaque du héro",
+									"text": "Si le monstre n'est pas mort et pas d'attaque du héros",
 									"horizontalAlignment": 2,
 									"verticalAlignment": 5
 								},
@@ -5084,7 +5084,7 @@
 					"_parent": {
 						"$ref": "AAAAAAFRr/LnKntK3LA="
 					},
-					"name": "Baisse des points de vie du héro adverse",
+					"name": "Baisse des points de vie du héros adverse",
 					"visibility": "public",
 					"kind": "opaque",
 					"isLocallyReentrant": false,
@@ -5652,7 +5652,7 @@
 					"_parent": {
 						"$ref": "AAAAAAFRr/LnKntK3LA="
 					},
-					"name": "Si le monstre n'est pas mort et pas d'attaque du héro",
+					"name": "Si le monstre n'est pas mort et pas d'attaque du héros",
 					"source": {
 						"$ref": "AAAAAAFRr/7TJXxy07w="
 					},
