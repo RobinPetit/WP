@@ -9,6 +9,12 @@
 class AbstractState;
 
 /// States manager that holds all the states and manages them.
+/// Structuring states as a stack allows more natural browsing in the menus
+/// without overhead in the code.
+/// For example, an option menu can be pushed in top of the main menu, or in top
+/// of the game state, and when it will be poped, the stack will naturally hand
+/// over to the previous state (no matter if it was the main menu or the game
+/// state).
 /// \see State
 class StateStack : private sf::NonCopyable
 {
