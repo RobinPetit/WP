@@ -1,12 +1,12 @@
 set(SOURCES
-	"client.cpp"
-	# states
-	"AbstractState.cpp"
-	"StateStack.cpp"
-	"states/MainMenuState.cpp"
-	# sockets
-	#~"sockets/Connection.cpp"
-	)
+    "client.cpp"
+    # states
+    "AbstractState.cpp"
+    "StateStack.cpp"
+    "states/MainMenuState.cpp"
+    # sockets
+    #~"sockets/Connection.cpp"
+    )
 
 set(CLIENT_NAME "${PROJECT_NAME}_client")
 

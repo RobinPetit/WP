@@ -3,12 +3,12 @@
 
 int main()
 {
-	StateStack s;
-	s.push<MainMenuState>();
-	while(not s.isEmpty())
-	{
-		s.display();
-		s.handleEvent();
-	}
-	return 0;
+    StateStack s;
+    s.push<MainMenuState>();
+    while(not s.isEmpty())
+    {
+        s.display();
+        s.handleEvent();
+    }
+    return 0;
 }

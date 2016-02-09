@@ -3,25 +3,25 @@
 
 void StateStack::display()
 {
-	_stack.top()->display();
+    _stack.top()->display();
 }
 
 void StateStack::handleEvent()
 {
-	_stack.top()->handleEvent();
+    _stack.top()->handleEvent();
 }
 
 void StateStack::pop()
 {
-	_stack.pop();
+    _stack.pop();
 }
 
 void StateStack::clear()
 {
-	_stack = std::stack<std::unique_ptr<AbstractState>>();
+    _stack = std::stack<std::unique_ptr<AbstractState>>();
 }
 
 bool StateStack::isEmpty() const
 {
-	return _stack.empty();
+    return _stack.empty();
 }

@@ -13,42 +13,42 @@
 /// Do not instanciate yourself a state, use AbstactState::statePush() instead.
 class AbstractState
 {
-	public:
-		/// Constructor.
-		/// \param stateStack The stack that manages this state.
-		AbstractState(StateStack& stateStack);
+    public:
+        /// Constructor.
+        /// \param stateStack The stack that manages this state.
+        AbstractState(StateStack& stateStack);
 
-		/// Destructor.
-		virtual ~AbstractState() = default;
+        /// Destructor.
+        virtual ~AbstractState() = default;
 
         /// The display function.
         /// It must do all things related to drawing or printing stuff on the screen.
-		virtual void display() = 0;
+        virtual void display() = 0;
 
         /// The event handling function.
-		/// This method get the user input and do things with it.
-		virtual void handleEvent() = 0;
+        /// This method get the user input and do things with it.
+        virtual void handleEvent() = 0;
 
-	protected:
-		/// Add a new state to the stack.
-		/// \tparam The type of state to create.
-		template<typename StateType>
-		void stackPush();
+    protected:
+        /// Add a new state to the stack.
+        /// \tparam The type of state to create.
+        template<typename StateType>
+        void stackPush();
 
-		/// Delete the top state.
-		void stackPop();
+        /// Delete the top state.
+        void stackPop();
 
-		/// Delete all the states.
-		void stackClear();
+        /// Delete all the states.
+        void stackClear();
 
-	private:
-		StateStack& _stateStack;
+    private:
+        StateStack& _stateStack;
 };
 
 template<typename StateType>
 void AbstractState::stackPush()
 {
-	_stateStack.push<StateType>();
+    _stateStack.push<StateType>();
 }
 
 #endif// _ABSTRACT_STATE_CLIENT_HPP
