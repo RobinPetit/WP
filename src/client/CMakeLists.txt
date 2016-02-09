@@ -3,6 +3,10 @@ set(SOURCES
     # states
     "AbstractState.cpp"
     "StateStack.cpp"
+    "states/CardsCollectionState.cpp"
+    "states/DecksManagementState.cpp"
+    "states/FriendsManagementState.cpp"
+    "states/LadderState.cpp"
     "states/MainMenuState.cpp"
     # sockets
     #~"sockets/Connection.cpp"

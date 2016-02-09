@@ -1,4 +1,8 @@
 #include <iostream>
+#include "client/states/CardsCollectionState.hpp"
+#include "client/states/DecksManagementState.hpp"
+#include "client/states/FriendsManagementState.hpp"
+#include "client/states/LadderState.hpp"
 #include "client/states/MainMenuState.hpp"
 
 MainMenuState::MainMenuState(StateStack& stateStack):
@@ -7,18 +11,9 @@ MainMenuState::MainMenuState(StateStack& stateStack):
     addAction("Find a game", &MainMenuState::findGame);
     addAction("Manage your decks", &MainMenuState::manageDecks);
     addAction("See your collection of cards", &MainMenuState::seeCollection);
-    addAction("Go to chat", &MainMenuState::goToChat);
-    addAction("Add a friend", &MainMenuState::addFriend);
-    addAction("See ladder", &MainMenuState::seeLadder);
+    addAction("Manage your friends", &MainMenuState::manageFriends);
+    addAction("See the ladder", &MainMenuState::seeLadder);
     addAction("Log out", &MainMenuState::logOut);
-}
-
-void MainMenuState::addAction(const std::string& actionName, void (MainMenuState::*method)())
-{
-    // emplace_back simply add an element to the end of the vector.
-    // std::bind constructs a function that results in the call
-    // of method with *this as implicit first argument.
-    _actions.emplace_back(actionName, std::bind(method, *this));
 }
 
 void MainMenuState::display()
@@ -60,26 +55,25 @@ void MainMenuState::findGame()
 void MainMenuState::manageDecks()
 {
     std::cout << "So, let's manage your decks...\n";
+    stackPush<DecksManagementState>();
 }
 
 void MainMenuState::seeCollection()
 {
     std::cout << "So, let's see your cards...\n";
-}
-
-void MainMenuState::goToChat()
-{
-    std::cout << "So, let's talk to someone's else...\n";
+    stackPush<CardsCollectionState>();
 }
 
 void MainMenuState::seeLadder()
 {
     std::cout << "So, let's see the ladder...\n";
+    stackPush<LadderState>();
 }
 
-void MainMenuState::addFriend()
+void MainMenuState::manageFriends()
 {
     std::cout << "So, let's meet new people...\n";
+    stackPush<FriendsManagementState>();
 }
 
 void MainMenuState::logOut()

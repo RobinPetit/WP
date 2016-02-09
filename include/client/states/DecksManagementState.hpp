@@ -1,5 +1,5 @@
-#ifndef _MAIN_MENU_STATE_CLIENT_HPP
-#define _MAIN_MENU_STATE_CLIENT_HPP
+#ifndef _DECKS_MANAGEMENT_STATE_CLIENT_HPP
+#define _DECKS_MANAGEMENT_STATE_CLIENT_HPP
 
 #include "client/AbstractState.hpp"
 
@@ -7,11 +7,11 @@
 class StateStack;
 
 /// Cannot be more explicit.
-class MainMenuState : public AbstractState
+class DecksManagementState : public AbstractState
 {
     public:
         /// Constructor.
-        MainMenuState(StateStack& stateStack);
+        DecksManagementState(StateStack& stateStack);
 
         /// The display function.
         /// It must do all things related to drawing or printing stuff on the screen.
@@ -21,13 +21,9 @@ class MainMenuState : public AbstractState
         virtual void handleEvent() override;
 
     private:
-        void findGame();
-        void manageDecks();
-        void seeCollection();
-        void seeLadder();
-        void manageFriends();
-        void logOut();
+        void backMainMenu();
+
 };
 
-#endif// _MAIN_MENU_STATE_CLIENT_HPP
+#endif// _DECKS_MANAGEMENT_STATE_CLIENT_HPP
 

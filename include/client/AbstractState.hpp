@@ -2,6 +2,10 @@
 #define _ABSTRACT_STATE_CLIENT_HPP
 
 #include <memory>
+#include <vector>
+#include <utility>// std::pair
+#include <string>
+#include <functional>// std::function and std::bind
 #include "client/StateStack.hpp"
 
 /// Base class for the various states.
@@ -41,9 +45,27 @@ class AbstractState
         /// Delete all the states.
         void stackClear();
 
+        /// Helper method for adding an entry in the menu.
+        /// \param actionName The name of the action.
+        /// \param method A pointer to member that will be called when the
+        /// action is triggered.
+        template <class StateType>
+        void addAction(const std::string& actionName, void (StateType::*method)());
+
+        std::vector<std::pair<std::string, std::function<void()>>> _actions;///< All actions doable in the state.
+
     private:
         StateStack& _stateStack;
 };
+
+template<typename StateType>
+void AbstractState::addAction(const std::string& actionName, void (StateType::*method)())
+{
+    // emplace_back simply add an element to the end of the vector.
+    // std::bind constructs a function that results in the call
+    // of method with *this as implicit first argument.
+    _actions.emplace_back(actionName, std::bind(method, static_cast<StateType&>(*this)));
+}
 
 template<typename StateType>
 void AbstractState::stackPush()
