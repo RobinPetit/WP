@@ -55,7 +55,7 @@ Here are the remarks I noted while the debriefing on Tuesday 02/02/2016 :
 A commit should start with a title that is a short explanation
 (52 characters maximum, if possible) of the change, then a blank line,
 then some paragraphs that explain the *how* and the *why* of the change
-(above all the *why*), if the change is not trivial.
+(above all the *why*), if the change is not trivial.  
 The explanations lines should have a length of maximum 72 characters.  
 **Note:** if you are using Vim as default command-line text editor,
 Vim will help you to follow these rules with automatic colors and
@@ -67,17 +67,17 @@ There are 3 main directories:
 * `SRD`
 * `include`
 * `src`
-   
-All the files that are related the the SRD go in the directory `SRD`.   
-All the header files (`.hpp` and `.inl`) go in the directory `include`.   
-All the implementation files (`.cpp`) go in the directory `src`.   
+
+All the files that are related the the SRD go in the directory `SRD`.  
+All the header files (`.hpp` and `.inl`) go in the directory `include`.  
+All the implementation files (`.cpp`) go in the directory `src`.  
 `include` and `src` directories have three subdirectories:
 * `client`
 * `server`
 * `common`
-   
+
 The files that belong exclusively to the client, exclusively to the server,
-or to both, go the the corresponding subdirectory.   
+or to both, go the the corresponding subdirectory.  
 If a part of the source code forms a logical unit and results in many files,
 then all these files should be located in a subdirectory of
 `client`, `server` or `common`.
@@ -107,11 +107,11 @@ depending on the directory of the file.
 	//~ declaration is "relatively" trivial. Do not structure your code
 	//~ to forward-declare when this is usually not possible
     #include "client/MyOtherClass.hpp"
-    
+
     //~ No trailing dot on regular comments (saving a keystroke is good)
     // Forward declarations
     class IncompleteClass;
-    
+
     //~ But trailing dot on docstrings
     //~ (they are meant to be formatted as document or web page)
     /// Brief explanation of the class.
@@ -136,18 +136,18 @@ depending on the directory of the file.
             /// Getter.
             /// \return myInt.
             int getMyInt() const;
-            
+
             /// Setter.
             /// \param newMyInt The new value of myInt.
             void setMyInt(int newMyInt);
 
-        private://~ Use protected only when this is meant to be redefined by subclasses
+        private:  //~ Use protected only when this is meant to be redefined by subclasses
             //~ Docstring alignment is not mandatory but is pretty
-            int _myInt;        ///< An useful integer.
-            std::string _myStr;///< A good C++ string.
+            int _myInt;          ///< An useful integer.
+            std::string _myStr;  ///< A good C++ string.
     };
 
-    #endif// _MYCLASS_CLIENT_HPP
+    #endif  // _MYCLASS_CLIENT_HPP
     //~ Trailling new line
 ```
 
@@ -158,7 +158,7 @@ depending on the directory of the file.
     #include <algorithm>
     #include <SFML/Window.hpp>
     #include "client/IncompleteClass.hpp"
-    #include "client/MyClass.hpp"//~ The corresponding header at last.
+    #include "client/MyClass.hpp"  //~ The corresponding header at last.
 
     //~ Not `using namespace std;`!
     MyClass::MyClass(int myInt):
@@ -171,7 +171,7 @@ depending on the directory of the file.
         if(it == _myStr.cend())
             std::cout << "Z not found in _myStr!\n";//~ std::endl is not always necessary
 
-        //Locally use a namespace can be useful sometimes
+        // Locally use a namespace can be useful sometimes
         using namespace std::placeholders;
         const std::string var{"X"};
         //~ I said whenever possible, everything is possible with STL!
@@ -185,9 +185,9 @@ depending on the directory of the file.
         _myInt(arg.getInt()),
         _myStr(arg.getStr())
     {
-        float var{0.5f};//Comment on same line if short enough
+        float var{0.5f};  // Comment on same line if short enough (with two spaces separating the code and the comment)
         for(std::size_t i{0}; i < _myStr.size(); ++i)
-            //But if the explanation comment is too long, write it on the previous line
+            // But if the explanation comment is too long, write it on the previous line
             if(_myInt > 42)
                 doSomething();
             else
