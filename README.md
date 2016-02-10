@@ -61,6 +61,25 @@ The explanations lines should have a length of maximum 72 characters.
 Vim will help you to follow these rules with automatic colors and
 line wraps.
 
+## Directories structure
+
+There are 3 main directories:
+* `SRD`
+* `include`
+* `src`
+All the files that are related the the SRD go in the directory `SRD`.
+All the header files (`.hpp` and `inl`) go in the directory `include`.
+All the implementation files (`.cpp`) go in the directory `src`.
+`include` and `src` directories have three subdirectories:
+* `client`
+* `server`
+* `common`
+The files that belong exclusively to the client, exclusively to the server,
+or to both, go the the corresponding subdirectory.
+If a part of the source code forms a logical unit and results in many files,
+then all these files should be located in a subdirectory of
+`client`, `server` or `common`.
+
 ## Proposal of coding conventions
 Comments starting by `//~` are not meant to be in
 the final code, they are just indicative about the coding conventions.  
@@ -69,7 +88,7 @@ This is not mandatory, but this is good practice.
 The header huard is written as follow: an underscore,
 then the name of the class (or the file) in uppercase with an underscore
 separating each word, then `[_CLIENT_HPP|_SERVER_HPP|_COMMON_HPP]`
-depending the directory of the file.
+depending on the directory of the file.
 
 * include/MyClass.hpp
 
@@ -85,7 +104,7 @@ depending the directory of the file.
 	//~ Never forward-declare standard classes, and forward-declare when the
 	//~ declaration is "relatively" trivial. Do not structure your code
 	//~ to forward-declare when this is usually not possible
-    #include "MyOtherClass.hpp"
+    #include "client/MyOtherClass.hpp"
     
     //~ No trailing dot on regular comments (saving a keystroke is good)
     // Forward declarations
@@ -136,8 +155,8 @@ depending the directory of the file.
 ```cpp
     #include <algorithm>
     #include <SFML/Window.hpp>
-    #include "IncompleteClass.hpp"
-    #include "MyClass.hpp"//~ The corresponding header at last.
+    #include "client/IncompleteClass.hpp"
+    #include "client/MyClass.hpp"//~ The corresponding header at last.
 
     //~ Not `using namespace std;`!
     MyClass::MyClass(int myInt):
