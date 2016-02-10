@@ -20,6 +20,7 @@ class HomeState : public AbstractState
     private:
         void connect();
         void createAccount();
+        void quit();
 
 };
 

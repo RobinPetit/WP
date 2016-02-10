@@ -14,6 +14,7 @@ MainMenuState::MainMenuState(StateStack& stateStack):
     addAction("Manage your friends", &MainMenuState::manageFriends);
     addAction("See the ladder", &MainMenuState::seeLadder);
     addAction("Log out", &MainMenuState::logOut);
+    addAction("Quit", &MainMenuState::quit);
 }
 
 void MainMenuState::display()
@@ -55,6 +56,12 @@ void MainMenuState::logOut()
 {
     std::cout << "Bye!...\n";
     stackPop();
+}
+
+void MainMenuState::quit()
+{
+	std::cout << "Bye!...\n";
+	stackClear();
 }
 
 

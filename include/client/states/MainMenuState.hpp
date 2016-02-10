@@ -24,6 +24,7 @@ class MainMenuState : public AbstractState
         void seeLadder();
         void manageFriends();
         void logOut();
+        void quit();
 };
 
 #endif// _MAIN_MENU_STATE_CLIENT_HPP

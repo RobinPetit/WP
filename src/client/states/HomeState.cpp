@@ -7,6 +7,7 @@ HomeState::HomeState(StateStack& stateStack):
 {
     addAction("Connect with your account", &HomeState::connect);
     addAction("Create an account", &HomeState::createAccount);
+    addAction("Quit", &HomeState::quit);
 }
 
 void HomeState::display()
@@ -41,4 +42,7 @@ void HomeState::createAccount()
 	stackPush<MainMenuState>();
 }
 
-
+void HomeState::quit()
+{
+	stackClear();
+}
