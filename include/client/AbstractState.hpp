@@ -27,12 +27,12 @@ class AbstractState
 
         /// The display function.
         /// It must do all things related to drawing or printing stuff on the screen.
-        virtual void display() = 0;
+        virtual void display();
 
         /// The event handling function.
         /// This method get the user input and do things with it.
         /// \param input The characters that the user typed (an entire line).
-        virtual void handleInput(const std::string& input) = 0;
+        virtual void handleInput(const std::string& input);
 
     protected:
         /// Add a new state to the stack.
@@ -53,9 +53,8 @@ class AbstractState
         template <class StateType>
         void addAction(const std::string& actionName, void (StateType::*method)());
 
-        std::vector<std::pair<std::string, std::function<void()>>> _actions;///< All actions doable in the state.
-
     private:
+        std::vector<std::pair<std::string, std::function<void()>>> _actions;///< All actions doable in the state.
         StateStack& _stateStack;
 };
 

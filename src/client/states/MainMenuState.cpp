@@ -21,28 +21,9 @@ void MainMenuState::display()
     // The menu is not that pretty, it can be improved
     std::cout << std::string(40, '*') << "\n";
     std::cout << "Main menu:\n";
-    unsigned int i{0};
-    // Display the actions
-    for(const auto& pair : _actions)
-        std::cout << ++i << ". " << pair.first << "\n";
-    std::cout << std::string(40, '*') << "\n";
-    std::cout << "What do you want to do? ";
-}
 
-void MainMenuState::handleInput(const std::string& input)
-{
-    try
-    {
-        // Get a number from the user input
-        const int intInput{std::stoi(input) - 1};
-        // Call the method at index intInput
-        // std::vector::at throws std::out_of_range if intInput is out of bounds
-        _actions.at(intInput).second();
-    }
-    catch(const std::logic_error& e)
-    {
-        std::cout << "Wrong input!\n";
-    }
+    // Display the actions
+    AbstractState::display();
 }
 
 void MainMenuState::findGame()

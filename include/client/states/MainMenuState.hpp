@@ -17,9 +17,6 @@ class MainMenuState : public AbstractState
         /// It must do all things related to drawing or printing stuff on the screen.
         virtual void display() override;
 
-        /// The event handling function.
-        virtual void handleInput(const std::string& input) override;
-
     private:
         void findGame();
         void manageDecks();

@@ -11,6 +11,7 @@ int main()
     {
 		system("clear");
         s.display();
+        std::cout << "What do you want to do? ";
 		std::string input;
 		std::getline(std::cin, input);
         s.handleInput(input);
