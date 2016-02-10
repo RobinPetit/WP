@@ -4,11 +4,11 @@
 DecksManagementState::DecksManagementState(StateStack& stateStack):
     AbstractState(stateStack)
 {
+    addAction("Back to main menu", &DecksManagementState::backMainMenu);
     addAction("Display a deck", &DecksManagementState::displayDeck);
     addAction("Edit a deck", &DecksManagementState::editDeck);
     addAction("Create a deck", &DecksManagementState::createDeck);
     addAction("Delete a deck", &DecksManagementState::deleteDeck);
-    addAction("Back to main menu", &DecksManagementState::backMainMenu);
     // Get the decks from the server...
     _decks.emplace_back("Aggro deck");
     _decks.emplace_back("Defense deck");

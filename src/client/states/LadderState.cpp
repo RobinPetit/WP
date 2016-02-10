@@ -12,7 +12,7 @@ LadderState::LadderState(StateStack& stateStack):
 void LadderState::display()
 {
     std::cout << "Here is the ladder:\n";
-    unsigned int i{0}
+    unsigned int i{0U};
 	for(const auto& user : _ladder)
 		std::cout << ++i << ". " << user << "\n";
 

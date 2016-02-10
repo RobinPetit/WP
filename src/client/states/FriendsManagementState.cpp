@@ -4,9 +4,9 @@
 FriendsManagementState::FriendsManagementState(StateStack& stateStack):
     AbstractState(stateStack)
 {
+    addAction("Back to main menu", &FriendsManagementState::backMainMenu);
 	addAction("Add a friend to the list", &FriendsManagementState::addFriend);
 	addAction("Remove a friend from the list", &FriendsManagementState::removeFriend);
-    addAction("Back to main menu", &FriendsManagementState::backMainMenu);
     // Get the list of friends...
     _friends = {"Emile", "Marc-Henry", "Sigmund"};
 }

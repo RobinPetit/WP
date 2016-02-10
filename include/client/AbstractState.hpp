@@ -47,6 +47,8 @@ class AbstractState
         void stackClear();
 
         /// Helper method for adding an entry in the menu.
+        /// The first call to this function should be for adding the 'quit'
+        /// entry or similar.
         /// \param actionName The name of the action.
         /// \param method A pointer to member that will be called when the
         /// action is triggered.

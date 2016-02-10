@@ -8,13 +8,13 @@
 MainMenuState::MainMenuState(StateStack& stateStack):
     AbstractState(stateStack)
 {
+    addAction("Quit", &MainMenuState::quit);
     addAction("Find a game", &MainMenuState::findGame);
     addAction("Manage your decks", &MainMenuState::manageDecks);
     addAction("See your collection of cards", &MainMenuState::seeCollection);
     addAction("Manage your friends", &MainMenuState::manageFriends);
     addAction("See the ladder", &MainMenuState::seeLadder);
     addAction("Log out", &MainMenuState::logOut);
-    addAction("Quit", &MainMenuState::quit);
 }
 
 void MainMenuState::display()

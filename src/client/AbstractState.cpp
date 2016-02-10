@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cassert>
 #include "client/AbstractState.hpp"
 
 AbstractState::AbstractState(StateStack& stateStack):
@@ -8,12 +9,12 @@ AbstractState::AbstractState(StateStack& stateStack):
 
 void AbstractState::display()
 {
-	// \TODO start menu entries by 0 rather than 1, and always put the
-	// 'back to main menu' or 'quit' as entry 0.
-	// So that the user has not to read all the menu in order to quit the menu.
-    unsigned int i{0};
-    for(const auto& pair : _actions)
-        std::cout << ++i << ". " << pair.first << "\n";
+    for(size_t i{1}; i < _actions.size(); ++i)
+        std::cout << i << ". " << _actions[i].first << "\n";
+    assert(_actions.size() > 0);
+    // Display the menu entry 0 (which should be 'quit' or something like this) at last
+    // because this is strange to have 'quit' as first possibility in a menu
+    std::cout << "0. " << _actions[0].first << "\n";
 }
 
 void AbstractState::handleInput(const std::string& input)
@@ -21,7 +22,7 @@ void AbstractState::handleInput(const std::string& input)
     try
     {
         // Get a number from the user input
-        const int intInput{std::stoi(input) - 1};
+        const int intInput{std::stoi(input)};
         // Call the method at index intInput
         // std::vector::at throws std::out_of_range if intInput is out of bounds
         _actions.at(intInput).second();

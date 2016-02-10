@@ -5,9 +5,9 @@
 HomeState::HomeState(StateStack& stateStack):
     AbstractState(stateStack)
 {
+    addAction("Quit", &HomeState::quit);
     addAction("Connect with your account", &HomeState::connect);
     addAction("Create an account", &HomeState::createAccount);
-    addAction("Quit", &HomeState::quit);
 }
 
 void HomeState::display()
