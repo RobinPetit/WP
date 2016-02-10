@@ -33,25 +33,21 @@ void MainMenuState::findGame()
 
 void MainMenuState::manageDecks()
 {
-    std::cout << "So, let's manage your decks...\n";
     stackPush<DecksManagementState>();
 }
 
 void MainMenuState::seeCollection()
 {
-    std::cout << "So, let's see your cards...\n";
     stackPush<CardsCollectionState>();
 }
 
 void MainMenuState::seeLadder()
 {
-    std::cout << "So, let's see the ladder...\n";
     stackPush<LadderState>();
 }
 
 void MainMenuState::manageFriends()
 {
-    std::cout << "So, let's meet new people...\n";
     stackPush<FriendsManagementState>();
 }
 
