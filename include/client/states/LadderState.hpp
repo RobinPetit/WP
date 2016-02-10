@@ -20,6 +20,7 @@ class LadderState : public AbstractState
     private:
         void backMainMenu();
 
+        std::vector<std::string> _ladder;
 };
 
 #endif// _LADDER_STATE_CLIENT_HPP
