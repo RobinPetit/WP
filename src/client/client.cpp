@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstdlib>
 #include "client/StateStack.hpp"
 #include "client/states/HomeState.hpp"
 
@@ -8,6 +9,7 @@ int main()
     s.push<HomeState>();
     while(not s.isEmpty())
     {
+		system("clear");
         s.display();
 		std::string input;
 		std::getline(std::cin, input);
