@@ -70,8 +70,6 @@ The header huard is written as follow: an underscore,
 then the name of the class (or the file) in uppercase with an underscore
 separating each word, then `[_CLIENT_HPP|_SERVER_HPP|_COMMON_HPP]`
 depending the directory of the file.
-The header guards can be changed, this is
-just a proposal.
 
 * include/MyClass.hpp
 
@@ -124,11 +122,11 @@ just a proposal.
 
         private://~ Use protected only when this is meant to be redefined by subclasses
             //~ Docstring alignment is not mandatory but is pretty
-            int m_myInt;        ///< An useful integer.
-            std::string m_myStr;///< A good C++ string.
+            int _myInt;        ///< An useful integer.
+            std::string _myStr;///< A good C++ string.
     };
 
-    #endif//_MYCLASS_CLIENT_HPP
+    #endif// _MYCLASS_CLIENT_HPP
     //~ Trailling new line
 ```
 
@@ -144,32 +142,32 @@ just a proposal.
     //~ Not `using namespace std;`!
     MyClass::MyClass(int myInt):
         MyOtherClass(3),
-        m_myInt(myInt),
-        m_myStr("LULZ")
+        _myInt(myInt),
+        _myStr("LULZ")
     {
         //~ Use algorithms and standard features whenever possible!
-        auto it = std::find(m_myStr.cbegin(), m_myStr.cend(), "Z");
-        if(it == m_myStr.cend())
-            std::cout << "Z not found in m_myStr!\n";//~ std::endl is not always necessary
+        auto it = std::find(_myStr.cbegin(), _myStr.cend(), "Z");
+        if(it == _myStr.cend())
+            std::cout << "Z not found in _myStr!\n";//~ std::endl is not always necessary
 
         //Locally use a namespace can be useful sometimes
         using namespace std::placeholders;
         const std::string var{"X"};
         //~ I said whenever possible, everything is possible with STL!
-        it = std::find_if(m_myStr.cbegin(), m_myStr.cend(), std::bind(checkWithTwoArgs, _1, var));
-        if(it == m_myStr.cend())
-            std::cout << "checkWithTwoArgs return true for none of the characters of m_myStr and var\n";
+        it = std::find_if(_myStr.cbegin(), _myStr.cend(), std::bind(checkWithTwoArgs, _1, var));
+        if(it == _myStr.cend())
+            std::cout << "checkWithTwoArgs return true for none of the characters of _myStr and var\n";
     }
 
     MyClass::MyClass(const IncompleteClass& arg):
         MyOtherClass(arg.getInt() / 2),
-        m_myInt(arg.getInt()),
-        m_myStr(arg.getStr())
+        _myInt(arg.getInt()),
+        _myStr(arg.getStr())
     {
         float var{0.5f};//Comment on same line if short enough
-        for(std::size_t i{0}; i < m_myStr.size(); ++i)
+        for(std::size_t i{0}; i < _myStr.size(); ++i)
             //But if the explanation comment is too long, write it on the previous line
-            if(m_myInt > 42)
+            if(_myInt > 42)
                 doSomething();
             else
                 var -= var / 2.f;
@@ -180,7 +178,7 @@ just a proposal.
             doSomething();
         } while(var > 5.f);
 
-        switch(m_myInt)
+        switch(_myInt)
         {
             case 0:
                 inCaseOfZero();
@@ -197,12 +195,12 @@ just a proposal.
 
     MyClass::getMyInt() const
     {
-        return m_myInt();
+        return _myInt();
     }
 
     MyClass::setMyInt(int newMyInt)
     {
-        m_myInt = newMyInt;
+        _myInt = newMyInt;
     }
 ```
 
