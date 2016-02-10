@@ -1,6 +1,7 @@
 #include <SFML/Network/TcpListener.hpp>
 #include <SFML/Network/TcpSocket.hpp>
 #include <SFML/Network/SocketSelector.hpp>
+#include <SFML/Network/Packet.hpp>
 #include <SFML/System/Time.hpp>
 #include <server/ErrorCode.hpp>
 #include <iostream>
@@ -29,7 +30,13 @@ void chatListening(sf::Uint16 *port, std::atomic_bool *loop)
 		sf::TcpSocket socket;
 		if(chatListener.accept(socket) == sf::Socket::Done)
 		{
-			std::cout << "\tinside\n";
+			sf::Uint32 address;
+			sf::Uint16 port;
+			std::string otherName, selfName;
+			sf::Packet packet;
+			socket.receive(packet);
+			packet >> address >> port >> selfName >> otherName;
+			std::cout << "chat connection is asked by " << otherName << " at address " << address << " and port " << port << ". Your name is " << selfName << std::endl;
 		}
 	}
 }
