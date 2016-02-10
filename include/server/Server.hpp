@@ -5,6 +5,12 @@
 #include <unordered_map>
 #include <string>
 
+struct ClientInformations
+{
+	sf::TcpSocket *socket;
+	sf::Uint16 listeningPort;  // used to send connection for the chat
+};
+
 class Server
 {
 public:
@@ -14,7 +20,7 @@ public:
 
 private:
 	// attributes
-	std::unordered_map<std::string, sf::TcpSocket *> _clients;
+	std::unordered_map<std::string, ClientInformations> _clients;
 	sf::TcpListener _listener;
 	sf::SocketSelector _socketSelector;
 	bool _done;

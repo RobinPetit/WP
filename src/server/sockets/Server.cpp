@@ -34,8 +34,8 @@ int Server::start(const unsigned short listenerPort)
 
 void Server::takeConnection()
 {
-	char playerName[MAX_NAME_LENGTH];
-	size_t receivedBytes;
+	std::string playerName;
+	sf::Uint16 clientPort;
 	sf::TcpSocket *newClient = new sf::TcpSocket();
 	// if listener can't accept correctly, free the allocated socket
 	if(_listener.accept(*newClient) != sf::Socket::Done)
@@ -44,13 +44,24 @@ void Server::takeConnection()
 		return;
 	}
 	// receive username
-	newClient->receive(playerName, MAX_NAME_LENGTH, receivedBytes);
-	/// \TODO receive the password and check the connection right here
-	std::cout << "new player connected: " << playerName << std::endl;
-	// add the new socket to the clients
-	_clients[playerName] = newClient;
-	// and add this client to the selector so that its receivals are handled properly
-	_socketSelector.add(*newClient);
+	sf::Packet packet;
+	newClient->receive(packet);
+	TransferType type;
+	packet >> type;
+	if(type == TransferType::GAME_CONNECTION)
+	{
+		packet >> playerName >> clientPort;
+		/// \TODO receive the password and check the connection right here
+		std::cout << "new player connected: " << playerName << std::endl;
+		// add the new socket to the clients
+		_clients[playerName] = {newClient, clientPort};
+		// and add this client to the selector so that its receivals are handled properly
+		_socketSelector.add(*newClient);
+	}
+	else if(type == TransferType::CHAT_PLAYER_IP)
+		handleChatRequest(packet, *newClient);
+	else
+		std::cout << "Error: wrong code!" << std::endl;
 }
 
 void Server::receiveData()
@@ -58,13 +69,13 @@ void Server::receiveData()
 	// first find which socket it is
 	auto it = std::find_if(_clients.begin(), _clients.end(), [this](const auto& pair)
 	{
-		return _socketSelector.isReady(*pair.second);
+		return _socketSelector.isReady(*(pair.second.socket));
 	});
 	if(it == _clients.end())
 		return;
 
 	sf::Packet packet;
-	sf::TcpSocket& client(*it->second);
+	sf::TcpSocket& client(*(it->second.socket));
 	if(client.receive(packet) == sf::Socket::Done)
 	{
 		sf::Packet packet;
@@ -87,23 +98,34 @@ void Server::receiveData()
 
 void Server::handleChatRequest(sf::Packet& packet, sf::TcpSocket& client)
 {
-	sf::Packet response;
-	response << TransferType::CHAT_PLAYER_IP;
-	std::string playerName;
-	packet >> playerName;
+	sf::Packet responseToCaller;
+	responseToCaller << TransferType::CHAT_PLAYER_IP;
+	std::string calleeName;
+	std::string callerName;
+	sf::Uint16 callerPort;
+	packet >> callerName >> calleeName >> callerPort;
 	try
 	{
 		// first of all, verify that player exist
 		// if it does, send his IP
-		sf::TcpSocket *socket = _clients.at(playerName);
-		response << socket->getRemoteAddress().toInteger();
+		responseToCaller << _clients.at(calleeName).socket->getRemoteAddress().toString();
+		sf::Packet packetToCalle;
+		sf::TcpSocket toCallee;
+		toCallee.connect(_clients.at(calleeName).socket->getRemoteAddress(), _clients.at(calleeName).listeningPort);
+		packetToCalle << client.getRemoteAddress().toInteger() << callerPort << calleeName << callerName;
+		toCallee.send(packetToCalle);
+		/*response << _clients.at(playerName).socket->getRemoteAddress().toInteger();
+		sf::TcpSocket socket;
+		socket.connect(_clients.at(playerName).socket->getRemoteAddress(), _clients.at(playerName).listeningPort);
+		sf::Packet packet;
+		packet << playerName << _clients.at(playerName).socket->getRemoteAddress();*/
 	}
 	catch(std::out_of_range& e)
 	{
 		// if it doesn't, send 0 as address
 		std::cout << e.what() << "\nplayer does not exist!";
-		response << static_cast<sf::Uint32>(0);
+		responseToCaller << static_cast<sf::Uint32>(0);
 	}
-	client.send(response);
+	client.send(responseToCaller);
 }
 

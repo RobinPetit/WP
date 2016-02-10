@@ -7,8 +7,9 @@
 enum class TransferType : sf::Uint32
 {
 	// CHAT
-	CHAT_PLAYER_IP
+	CHAT_PLAYER_IP,
 	// GAME
+	GAME_CONNECTION,
 };
 
 sf::Packet& operator<<(sf::Packet& packet, const TransferType& type);

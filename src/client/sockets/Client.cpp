@@ -2,11 +2,17 @@
 #include <common/constants.hpp>
 #include <common/sockets/TransferType.hpp>
 #include <iostream>
+#include <thread>
+#include <cstdlib>
+
+extern void chatListening(sf::Uint16 *port, bool *loop);
 
 Client::Client(const std::string& name):
 	_socket(),
 	_currentConversations(),
-	_isConnected(false)
+	_isConnected(false),
+	_chatListenerPort(0),
+	_threadLoop(0)
 {
 	// forces the name to not be larger than MAX_NAME_LENGTH
 	_name = (name.size() < MAX_NAME_LENGTH) ? name : name.substr(0, MAX_NAME_LENGTH);
@@ -14,30 +20,47 @@ Client::Client(const std::string& name):
 
 bool Client::connectToServer(const sf::IpAddress& address, int port)
 {
+	// if client is already connected to a server, do not try to re-connect it
+	if(_isConnected)
+		return false;
+	initListener();  // creates the new thread which listens for entring chat conenctions
 	// if connection does not work, don't go further
 	if(_socket.connect(address, port) != sf::Socket::Done)
 		return false;
-	// do not forget the '\0' character
-	return _isConnected = (_socket.send(_name.c_str(), _name.size()+1) == sf::Socket::Done);
+	sf::Packet packet;
+	packet << TransferType::GAME_CONNECTION  // precise
+	       << _name  // do not forget the '\0' character
+	       << static_cast<sf::Uint16>(_chatListenerPort);
+	if(_socket.send(packet) != sf::Socket::Done)
+		return false;
+	_isConnected = true;
+	return true;
 }
 
 bool Client::startConversation(const std::string& playerName)
 {
+	// rest assured the client is connected to a server before trying to access it
 	if(!_isConnected)
 		return false;
-	sf::Packet sentPacket;
-    sentPacket << TransferType::CHAT_PLAYER_IP << playerName;
-    if(_socket.send(sentPacket) != sf::Socket::Done)
-		return false;
-	sf::Packet receivedPacket;
-	if(_socket.receive(receivedPacket) != sf::Socket::Done)
-		return false;
-	TransferType type;
-	receivedPacket >> type;
-	if(type != TransferType::CHAT_PLAYER_IP)
-		return false;
-	sf::Uint32 playerIP;
-	receivedPacket >> playerIP;
+	std::string cmd;
+	cmd = "gnome-terminal "
+	      "-x ./WizardPoker_chat "
+	      "\"caller\" "
+	      "\"" SERVER_ADDRESS "\" "
+	      "\"" + _name + "\" "
+	      "\"" + playerName + "\"";
+	system((cmd + ">log.txt").c_str());
 	return true;
 }
 
+void Client::initListener()
+{
+	_threadLoop = true;
+	_listenerThread = std::thread(chatListening, &_chatListenerPort, &_threadLoop);
+}
+
+void Client::quit()
+{
+	_threadLoop = false;
+	_listenerThread.join();
+}
