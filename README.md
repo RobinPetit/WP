@@ -16,6 +16,8 @@ When you want to contribute, here is an idea of the usual workflow:
 
 ```bash
     git pull
+	# Make sure your branch is master! (git checkout master)
+	# Unless you really want to do a branch from a branch
 	git checkout -b nameOfYourModifications
 	# Do things in you local branch
 	git add filesThatYouJustModified.cpp
