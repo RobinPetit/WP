@@ -9,7 +9,7 @@ int main()
     stack.push<HomeState>();
     while(not stack.isEmpty())
     {
-        //~system("clear");
+        system("clear");
         stack.display();
         std::cout << "What do you want to do? ";
         std::string input;

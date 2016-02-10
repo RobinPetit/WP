@@ -8,6 +8,9 @@ AbstractState::AbstractState(StateStack& stateStack):
 
 void AbstractState::display()
 {
+	// \TODO start menu entries by 0 rather than 1, and always put the
+	// 'back to main menu' or 'quit' as entry 0.
+	// So that the user has not to read all the menu in order to quit the menu.
     unsigned int i{0};
     for(const auto& pair : _actions)
         std::cout << ++i << ". " << pair.first << "\n";

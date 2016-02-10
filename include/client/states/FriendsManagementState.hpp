@@ -18,8 +18,11 @@ class FriendsManagementState : public AbstractState
         virtual void display() override;
 
     private:
+		void addFriend();
+		void removeFriend();
         void backMainMenu();
 
+        std::vector<std::string> _friends;///< The list of friends.
 };
 
 #endif// _FRIENDS_MANAGEMENT_STATE_CLIENT_HPP
