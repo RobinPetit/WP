@@ -7,18 +7,18 @@ template <typename Param>
 class Card{
     unsigned int _cost;
     Effect<Param> _effect;
-    char* _img;
+    std::string _name;
     
 public:
 
     ///Constructors
-    Card (unsigned int cost, Effect<Param> effect, char* img):
-                            _cost(cost), _effect(effect), _img(img){};
+    Card (unsigned int cost, Effect<Param> effect, std::string name):
+                            _cost(cost), _effect(effect), _name(name){};
     
     ///Getters
     unsigned int getCost(){return _cost;};
     Effect<Param> getEffect(){return _effect;};
-    char* getImg(){return _img;};
+    std::string getName(){return _name;};
 
 };
 
