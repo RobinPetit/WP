@@ -112,6 +112,8 @@ void Server::handleChatRequest(sf::Packet& packet, sf::TcpSocket& client)
 		sf::Packet packetToCalle;
 		sf::TcpSocket toCallee;
 		toCallee.connect(_clients.at(calleeName).socket->getRemoteAddress(), _clients.at(calleeName).listeningPort);
+		// as the listening port has a delay, set communications as blokcing
+		toCallee.setBlocking(true);
 		packetToCalle << client.getRemoteAddress().toInteger() << callerPort << calleeName << callerName;
 		toCallee.send(packetToCalle);
 		/*response << _clients.at(playerName).socket->getRemoteAddress().toInteger();

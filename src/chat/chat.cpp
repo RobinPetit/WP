@@ -31,6 +31,8 @@ int main(int argc, char **argv)
 	{
 		// out here represents the game server
 		out.connect(address, gameServerPort);
+		// the connection to the server is blocking because of the several delays possible
+		out.setBlocking(true);
 		// transfer in the right order the necessary data to the server
 		packet << TransferType::CHAT_PLAYER_IP << selfName << otherName << listener.getLocalPort();
 		out.send(packet);

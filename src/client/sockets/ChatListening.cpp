@@ -29,6 +29,7 @@ void chatListening(sf::Uint16 *port, std::atomic_bool *loop)
 		sf::TcpSocket socket;
 		if(chatListener.accept(socket) == sf::Socket::Done)
 		{
+			std::cout << "\tinside\n";
 		}
 	}
 }

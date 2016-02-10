@@ -45,10 +45,12 @@ bool Client::startConversation(const std::string& playerName)
 	std::string cmd;
 	cmd = "gnome-terminal "
 	      "-x ./WizardPoker_chat "
-	      "\"caller\" "
-	      "\"" SERVER_ADDRESS "\" "
-	      "\"" + _name + "\" "
-	      "\"" + playerName + "\"";
+	      "\"caller\" "  // parameter 1 is caller/callee
+	      "\"" SERVER_ADDRESS "\" "  // parameter 2 is the address to connect to
+	      "\"" + std::to_string(SERVER_PORT) + "\" "  // parameter 3 is the port to connect to
+	      "\"" + _name + "\" "  // parameter 4 is caller's name
+	      "\"" + playerName + "\"";  // parameter 5 is callee's name
+	      // there is not more parameters!
 	system(cmd.c_str());
 	return true;
 }
