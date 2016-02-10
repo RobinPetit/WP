@@ -17,13 +17,11 @@ void CardsCollectionState::display()
     std::cout << "What do you want to do? ";
 }
 
-void CardsCollectionState::handleEvent()
+void CardsCollectionState::handleEvent(const std::string& input)
 {
     try
     {
         // Get a number from the user input
-        std::string input;
-        std::getline(std::cin, input);
         const int intInput{std::stoi(input) - 1};
         // Call the method at index intInput
         // std::vector::at throws std::out_of_range if intInput is out of bounds

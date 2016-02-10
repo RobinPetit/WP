@@ -8,7 +8,9 @@ int main()
     while(not s.isEmpty())
     {
         s.display();
-        s.handleEvent();
+		std::string input;
+		std::getline(std::cin, input);
+        s.handleEvent(input);
     }
     return 0;
 }

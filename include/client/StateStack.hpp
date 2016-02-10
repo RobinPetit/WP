@@ -27,7 +27,7 @@ class StateStack : private sf::NonCopyable
         void display();
 
         /// Call the handleEvent() function of the top state.
-        void handleEvent();
+        void handleEvent(const std::string& input);
 
         /// Add a new state of the template type to the top of the stack.
         /// \tparam StateType The type of the state to construct.

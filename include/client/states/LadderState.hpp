@@ -18,7 +18,7 @@ class LadderState : public AbstractState
         virtual void display() override;
 
         /// The event handling function.
-        virtual void handleEvent() override;
+        virtual void handleEvent(const std::string& input) override;
 
     private:
         void backMainMenu();
