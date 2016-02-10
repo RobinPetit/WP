@@ -68,16 +68,16 @@ There are 3 main directories:
 * `include`
 * `src`
    
-All the files that are related the the SRD go in the directory `SRD`.
-All the header files (`.hpp` and `inl`) go in the directory `include`.
-All the implementation files (`.cpp`) go in the directory `src`.
+All the files that are related the the SRD go in the directory `SRD`.   
+All the header files (`.hpp` and `.inl`) go in the directory `include`.   
+All the implementation files (`.cpp`) go in the directory `src`.   
 `include` and `src` directories have three subdirectories:
 * `client`
 * `server`
 * `common`
    
 The files that belong exclusively to the client, exclusively to the server,
-or to both, go the the corresponding subdirectory.
+or to both, go the the corresponding subdirectory.   
 If a part of the source code forms a logical unit and results in many files,
 then all these files should be located in a subdirectory of
 `client`, `server` or `common`.
