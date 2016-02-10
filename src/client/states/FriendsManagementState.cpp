@@ -17,7 +17,7 @@ void FriendsManagementState::display()
     std::cout << "What do you want to do? ";
 }
 
-void FriendsManagementState::handleEvent(const std::string& input)
+void FriendsManagementState::handleInput(const std::string& input)
 {
     try
     {

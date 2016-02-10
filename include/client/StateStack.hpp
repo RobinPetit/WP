@@ -2,6 +2,7 @@
 #define _STATE_STACK_CLIENT_HPP
 
 #include <stack>
+#include <string>
 #include <memory>
 #include <SFML/System.hpp>
 
@@ -26,8 +27,8 @@ class StateStack : private sf::NonCopyable
         /// Call the display() function of the top state.
         void display();
 
-        /// Call the handleEvent() function of the top state.
-        void handleEvent(const std::string& input);
+        /// Call the handleInput() function of the top state.
+        void handleInput(const std::string& input);
 
         /// Add a new state of the template type to the top of the stack.
         /// \tparam StateType The type of the state to construct.

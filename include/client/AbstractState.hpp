@@ -32,7 +32,7 @@ class AbstractState
         /// The event handling function.
         /// This method get the user input and do things with it.
         /// \param input The characters that the user typed (an entire line).
-        virtual void handleEvent(const std::string& input) = 0;
+        virtual void handleInput(const std::string& input) = 0;
 
     protected:
         /// Add a new state to the stack.

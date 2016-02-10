@@ -17,7 +17,7 @@ void DecksManagementState::display()
     std::cout << "What do you want to do? ";
 }
 
-void DecksManagementState::handleEvent(const std::string& input)
+void DecksManagementState::handleInput(const std::string& input)
 {
     try
     {

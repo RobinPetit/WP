@@ -17,7 +17,7 @@ void LadderState::display()
     std::cout << "What do you want to do? ";
 }
 
-void LadderState::handleEvent(const std::string& input)
+void LadderState::handleInput(const std::string& input)
 {
     try
     {

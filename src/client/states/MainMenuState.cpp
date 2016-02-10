@@ -29,7 +29,7 @@ void MainMenuState::display()
     std::cout << "What do you want to do? ";
 }
 
-void MainMenuState::handleEvent(const std::string& input)
+void MainMenuState::handleInput(const std::string& input)
 {
     try
     {

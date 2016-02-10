@@ -18,7 +18,7 @@ class MainMenuState : public AbstractState
         virtual void display() override;
 
         /// The event handling function.
-        virtual void handleEvent(const std::string& input) override;
+        virtual void handleInput(const std::string& input) override;
 
     private:
         void findGame();

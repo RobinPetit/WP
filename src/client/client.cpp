@@ -1,3 +1,4 @@
+#include <iostream>
 #include "client/StateStack.hpp"
 #include "client/states/MainMenuState.hpp"
 
@@ -10,7 +11,7 @@ int main()
         s.display();
 		std::string input;
 		std::getline(std::cin, input);
-        s.handleEvent(input);
+        s.handleInput(input);
     }
     return 0;
 }

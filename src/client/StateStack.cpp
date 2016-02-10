@@ -1,4 +1,3 @@
-#include <iostream>
 #include "client/AbstractState.hpp"
 #include "client/StateStack.hpp"
 
@@ -7,9 +6,9 @@ void StateStack::display()
     _stack.top()->display();
 }
 
-void StateStack::handleEvent(const std::string& input)
+void StateStack::handleInput(const std::string& input)
 {
-    _stack.top()->handleEvent(input);
+    _stack.top()->handleInput(input);
 }
 
 void StateStack::pop()

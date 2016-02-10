@@ -17,7 +17,7 @@ void CardsCollectionState::display()
     std::cout << "What do you want to do? ";
 }
 
-void CardsCollectionState::handleEvent(const std::string& input)
+void CardsCollectionState::handleInput(const std::string& input)
 {
     try
     {
