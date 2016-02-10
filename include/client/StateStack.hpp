@@ -2,8 +2,10 @@
 #define _STATE_STACK_CLIENT_HPP
 
 #include <stack>
+#include <queue>
 #include <string>
 #include <memory>
+#include <functional>
 #include <SFML/System.hpp>
 
 //Forward declarations
@@ -45,14 +47,21 @@ class StateStack : private sf::NonCopyable
         /// \return True if the stack is empty, false otherwise.
         bool isEmpty() const;
 
+        void doPendingChanges();
+
     private:
-        std::stack<std::unique_ptr<AbstractState>> _stack;
+        std::stack<std::unique_ptr<AbstractState>> _stack;///< Stack of state.
+        std::queue<std::function<void()>> _pendingChanges;///< Pending changes to do on the stack.
 };
 
 template <typename StateType>
 void StateStack::push()
 {
-    _stack.emplace(new StateType(*this));
+
+    _pendingChanges.emplace([this]()
+    {
+        _stack.emplace(new StateType(*this));
+    });
 }
 
 #endif// _STATE_STACK_CLIENT_HPP

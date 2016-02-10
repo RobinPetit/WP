@@ -5,16 +5,17 @@
 
 int main()
 {
-    StateStack s;
-    s.push<HomeState>();
-    while(not s.isEmpty())
+    StateStack stack;
+    stack.push<HomeState>();
+    stack.doPendingChanges();  // Force the stack to push the HomeState
+    while(not stack.isEmpty())
     {
-		system("clear");
-        s.display();
+        system("clear");
+        stack.display();
         std::cout << "What do you want to do? ";
-		std::string input;
-		std::getline(std::cin, input);
-        s.handleInput(input);
+        std::string input;
+        std::getline(std::cin, input);
+        stack.handleInput(input);
     }
     return 0;
 }
