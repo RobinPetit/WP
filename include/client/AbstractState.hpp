@@ -63,8 +63,8 @@ void AbstractState::addAction(const std::string& actionName, void (StateType::*m
 {
     // emplace_back simply add an element to the end of the vector.
     // std::bind constructs a function that results in the call
-    // of method with *this as implicit first argument.
-    _actions.emplace_back(actionName, std::bind(method, dynamic_cast<StateType&>(*this)));
+    // of method with this as implicit first argument.
+    _actions.emplace_back(actionName, std::bind(method, dynamic_cast<StateType*>(this)));
 }
 
 template<typename StateType>
