@@ -21,8 +21,12 @@ class DecksManagementState : public AbstractState
         virtual void handleInput(const std::string& input) override;
 
     private:
+        void editDeck();
+        void createDeck();
+        void deleteDeck();
         void backMainMenu();
 
+        std::vector<std::string> _decks;// Use the class Deck as soon as possible
 };
 
 #endif// _DECKS_MANAGEMENT_STATE_CLIENT_HPP
