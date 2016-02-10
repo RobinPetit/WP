@@ -18,6 +18,7 @@ class DecksManagementState : public AbstractState
         virtual void display() override;
 
     private:
+        // \TODO write DisplayDeckState, EditDeckState and CreateDeckState
         void displayDeck();
         void editDeck();
         void createDeck();
