@@ -18,8 +18,8 @@ void CardsCollectionState::display()
 {
     std::cout << "Here are your cards:\n";
     for(const auto& card : _cards)
-		std::cout << "* " << card << "\n";
-	std::cout << std::string(40, '*') << "\n";
+        std::cout << "* " << card << "\n";
+    std::cout << std::string(40, '*') << "\n";
 
     // Display the actions
     AbstractState::display();

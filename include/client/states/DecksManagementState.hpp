@@ -18,10 +18,12 @@ class DecksManagementState : public AbstractState
         virtual void display() override;
 
     private:
+        void displayDeck();
         void editDeck();
         void createDeck();
         void deleteDeck();
         void backMainMenu();
+        static int askForNumber(int from, int to);
 
         std::vector<std::string> _decks;// Use the class Deck as soon as possible
 };
