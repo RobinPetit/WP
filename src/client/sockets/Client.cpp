@@ -49,7 +49,7 @@ bool Client::startConversation(const std::string& playerName)
 	      "\"" SERVER_ADDRESS "\" "
 	      "\"" + _name + "\" "
 	      "\"" + playerName + "\"";
-	system((cmd + ">log.txt").c_str());
+	system(cmd.c_str());
 	return true;
 }
 

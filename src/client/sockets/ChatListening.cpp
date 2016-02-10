@@ -3,9 +3,10 @@
 #include <server/ErrorCode.hpp>
 #include <iostream>
 
-// method called by a new thread only
+// function called by a new thread only
 void chatListening(sf::Uint16 *port, bool *loop)
 {
+	bool volatile _continue = *loop;
 	sf::TcpListener chatListener;
 	if(chatListener.listen(sf::Socket::AnyPort) != sf::Socket::Done)
 	{
@@ -14,21 +15,12 @@ void chatListening(sf::Uint16 *port, bool *loop)
 	}
 	else
 		*port = chatListener.getLocalPort();
-	while(*loop)
+	while(_continue)
 	{
 		sf::TcpSocket socket;
 		if(chatListener.accept(socket) == sf::Socket::Done)
 		{
-			std::cout << "communication reçue!" << std::endl;
-			/*sf::Packet receivedPacket;
-			if(socket.receive(receivedPacket) == sf::Socket::Done)
-			{
-				std::string friendName;
-				std::string friendAddress;
-				sf::Uint16 friendPort;
-				receivedPacket >> friendName >> friendAddress >> friendPort;
-				std::cout << friendName << " wants to chat with you (at " << friendAddress << ", " << friendPort << ")";
-			}*/
+
 		}
 	}
 }
