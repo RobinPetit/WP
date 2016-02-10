@@ -1,6 +1,7 @@
 #ifndef _CARD_COMMON_HPP
 #define _CARD_COMMON_HPP
 
+#include <string>
 #include "effect.hpp"
 
 template <typename Param>
