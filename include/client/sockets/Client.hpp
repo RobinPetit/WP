@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <thread>
+#include <atomic>
 
 class Client
 {
@@ -22,7 +23,7 @@ private:
 	std::string _name;
 	std::vector<std::string> _currentConversations;
 	bool _isConnected;
-	bool _threadLoop;
+	std::atomic_bool _threadLoop;
 	std::thread _listenerThread;
 
 	// private methods

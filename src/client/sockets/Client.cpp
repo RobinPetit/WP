@@ -5,7 +5,7 @@
 #include <thread>
 #include <cstdlib>
 
-extern void chatListening(sf::Uint16 *port, bool *loop);
+extern void chatListening(sf::Uint16 *port, std::atomic_bool *loop);
 
 Client::Client(const std::string& name):
 	_socket(),
@@ -55,12 +55,12 @@ bool Client::startConversation(const std::string& playerName)
 
 void Client::initListener()
 {
-	_threadLoop = true;
+	_threadLoop.store(true);
 	_listenerThread = std::thread(chatListening, &_chatListenerPort, &_threadLoop);
 }
 
 void Client::quit()
 {
-	_threadLoop = false;
+	_threadLoop.store(false);
 	_listenerThread.join();
 }
