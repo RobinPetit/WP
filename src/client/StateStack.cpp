@@ -38,6 +38,7 @@ void StateStack::doPendingChanges()
 {
     while(not _pendingChanges.empty())
     {
+		// Call the method on top of the queue, then pop it from the queue
         _pendingChanges.front()();
         _pendingChanges.pop();
     }

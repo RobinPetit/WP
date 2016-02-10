@@ -47,9 +47,17 @@ class StateStack : private sf::NonCopyable
         /// \return True if the stack is empty, false otherwise.
         bool isEmpty() const;
 
+    private:
+
+        /// Apply the changes that need to be done.
+        /// These changes are stored in _pendingChanges.
+        /// When a state calls pop, this state is deleted (its destructor gets
+        /// called) but when the pop is done, the stack returns to the caller of
+        /// the pop method, which is the state just popped out. Executing code
+        /// from a deleted object is undefined behavior, so by delaying the pop
+        /// (and the clear) we avoid this undefined behavior.
         void doPendingChanges();
 
-    private:
         std::stack<std::unique_ptr<AbstractState>> _stack;///< Stack of state.
         std::queue<std::function<void()>> _pendingChanges;///< Pending changes to do on the stack.
 };
@@ -57,11 +65,7 @@ class StateStack : private sf::NonCopyable
 template <typename StateType>
 void StateStack::push()
 {
-
-    _pendingChanges.emplace([this]()
-    {
-        _stack.emplace(new StateType(*this));
-    });
+    _stack.emplace(new StateType(*this));
 }
 
 #endif// _STATE_STACK_CLIENT_HPP

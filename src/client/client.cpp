@@ -7,7 +7,6 @@ int main()
 {
     StateStack stack;
     stack.push<HomeState>();
-    stack.doPendingChanges();  // Force the stack to push the HomeState
     while(not stack.isEmpty())
     {
         system("clear");
