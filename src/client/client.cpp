@@ -1,11 +1,11 @@
 #include <iostream>
 #include "client/StateStack.hpp"
-#include "client/states/MainMenuState.hpp"
+#include "client/states/HomeState.hpp"
 
 int main()
 {
     StateStack s;
-    s.push<MainMenuState>();
+    s.push<HomeState>();
     while(not s.isEmpty())
     {
         s.display();

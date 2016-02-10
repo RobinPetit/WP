@@ -8,6 +8,7 @@ set(SOURCES
     "states/FriendsManagementState.cpp"
     "states/LadderState.cpp"
     "states/MainMenuState.cpp"
+    "states/HomeState.cpp"
     # sockets
     #~"sockets/Connection.cpp"
     )
