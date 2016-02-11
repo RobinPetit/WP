@@ -171,7 +171,7 @@ depending on the directory of the file.
         //~ Use algorithms and standard features whenever possible!
         auto it = std::find(_myStr.cbegin(), _myStr.cend(), "Z");
         if(it == _myStr.cend())
-            std::cout << "Z not found in _myStr!\n";//~ std::endl is not always necessary
+            std::cout << "Z not found in _myStr!\n";  //~ std::endl is not always necessary
 
         // Locally use a namespace can be useful sometimes
         using namespace std::placeholders;
