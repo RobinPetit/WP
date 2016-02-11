@@ -16,6 +16,8 @@ When you want to contribute, here is an idea of the usual workflow:
 
 ```bash
     git pull
+	# Make sure your branch is master! (git checkout master)
+	# Unless you really want to do a branch from a branch
 	git checkout -b nameOfYourModifications
 	# Do things in you local branch
 	git add filesThatYouJustModified.cpp
@@ -55,11 +57,32 @@ Here are the remarks I noted while the debriefing on Tuesday 02/02/2016 :
 A commit should start with a title that is a short explanation
 (52 characters maximum, if possible) of the change, then a blank line,
 then some paragraphs that explain the *how* and the *why* of the change
-(above all the *why*), if the change is not trivial.
+(above all the *why*), if the change is not trivial.  
 The explanations lines should have a length of maximum 72 characters.  
 **Note:** if you are using Vim as default command-line text editor,
 Vim will help you to follow these rules with automatic colors and
 line wraps.
+
+## Directories structure
+
+There are 3 main directories:
+* `SRD`
+* `include`
+* `src`
+
+All the files that are related the the SRD go in the directory `SRD`.  
+All the header files (`.hpp` and `.inl`) go in the directory `include`.  
+All the implementation files (`.cpp`) go in the directory `src`.  
+`include` and `src` directories have three subdirectories:
+* `client`
+* `server`
+* `common`
+
+The files that belong exclusively to the client, exclusively to the server,
+or to both, go the the corresponding subdirectory.  
+If a part of the source code forms a logical unit and results in many files,
+then all these files should be located in a subdirectory of
+`client`, `server` or `common`.
 
 ## Proposal of coding conventions
 Comments starting by `//~` are not meant to be in
@@ -69,9 +92,7 @@ This is not mandatory, but this is good practice.
 The header huard is written as follow: an underscore,
 then the name of the class (or the file) in uppercase with an underscore
 separating each word, then `[_CLIENT_HPP|_SERVER_HPP|_COMMON_HPP]`
-depending the directory of the file.
-The header guards can be changed, this is
-just a proposal.
+depending on the directory of the file.
 
 * include/MyClass.hpp
 
@@ -87,12 +108,12 @@ just a proposal.
 	//~ Never forward-declare standard classes, and forward-declare when the
 	//~ declaration is "relatively" trivial. Do not structure your code
 	//~ to forward-declare when this is usually not possible
-    #include "MyOtherClass.hpp"
-    
+    #include "client/MyOtherClass.hpp"
+
     //~ No trailing dot on regular comments (saving a keystroke is good)
     // Forward declarations
     class IncompleteClass;
-    
+
     //~ But trailing dot on docstrings
     //~ (they are meant to be formatted as document or web page)
     /// Brief explanation of the class.
@@ -117,18 +138,18 @@ just a proposal.
             /// Getter.
             /// \return myInt.
             int getMyInt() const;
-            
+
             /// Setter.
             /// \param newMyInt The new value of myInt.
             void setMyInt(int newMyInt);
 
-        private://~ Use protected only when this is meant to be redefined by subclasses
+        private:  //~ Use protected only when this is meant to be redefined by subclasses
             //~ Docstring alignment is not mandatory but is pretty
-            int m_myInt;        ///< An useful integer.
-            std::string m_myStr;///< A good C++ string.
+            int _myInt;          ///< An useful integer.
+            std::string _myStr;  ///< A good C++ string.
     };
 
-    #endif//_MYCLASS_CLIENT_HPP
+    #endif  // _MYCLASS_CLIENT_HPP
     //~ Trailling new line
 ```
 
@@ -138,38 +159,38 @@ just a proposal.
 ```cpp
     #include <algorithm>
     #include <SFML/Window.hpp>
-    #include "IncompleteClass.hpp"
-    #include "MyClass.hpp"//~ The corresponding header at last.
+    #include "client/IncompleteClass.hpp"
+    #include "client/MyClass.hpp"  //~ The corresponding header at last.
 
     //~ Not `using namespace std;`!
     MyClass::MyClass(int myInt):
         MyOtherClass(3),
-        m_myInt(myInt),
-        m_myStr("LULZ")
+        _myInt(myInt),
+        _myStr("LULZ")
     {
         //~ Use algorithms and standard features whenever possible!
-        auto it = std::find(m_myStr.cbegin(), m_myStr.cend(), "Z");
-        if(it == m_myStr.cend())
-            std::cout << "Z not found in m_myStr!\n";//~ std::endl is not always necessary
+        auto it = std::find(_myStr.cbegin(), _myStr.cend(), "Z");
+        if(it == _myStr.cend())
+            std::cout << "Z not found in _myStr!\n";  //~ std::endl is not always necessary
 
-        //Locally use a namespace can be useful sometimes
+        // Locally use a namespace can be useful sometimes
         using namespace std::placeholders;
         const std::string var{"X"};
         //~ I said whenever possible, everything is possible with STL!
-        it = std::find_if(m_myStr.cbegin(), m_myStr.cend(), std::bind(checkWithTwoArgs, _1, var));
-        if(it == m_myStr.cend())
-            std::cout << "checkWithTwoArgs return true for none of the characters of m_myStr and var\n";
+        it = std::find_if(_myStr.cbegin(), _myStr.cend(), std::bind(checkWithTwoArgs, _1, var));
+        if(it == _myStr.cend())
+            std::cout << "checkWithTwoArgs return true for none of the characters of _myStr and var\n";
     }
 
     MyClass::MyClass(const IncompleteClass& arg):
         MyOtherClass(arg.getInt() / 2),
-        m_myInt(arg.getInt()),
-        m_myStr(arg.getStr())
+        _myInt(arg.getInt()),
+        _myStr(arg.getStr())
     {
-        float var{0.5f};//Comment on same line if short enough
-        for(std::size_t i{0}; i < m_myStr.size(); ++i)
-            //But if the explanation comment is too long, write it on the previous line
-            if(m_myInt > 42)
+        float var{0.5f};  // Comment on same line if short enough (with two spaces separating the code and the comment)
+        for(std::size_t i{0}; i < _myStr.size(); ++i)
+            // But if the explanation comment is too long, write it on the previous line
+            if(_myInt > 42)
                 doSomething();
             else
                 var -= var / 2.f;
@@ -180,7 +201,7 @@ just a proposal.
             doSomething();
         } while(var > 5.f);
 
-        switch(m_myInt)
+        switch(_myInt)
         {
             case 0:
                 inCaseOfZero();
@@ -197,12 +218,12 @@ just a proposal.
 
     MyClass::getMyInt() const
     {
-        return m_myInt();
+        return _myInt();
     }
 
     MyClass::setMyInt(int newMyInt)
     {
-        m_myInt = newMyInt;
+        _myInt = newMyInt;
     }
 ```
 
