@@ -6,6 +6,10 @@
 #include <server/ErrorCode.hpp>
 #include <iostream>
 #include <atomic>
+#include <string>
+#include <cstdlib>
+
+static inline std::string chatCommand(sf::Uint32 address, sf::Uint16 port, std::string selfName, std::string otherName);
 
 // function called by a new thread only
 void chatListening(sf::Uint16 *port, std::atomic_bool *loop)
@@ -25,18 +29,30 @@ void chatListening(sf::Uint16 *port, std::atomic_bool *loop)
 	while(loop->load())
 	{
 		// set waiting to 1 second so that the loop variable is checked frequently
-		if(!selector.wait(sf::seconds(1)))
+		if(!selector.wait(sf::seconds(0.1)))
 			continue;
 		sf::TcpSocket socket;
 		if(chatListener.accept(socket) == sf::Socket::Done)
 		{
+			std::cout << "connection!\n";
 			sf::Uint32 address;
 			sf::Uint16 port;
 			std::string otherName, selfName;
 			sf::Packet packet;
 			socket.receive(packet);
 			packet >> address >> port >> selfName >> otherName;
-			std::cout << "chat connection is asked by " << otherName << " at address " << address << " and port " << port << ". Your name is " << selfName << std::endl;
+			system(chatCommand(address, port, selfName, otherName).c_str());
 		}
 	}
+}
+
+static inline std::string chatCommand(sf::Uint32 address, sf::Uint16 port, std::string selfName, std::string otherName)
+{
+    return "gnome-terminal "
+           "-x ./WizardPoker_chat "
+           "callee "  // frst parameter is caller or callee
+           + std::to_string(address) + " "
+           + std::to_string(port) + " "
+           + selfName + " "
+           + otherName;
 }
