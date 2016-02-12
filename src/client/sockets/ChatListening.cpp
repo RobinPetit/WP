@@ -25,6 +25,7 @@ void chatListening(sf::Uint16 *port, std::atomic_bool *loop)
 	}
 	else
 		*port = chatListener.getLocalPort();
+        std::cout << "waiting for connections on port " << *port << std::endl;
 	selector.add(chatListener);
 	while(loop->load())
 	{

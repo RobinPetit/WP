@@ -8,6 +8,7 @@ enum class TransferType : sf::Uint32
 {
 	// CHAT
 	CHAT_PLAYER_IP,
+	CHAT_MESSAGE,
 	// GAME
 	GAME_CONNECTION,
 };

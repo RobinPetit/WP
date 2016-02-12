@@ -66,6 +66,7 @@ void Server::takeConnection()
 
 void Server::receiveData()
 {
+        std::cout << "Data received\n";
 	// first find which socket it is
 	auto it = std::find_if(_clients.begin(), _clients.end(), [this](const auto& pair)
 	{
@@ -116,11 +117,6 @@ void Server::handleChatRequest(sf::Packet& packet, sf::TcpSocket& client)
 		toCallee.setBlocking(true);
 		packetToCalle << client.getRemoteAddress().toInteger() << callerPort << calleeName << callerName;
 		toCallee.send(packetToCalle);
-		/*response << _clients.at(playerName).socket->getRemoteAddress().toInteger();
-		sf::TcpSocket socket;
-		socket.connect(_clients.at(playerName).socket->getRemoteAddress(), _clients.at(playerName).listeningPort);
-		sf::Packet packet;
-		packet << playerName << _clients.at(playerName).socket->getRemoteAddress();*/
 	}
 	catch(std::out_of_range& e)
 	{
