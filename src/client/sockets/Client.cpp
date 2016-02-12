@@ -1,5 +1,6 @@
 // SFML headers
 #include <SFML/System/Sleep.hpp>
+#include <SFML/Network/IpAddress.hpp>
 // WizardPoker headers
 #include <client/sockets/Client.hpp>
 #include <common/constants.hpp>
@@ -16,7 +17,9 @@ Client::Client(const std::string& name):
 	_currentConversations(),
 	_isConnected(false),
 	_chatListenerPort(0),
-	_threadLoop(0)
+	_threadLoop(0),
+	_serverAddress(),
+	_serverPort(0)
 {
 	// forces the name to not be larger than MAX_NAME_LENGTH
 	_name = (name.size() < MAX_NAME_LENGTH) ? name : name.substr(0, MAX_NAME_LENGTH);
@@ -27,6 +30,8 @@ bool Client::connectToServer(const sf::IpAddress& address, sf::Uint16 port)
 	// if client is already connected to a server, do not try to re-connect it
 	if(_isConnected)
 		return false;
+	_serverAddress = address;
+	_serverPort = port;
 	initListener();  // creates the new thread which listens for entring chat conenctions
 	// if connection does not work, don't go further
 	if(_socket.connect(address, port) != sf::Socket::Done)
@@ -51,8 +56,8 @@ bool Client::startConversation(const std::string& playerName)
 	cmd = "gnome-terminal "
 	      "-x ./WizardPoker_chat "
 	      "\"caller\" "  // parameter 1 is caller/callee
-	      "\"" SERVER_ADDRESS "\" "  // parameter 2 is the address to connect to
-	      "\"" + std::to_string(SERVER_PORT) + "\" "  // parameter 3 is the port to connect to
+	      "\"" + _serverAddress.toString() + "\" "  // parameter 2 is the address to connect to
+	      "\"" + std::to_string(_serverPort) + "\" "  // parameter 3 is the port to connect to
 	      "\"" + _name + "\" "  // parameter 4 is caller's name
 	      "\"" + playerName + "\"";  // parameter 5 is callee's name
 	      // there is not more parameters!

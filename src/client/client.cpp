@@ -9,6 +9,8 @@
 #include <client/ErrorCode.hpp>
 #include <client/sockets/Client.hpp>
 #include <common/sockets/TransferType.hpp>
+#include <common/ConfigData.hpp>
+#include <common/ConfigParser.hpp>
 // std-C++ headers
 #include <iostream>
 
@@ -21,7 +23,11 @@ int main(int argc, char **argv)
 	}
 	Client self(argv[1]);
 	std::cout << "Welcome " << argv[1] << std::endl;
-	if(!self.connectToServer(SERVER_ADDRESS, SERVER_PORT))
+	ConfigData serverConfigData;
+	int status = ConfigParser::readFromFile(SERVER_CONFIG_FILE_PATH, serverConfigData);
+	if(status != SUCCESS)
+		return status;
+	if(!self.connectToServer(serverConfigData.address, serverConfigData.port))
 	{
 		std::cout << "Unable to connect to server" << std::endl;
 		return UNABLE_TO_CONNECT;
@@ -42,5 +48,5 @@ int main(int argc, char **argv)
 	}
 	std::cout << "quit\n";
 	self.quit();
-	return CLIENT_OK;
+	return SUCCESS;
 }

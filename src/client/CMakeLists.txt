@@ -5,6 +5,7 @@ set(SOURCES
 		"sockets/ChatListening.cpp"
 		# common
 		"../common/sockets/TransferType.cpp"
+		"../common/ConfigParser.cpp"
 	)
 
 set(CLIENT_NAME "${PROJECT_NAME}_client")

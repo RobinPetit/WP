@@ -2,12 +2,17 @@
     server entry point
 **/
 
-// WizardPoker common headers
+// WizardPoker headers
 #include <common/constants.hpp>
-// WizardPoker server headers
+#include <common/ConfigParser.hpp>
 #include <server/Server.hpp>
+#include <server/ErrorCode.hpp>
 
 int main()
 {
-	return Server().start(SERVER_PORT);
+	ConfigData data;
+	int status = ConfigParser::readFromFile(SERVER_CONFIG_FILE_PATH, data);
+	if(status != SUCCESS)
+		return status;
+	return Server().start(data.port);
 }

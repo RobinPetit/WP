@@ -3,12 +3,12 @@
 
 // std-C++ headers
 #include <cstdlib>
+// WizardPoker headers
+#include <common/ErrorCode.hpp>
 
 /// enum used to define the return status of the client program
-enum ErrorCode
+enum
 {
-	/// return code for a successful client ending program
-	CLIENT_OK=EXIT_SUCCESS,  // start with succes (usually 0)
 	/// return code in case of unability to reach the server
 	UNABLE_TO_CONNECT
 };

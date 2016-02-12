@@ -49,6 +49,10 @@ private:
 	std::thread _listenerThread;
 	/// Used to communicate with the listening thread to tell it to stop
 	std::atomic_bool _threadLoop;
+	/// Stores the address of the server (needed to start the chat)
+	sf::IpAddress _serverAddress;
+	/// Stores the port of the server (needed to start the chat)
+	sf::Uint16 _serverPort;
 
 	// private methods
 	/// The functions used to create the listening thread

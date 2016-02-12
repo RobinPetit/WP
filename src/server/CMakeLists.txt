@@ -4,6 +4,7 @@ set(SOURCES
 		"sockets/Server.cpp"
 		# common
 		"../common/sockets/TransferType.cpp"
+		"../common/ConfigParser.cpp"
 	)
 
 set(SERVER_NAME "${PROJECT_NAME}_server")

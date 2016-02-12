@@ -32,7 +32,7 @@ int Server::start(const unsigned short listenerPort)
 		else  // one of the client sockets has received something
 			receiveData();
 	}
-	return SERVER_OK;
+	return SUCCESS;
 }
 
 void Server::takeConnection()
