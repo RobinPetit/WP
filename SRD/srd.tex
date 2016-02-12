@@ -24,7 +24,7 @@
 
 \newglossarystyle{noIndex} {
 	\renewenvironment{theglossary}
-	{\vspace{-4em} 
+	{\vspace{-4em}
 	\begin{longtable}{@{}p{0.15\textwidth}@{}p{0.85\textwidth}}}
 	{\end{longtable}}
 	\renewcommand*{\glossaryheader}{}
@@ -34,7 +34,7 @@
 
 \newglossarystyle{Index} {
 	\renewenvironment{theglossary}
-	{\vspace{-4em} 
+	{\vspace{-4em}
 	\begin{longtable}{@{}p{0.15\textwidth}@{}p{0.85\textwidth}}}
 	{\end{longtable}}
 	\renewcommand*{\glossaryheader}{}
@@ -54,7 +54,7 @@
 	\subsection{But du projet}
 		L'objectif visé par ce projet d'année de BA2 en sciences informatiques est la réalisation d'une application client-serveur en C/C++. L'application visée est
 		un jeu de carte (appelé \textit{Wizard Poker}) au tour par tour et multijoueurs en réseau. Elle est destinée à tous types de public. Elle est également
-		\textit{open source}, libre de droit et à but non commercial : c'est un projet académique.  
+		\textit{open source}, libre de droit et à but non commercial : c'est un projet académique.
 
 		Pour ce faire, notre équipe, composée de sept personnes, dispose de trois phases de développement qui dureront approximativement 4 semaines chacune :
 		\begin{itemize}
@@ -74,7 +74,7 @@
 			peut éventuellement être réutilisée à l'aide de sorts particuliers par exemple. Une carte défaussée n'est pas perdue, elle reste propriété du joueur :
 			à la fin de la partie, les joueurs ont les mêmes cartes qu'au début de la partie si ce n'est que le gagnant a reçu une carte supplémentaire
 			suite à sa victoire. La partie s'arrête lorsqu'un des deux joueurs a un nombre inférieur ou égal à 0 points de vie ou a passé 10 tours sans carte en main.
-			
+
 			\begin{center}\includegraphics[scale=0.45]{Activity1_Gameplay.png}\end{center}
 
 	\subsection{Glossaire}  % doit s'agrandir avec le temps (automatiquement)
@@ -108,6 +108,51 @@
 	\subsection{Exigences fonctionnelles}
 		\subsubsection{Possibilités d'actions de l'utilisateur}
 			\begin{center}\includegraphics[scale=0.5]{UseCase1_Main.png}\end{center}
+			\begin{itemize}
+				% \TODO: remplacer Gérer un compte par Créer un compte dans UseCase1_Main.png
+				\item \textbf{Créer un compte}
+				\begin{description}
+					\item[Description] Un utilisateur doit créer un compte pour pouvoir accéder à l'application.
+					\item[Pré-condition] Aucune.
+					\item[Post-condition] Un compte est crée, le nom d'utilisateur correspondant est unique.\\
+				\end{description}
+
+				\item \textbf{Se connecter}
+				\begin{description}
+					\item[Description] Un utilisateur doit se connecter avec un compte pour pouvoir acceder à l'application
+					\item[Pré-condition] L'utilisateur n'est pas déjà connecté, le compte utilisé est existant est n'est pas déjà connecté.
+					\item[Post-condition] L'utilisateur est connecté.\\
+				\end{description}
+
+				\item \textbf{Consulter sa collection}
+				\begin{description}
+					\item[Description] Un utilisateur peut voir la collection de cartes qu'il a acquises.
+					\item[Pré-condition] Aucune.
+					\item[Post-condition] L'utilisateur a pris connaissance sa collection de carte.\\
+				\end{description}
+
+				\item \textbf{Consulter sa collection}
+				\begin{description}
+					\item[Description] Un utilisateur peut voir la collection de cartes qu'il a acquises.
+					\item[Pré-condition] Aucune.
+					\item[Post-condition] L'utilisateur a pris connaissance sa collection de carte.\\
+				\end{description}
+
+				\item \textbf{Faire une partie}
+				\begin{description}
+					\item[Description] Un utilisateur peut jouer une partie.
+					\item[Pré-condition] L'utilisateur a un deck actif.
+					\item[Post-condition] Si l'utilisateur a gagné la partie, une carte est ajoutée à sa collection.
+					Ses statistiques (parties gagnées / parties perdues) sont mises à jour.\\
+				\end{description}
+
+				\item \textbf{Discuter avec ses amis}
+				\begin{description}
+					\item[Description] Un utilisateur peut entamer une conversation avec d'autres joueurs, s'ils sont dans sa liste d'amis.
+					\item[Pré-condition] L'utilisateur a au moins un ami, et l'ami
+					\item[Post-condition] L'utilisateur\\
+				\end{description}
+			\end{itemize}
 
 		\subsubsection{Création d'un compte}
 			\begin{center}\includegraphics[scale=0.6]{Collaboration1_SignIn.png}\end{center}
