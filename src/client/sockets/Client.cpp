@@ -20,7 +20,7 @@ Client::Client(const std::string& name):
 	_name = (name.size() < MAX_NAME_LENGTH) ? name : name.substr(0, MAX_NAME_LENGTH);
 }
 
-bool Client::connectToServer(const sf::IpAddress& address, int port)
+bool Client::connectToServer(const sf::IpAddress& address, sf::Uint16 port)
 {
 	// if client is already connected to a server, do not try to re-connect it
 	if(_isConnected)
