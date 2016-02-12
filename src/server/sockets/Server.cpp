@@ -26,7 +26,7 @@ int Server::start(const unsigned short listenerPort)
 		// if listener is ready, then a new connection is incoming
 		if(_socketSelector.isReady(_listener))
 			takeConnection();
-		else // one of the client sockets has received something
+		else  // one of the client sockets has received something
 			receiveData();
 	}
 	return SERVER_OK;
@@ -86,9 +86,6 @@ void Server::receiveData()
 			packet >> type;
 			switch(type)
 			{
-			case TransferType::CHAT_PLAYER_IP:
-				handleChatRequest(packet, client);
-				break;
 			default:
 				std::cerr << "Error: unknown code " << static_cast<int>(type) << std::endl;
 				break;
