@@ -1,3 +1,4 @@
+// WizardPoker headers
 #include <common/sockets/TransferType.hpp>
 
 sf::Packet& operator<<(sf::Packet& packet, const TransferType& type)

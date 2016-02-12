@@ -1,23 +1,36 @@
+/**
+	client main file (entry point)
+**/
+
+// SFML headers
 #include <SFML/Network/TcpSocket.hpp>
 #include <SFML/Network/TcpListener.hpp>
 #include <SFML/Network/IpAddress.hpp>
 #include <SFML/Network/Packet.hpp>
 #include <SFML/System.hpp>
+// std-C++ headers
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
 #include <thread>
 #include <atomic>
+// WizardPoker headers
 #include <common/sockets/TransferType.hpp>
 
-static void input(sf::TcpSocket *inputSocket, std::atomic_bool *wait);
+// static functions prototypes
+static void input(sf::TcpSocket *inputSocket, const std::atomic_bool *wait);
 static inline sf::Packet formatOutputMessage(std::string message);
 
-static void input(sf::TcpSocket *inputSocket, std::atomic_bool *wait)
+/// input is the function that is used in the "input" thread for the chat
+/// it waits for the other player to send messages and displays them on the screen
+/// \param inputSocket A pointer to the socket created to receive the other player's messages
+/// \param wait A thread-safe boolean telling whethere the thread needs to keep waiting or has to stop
+static void input(sf::TcpSocket *inputSocket, const std::atomic_bool *wait)
 {
 	sf::TcpSocket& in = *inputSocket;  // create reference to simplify reading
 	in.setBlocking(false);  // set the socket as non-blocking so that it verifies that connection is still available
 	sf::Packet packet;
+	// the wait variable is changed in the "main" thread to tell when the program quits and then when to stop the thread
 	while(wait->load())
 	{
 		sf::Socket::Status receivedStatus = in.receive(packet);
@@ -36,13 +49,14 @@ static void input(sf::TcpSocket *inputSocket, std::atomic_bool *wait)
 				std::cout << message << std::endl;
 			}
 		}
-		else if(receivedStatus == sf::Socket::NotReady)
-		{
-			sf::sleep(sf::milliseconds(250));
-		}
+		else if(receivedStatus == sf::Socket::NotReady)  // no data has been sent
+			sf::sleep(sf::milliseconds(250));  // do not keep the processor and wait a bit
 	}
 }
 
+/// formatOutputMessage is a function that's supposed to be inlined and which is used
+/// to create a correct transmission packet for the other user
+/// \param message A string containing the message to send to the other player
 static inline sf::Packet formatOutputMessage(std::string message)
 {
 	sf::Packet packet;
@@ -114,10 +128,12 @@ int main(int argc, char **argv)
 	}
 	std::thread inputThread(input, &in, &running);
 	// Warning: the `in` socket may not be used in this thread anymore!
+	//~ following code is test code!
 	packet = formatOutputMessage("Hi " + otherName + ", I am " + selfName);
 	out.send(packet);
 	int n;
 	std::cin >> n;
+	// must be the end of the main thread: waits for the other thread to end
 	running.store(false);
 	inputThread.join();
 	return EXIT_SUCCESS;

@@ -1,12 +1,15 @@
 #ifndef _ERROR_CODE_SERVER_HPP_
 #define _ERROR_CODE_SERVER_HPP_
 
-#include <cstdlib>  // defines EXIT_SUCCESS
+// std-C++ headers
+#include <cstdlib>
 
-// enum containing an ID for the server return code
+/// enum used to define the return status of the server program
 enum ErrorCode
 {
+	/// return code for a successful server program
 	SERVER_OK=EXIT_SUCCESS,  // start with succes (usually 0)
+	/// return code in case of non-free listening port
 	UNABLE_TO_LISTEN
 };
 

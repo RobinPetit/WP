@@ -2,10 +2,12 @@
 	client main file (entry point)
 **/
 
+// WizardPoker headers
 #include <common/constants.hpp>
 #include <client/ErrorCode.hpp>
 #include <client/sockets/Client.hpp>
 #include <common/sockets/TransferType.hpp>
+// std-C++ headers
 #include <iostream>
 
 int main(int argc, char **argv)
@@ -15,20 +17,12 @@ int main(int argc, char **argv)
 		std::cerr << "must be called as ./WizardPoker_client <name>\n";
 		return -1;
 	}
-	/*std::string name;
-	std::cout << "what's your name ?\n\t";
-	std::cin >> name;*/
 	Client self(argv[1]);
 	std::cout << "Welcome " << argv[1] << std::endl;
 	if(!self.connectToServer(SERVER_ADDRESS, SERVER_PORT))
 	{
 		std::cout << "Unable to connect to server" << std::endl;
 		return UNABLE_TO_CONNECT;
-	}
-	if(std::string(argv[1]) == "player2")
-	{
-		std::cout << "starting conversation.\n";
-		self.startConversation("Poupou");
 	}
 	int n;
 	std::cin >> n;

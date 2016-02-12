@@ -7,12 +7,17 @@
 enum class TransferType : sf::Uint32
 {
 	// CHAT
+	/// Used in pre-chat communications (getting the addresses and ports)
 	CHAT_PLAYER_IP,
+	/// Used during the chat communications (precises the content of the packet is a string message)
 	CHAT_MESSAGE,
 	// GAME
+	/// Not used yet, will be when the game core will be coded
 	GAME_CONNECTION,
 };
 
+/// Overloading of the sf::Packet operators so that a TransferType variable can be stored
+/// in a packet to be sent on the network
 sf::Packet& operator<<(sf::Packet& packet, const TransferType& type);
 sf::Packet& operator>>(sf::Packet& packet, TransferType& type);
 

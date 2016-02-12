@@ -1,11 +1,13 @@
+// WizardPoker headers
 #include <client/sockets/Client.hpp>
 #include <common/constants.hpp>
 #include <common/sockets/TransferType.hpp>
+// std-C++ headers
 #include <iostream>
 #include <thread>
 #include <cstdlib>
 
-extern void chatListening(sf::Uint16 *port, std::atomic_bool *loop);
+extern void chatListening(sf::Uint16 *port, const std::atomic_bool *loop);
 
 Client::Client(const std::string& name):
 	_socket(),
