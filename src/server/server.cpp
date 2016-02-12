@@ -2,8 +2,6 @@
     server entry point
 **/
 
-// SFML headers
-#include <SFML/Network.hpp>
 // WizardPoker common headers
 #include <common/constants.hpp>
 // WizardPoker server headers

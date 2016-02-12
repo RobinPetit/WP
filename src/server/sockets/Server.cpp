@@ -1,3 +1,5 @@
+// SFML headers
+#include <SFML/Network/IpAddress.hpp>
 // WizardPoker headers
 #include <server/Server.hpp>
 #include <common/constants.hpp>

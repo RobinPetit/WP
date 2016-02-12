@@ -6,7 +6,7 @@
 #include <SFML/System/Time.hpp>
 // WizardPoker headers
 #include <server/ErrorCode.hpp>
-#incldue <common/constants.hpp>
+#include <common/constants.hpp>
 // std-C++ headers
 #include <iostream>
 #include <atomic>

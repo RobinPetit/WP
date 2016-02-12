@@ -1,3 +1,5 @@
+// SFML headers
+#include <SFML/System/Sleep.hpp>
 // WizardPoker headers
 #include <client/sockets/Client.hpp>
 #include <common/constants.hpp>

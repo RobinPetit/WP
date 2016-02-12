@@ -7,7 +7,7 @@
 #include <SFML/Network/TcpListener.hpp>
 #include <SFML/Network/IpAddress.hpp>
 #include <SFML/Network/Packet.hpp>
-#include <SFML/System.hpp>
+#include <SFML/System/Sleep.hpp>
 // std-C++ headers
 #include <cstdlib>
 #include <iostream>

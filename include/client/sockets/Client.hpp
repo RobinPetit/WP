@@ -2,7 +2,8 @@
 #define _CONNECTION_HPP_
 
 // SFML headers
-#include <SFML/Network.hpp>
+#include <SFML/Network/TcpSocket.hpp>
+#include <SFML/Network/TcpListener.hpp>
 // std-C++ headers
 #include <string>
 #include <vector>

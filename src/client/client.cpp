@@ -2,6 +2,8 @@
 	client main file (entry point)
 **/
 
+// SFML headers
+#include <SFML/Network/IpAddress.hpp>
 // WizardPoker headers
 #include <common/constants.hpp>
 #include <client/ErrorCode.hpp>
