@@ -6,7 +6,7 @@ project("WizardPoker")
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 #Find dependencies
-find_package(SFML 2.3 COMPONENTS system network REQUIRED)
+find_package(SFML 2.1 COMPONENTS system network REQUIRED)
 
 # Set the include directory of the project
 include_directories(
