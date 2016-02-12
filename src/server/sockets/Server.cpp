@@ -103,24 +103,35 @@ void Server::handleChatRequest(sf::Packet& packet, sf::TcpSocket& client)
 	std::string callerName;
 	sf::Uint16 callerPort;
 	packet >> callerName >> calleeName >> callerPort;
-	try
+	std::cout << "start request\n";
+	// first of all, verify that player exist
+	// if it does, send his IP
+	auto callee = _clients.find(calleeName);
+	if(callee == _clients.end())
 	{
-		// first of all, verify that player exist
-		// if it does, send his IP
-		responseToCaller << _clients.at(calleeName).socket->getRemoteAddress().toString();
+		std::cout << "player does not exist!\n";
+		responseToCaller << static_cast<sf::Uint32>(0);
+	}
+	else
+	{
+		responseToCaller << _clients[calleeName].socket->getRemoteAddress().toInteger();
 		sf::Packet packetToCalle;
 		sf::TcpSocket toCallee;
-		toCallee.connect(_clients.at(calleeName).socket->getRemoteAddress(), _clients.at(calleeName).listeningPort);
-		// as the listening port has a delay, set communications as blokcing
-		toCallee.setBlocking(true);
-		packetToCalle << client.getRemoteAddress().toInteger() << callerPort << calleeName << callerName;
-		toCallee.send(packetToCalle);
-	}
-	catch(std::out_of_range& e)
-	{
-		// if it doesn't, send 0 as address
-		std::cout << e.what() << "\nplayer does not exist!";
-		responseToCaller << static_cast<sf::Uint32>(0);
+		std::cout << "address is " << _clients[calleeName].socket->getRemoteAddress() << " and port is " << _clients[calleeName].listeningPort << std::endl;
+		if(toCallee.connect(_clients[calleeName].socket->getRemoteAddress(), _clients[calleeName].listeningPort) != sf::Socket::Done)
+			std::cerr << "Unable to connect to calle (" << calleeName << ")\n";
+		else
+		{
+			std::cout << "connected\n";
+			// as the listening port has a delay, set communications as blokcing
+			toCallee.setBlocking(true);
+			packetToCalle << client.getRemoteAddress().toInteger() << callerPort << calleeName << callerName;
+			std::cout << "sending to callee\n";
+			if(toCallee.send(packetToCalle) != sf::Socket::Done)
+				std::cerr << "unable to send to calle\n";
+			else
+				std::cout << "sent to callee (" << calleeName << ")\n";
+		}
 	}
 	client.send(responseToCaller);
 }

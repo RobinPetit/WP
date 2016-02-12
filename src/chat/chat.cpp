@@ -21,6 +21,20 @@
 // static functions prototypes
 static void input(sf::TcpSocket *inputSocket, const std::atomic_bool *wait, const std::string& otherName);
 static inline sf::Packet formatOutputMessage(std::string message);
+static inline std::string setBold(std::string message);
+static void enterMessages(sf::TcpSocket& out, const std::string& name);
+
+#ifdef __linux__
+static inline std::string setBold(std::string message)
+{
+	return "\033[1m" + message + "\033[0m";
+}
+#else
+static inline std::string setBold(std::string message)
+{
+	return message;
+}
+#endif
 
 /// input is the function that is used in the "input" thread for the chat
 /// it waits for the other player to send messages and displays them on the screen
@@ -41,16 +55,44 @@ static void input(sf::TcpSocket *inputSocket, const std::atomic_bool *wait, cons
 			TransferType type;
 			std::string message;
 			packet >> type;
-			if(type != TransferType::CHAT_MESSAGE)
-				std::cerr << "Wrong transfer\n";
-			else
+			if(type == TransferType::CHAT_MESSAGE)
 			{
 				packet >> message;
-				std::cout << message << std::endl;
+				std::cout << setBold(otherName + ": ") << message << std::endl;
 			}
+			else if(type == TransferType::CHAT_QUIT)
+				std::cout << setBold(otherName) << " left the discussion" << std::endl;
+			else
+				std::cerr << "Wrong transfer\n";
 		}
 		else if(receivedStatus == sf::Socket::NotReady)  // no data has been sent
 			sf::sleep(sf::milliseconds(250));  // do not keep the processor and wait a bit
+	}
+}
+
+/// output is the fucntion where the user writes the messages to be sent to the other player
+/// \param out The output socket to send data with
+/// \param name The name of the player
+static void output(sf::TcpSocket& out, const std::string& name)
+{
+	std::string message;
+	bool loop(true);
+	while(loop)
+	{
+		getline(std::cin, message);
+		if(message[0] != ':')
+		{
+			sf::Packet packet = formatOutputMessage(message);
+			std::cout << setBold(name + ": ") << message << std::endl;
+			out.send(packet);
+		}
+		else if(message == ":quit")
+		{
+			loop = false;
+			sf::Packet packet;
+			packet << TransferType::CHAT_QUIT;
+			out.send(packet);
+		}
 	}
 }
 
@@ -97,7 +139,7 @@ int main(int argc, char **argv)
 		out.send(packet);
 		// get back the other player's address
 		out.receive(packet);
-		std::string calleeAddress;
+		sf::Uint32 calleeAddress;
 		packet >> calleeAddress;
 		// create the first socket (receiving data from the other player
 		listener.accept(in);
@@ -128,13 +170,9 @@ int main(int argc, char **argv)
 	}
 	std::thread inputThread(input, &in, &running, otherName);
 	// Warning: the `in` socket may not be used in this thread anymore!
-	//~ following code is test code!
-	packet = formatOutputMessage("Hi " + otherName + ", I am " + selfName);
-	out.send(packet);
-	int n;
-	std::cin >> n;
-	// must be the end of the main thread: waits for the other thread to end
+	output(out, selfName);
 	running.store(false);
 	inputThread.join();
 	return EXIT_SUCCESS;
 }
+

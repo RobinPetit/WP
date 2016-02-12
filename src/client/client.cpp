@@ -24,8 +24,20 @@ int main(int argc, char **argv)
 		std::cout << "Unable to connect to server" << std::endl;
 		return UNABLE_TO_CONNECT;
 	}
-	int n;
-	std::cin >> n;
+	int choice;
+	std::cout << "Enter 1 to make a discussion and anything else to quit\n\t";
+	std::cin >> choice;
+	if(choice == 1)
+	{
+		std::string name;
+		std::cout << "Who do you want to discuss with?\n\t";
+		std::cin >> name;
+		if(!self.startConversation(name))
+			std::cerr << "Error!\n";
+		int n;
+		std::cout << "Type anything to quit";
+		std::cin >> n;
+	}
 	std::cout << "quit\n";
 	self.quit();
 	return CLIENT_OK;

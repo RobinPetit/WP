@@ -11,6 +11,8 @@ enum class TransferType : sf::Uint32
 	CHAT_PLAYER_IP,
 	/// Used during the chat communications (precises the content of the packet is a string message)
 	CHAT_MESSAGE,
+	/// Used during the chat communications: tells that the other player wants to end the conversation
+	CHAT_QUIT,
 	// GAME
 	/// Not used yet, will be when the game core will be coded
 	GAME_CONNECTION,
