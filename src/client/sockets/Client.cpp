@@ -54,7 +54,7 @@ bool Client::connectToServer(const sf::IpAddress& address, sf::Uint16 port)
 bool Client::startConversation(const std::string& playerName)
 {
 	// rest assured the client is connected to a server before trying to access it
-	if(!_isConnected || !_userTerminal.hasKnownTerminal())
+	if(!_isConnected || !_userTerminal.hasKnownTerminal() || playerName == _name)
 		return false;
 	std::string cmd;
 	cmd = _userTerminal.getTerminalName() + " "
