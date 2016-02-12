@@ -28,6 +28,7 @@ void chatListening(sf::Uint16 *port, const std::atomic_bool *loop)
 	sf::SocketSelector selector;
 	if(chatListener.listen(sf::Socket::AnyPort) != sf::Socket::Done)
 	{
+		std::cerr << "Unable to listen to arriving chat connections!" << std::endl;
 		*port = 0;
 		exit(UNABLE_TO_LISTEN);
 	}
