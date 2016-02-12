@@ -14,14 +14,14 @@
 #include <cstdlib>
 
 // static functions prototypes
-static inline std::string chatCommand(sf::Uint32 address, sf::Uint16 port, std::string selfName, std::string otherName);
+static inline std::string chatCommand(sf::Uint32 address, sf::Uint16 port, std::string selfName, std::string otherName, const std::string& terminalName);
 
 // function called by a new thread only
 /// chatListening is the function used by the client to make a new thread listening for entring connections
 /// (players that want to make a discussion)
 /// \param port A pointer to an integer which will contain the port of the listening socket
 /// \param loop A thread-safe boolean to tell whether the thread has to keep waiting for connections or has to stop
-void chatListening(sf::Uint16 *port, const std::atomic_bool *loop)
+void chatListening(sf::Uint16 *port, const std::atomic_bool *loop, const std::string terminalName)
 {
 	//bool volatile _continue = *loop;
 	sf::TcpListener chatListener;
@@ -52,7 +52,7 @@ void chatListening(sf::Uint16 *port, const std::atomic_bool *loop)
 			sf::Packet packet;
 			socket.receive(packet);
 			packet >> address >> port >> selfName >> otherName;
-			system(chatCommand(address, port, selfName, otherName).c_str());
+			system(chatCommand(address, port, selfName, otherName, terminalName).c_str());
 		}
 	}
 }
@@ -62,9 +62,10 @@ void chatListening(sf::Uint16 *port, const std::atomic_bool *loop)
 /// \param port An integer representing the port the other player is listening on
 /// \param selfName The name of the called user (self)
 /// \param otherName The name of the caller user (the other one)
-static inline std::string chatCommand(sf::Uint32 address, sf::Uint16 port, std::string selfName, std::string otherName)
+/// \param terminal The name of the right terminal program
+static inline std::string chatCommand(sf::Uint32 address, sf::Uint16 port, std::string selfName, std::string otherName, const std::string& terminal)
 {
-    return "gnome-terminal "
+    return terminal + " "
            "-x ./WizardPoker_chat "
            "callee "  // frst parameter is caller or callee
            + std::to_string(address) + " "

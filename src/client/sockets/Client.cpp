@@ -10,7 +10,7 @@
 #include <thread>
 #include <cstdlib>
 
-extern void chatListening(sf::Uint16 *port, const std::atomic_bool *loop);
+extern void chatListening(sf::Uint16 *port, const std::atomic_bool *loop, const std::string terminal);
 
 Client::Client(const std::string& name):
 	_socket(),
@@ -24,8 +24,6 @@ Client::Client(const std::string& name):
 {
 	// forces the name to not be larger than MAX_NAME_LENGTH
 	_name = (name.size() < MAX_NAME_LENGTH) ? name : name.substr(0, MAX_NAME_LENGTH);
-	if(!_userTerminal.hasKnownTerminal())
-		std::cout << "Warning: as no known terminal has been found, chat is disabled" << std::endl;
 }
 
 bool Client::connectToServer(const sf::IpAddress& address, sf::Uint16 port)
@@ -35,7 +33,10 @@ bool Client::connectToServer(const sf::IpAddress& address, sf::Uint16 port)
 		return false;
 	_serverAddress = address;
 	_serverPort = port;
-	initListener();  // creates the new thread which listens for entring chat conenctions
+	if(!_userTerminal.hasKnownTerminal())
+		std::cout << "Warning: as no known terminal has been found, chat is disabled" << std::endl;
+	else
+		initListener();  // creates the new thread which listens for entring chat conenctions
 	// if connection does not work, don't go further
 	if(_socket.connect(address, port) != sf::Socket::Done)
 		return false;
@@ -71,7 +72,7 @@ bool Client::startConversation(const std::string& playerName)
 void Client::initListener()
 {
 	_threadLoop.store(true);
-	_listenerThread = std::thread(chatListening, &_chatListenerPort, &_threadLoop);
+	_listenerThread = std::thread(chatListening, &_chatListenerPort, &_threadLoop, _userTerminal.getTerminalName());
 }
 
 void Client::quit()
