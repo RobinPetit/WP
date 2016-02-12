@@ -15,9 +15,15 @@
 #include <thread>
 #include <atomic>
 #include <string>
+#include <fstream>
+#include <mutex>
 // WizardPoker headers
 #include <common/sockets/TransferType.hpp>
 #include <common/constants.hpp>
+
+std::mutex loggerMutex;
+std::fstream logFile;
+std::ostream& outStream = std::cout;  // define the text output is stdout
 
 // static functions prototypes
 static void input(sf::TcpSocket *inputSocket, const std::atomic_bool *wait, const std::string& otherName, std::atomic_bool *presence);
@@ -25,6 +31,7 @@ static inline sf::Packet formatOutputMessage(std::string message);
 static inline std::string setBold(std::string message);
 static void output(sf::TcpSocket& out, const std::string& name);
 static inline void endDiscussion(bool& running, sf::TcpSocket& socket);
+static void display(std::ostream& outputStream, const std::string& name, const std::string& message, bool setAsComment=false);
 
 #ifdef __linux__
 static inline std::string setBold(std::string message)
@@ -37,6 +44,19 @@ static inline std::string setBold(std::string message)
 	return message;
 }
 #endif
+
+/// display is the function that outputs the received (or sent) message and logs it
+/// \param outputStream The stream to write the message (std::cout if terminal)
+/// \param name The name of the person sending the message
+/// \param message The message to be displayed
+static void display(std::ostream& outputStream, const std::string& name, const std::string& message, bool setAsComment)
+{
+	std::string displayedMessage((setAsComment ? "// " : "") + setBold(name) + ": " + message + "\n");
+	loggerMutex.lock();
+	outputStream << displayedMessage;
+	logFile << displayedMessage;
+	loggerMutex.unlock();
+}
 
 /// endDiscussion is a fucntion that tells to stop looping waiting for messages and send
 /// to the other player that this player leaves the discussion
@@ -76,11 +96,11 @@ static void input(sf::TcpSocket *inputSocket, const std::atomic_bool *wait, cons
 			if(type == TransferType::CHAT_MESSAGE)
 			{
 				packet >> message;
-				std::cout << setBold(otherName + ": ") << message << std::endl;
+				display(outStream, otherName, message);
 			}
 			else if(type == TransferType::CHAT_QUIT)
 			{
-				std::cout << setBold(otherName) << " left the discussion" << std::endl;
+				display(outStream, otherName, "left the discussion");
 				presence->store(false);
 			}
 			else
@@ -104,18 +124,32 @@ static void output(sf::TcpSocket& out, const std::string& name, const std::atomi
 		getline(std::cin, message);
 		if(message[0] != ':')
 		{
-			if(!presence.load())
-				std::cout << "// ";
-			else
+			if(presence.load())
 			{
 				sf::Packet packet = formatOutputMessage(message);
 				out.send(packet);
 			}
-			std::cout << setBold(name + ": ") << message << std::endl;
+			display(outStream, name, message, !presence.load());
 		}
 		else if(message == ":quit")
 			endDiscussion(loop, out, presence.load());
 	}
+}
+
+/// restoreOldDiscussion is a function that reads from the log discussion file
+/// and displays the content of the previous discussions with this person
+static void restoreOldDiscussion()
+{
+	// backup does not need to be thread tested with mutex::lock because no other thread has yet been created
+	char *buffer;
+	logFile.seekg(0,logFile.end);
+	std::streamsize length = logFile.tellg();
+	std::cout << "size is: " << length << std::endl;
+	logFile.seekg(0, logFile.beg);
+	buffer = new char[length];
+	logFile.read(buffer, length);
+	outStream << buffer;
+	delete[] buffer;
 }
 
 /// formatOutputMessage is a function that's supposed to be inlined and which is used
@@ -190,11 +224,16 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 	std::atomic_bool presence(true);
+	logFile.open(CHAT_LOGGERS_DIR + otherName + ".txt", std::ios_base::in | std::ios_base::out);
+	restoreOldDiscussion();
 	std::thread inputThread(input, &in, &running, otherName, &presence);
 	// Warning: the `in` socket may not be used in this thread anymore!
 	output(out, selfName, presence);
+	// code to quit properly (frees the memory)
 	running.store(false);
 	inputThread.join();
+	// close the file when the input thread is over: be sure it does not need to log something anymore
+	logFile.close();
 	return EXIT_SUCCESS;
 }
 
