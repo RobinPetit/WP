@@ -19,10 +19,13 @@ Client::Client(const std::string& name):
 	_chatListenerPort(0),
 	_threadLoop(0),
 	_serverAddress(),
-	_serverPort(0)
+	_serverPort(0),
+	_userTerminal()
 {
 	// forces the name to not be larger than MAX_NAME_LENGTH
 	_name = (name.size() < MAX_NAME_LENGTH) ? name : name.substr(0, MAX_NAME_LENGTH);
+	if(!_userTerminal.hasKnownTerminal())
+		std::cout << "Warning: as no known terminal has been found, chat is disabled" << std::endl;
 }
 
 bool Client::connectToServer(const sf::IpAddress& address, sf::Uint16 port)
@@ -50,10 +53,10 @@ bool Client::connectToServer(const sf::IpAddress& address, sf::Uint16 port)
 bool Client::startConversation(const std::string& playerName)
 {
 	// rest assured the client is connected to a server before trying to access it
-	if(!_isConnected)
+	if(!_isConnected || !_userTerminal.hasKnownTerminal())
 		return false;
 	std::string cmd;
-	cmd = "gnome-terminal "
+	cmd = _userTerminal.getTerminalName() + " "
 	      "-x ./WizardPoker_chat "
 	      "\"caller\" "  // parameter 1 is caller/callee
 	      "\"" + _serverAddress.toString() + "\" "  // parameter 2 is the address to connect to

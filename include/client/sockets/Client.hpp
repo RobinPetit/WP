@@ -9,6 +9,8 @@
 #include <vector>
 #include <thread>
 #include <atomic>
+// WizardPoker headers
+#include <common/Terminal.hpp>
 
 /// Client is a class representing the state of the client program (not the user!)
 class Client final
@@ -53,6 +55,8 @@ private:
 	sf::IpAddress _serverAddress;
 	/// Stores the port of the server (needed to start the chat)
 	sf::Uint16 _serverPort;
+	/// gives informations about the terminal installed on the computer
+	Terminal _userTerminal;
 
 	// private methods
 	/// The functions used to create the listening thread

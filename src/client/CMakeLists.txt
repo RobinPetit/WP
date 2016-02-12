@@ -6,6 +6,7 @@ set(SOURCES
 		# common
 		"../common/sockets/TransferType.cpp"
 		"../common/ConfigParser.cpp"
+		"../common/Terminal.cpp"
 	)
 
 set(CLIENT_NAME "${PROJECT_NAME}_client")
