@@ -165,6 +165,42 @@
 
 		\subsubsection{Gestion des \glspl{deck}}
 			\begin{center}\includegraphics[scale=0.5]{Model1_DecksManagement.png}\end{center}
+			\begin{itemize}
+				\item \textbf{Supprimer un deck}
+				\begin{description}
+					\item[Description] Suppression d'un deck.
+					\item[Pré-condition] La liste des decks n'est pas vide.
+					\item[Post-condition] Il y a un deck en moins dans la liste des decks.\\
+				\end{description}
+
+				\item \textbf{Afficher un deck}
+				\begin{description}
+					\item[Description] Affichage d'un deck.
+					\item[Pré-condition] La liste des decks n'est pas vide.
+					\item[Post-condition] L'utilisateur a pris connaissance du contenu d'un deck.\\
+				\end{description}
+
+				\item \textbf{Créer un deck par défaut}
+				\begin{description}
+					\item[Description] Pour créer un nouveau deck, le deck par défaut est ajouté.
+					\item[Pré-condition] Aucune.
+					\item[Post-condition] Il y a un deck en plus dans la liste des decks.\\
+				\end{description}
+
+				\item \textbf{Changer les cartes d'un deck}
+				\begin{description}
+					\item[Description] Pour modifier un deck, il faut changer une par une les cartes qui le composent.
+					\item[Pré-condition] La liste des decks n'est pas vide.
+					\item[Post-condition] Un des decks la liste des decks a été modifié.\\
+				\end{description}
+			\end{itemize}
+			Le fonctionnement de la création d'un nouveau deck nécessite peut-être quelques explications
+			supplémentaire. Le use case "Créer un deck" commence par ajouter dans la liste des decks
+			une copie du deck par défaut (celui donné à la création du compte). Ensuite l'utilisateur
+			est redirigé vers le use case "Changer les cartes d'un deck", qui permet de remplacer
+			une par une les cartes d'un deck. Ainsi, avec une grande modularité et peu de code,
+			donné la possibilité de créer un tout nouveau deck sans devoir recoder une partie
+			de l'interface qui modifie un deck.
 
 		\subsubsection{Début de partie}
 			\begin{center}\includegraphics[scale=0.45]{Collaboration2_StartDuel.png}\end{center}
