@@ -11,7 +11,7 @@
 #include <atomic>
 
 /// Client is a class representing the state of the client program (not the user!)
-class Client
+class Client final
 {
 public:
 	/// Constructor

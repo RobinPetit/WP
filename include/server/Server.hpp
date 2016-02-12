@@ -19,7 +19,7 @@ struct ClientInformations
 	sf::Uint16 listeningPort;  // used to send connection for the chat
 };
 
-class Server
+class Server final
 {
 public:
 	/// Constructor

@@ -8,7 +8,7 @@
 // WizardPoker headers
 #include <common/ConfigData.hpp>
 
-class ConfigParser
+class ConfigParser final
 {
 public:
 	/// \TODO description
