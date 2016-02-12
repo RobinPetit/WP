@@ -5,10 +5,13 @@
 #include <string>
 #include "common/Card.hpp"
 
-/// A deck is a set of cards. There is a special deck, the default deck,
-/// wich is just a predefined deck that the user gets when it suscribes to
-/// Wizard Poker. All decks have the same amount of cards, this amount is
-/// defined by Deck::size.
+/// A deck is a set of cards.
+/// All decks have the same amount of card, defined by Deck::size.
+/// There is a special deck, the default deck
+/// The default deck contains exactly Deck::size unique cards that match
+/// the Deck::size cards all players start with.
+// \TODO Card.hpp should implements a type CardId
+// (maybe such as `typedef std::size_t CardId`)
 class Deck
 {
 	public:
@@ -35,6 +38,6 @@ class Deck
 	private:
 		std::string _name;              ///< The name of the deck.
 		std::array<CardId, size> _cards;///< All the cards of the deck.
-}
+};
 
 #endif  // _DECK_COMMON_HPP
