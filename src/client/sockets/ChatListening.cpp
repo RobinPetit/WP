@@ -6,6 +6,7 @@
 #include <SFML/System/Time.hpp>
 // WizardPoker headers
 #include <server/ErrorCode.hpp>
+#incldue <common/constants.hpp>
 // std-C++ headers
 #include <iostream>
 #include <atomic>
@@ -39,7 +40,7 @@ void chatListening(sf::Uint16 *port, const std::atomic_bool *loop)
 	while(loop->load())
 	{
 		// set waiting to 0.1 second so that the loop variable is checked frequently enough
-		if(!selector.wait(sf::seconds(0.1)))
+		if(!selector.wait(SOCKET_TIME_SLEEP))
 			continue;
 		sf::TcpSocket socket;
 		if(chatListener.accept(socket) == sf::Socket::Done)

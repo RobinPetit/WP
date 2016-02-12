@@ -17,6 +17,7 @@
 #include <string>
 // WizardPoker headers
 #include <common/sockets/TransferType.hpp>
+#include <common/constants.hpp>
 
 // static functions prototypes
 static void input(sf::TcpSocket *inputSocket, const std::atomic_bool *wait, const std::string& otherName);
@@ -66,7 +67,7 @@ static void input(sf::TcpSocket *inputSocket, const std::atomic_bool *wait, cons
 				std::cerr << "Wrong transfer\n";
 		}
 		else if(receivedStatus == sf::Socket::NotReady)  // no data has been sent
-			sf::sleep(sf::milliseconds(250));  // do not keep the processor and wait a bit
+			sf::sleep(SOCKET_TIME_SLEEP);  // do not keep the processor and wait a bit
 	}
 }
 
@@ -146,7 +147,6 @@ int main(int argc, char **argv)
 		// get the port use to send data to the other player
 		in.receive(packet);
 		packet >> calleeListeningPort;
-		sf::sleep(sf::seconds(0.05));
 		// and finally create the second socket (sending data)
 		out.disconnect();
 		if(out.connect(in.getRemoteAddress(), calleeListeningPort) != sf::Socket::Done)

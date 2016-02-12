@@ -29,7 +29,7 @@ bool Client::connectToServer(const sf::IpAddress& address, sf::Uint16 port)
 	// if connection does not work, don't go further
 	if(_socket.connect(address, port) != sf::Socket::Done)
 		return false;
-	sf::sleep(sf::milliseconds(250));  // wait a quarter second to let the listening thread init the port
+	sf::sleep(SOCKET_TIME_SLEEP);  // wait a quarter second to let the listening thread init the port
 	sf::Packet packet;
 	packet << TransferType::GAME_CONNECTION  // precise
 	       << _name  // do not forget the '\0' character
