@@ -10,5 +10,5 @@ set(CLIENT_NAME "${PROJECT_NAME}_client")
 add_executable(${CLIENT_NAME} "${SOURCES}")
 
 # Link the executable to the libraries
-target_link_libraries(${CLIENT_NAME} ${EXTERNAL_LIBRARIES})
+target_link_libraries(${CLIENT_NAME} ${EXTERNAL_LIBRARIES} ${COMMON_NAME})
 

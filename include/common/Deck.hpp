@@ -33,7 +33,7 @@ class Deck
 		Deck(const std::string& name, const std::array<CardId, size>& cards);
 
 		/// Replaces the card at \a index in the deck by \a card.
-		void changeCard(std::size_t index, const CardId& card);
+		void changeCard(std::size_t index, CardId card);
 
 	private:
 		std::string _name;              ///< The name of the deck.
