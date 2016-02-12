@@ -20,10 +20,11 @@
 #include <common/constants.hpp>
 
 // static functions prototypes
-static void input(sf::TcpSocket *inputSocket, const std::atomic_bool *wait, const std::string& otherName);
+static void input(sf::TcpSocket *inputSocket, const std::atomic_bool *wait, const std::string& otherName, std::atomic_bool *presence);
 static inline sf::Packet formatOutputMessage(std::string message);
 static inline std::string setBold(std::string message);
-static void enterMessages(sf::TcpSocket& out, const std::string& name);
+static void output(sf::TcpSocket& out, const std::string& name);
+static inline void endDiscussion(bool& running, sf::TcpSocket& socket);
 
 #ifdef __linux__
 static inline std::string setBold(std::string message)
@@ -37,12 +38,28 @@ static inline std::string setBold(std::string message)
 }
 #endif
 
+/// endDiscussion is a fucntion that tells to stop looping waiting for messages and send
+/// to the other player that this player leaves the discussion
+/// \param running Set to false
+/// \param socket The output socket where CHAT_QUIT is send to
+/// \param sending True if necessary to send to the other player (still connected) false otherwise (already disconnected)
+static inline void endDiscussion(bool& running, sf::TcpSocket& socket, bool sending)
+{
+	running = false;
+	if(!sending)
+		return;
+	sf::Packet packet;
+	packet << TransferType::CHAT_QUIT;
+	socket.send(packet);
+}
+
 /// input is the function that is used in the "input" thread for the chat
 /// it waits for the other player to send messages and displays them on the screen
 /// \param inputSocket A pointer to the socket created to receive the other player's messages
 /// \param wait A thread-safe boolean telling whethere the thread needs to keep waiting or has to stop
 /// \param otherName the name of the other player
-static void input(sf::TcpSocket *inputSocket, const std::atomic_bool *wait, const std::string& otherName)
+/// \param presence A thread-safe boolean telling whether the other player has left or not
+static void input(sf::TcpSocket *inputSocket, const std::atomic_bool *wait, const std::string& otherName, std::atomic_bool *presence)
 {
 	sf::TcpSocket& in = *inputSocket;  // create reference to simplify reading
 	in.setBlocking(false);  // set the socket as non-blocking so that it verifies that connection is still available
@@ -62,7 +79,10 @@ static void input(sf::TcpSocket *inputSocket, const std::atomic_bool *wait, cons
 				std::cout << setBold(otherName + ": ") << message << std::endl;
 			}
 			else if(type == TransferType::CHAT_QUIT)
+			{
 				std::cout << setBold(otherName) << " left the discussion" << std::endl;
+				presence->store(false);
+			}
 			else
 				std::cerr << "Wrong transfer\n";
 		}
@@ -74,7 +94,8 @@ static void input(sf::TcpSocket *inputSocket, const std::atomic_bool *wait, cons
 /// output is the fucntion where the user writes the messages to be sent to the other player
 /// \param out The output socket to send data with
 /// \param name The name of the player
-static void output(sf::TcpSocket& out, const std::string& name)
+/// \param presence A thread-safe boolean telling whether the other player hasleft or not
+static void output(sf::TcpSocket& out, const std::string& name, const std::atomic_bool &presence)
 {
 	std::string message;
 	bool loop(true);
@@ -83,17 +104,17 @@ static void output(sf::TcpSocket& out, const std::string& name)
 		getline(std::cin, message);
 		if(message[0] != ':')
 		{
-			sf::Packet packet = formatOutputMessage(message);
+			if(!presence.load())
+				std::cout << "// ";
+			else
+			{
+				sf::Packet packet = formatOutputMessage(message);
+				out.send(packet);
+			}
 			std::cout << setBold(name + ": ") << message << std::endl;
-			out.send(packet);
 		}
 		else if(message == ":quit")
-		{
-			loop = false;
-			sf::Packet packet;
-			packet << TransferType::CHAT_QUIT;
-			out.send(packet);
-		}
+			endDiscussion(loop, out, presence.load());
 	}
 }
 
@@ -168,9 +189,10 @@ int main(int argc, char **argv)
 		std::cerr << "unknown role: " << role;
 		return EXIT_FAILURE;
 	}
-	std::thread inputThread(input, &in, &running, otherName);
+	std::atomic_bool presence(true);
+	std::thread inputThread(input, &in, &running, otherName, &presence);
 	// Warning: the `in` socket may not be used in this thread anymore!
-	output(out, selfName);
+	output(out, selfName, presence);
 	running.store(false);
 	inputThread.join();
 	return EXIT_SUCCESS;
