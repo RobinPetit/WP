@@ -32,7 +32,8 @@ static inline std::string setBold(const std::string& message);
 static void output(sf::TcpSocket& out, const std::string& name);
 static inline void endDiscussion(bool& running, sf::TcpSocket& socket);
 static void display(std::ostream& outputStream, const std::string& name, const std::string& message, bool setAsComment=false);
-static inline std::string getDiscussionFileName(const std::string& otherName);
+static inline std::string getDiscussionFileName(const std::string& otherName, const std::string& name);
+static void restoreOldDiscussion(const std::string& otherName, const std::string& name);
 
 #ifdef __linux__
 static inline std::string setBold(const std::string& message)
@@ -139,10 +140,12 @@ static void output(sf::TcpSocket& out, const std::string& name, const std::atomi
 
 /// restoreOldDiscussion is a function that reads from the log discussion file
 /// and displays the content of the previous discussions with this person
-static void restoreOldDiscussion(const std::string& otherName)
+/// \param otherName A string containing the name of the other player
+/// \param name A strign containing the player's name
+static void restoreOldDiscussion(const std::string& otherName, const std::string& name)
 {
 	std::ifstream backup;
-	backup.open(getDiscussionFileName(otherName));
+	backup.open(getDiscussionFileName(otherName, name));
 	if(!backup)
 		return;
 	// backup does not need to be thread tested with mutex::lock because no other thread has yet been created
@@ -171,9 +174,10 @@ static inline sf::Packet formatOutputMessage(const std::string& message)
 /// getDiscussionFileName is a function that's supposed to be inlined and which is used
 /// to find the right file name where the discussion has been/will be stored
 /// \param othername A string containing the other player's name
-static inline std::string getDiscussionFileName(const std::string& otherName)
+/// \param name A strign containing the player's name
+static inline std::string getDiscussionFileName(const std::string& otherName, const std::string& name)
 {
-	return CHAT_LOGGERS_DIR + otherName + ".txt";
+	return CHAT_LOGGERS_DIR + name + "_" + otherName + ".txt";
 }
 
 int main(int argc, char **argv)
@@ -238,9 +242,9 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 	std::atomic_bool presence(true);
-	restoreOldDiscussion(otherName);
+	restoreOldDiscussion(otherName, selfName);
 	// open the file in append mode only after it has been open in read-only mode
-	logFile.open(getDiscussionFileName(otherName), std::ios_base::out | std::ios_base::trunc | std::ios_base::app);
+	logFile.open(getDiscussionFileName(otherName, selfName), std::ios_base::out | std::ios_base::trunc | std::ios_base::app);
 	std::thread inputThread(input, &in, &running, otherName, &presence);
 	// Warning: the `in` socket may not be used in this thread anymore!
 	output(out, selfName, presence);
