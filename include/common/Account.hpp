@@ -16,6 +16,7 @@ class Account
 		CardsCollection _cardsCollection;
 		std::map<std::string, Deck> _decks;
 		std::set<ID> _friends;
+		ID _id;
 };
 
 #endif  // _ACCOUNT_COMMON_HPP
