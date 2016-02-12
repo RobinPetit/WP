@@ -27,20 +27,20 @@ std::ostream& outStream = std::cout;  // define the text output is stdout
 
 // static functions prototypes
 static void input(sf::TcpSocket *inputSocket, const std::atomic_bool *wait, const std::string& otherName, std::atomic_bool *presence);
-static inline sf::Packet formatOutputMessage(std::string message);
-static inline std::string setBold(std::string message);
+static inline sf::Packet formatOutputMessage(const std::string& message);
+static inline std::string setBold(const std::string& message);
 static void output(sf::TcpSocket& out, const std::string& name);
 static inline void endDiscussion(bool& running, sf::TcpSocket& socket);
 static void display(std::ostream& outputStream, const std::string& name, const std::string& message, bool setAsComment=false);
 static inline std::string getDiscussionFileName(const std::string& otherName);
 
 #ifdef __linux__
-static inline std::string setBold(std::string message)
+static inline std::string setBold(const std::string& message)
 {
 	return "\033[1m" + message + "\033[0m";
 }
 #else
-static inline std::string setBold(std::string message)
+static inline std::string setBold(const std::string& message)
 {
 	return message;
 }
@@ -161,7 +161,7 @@ static void restoreOldDiscussion(const std::string& otherName)
 /// formatOutputMessage is a function that's supposed to be inlined and which is used
 /// to create a correct transmission packet for the other user
 /// \param message A string containing the message to send to the other player
-static inline sf::Packet formatOutputMessage(std::string message)
+static inline sf::Packet formatOutputMessage(const std::string& message)
 {
 	sf::Packet packet;
 	packet << TransferType::CHAT_MESSAGE << message;
