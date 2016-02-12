@@ -1,18 +1,36 @@
 cmake_minimum_required(VERSION 3.2)
 
-project(WizardPoker)
+project("WizardPoker")
 
-#Set the include directory of the project
-include_directories(${PROJECT_SOURCE_DIR}/include)
+#Set path to Find* scripts
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
-#Set compilator flags (they must be in one line)
+#Find dependencies
+find_package(SFML 2.3 COMPONENTS system network REQUIRED)
+
+# Set the include directory of the project
+include_directories(
+	"${PROJECT_SOURCE_DIR}/include"
+	"${SFML_INCLUDE_DIR}"
+	)
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin/")
+
+set(CMAKE_CXX_COMPILER "g++-5")
+# Set compiler flags (they must be in one line)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -Wall -Wextra -pedantic -pedantic-errors -Wnon-virtual-dtor -Wshadow -Winit-self -Wredundant-decls -Wcast-align -Wundef -Winline -Wunreachable-code -Wmissing-declarations")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -DNDEBUG")
 
-# Tell to cmake to explore src/
-add_subdirectory(src)
+# This variable contains the name of all libraries that has to be linked
+set(EXTERNAL_LIBRARIES ${SFML_LIBRARIES})
 
-# Create an executable from the object compiled in src/
-add_executable(${PROJECT_NAME} "$<TARGET_OBJECTS:WP>")
+# Tell to cmake to explore src/ to build both the server and the client
+add_subdirectory(src)
+# And build the SRD
+add_subdirectory(SRD)
+
+# Move the executables created in src/client/ and src/server/
+# to the root build directory
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
