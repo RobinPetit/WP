@@ -3,6 +3,10 @@
 
 #include <cstddef>
 
-typedef std::size_t CardId;
+class Card
+{
+	public:
+		typedef std::size_t ID;
+};
 
 #endif  // _CARD_COMMON_HPP

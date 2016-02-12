@@ -10,8 +10,8 @@
 /// There is a special deck, the default deck
 /// The default deck contains exactly Deck::size unique cards that match
 /// the Deck::size cards all players start with.
-// \TODO Card.hpp should implements a type CardId
-// (maybe such as `typedef std::size_t CardId`)
+// \TODO Card.hpp should implements a type Card::ID
+// (maybe such as `typedef std::size_t Card::ID`)
 class Deck
 {
 	public:
@@ -26,18 +26,17 @@ class Deck
 		/// Constructor.
 		/// Creates a default deck. The default deck is the set of the \a size
 		/// first cards (with the cards ordered by their ID).
-		explicit Deck(const std::string& name);
+		explicit Deck();
 
 		/// Constructor.
 		/// Creates a deck from an array of cards.
-		Deck(const std::string& name, const std::array<CardId, size>& cards);
+		Deck(const std::array<Card::ID, size>& cards);
 
 		/// Replaces the card at \a index in the deck by \a card.
-		void changeCard(std::size_t index, CardId card);
+		void changeCard(std::size_t index, Card::ID card);
 
 	private:
-		std::string _name;              ///< The name of the deck.
-		std::array<CardId, size> _cards;///< All the cards of the deck.
+		std::array<Card::ID, size> _cards;  ///< All the cards of the deck.
 };
 
 #endif  // _DECK_COMMON_HPP

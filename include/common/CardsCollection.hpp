@@ -13,24 +13,24 @@ class CardsCollection
 
 		CardsCollection(const CardsCollection& other) = default;
 
-		explicit CardsCollection(const std::multiset<CardId>& cards);
+		explicit CardsCollection(const std::multiset<Card::ID>& cards);
 
 		/// Add an occurence of \a card.
 		/// \param card Card to add.
-		void addCard(CardId card);
+		void addCard(Card::ID card);
 
 		/// Gives the number of occurences of \a card
 		/// \param card Card to check.
 		/// \return The number of occurences of \a card
-		std::size_t count(CardId card);
+		std::size_t count(Card::ID card);
 
 		/// Checks if the set contains \a card.
 		/// \param card Card to check.
 		/// \return count(card) > 0
-		bool contains(CardId card);
+		bool contains(Card::ID card);
 
 	private:
-		std::multiset<CardId> _cards;///< The set of cards. A player can have multiple times a given card.
+		std::multiset<Card::ID> _cards;  ///< The set of cards. A player can have multiple times a given card.
 };
 
 #endif  // _CARDS_COLLECTION_COMMON_HPP
