@@ -14,18 +14,20 @@
 #include <sstream>
 #include <thread>
 #include <atomic>
+#include <string>
 // WizardPoker headers
 #include <common/sockets/TransferType.hpp>
 
 // static functions prototypes
-static void input(sf::TcpSocket *inputSocket, const std::atomic_bool *wait);
+static void input(sf::TcpSocket *inputSocket, const std::atomic_bool *wait, const std::string& otherName);
 static inline sf::Packet formatOutputMessage(std::string message);
 
 /// input is the function that is used in the "input" thread for the chat
 /// it waits for the other player to send messages and displays them on the screen
 /// \param inputSocket A pointer to the socket created to receive the other player's messages
 /// \param wait A thread-safe boolean telling whethere the thread needs to keep waiting or has to stop
-static void input(sf::TcpSocket *inputSocket, const std::atomic_bool *wait)
+/// \param otherName the name of the other player
+static void input(sf::TcpSocket *inputSocket, const std::atomic_bool *wait, const std::string& otherName)
 {
 	sf::TcpSocket& in = *inputSocket;  // create reference to simplify reading
 	in.setBlocking(false);  // set the socket as non-blocking so that it verifies that connection is still available
@@ -39,10 +41,8 @@ static void input(sf::TcpSocket *inputSocket, const std::atomic_bool *wait)
 			TransferType type;
 			std::string message;
 			packet >> type;
-			if(!(type == TransferType::CHAT_MESSAGE))
-			{
-				std::cout << "Wrong transfer\n";
-			}
+			if(type != TransferType::CHAT_MESSAGE)
+				std::cerr << "Wrong transfer\n";
 			else
 			{
 				packet >> message;
@@ -126,7 +126,7 @@ int main(int argc, char **argv)
 		std::cerr << "unknown role: " << role;
 		return EXIT_FAILURE;
 	}
-	std::thread inputThread(input, &in, &running);
+	std::thread inputThread(input, &in, &running, otherName);
 	// Warning: the `in` socket may not be used in this thread anymore!
 	//~ following code is test code!
 	packet = formatOutputMessage("Hi " + otherName + ", I am " + selfName);
