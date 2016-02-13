@@ -6,18 +6,14 @@ CardsCollectionState::CardsCollectionState(StateStack& stateStack):
 {
     addAction("Back to main menu", &CardsCollectionState::backMainMenu);
     //Get the list of cards from the server...
-    _cards.emplace_back("Saruman the White");
-    _cards.emplace_back("Gandalf the Grey");
-    _cards.emplace_back("Aragorn, heir of Isildur");
-    _cards.emplace_back("Legolas, son of Thranduil");
-    _cards.emplace_back("Gimli, son of Glóin");
-    _cards.emplace_back("Boromir, son of Denethor II");
+    for(size_t i{0}; i < 20; ++i)
+		_cardsCollection.addCard(static_cast<Card::ID>(i));
 }
 
 void CardsCollectionState::display()
 {
     std::cout << "Here are your cards:\n";
-    for(const auto& card : _cards)
+    for(const auto& card : _cardsCollection)
         std::cout << "* " << card << "\n";
     std::cout << std::string(40, '*') << "\n";
 

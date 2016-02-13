@@ -2,6 +2,7 @@
 #define _CARDS_COLLECTION_STATE_CLIENT_HPP
 
 #include "client/AbstractState.hpp"
+#include "common/CardsCollection.hpp"
 
 // Forward declarations
 class StateStack;
@@ -19,7 +20,8 @@ class CardsCollectionState : public AbstractState
 
     private:
         void backMainMenu();
-        std::vector<std::string> _cards;// The list of cards, use the class Card instead of std::string when it will be available
+
+        CardsCollection _cardsCollection;
 
 };
 
