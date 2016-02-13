@@ -16,6 +16,7 @@ class Deck
 {
 	public:
 		static constexpr std::size_t size{20};
+		typedef std::array<Card::ID, size>::iterator Iterator;
 
 		/// Copy constructor.
 		Deck(const Deck& other) = default;
@@ -34,6 +35,10 @@ class Deck
 
 		/// Replaces the card at \a index in the deck by \a card.
 		void changeCard(std::size_t index, Card::ID card);
+
+		Iterator begin();
+
+		Iterator end();
 
 	private:
 		std::array<Card::ID, size> _cards;  ///< All the cards of the deck.

@@ -18,3 +18,13 @@ void Deck::changeCard(std::size_t index, Card::ID card)
 	assert(std::count(_cards.begin(), _cards.end(), card) < 2);
 	_cards[index] = card;
 }
+
+Deck::Iterator Deck::begin()
+{
+	return _cards.begin();
+}
+
+Deck::Iterator Deck::end()
+{
+	return _cards.end();
+}
