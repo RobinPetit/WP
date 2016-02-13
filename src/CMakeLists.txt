@@ -2,5 +2,4 @@
 add_subdirectory(client)
 
 # Build server
-#~add_subdirectory(server)
-
+add_subdirectory(server)

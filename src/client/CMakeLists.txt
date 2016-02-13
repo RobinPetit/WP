@@ -10,7 +10,7 @@ set(SOURCES
     "states/MainMenuState.cpp"
     "states/HomeState.cpp"
     # sockets
-    #~"sockets/Connection.cpp"
+    "sockets/Connection.cpp"
     )
 
 set(CLIENT_NAME "${PROJECT_NAME}_client")
