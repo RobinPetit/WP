@@ -1,3 +1,5 @@
+set(COMMON_NAME "${PROJECT_NAME}_common")
+
 # Build common files
 add_subdirectory(common)
 
