@@ -26,3 +26,13 @@ bool CardsCollection::contains(Card::ID card)
 {
 	return count(card) > 0;
 }
+
+CardsCollection::Iterator CardsCollection::begin()
+{
+	return _cards.begin();
+}
+
+CardsCollection::Iterator CardsCollection::end()
+{
+	return _cards.end();
+}

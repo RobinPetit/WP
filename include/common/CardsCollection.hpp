@@ -7,6 +7,8 @@
 class CardsCollection
 {
 	public:
+		typedef std::multiset<Card::ID>::iterator Iterator;
+
 		/// Default constructor.
 		/// Initially, the card collection contains the first 20 cards.
 		CardsCollection();
@@ -28,6 +30,10 @@ class CardsCollection
 		/// \param card Card to check.
 		/// \return count(card) > 0
 		bool contains(Card::ID card);
+
+		Iterator begin();
+
+		Iterator end();
 
 	private:
 		std::multiset<Card::ID> _cards;  ///< The set of cards. A player can have multiple times a given card.
