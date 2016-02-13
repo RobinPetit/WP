@@ -11,8 +11,8 @@ class Account
 
 		std::string _userName;
 		std::string _password;
-		unsigned int _wonMatches;
-		unsigned int _lostMatches;
+		unsigned int _wonGames;
+		unsigned int _lostGames;
 		CardsCollection _cardsCollection;
 		std::map<std::string, Deck> _decks;
 		std::set<ID> _friends;
