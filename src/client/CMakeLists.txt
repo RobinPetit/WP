@@ -1,5 +1,4 @@
 set(SOURCES
-<<<<<<< HEAD
 		"client.cpp"
 		# sockets
 		"sockets/Client.cpp"
@@ -18,8 +17,6 @@ set(SOURCES
 		"states/LadderState.cpp"
 		"states/MainMenuState.cpp"
 		"states/HomeState.cpp"
-		# sockets
-		"sockets/Connection.cpp"
 	)
 
 set(CLIENT_NAME "${PROJECT_NAME}_client")
