@@ -107,6 +107,7 @@ void Server::receiveData()
 			break;
 		case TransferType::PLAYER_CHECK_CONNECTION:
 			checkPresence(it, packet);
+			break;
 		default:
 			std::cerr << "Error: unknown code " << static_cast<sf::Uint32>(type) << std::endl;
 			break;
