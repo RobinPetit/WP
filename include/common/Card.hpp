@@ -9,7 +9,7 @@ class Card
 {
     unsigned int _cost;
     std::string _name;
-    vector<int> _effect;    // Create an empty Vector which will contain all the required variables for his effect.
+    vector<int> _effect;    //~ Create an empty Vector which will contain all the required variables for his effect.
 
 public:
 
