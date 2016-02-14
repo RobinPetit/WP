@@ -20,19 +20,28 @@ public:
 	/// \param name The name of the program (a priori the same as the user's)
 	Client(const std::string& name);
 
-	/// The functions used to make first connection with the game server
+	/// The function used to make first connection with the game server
 	/// \return True if the connection succeeded and false otherwise
 	/// \param address The address where the server stands
 	/// \param port The port the server occupies
 	bool connectToServer(const sf::IpAddress& address, sf::Uint16 port);
 
-	/// The fonctions used to start the process of making a new discussion with the chat program
+	/// The function used to start the process of making a new discussion with the chat program
 	/// \return True if the chat program has been started and false otherwise
 	/// \param playerName The name of the player the client wants to discuss with
+	/// \throw NotConnectedException if connectToServer has not been called before
 	bool startConversation(const std::string& playerName);
 
+	/// The function used to to get a list of the user's friends
+	/// \return A vector of names representing all of the friends
+	/// \param onlyConnected Boolean precising if non-connected players must be considered or not
+	/// \throw NotConnectedException if onlyConnected is set to true
+	/// and connectToServer has not been called before
 	std::vector<std::string> getFriends(bool onlyConnected=true);
 
+	/// Function used to ask the friends list to the server. The list containing the
+	/// names is the attribute _friends
+	/// \throw NotConnectedException if connectToServer has not been called before
 	void updateFriends();
 
 	/// The function used to rest assured all conections are stopped and the client is
@@ -59,9 +68,12 @@ private:
 	sf::IpAddress _serverAddress;
 	/// Stores the port of the server (needed to start the chat)
 	sf::Uint16 _serverPort;
-	/// gives informations about the terminal installed on the computer
+	/// Gives informations about the terminal installed on the computer
 	Terminal _userTerminal;
+	/// List containing the names of the friends
 	std::vector<std::string> _friends;
+	/// \TODO use this!
+	/// List  containing the names of the friendship requests
 	std::vector<std::string> _friendsRequest;
 
 	// private methods

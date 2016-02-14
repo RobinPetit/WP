@@ -89,9 +89,11 @@ void Client::updateFriends()
 	if(!_isConnected)
 		throw NotConnectedException();
 	sf::Packet packet;
+	// send that friends list is asked
 	packet << TransferType::PLAYER_ASKS_FRIENDS;
 	_socket.send(packet);
 	_socket.receive(packet);
+	// std::vector packing has been defined in PacketOverload.hpp
 	packet >> _friends;
 }
 
@@ -130,3 +132,4 @@ void Client::quit()
 	_threadLoop.store(false);
 	_listenerThread.join();
 }
+
