@@ -53,6 +53,16 @@ public:
 	/// \param accept True to accept the request, false to refuse it
 	void acceptFriendshipRequest(const std::string& name, bool accept=true);
 
+	/// Used to ask the server if new friendship requet arrived and if requests were accepted
+	/// \return True if the data was correctly received and false otherwise
+	/// \param newIncomingRequests A vector containing the names of the players asking to become friend
+	/// \param acceptedSentRequests A vector containing the names of the players who accepted to become friend
+	/// \param refusedSentRequests A vector containing the names of the players who refused to become friends
+	bool updateFriendshipRequests(
+		std::vector<std::string>& newIncomingRequests,
+		std::vector<std::string>& acceptedSentRequests,
+		std::vector<std::string>& refusedSentRequests);
+
 	/// The function used to rest assured all conections are stopped and the client is
 	/// not waiting for entering chat connections anymore
 	void quit();

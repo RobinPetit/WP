@@ -119,6 +119,22 @@ void Client::askNewFriend(const std::string& name)
 		_friendsRequests.push_back(name);
 }
 
+bool Client::updateFriendshipRequests(std::vector<std::string>& newIncomingRequests,
+	std::vector<std::string>& acceptedSentRequests,
+	std::vector<std::string>& refusedSentRequests)
+{
+	sf::Packet packet;
+	packet << TransferType::PLAYER_GETTING_FRIEND_REQUESTS_STATE;
+	_socket.send(packet);
+	_socket.receive(packet);
+	TransferType type;
+	packet >> type;
+	if(type != TransferType::PLAYER_GETTING_FRIEND_REQUESTS_STATE)
+		return false;
+	packet >> newIncomingRequests >> acceptedSentRequests >> refusedSentRequests;
+	return true;
+}
+
 void Client::acceptFriendshipRequest(const std::string& name, bool accept)
 {
 	sf::Packet packet;

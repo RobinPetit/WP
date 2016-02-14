@@ -20,6 +20,7 @@ struct ClientInformations
 	sf::Uint16 listeningPort;  // used to send connection for the chat
 	std::vector<std::string> friendshipRequests;  // players client asked to become friends with
 	std::vector<std::string> acceptedRequests;  // players who accepted the friendship request
+	std::vector<std::string> refusedRequests;  // players who refused the friendship request
 	std::vector<std::string> externalRequests;  // players who asked to become friend with client
 };
 
@@ -64,6 +65,8 @@ private:
 	void handleFriendshipRequest(const _iterator& it, sf::Packet& transmission);
 	/// Used to receive the answer of a friendship request
 	void handleFriendshipRequestResponse(const _iterator& it, sf::Packet& transmission);
+	/// Used to send to a client the current state of the friendship requests state
+	void sendFriendshipRequestsState(const _iterator& it);
 };
 
 #endif // _SERVER_HPP_

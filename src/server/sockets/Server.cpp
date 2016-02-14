@@ -118,6 +118,9 @@ void Server::receiveData()
 		case TransferType::PLAYER_RESPONSE_FRIEND_REQUEST:
 			handleFriendshipRequestResponse(it, packet);
 			break;
+		case TransferType::PLAYER_GETTING_FRIEND_REQUESTS_STATE:
+			sendFriendshipRequestsState(it);
+			break;
 		default:
 			std::cerr << "Error: unknown code " << static_cast<sf::Uint32>(type) << std::endl;
 			break;
@@ -220,10 +223,19 @@ void Server::handleFriendshipRequestResponse(const _iterator& it, sf::Packet& tr
 	extRequests.erase(std::find(extRequests.begin(), extRequests.end(), name));
 	auto& friendRequests = asker->second.friendshipRequests;
 	friendRequests.erase(std::find(friendRequests.begin(), friendRequests.end(), it->first));
-	if(accepted)
-		asker->second.acceptedRequests.push_back(it->first);
+	(accepted ? asker->second.acceptedRequests : asker->second.refusedRequests).push_back(it->first);
 	sf::Packet response;
 	response << TransferType::PLAYER_RESPONSE_FRIEND_REQUEST;
+	it->second.socket->send(response);
+}
+
+void Server::sendFriendshipRequestsState(const _iterator& it)
+{
+	sf::Packet response;
+	response << TransferType::PLAYER_GETTING_FRIEND_REQUESTS_STATE
+	         << it->second.externalRequests
+	         << it->second.acceptedRequests
+	         << it->second.refusedRequests;
 	it->second.socket->send(response);
 }
 
@@ -272,3 +284,4 @@ static void waitQuit(std::atomic_bool *done, std::atomic_bool *running)
 	running->store(false);
 	std::cout << "ending server..." << std::endl;
 }
+
