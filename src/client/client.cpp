@@ -11,9 +11,9 @@
 #include <common/sockets/TransferType.hpp>
 #include <common/Terminal.hpp>
 #include <common/ini/IniFile.hpp>
-#include <common/StrToInt.hpp>
 // std-C++ headers
 #include <iostream>
+#include <cstdlib>
 
 int main(int argc, char **argv)
 {
@@ -30,25 +30,23 @@ int main(int argc, char **argv)
 		return status;
 	if(config.find("SERVER_PORT") == config.end() || config.find("SERVER_ADDRESS") == config.end())
 		return WRONG_FORMAT_CONFIG_FILE;
-	if(!self.connectToServer(config["SERVER_ADDRESS"], strToInt(config["SERVER_PORT"])))
+	if(!self.connectToServer(config["SERVER_ADDRESS"], std::stoi(config["SERVER_PORT"], nullptr, AUTO_BASE)))
 	{
 		std::cout << "Unable to connect to server" << std::endl;
 		return UNABLE_TO_CONNECT;
 	}
-	int choice;
-	std::cout << "Enter 1 to make a discussion and anything else to quit\n\t";
-	std::cin >> choice;
-	if(choice == 1)
+	if(std::string(argv[1]) == "player2")
 	{
-		std::string name;
-		std::cout << "Who do you want to discuss with?\n\t";
-		std::cin >> name;
-		if(!self.startConversation(name))
-			std::cerr << "Error!\n";
-		int n;
-		std::cout << "Type anything to quit";
-		std::cin >> n;
+		//self.addFriend("player1");
+		//self.addFriend("Chirac");
 	}
+	std::cin.ignore();
+	std::cout << "showing all of your friends:\n";
+	for(const auto& friendName: self.getFriends(false))
+		std::cout << friendName << std::endl;
+	std::cout << "Are connected:\n";
+	for(const auto& friendName: self.getFriends(true))
+		std::cout << friendName << std::endl;
 	std::cout << "quit\n";
 	self.quit();
 	return SUCCESS;

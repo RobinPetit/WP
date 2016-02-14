@@ -5,7 +5,6 @@ set(SOURCES
 		# common
 		"../common/sockets/TransferType.cpp"
 		"../common/ini/IniFile.cpp"
-		"../common/StrToInt.cpp"
 	)
 
 set(SERVER_NAME "${PROJECT_NAME}_server")

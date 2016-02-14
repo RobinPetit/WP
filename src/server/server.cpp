@@ -7,7 +7,8 @@
 #include <server/Server.hpp>
 #include <server/ErrorCode.hpp>
 #include <common/ini/IniFile.hpp>
-#include <common/StrToInt.hpp>
+// std-C++ headers
+#include <cstdlib>
 
 int main()
 {
@@ -18,7 +19,7 @@ int main()
 	Server server;
 	if(config.find("SERVER_PORT") == config.end())
 		return WRONG_FORMAT_CONFIG_FILE;
-	int serverStatus = server.start(strToInt(config["SERVER_PORT"]));
+	int serverStatus = server.start(std::stoi(config["SERVER_PORT"], nullptr, AUTO_BASE));
 	server.quit();
 	return serverStatus;
 }

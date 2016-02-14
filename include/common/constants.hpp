@@ -16,4 +16,7 @@
 // location of the log files of the chat
 #define CHAT_LOGGERS_DIR "chat/logs/"
 
+// argument to strtoi to precise the base must be found by the function
+#define AUTO_BASE 0
+
 #endif // _COMMON_CONSTANTS_HPP

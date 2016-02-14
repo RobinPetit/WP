@@ -6,7 +6,6 @@ set(SOURCES
 		# common
 		"../common/sockets/TransferType.cpp"
 		"../common/ini/IniFile.cpp"
-		"../common/StrToInt.cpp"
 		"../common/Terminal.cpp"
 		"../common/NotConnectedException.cpp"
 		"client.cpp"
