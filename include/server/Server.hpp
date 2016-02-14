@@ -14,7 +14,7 @@
 #include <common/ConfigData.hpp>
 
 /// structure used isnide of the server program to keep informations
-/// ona single client
+/// on a single client
 struct ClientInformations
 {
 	sf::TcpSocket *socket;
@@ -40,6 +40,7 @@ private:
 	sf::TcpListener _listener;
 	sf::SocketSelector _socketSelector;
 	std::atomic_bool _done;
+	std::atomic_bool _threadRunning;
 	std::thread _quitThread;
 
 	// private methods

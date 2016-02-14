@@ -13,13 +13,14 @@
 const std::string quitPrompt = ":QUIT";
 
 // static functions prototypes
-static void waitQuit(std::atomic_bool *done);
+static void waitQuit(std::atomic_bool *done, std::atomic_bool *running);
 
 Server::Server():
 	_clients(),
 	_listener(),
 	_socketSelector(),
 	_done(false),
+	_threadRunning(false),
 	_quitThread()
 {}
 
@@ -27,7 +28,8 @@ int Server::start(const unsigned short listenerPort)
 {
 	if(_listener.listen(listenerPort) != sf::Socket::Done)
 		return UNABLE_TO_LISTEN;
-	_quitThread = std::thread(waitQuit, &_done);
+	_quitThread = std::thread(waitQuit, &_done, &_threadRunning);
+	_threadRunning.store(true);
 	sf::sleep(SOCKET_TIME_SLEEP);
 	_socketSelector.add(_listener);
 	while(!_done.load())
@@ -173,11 +175,16 @@ void Server::quit()
 	// in case the method is called even though server has not been manually ended
 	_done.store(true);
 	_quitThread.join();
+	_threadRunning.store(false);
 	for(auto it = _clients.begin(); it != _clients.end(); ++it)
-		removeClient(it);
+	{
+		_socketSelector.remove(*(it->second.socket));
+		delete it->second.socket;
+	}
+	_clients.clear();
 }
 
-static void waitQuit(std::atomic_bool *done)
+static void waitQuit(std::atomic_bool *done, std::atomic_bool *running)
 {
 	std::cout << "Type '" << quitPrompt << "' to end the server" << std::endl;
 	std::string input;
@@ -187,5 +194,6 @@ static void waitQuit(std::atomic_bool *done)
 		if(input == quitPrompt)
 			done->store(true);
 	}
+	running->store(false);
 	std::cout << "ending server..." << std::endl;
 }
