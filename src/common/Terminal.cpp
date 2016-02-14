@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <string>
 #include <fstream>
+#include <initializer_list>
 // SFML headers
 #include <SFML/System/Sleep.hpp>
 
@@ -71,4 +72,17 @@ const std::string& Terminal::getTerminalName()
 bool Terminal::hasKnownTerminal()
 {
 	return _idx != NO_KNOWN_TERMINAL;
+}
+
+std::string Terminal::startProgram(const std::string& name, const std::initializer_list<const std::string>& args)
+{
+	std::string command;
+#ifdef __linux__
+	command = getTerminalname() + " -x ./" + name;
+#else
+	command = "start " + name;
+#endif
+	for(auto& arg: args)
+		command += " \"" + arg + "\"";
+	return command;
 }

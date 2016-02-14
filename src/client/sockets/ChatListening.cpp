@@ -7,21 +7,20 @@
 // WizardPoker headers
 #include <server/ErrorCode.hpp>
 #include <common/constants.hpp>
+#include <common/Terminal.hpp>
 // std-C++ headers
 #include <iostream>
 #include <atomic>
 #include <string>
 #include <cstdlib>
 
-// static functions prototypes
-static inline std::string chatCommand(sf::Uint32 address, sf::Uint16 port, std::string selfName, std::string otherName, const std::string& terminalName);
-
 // function called by a new thread only
 /// chatListening is the function used by the client to make a new thread listening for entring connections
 /// (players that want to make a discussion)
 /// \param port A pointer to an integer which will contain the port of the listening socket
 /// \param loop A thread-safe boolean to tell whether the thread has to keep waiting for connections or has to stop
-void chatListening(sf::Uint16 *port, const std::atomic_bool *loop, const std::string terminalName)
+/// \param terminal An instance of the Terminal class allowing to have a better management of the command system
+void chatListening(sf::Uint16 *port, const std::atomic_bool *loop, Terminal terminal)
 {
 	//bool volatile _continue = *loop;
 	sf::TcpListener chatListener;
@@ -52,24 +51,17 @@ void chatListening(sf::Uint16 *port, const std::atomic_bool *loop, const std::st
 			sf::Packet packet;
 			socket.receive(packet);
 			packet >> address >> port >> selfName >> otherName;
-			system(chatCommand(address, port, selfName, otherName, terminalName).c_str());
+			std::string cmd;
+			cmd = terminal.startProgram(
+				"WizardPoker_chat",
+				{
+					"callee",
+					std::to_string(address),
+					std::to_string(port),
+					selfName,
+					otherName
+				});
+			system(cmd.c_str());
 		}
 	}
-}
-
-/// chatCommand is a function that's supposed to be inlined which make the terminal command to start the chat
-/// \param address An integer representing the address of the player who wants to chat
-/// \param port An integer representing the port the other player is listening on
-/// \param selfName The name of the called user (self)
-/// \param otherName The name of the caller user (the other one)
-/// \param terminal The name of the right terminal program
-static inline std::string chatCommand(sf::Uint32 address, sf::Uint16 port, std::string selfName, std::string otherName, const std::string& terminal)
-{
-    return terminal + " "
-           "-x ./WizardPoker_chat "
-           "callee "  // frst parameter is caller or callee
-           + std::to_string(address) + " "
-           + std::to_string(port) + " "
-           + selfName + " "
-           + otherName;
 }

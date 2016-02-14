@@ -10,7 +10,7 @@
 #include <thread>
 #include <cstdlib>
 
-extern void chatListening(sf::Uint16 *port, const std::atomic_bool *loop, const std::string terminal);
+extern void chatListening(sf::Uint16 *port, const std::atomic_bool *loop, Terminal terminal);
 
 Client::Client(const std::string& name):
 	_socket(),
@@ -57,14 +57,16 @@ bool Client::startConversation(const std::string& playerName)
 	if(!_isConnected || !_userTerminal.hasKnownTerminal() || playerName == _name)
 		return false;
 	std::string cmd;
-	cmd = _userTerminal.getTerminalName() + " "
-	      "-x ./WizardPoker_chat "
-	      "\"caller\" "  // parameter 1 is caller/callee
-	      "\"" + _serverAddress.toString() + "\" "  // parameter 2 is the address to connect to
-	      "\"" + std::to_string(_serverPort) + "\" "  // parameter 3 is the port to connect to
-	      "\"" + _name + "\" "  // parameter 4 is caller's name
-	      "\"" + playerName + "\"";  // parameter 5 is callee's name
-	      // there is not more parameters!
+	cmd = _userTerminal.startProgram(
+		"WizardPoker_chat",
+		{
+			"caller",  // parameter 1 is caller/callee
+			_serverAddress.toString(),  // parameter 2 is the address to connect to
+			std::to_string(_serverPort),  // parameter 3 is the port to connect to
+			_name,  // parameter 4 is caller's name
+			playerName, // parameter 5 is callee's name
+			// there is not more parameters!
+		});
 	system(cmd.c_str());
 	return true;
 }
@@ -72,7 +74,7 @@ bool Client::startConversation(const std::string& playerName)
 void Client::initListener()
 {
 	_threadLoop.store(true);
-	_listenerThread = std::thread(chatListening, &_chatListenerPort, &_threadLoop, _userTerminal.getTerminalName());
+	_listenerThread = std::thread(chatListening, &_chatListenerPort, &_threadLoop, _userTerminal);
 }
 
 void Client::quit()

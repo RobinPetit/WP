@@ -11,6 +11,7 @@
 #include <common/sockets/TransferType.hpp>
 #include <common/ConfigData.hpp>
 #include <common/ConfigParser.hpp>
+#include <common/Terminal.hpp>
 // std-C++ headers
 #include <iostream>
 

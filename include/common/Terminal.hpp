@@ -23,10 +23,15 @@ public:
 	/// \return The string that needs to be used to start a new terminal
 	const std::string& getTerminalName();
 
-	/// This function must be used in the beggining of the client program
+	/// This function must be used in the beginning of the client program
 	/// to know whether or not a chat will be used
 	/// \return True if the program found a terminal it knows and false otherwise
 	bool hasKnownTerminal();
+
+	    /// This function returns the right command to start a new program
+	    /// \param name A string containing the name of the program to be started
+	    /// \param args A list representing the parameters given to the called program
+	std::string startProgram(const std::string& name, const std::initializer_list<const std::string>& args);
 private:
 	static const std::string _terminalNames[];
 	int _idx;
