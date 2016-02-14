@@ -35,8 +35,8 @@ void DecksManagementState::displayDeck()
         std::cout << "There are no deck to display!\n";
         return;
     }
-    std::cout << "Which deck would you like to display (insert a number in [1, " << _decks.size() << "])? ";
-    const int index{askForNumber(1, _decks.size() + 1) - 1};
+    std::cout << "Which deck would you like to display? ";
+    const std::size_t index{askForNumber(1, _decks.size() + 1) - 1};
     for(const auto& card : _decks[index])  // Browse the deck
         std::cout << "* " << card << "\n";
 }
@@ -48,8 +48,8 @@ void DecksManagementState::editDeck()
         std::cout << "There are no deck to edit!\n";
         return;
     }
-    std::cout << "Which deck would you like to edit (insert a number in [1, " << _decks.size() << "])? ";
-    int deckIndex, replacedIndex;
+    std::cout << "Which deck would you like to edit ? ";
+    std::size_t deckIndex, replacedIndex;
     try
     {
         deckIndex = askForNumber(1, _decks.size() + 1) - 1;
@@ -63,29 +63,36 @@ void DecksManagementState::editDeck()
     {
         try
         {
-            // Ask for the replacee card
-            std::cout << "Content of your card collection:\n";
+            // Ask for the replaced card
             int i{0};
-            for(const auto& card : _cardsCollection)
-                std::cout << ++i << ". " << card << "\n";
-            std::cout << "Which card do you want to put in you deck? ";
-            int replacee{askForNumber(1, _cardsCollection.getSize() + 1) - 1};
-
-            i = 0;
-            // Ask for the replaced cardgit
             std::cout << "Content of the deck " << _decks[deckIndex].getName() << ":\n";
             for(const auto& card : _decks[deckIndex])
                 std::cout << ++i << ". " << card << "\n";
             std::cout << "Which card do you want to replace (0 to quit)? ";
             replacedIndex = askForNumber(0, Deck::size + 1);
-            if(replacedIndex > 0)
-            {
-                Card::ID replaceeCard{static_cast<Card::ID>(replaceeCard)};
-                if(std::count(_decks[deckIndex].begin(), _decks[deckIndex].end(), (replaceeCard)) > 1)
-                    std::cout << replaceeCard << " is already two times in your deck, this is the maximum.\n";
-                else
-                    _decks[deckIndex].changeCard(replacedIndex, replaceeCard);
-            }
+            if(replacedIndex == 0)
+				break;
+			// Index are displayed 1 greater than their actual value
+			// (for the card 0, the index 1 is shown to the user)
+			--replacedIndex;
+
+            // Ask for the replacing card
+            std::cout << "Content of your card collection:\n";
+            for(const auto& card : _cardsCollection)
+                std::cout << static_cast<std::size_t>(card) << ". " << card << "\n";
+            std::cout << "Which card do you want to put in you deck? ";
+            // Replace 666 by the number of different cards in the game
+			Card::ID replacingCard{askForNumber(0, 666)};
+			if(not _cardsCollection.contains(replacingCard))
+			{
+				std::cout << "You do not have this card!\n";
+				continue;
+			}
+
+			if(std::count(_decks[deckIndex].begin(), _decks[deckIndex].end(), replacingCard) > 1)
+				std::cout << replacingCard << " is already two times in your deck, this is the maximum allowed.\n";
+			else
+				_decks[deckIndex].changeCard(replacedIndex - 1, replacingCard);
         }
         catch(const std::out_of_range& e)
         {
@@ -112,8 +119,8 @@ void DecksManagementState::deleteDeck()
     }
     try
     {
-        std::cout << "Which deck would you like to delete (insert a number in [1, " << _decks.size() << "])? ";
-        const int input{askForNumber(1, _decks.size() + 1) - 1};
+        std::cout << "Which deck would you like to delete? ";
+        const std::size_t input{askForNumber(1, _decks.size() + 1) - 1};
         _decks.erase(_decks.begin() + input);
     }
     catch(const std::logic_error& e)
@@ -127,12 +134,12 @@ void DecksManagementState::backMainMenu()
     stackPop();
 }
 
-int DecksManagementState::askForNumber(int from, int to)
+std::size_t DecksManagementState::askForNumber(std::size_t from, std::size_t to)
 {
     std::string input;
     std::getline(std::cin, input);
     // Get a number from the user input
-    const int intInput{std::stoi(input)};
+    const std::size_t intInput{std::stoul(input)};
     if(intInput < from or intInput >= to)
         throw std::out_of_range("Index out of range.");
     return intInput;
