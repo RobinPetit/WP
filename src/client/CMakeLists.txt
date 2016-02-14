@@ -1,4 +1,5 @@
 set(SOURCES
+<<<<<<< HEAD
 		"client.cpp"
 		# sockets
 		"sockets/Client.cpp"
@@ -7,6 +8,18 @@ set(SOURCES
 		"../common/sockets/TransferType.cpp"
 		"../common/ConfigParser.cpp"
 		"../common/Terminal.cpp"
+		"client.cpp"
+		# states
+		"AbstractState.cpp"
+		"StateStack.cpp"
+		"states/CardsCollectionState.cpp"
+		"states/DecksManagementState.cpp"
+		"states/FriendsManagementState.cpp"
+		"states/LadderState.cpp"
+		"states/MainMenuState.cpp"
+		"states/HomeState.cpp"
+		# sockets
+		"sockets/Connection.cpp"
 	)
 
 set(CLIENT_NAME "${PROJECT_NAME}_client")

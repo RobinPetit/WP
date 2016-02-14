@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.0.2)
 
 project("WizardPoker")
 
@@ -6,7 +6,7 @@ project("WizardPoker")
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 #Find dependencies
-find_package(SFML 2.3 COMPONENTS system network REQUIRED)
+find_package(SFML 2.1 COMPONENTS system network REQUIRED)
 
 # Set the include directory of the project
 include_directories(
@@ -27,10 +27,10 @@ set(EXTERNAL_LIBRARIES ${SFML_LIBRARIES})
 
 # Tell to cmake to explore src/ to build both the server and the client
 add_subdirectory(src)
+
 # And build the SRD
 add_subdirectory(SRD)
 
 # Move the executables created in src/client/ and src/server/
 # to the root build directory
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-
