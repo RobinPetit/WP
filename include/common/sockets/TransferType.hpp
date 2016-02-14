@@ -19,11 +19,17 @@ enum class TransferType : sf::Uint32
 	// Client/Server
 	/// Used when the client quits to tell the server it disconnects
 	PLAYER_DISCONNECTION,
+	/// Used when a client checks if another client is connected
 	PLAYER_CHECK_CONNECTION,
+	/// Used when a client asks the list of his friends
 	PLAYER_ASKS_FRIENDS,
+	/// Used when a client asks another player to be his friend
 	PLAYER_NEW_FRIEND,
+	/// Used as an "error-value" for acknowledgement of friendship requests
 	NOT_EXISTING_FRIEND,
+	/// Used when a client answers a friendship request
 	PLAYER_RESPONSE_FRIEND_REQUEST,
+	/// Used when a client asks what friendship requests he got and which of his own requests were accepted/refused
 	PLAYER_GETTING_FRIEND_REQUESTS_STATE,
 };
 

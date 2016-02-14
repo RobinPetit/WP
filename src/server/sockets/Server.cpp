@@ -212,6 +212,7 @@ void Server::handleFriendshipRequestResponse(const _iterator& it, sf::Packet& tr
 	std::string name;
 	transmission >> name >> accepted;
 	const auto& asker = _clients.find(name);
+	// if request corresponds to a non-connected player, don't go further
 	if(asker == _clients.end())
 	{
 		sf::Packet response;
@@ -219,11 +220,14 @@ void Server::handleFriendshipRequestResponse(const _iterator& it, sf::Packet& tr
 		it->second.socket->send(response);
 		return;
 	}
+	// remove requests for both players
 	auto& extRequests = it->second.externalRequests;
 	extRequests.erase(std::find(extRequests.begin(), extRequests.end(), name));
 	auto& friendRequests = asker->second.friendshipRequests;
 	friendRequests.erase(std::find(friendRequests.begin(), friendRequests.end(), it->first));
+	// add the accepter's name in the correct list
 	(accepted ? asker->second.acceptedRequests : asker->second.refusedRequests).push_back(it->first);
+	// acknowledge to client
 	sf::Packet response;
 	response << TransferType::PLAYER_RESPONSE_FRIEND_REQUEST;
 	it->second.socket->send(response);
