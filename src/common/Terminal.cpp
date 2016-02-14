@@ -78,7 +78,7 @@ std::string Terminal::startProgram(const std::string& name, const std::initializ
 {
 	std::string command;
 #ifdef __linux__
-	command = getTerminalname() + " -x ./" + name;
+	command = getTerminalName() + " -x ./" + name;
 #else
 	command = "start " + name;
 #endif
