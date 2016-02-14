@@ -1,5 +1,5 @@
-#ifndef MONSTER_HPP
-#define MONSTER_HPP
+#ifndef MONSTER_COMMON_HPP
+#define MONSTER_COMMON_HPP
 
 #include "Card.hpp"
 
@@ -30,4 +30,4 @@ public:
 };
 
 
-#endif // MONSTER_HPP
+#endif // MONSTER_COMMON_HPP
