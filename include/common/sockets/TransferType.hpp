@@ -16,6 +16,9 @@ enum class TransferType : sf::Uint32
 	// GAME
 	/// Not used yet, will be when the game core will be coded
 	GAME_CONNECTION,
+	// Client/Server
+	/// Used when the client quits to tell the server it disconnects
+	PLAYER_DISCONNECTION,
 };
 
 /// Overloading of the sf::Packet operators so that a TransferType variable can be stored

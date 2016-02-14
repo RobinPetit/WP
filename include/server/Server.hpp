@@ -43,6 +43,8 @@ private:
 	void receiveData();
 	/// Used to exchange the correct informations with the clients when a chat request is made
 	void handleChatRequest(sf::Packet& packet, sf::TcpSocket& client);
+	/// Used to remove a player from the server connection
+	void removeClient(const std::unordered_map<std::string, ClientInformations>::iterator& it);
 };
 
 #endif // _SERVER_HPP_

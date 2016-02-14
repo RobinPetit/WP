@@ -69,32 +69,53 @@ void Server::takeConnection()
 
 void Server::receiveData()
 {
-        std::cout << "Data received\n";
+	std::cout << "Data received\n";
 	// first find which socket it is
 	auto it = std::find_if(_clients.begin(), _clients.end(), [this](const auto& pair)
 	{
 		return _socketSelector.isReady(*(pair.second.socket));
 	});
 	if(it == _clients.end())
+	{
+		std::cerr << "Unable to find which socket is ready" << std::endl;
 		return;
+	}
 
 	sf::Packet packet;
 	sf::TcpSocket& client(*(it->second.socket));
-	if(client.receive(packet) == sf::Socket::Done)
+	sf::Socket::Status receivalStatus = client.receive(packet);
+	if(receivalStatus == sf::Socket::Done)
 	{
-		sf::Packet packet;
-		if(client.receive(packet) == sf::Socket::Done)
+		TransferType type;
+		packet >> type;
+		switch(type)
 		{
-			TransferType type;
-			packet >> type;
-			switch(type)
-			{
-			default:
-				std::cerr << "Error: unknown code " << static_cast<int>(type) << std::endl;
-				break;
-			}
+		case TransferType::PLAYER_DISCONNECTION:
+			std::cout << "Player " << it->first << " quits the game!" << std::endl;
+			removeClient(it);
+			break;
+		default:
+			std::cerr << "Error: unknown code " << static_cast<sf::Uint32>(type) << std::endl;
+			break;
 		}
 	}
+	else if(receivalStatus == sf::Socket::Disconnected)
+	{
+		std::cerr << "Connection with player " << it->first << " is lost: forced disconnection from server" << std::endl;
+		removeClient(it);
+	}
+	else
+		std::cerr << "data not well received" << std::endl;
+}
+
+void Server::removeClient(const std::unordered_map<std::string, ClientInformations>::iterator& it)
+{
+	// remove from the selector so it won't receive data anymore
+	_socketSelector.remove(*(it->second.socket));
+	// free the allocated socket
+	delete it->second.socket;
+	// remove from the map
+	_clients.erase(it);
 }
 
 void Server::handleChatRequest(sf::Packet& packet, sf::TcpSocket& client)
