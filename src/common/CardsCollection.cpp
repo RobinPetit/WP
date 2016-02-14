@@ -27,6 +27,11 @@ bool CardsCollection::contains(Card::ID card)
 	return count(card) > 0;
 }
 
+std::size_t CardsCollection::getSize() const
+{
+	return _cards.size();
+}
+
 CardsCollection::Iterator CardsCollection::begin()
 {
 	return _cards.begin();

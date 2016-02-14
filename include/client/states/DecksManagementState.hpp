@@ -2,6 +2,8 @@
 #define _DECKS_MANAGEMENT_STATE_CLIENT_HPP
 
 #include "client/AbstractState.hpp"
+#include "common/Deck.hpp"
+#include "common/CardsCollection.hpp"
 
 // Forward declarations
 class StateStack;
@@ -18,7 +20,6 @@ class DecksManagementState : public AbstractState
         virtual void display() override;
 
     private:
-        // \TODO write DisplayDeckState, EditDeckState and CreateDeckState
         void displayDeck();
         void editDeck();
         void createDeck();
@@ -26,7 +27,8 @@ class DecksManagementState : public AbstractState
         void backMainMenu();
         static int askForNumber(int from, int to);
 
-        std::vector<std::string> _decks;// Use the class Deck as soon as possible
+        std::vector<Deck> _decks;
+        CardsCollection _cardsCollection;
 };
 
 #endif// _DECKS_MANAGEMENT_STATE_CLIENT_HPP

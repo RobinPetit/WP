@@ -31,6 +31,8 @@ class CardsCollection
 		/// \return count(card) > 0
 		bool contains(Card::ID card);
 
+		std::size_t getSize() const;
+
 		Iterator begin();
 
 		Iterator end();

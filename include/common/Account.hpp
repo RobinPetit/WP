@@ -14,7 +14,7 @@ class Account
 		unsigned int _wonGames;
 		unsigned int _lostGames;
 		CardsCollection _cardsCollection;
-		std::map<std::string, Deck> _decks;
+		std::vector<Deck> _decks;
 		std::set<ID> _friends;
 		ID _id;
 };
