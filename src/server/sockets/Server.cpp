@@ -1,5 +1,6 @@
 // SFML headers
 #include <SFML/Network/IpAddress.hpp>
+#include <SFML/System/Sleep.hpp>
 // WizardPoker headers
 #include <server/Server.hpp>
 #include <common/constants.hpp>
@@ -9,22 +10,30 @@
 #include <iostream>
 #include <algorithm>
 
+const std::string quitPrompt = ":QUIT";
+
+// static functions prototypes
+static void waitQuit(std::atomic_bool *done);
+
 Server::Server():
 	_clients(),
 	_listener(),
 	_socketSelector(),
-	_done(false)
+	_done(false),
+	_quitThread()
 {}
 
 int Server::start(const unsigned short listenerPort)
 {
 	if(_listener.listen(listenerPort) != sf::Socket::Done)
 		return UNABLE_TO_LISTEN;
+	_quitThread = std::thread(waitQuit, &_done);
+	sf::sleep(SOCKET_TIME_SLEEP);
 	_socketSelector.add(_listener);
-	while(!_done)
+	while(!_done.load())
 	{
 		// if no socket is ready, wait again
-		if(!_socketSelector.wait())
+		if(!_socketSelector.wait(sf::milliseconds(50)))
 			continue;
 		// if listener is ready, then a new connection is incoming
 		if(_socketSelector.isReady(_listener))
@@ -159,3 +168,24 @@ void Server::handleChatRequest(sf::Packet& packet, sf::TcpSocket& client)
 	client.send(responseToCaller);
 }
 
+void Server::quit()
+{
+	// in case the method is called even though server has not been manually ended
+	_done.store(true);
+	_quitThread.join();
+	for(auto it = _clients.begin(); it != _clients.end(); ++it)
+		removeClient(it);
+}
+
+static void waitQuit(std::atomic_bool *done)
+{
+	std::cout << "Type '" << quitPrompt << "' to end the server" << std::endl;
+	std::string input;
+	while(!done->load())
+	{
+		std::cin >> input;
+		if(input == quitPrompt)
+			done->store(true);
+	}
+	std::cout << "ending server..." << std::endl;
+}

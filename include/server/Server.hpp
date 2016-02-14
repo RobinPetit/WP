@@ -8,6 +8,8 @@
 // std-C++ headers
 #include <unordered_map>
 #include <string>
+#include <atomic>
+#include <thread>
 // WizardPoker headers
 #include <common/ConfigData.hpp>
 
@@ -29,12 +31,16 @@ public:
 	/// \param listenerPort The port the server must be listening on
 	int start(const unsigned short listenerPort);
 
+	/// Allows to free correctly the connected sockets
+	void quit();
+
 private:
 	// attributes
 	std::unordered_map<std::string, ClientInformations> _clients;
 	sf::TcpListener _listener;
 	sf::SocketSelector _socketSelector;
-	bool _done;
+	std::atomic_bool _done;
+	std::thread _quitThread;
 
 	// private methods
 	/// Used to handle a newconnection request (when the listener gets a packet)

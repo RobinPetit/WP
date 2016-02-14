@@ -14,5 +14,8 @@ int main()
 	int status = ConfigParser::readFromFile(SERVER_CONFIG_FILE_PATH, data);
 	if(status != SUCCESS)
 		return status;
-	return Server().start(data.port);
+	Server server;
+	int serverStatus = server.start(data.port);
+	server.quit();
+	return serverStatus;
 }
