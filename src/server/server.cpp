@@ -16,6 +16,8 @@ int main()
 	if(status != SUCCESS)
 		return status;
 	Server server;
+	if(config.find("SERVER_PORT") == config.end())
+		return WRONG_FORMAT_CONFIG_FILE;
 	int serverStatus = server.start(strToInt(config["SERVER_PORT"]));
 	server.quit();
 	return serverStatus;

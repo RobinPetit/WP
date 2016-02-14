@@ -28,6 +28,8 @@ int main(int argc, char **argv)
 	int status = config.readFromFile(SERVER_CONFIG_FILE_PATH);
 	if(status != SUCCESS)
 		return status;
+	if(config.find("SERVER_PORT") == config.end() || config.find("SERVER_ADDRESS") == config.end())
+		return WRONG_FORMAT_CONFIG_FILE;
 	if(!self.connectToServer(config["SERVER_ADDRESS"], strToInt(config["SERVER_PORT"])))
 	{
 		std::cout << "Unable to connect to server" << std::endl;
