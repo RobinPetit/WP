@@ -6,6 +6,7 @@
 #include <common/constants.hpp>
 #include <server/ErrorCode.hpp>
 #include <common/sockets/TransferType.hpp>
+#include <common/sockets/PacketOverload.hpp>
 // std-C++ headers
 #include <iostream>
 #include <algorithm>
@@ -24,7 +25,7 @@ Server::Server():
 	_quitThread()
 {}
 
-int Server::start(const unsigned short listenerPort)
+int Server::start(const sf::Uint16 listenerPort)
 {
 	if(_listener.listen(listenerPort) != sf::Socket::Done)
 		return UNABLE_TO_LISTEN;
@@ -107,6 +108,9 @@ void Server::receiveData()
 			break;
 		case TransferType::PLAYER_CHECK_CONNECTION:
 			checkPresence(it, packet);
+			break;
+		case TransferType::PLAYER_ASKS_FRIENDS:
+			sendFriends(it);
 			break;
 		default:
 			std::cerr << "Error: unknown code " << static_cast<sf::Uint32>(type) << std::endl;
@@ -193,6 +197,15 @@ void Server::checkPresence(const _iterator& it, sf::Packet& transmission)
 	std::string nameToCheck;
 	transmission >> nameToCheck;
 	packet << TransferType::PLAYER_CHECK_CONNECTION << (_clients.find(nameToCheck) != _clients.end());
+	it->second.socket->send(packet);
+}
+
+void Server::sendFriends(const _iterator& it)
+{
+	std::vector<std::string> friends;
+	/// \TODO use database to find the friends
+	sf::Packet packet;
+	packet << friends;
 	it->second.socket->send(packet);
 }
 

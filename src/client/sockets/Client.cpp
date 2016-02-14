@@ -6,6 +6,7 @@
 #include <common/constants.hpp>
 #include <common/sockets/TransferType.hpp>
 #include <common/NotConnectedException.hpp>
+#include <common/sockets/PacketOverload.hpp>
 // std-C++ headers
 #include <iostream>
 #include <thread>
@@ -48,6 +49,7 @@ bool Client::connectToServer(const sf::IpAddress& address, sf::Uint16 port)
 	       << static_cast<sf::Uint16>(_chatListenerPort);
 	if(_socket.send(packet) != sf::Socket::Done)
 		return false;
+	updateFriends();
 	_isConnected = true;
 	return true;
 }
@@ -74,11 +76,23 @@ std::vector<std::string> Client::getFriends(bool onlyConnected)
 				continue;
 			bool isPresent;
 			packet >> isPresent;
+			// add to vector only if friend is present
 			if(isPresent)
 				connectedFriends.push_back(friendName);
 		}
 		return connectedFriends;
 	}
+}
+
+void Client::updateFriends()
+{
+	if(!_isConnected)
+		throw NotConnectedException();
+	sf::Packet packet;
+	packet << TransferType::PLAYER_ASKS_FRIENDS;
+	_socket.send(packet);
+	_socket.receive(packet);
+	packet >> _friends;
 }
 
 bool Client::startConversation(const std::string& playerName)

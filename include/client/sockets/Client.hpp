@@ -33,6 +33,8 @@ public:
 
 	std::vector<std::string> getFriends(bool onlyConnected=true);
 
+	void updateFriends();
+
 	/// The function used to rest assured all conections are stopped and the client is
 	/// not waiting for entering chat connections anymore
 	void quit();

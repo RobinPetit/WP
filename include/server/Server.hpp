@@ -12,7 +12,7 @@
 #include <atomic>
 #include <thread>
 
-/// structure used isnide of the server program to keep informations
+/// structure used inside of the server program to keep informations
 /// on a single client
 struct ClientInformations
 {
@@ -28,13 +28,14 @@ public:
 
 	/// Function used to start the server: it starts to listen and then to handle incoming packets
 	/// \param listenerPort The port the server must be listening on
-	int start(const unsigned short listenerPort);
+	int start(const sf::Uint16 listenerPort);
 
 	/// Allows to free correctly the connected sockets
 	void quit();
 
 private:
 	typedef std::unordered_map<std::string, ClientInformations>::iterator _iterator;
+
 	// attributes
 	std::unordered_map<std::string, ClientInformations> _clients;
 	sf::TcpListener _listener;
@@ -52,7 +53,10 @@ private:
 	void handleChatRequest(sf::Packet& packet, sf::TcpSocket& client);
 	/// Used to remove a player from the server connection
 	void removeClient(const _iterator& it);
+	/// Used to tell whether or not a user is connected
 	void checkPresence(const _iterator& it, sf::Packet& transmission);
+	/// Used to send the list of friends of a user
+	void sendFriends(const _iterator& it);
 };
 
 #endif // _SERVER_HPP_
