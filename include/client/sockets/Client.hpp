@@ -44,6 +44,10 @@ public:
 	/// \throw NotConnectedException if connectToServer has not been called before
 	void updateFriends();
 
+	/// Functions used to send a friendship request to another player
+	/// \param name The name of the player asked to become a new friend
+	void askNewFriend(const std::string& name);
+
 	/// The function used to rest assured all conections are stopped and the client is
 	/// not waiting for entering chat connections anymore
 	void quit();
@@ -73,8 +77,8 @@ private:
 	/// List containing the names of the friends
 	std::vector<std::string> _friends;
 	/// \TODO use this!
-	/// List  containing the names of the friendship requests
-	std::vector<std::string> _friendsRequest;
+	/// List containing the names of the friendship requests
+	std::vector<std::string> _friendsRequests;
 
 	// private methods
 	/// The functions used to create the listening thread

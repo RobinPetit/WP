@@ -18,6 +18,9 @@ struct ClientInformations
 {
 	sf::TcpSocket *socket;
 	sf::Uint16 listeningPort;  // used to send connection for the chat
+	std::vector<std::string> friendshipRequests;  // players client asked to become friends with
+	std::vector<std::string> acceptedRequests;  // players who accepted the friendship request
+	std::vector<std::string> externalRequests;  // players who asked to become friend with client
 };
 
 class Server final
@@ -57,6 +60,8 @@ private:
 	void checkPresence(const _iterator& it, sf::Packet& transmission);
 	/// Used to send the list of friends of a user
 	void sendFriends(const _iterator& it);
+	/// Used to update the internal data when a frienship request is made
+	void handleFriendshipRequest(const _iterator& it, sf::Packet& transmission);
 };
 
 #endif // _SERVER_HPP_

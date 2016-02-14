@@ -112,6 +112,9 @@ void Server::receiveData()
 		case TransferType::PLAYER_ASKS_FRIENDS:
 			sendFriends(it);
 			break;
+		case TransferType::PLAYER_NEW_FRIEND:
+			handleFriendshipRequest(it, packet);
+			break;
 		default:
 			std::cerr << "Error: unknown code " << static_cast<sf::Uint32>(type) << std::endl;
 			break;
@@ -175,6 +178,26 @@ void Server::handleChatRequest(sf::Packet& packet, sf::TcpSocket& client)
 		}
 	}
 	client.send(responseToCaller);
+}
+
+void Server::handleFriendshipRequest(const _iterator& it, sf::Packet& transmission)
+{
+	sf::Packet response;
+	std::string name;
+	transmission >> name;
+	/// \TODO check if name is in the database so that is the requested player exists but is not connected,
+	/// the request in stored somewhere
+	//~ Right now, the code only works if both players are conencted simultaneously
+	const _iterator& aimedPlayer = _clients.find(name);
+	if(aimedPlayer == _clients.end())
+		response << TransferType::NOT_EXISTING_FRIEND;
+	else
+	{
+		it->second.friendshipRequests.push_back(name);
+		aimedPlayer->second.externalRequests.push_back(it->first);
+		response << TransferType::PLAYER_NEW_FRIEND;
+	}
+	it->second.socket->send(response);
 }
 
 void Server::quit()

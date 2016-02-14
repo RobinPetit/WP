@@ -11,6 +11,7 @@
 #include <iostream>
 #include <thread>
 #include <cstdlib>
+#include <algorithm>
 
 extern void chatListening(sf::Uint16 *port, const std::atomic_bool *loop, Terminal terminal);
 
@@ -95,6 +96,27 @@ void Client::updateFriends()
 	_socket.receive(packet);
 	// std::vector packing has been defined in PacketOverload.hpp
 	packet >> _friends;
+}
+
+void Client::askNewFriend(const std::string& name)
+{
+	if(!_isConnected)
+		throw NotConnectedException();
+	// Cannot be friend with yourself
+	if(name == _name)
+		return;
+	// Don't ask a friend to become your friend
+	if(std::find(_friends.begin(), _friends.end(), name) != _friends.end())
+		return;
+	sf::Packet packet;
+	packet << TransferType::PLAYER_NEW_FRIEND << name;
+	_socket.send(packet);
+	// server acknowledges with PLAYER_NEW_FRIEND if request was correctly made and by NOT_EXISTING_FRIEND otherwise
+	_socket.receive(packet);
+	TransferType type;
+	packet >> type;
+	if(type == TransferType::PLAYER_NEW_FRIEND)
+		_friendsRequests.push_back(name);
 }
 
 bool Client::startConversation(const std::string& playerName)
