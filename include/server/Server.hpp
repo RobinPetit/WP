@@ -5,6 +5,7 @@
 #include <SFML/Network/TcpListener.hpp>
 #include <SFML/Network/TcpSocket.hpp>
 #include <SFML/Network/SocketSelector.hpp>
+#include <SFML/Network/Packet.hpp>
 // std-C++ headers
 #include <unordered_map>
 #include <string>
@@ -33,6 +34,7 @@ public:
 	void quit();
 
 private:
+	typedef std::unordered_map<std::string, ClientInformations>::iterator _iterator;
 	// attributes
 	std::unordered_map<std::string, ClientInformations> _clients;
 	sf::TcpListener _listener;
@@ -49,7 +51,8 @@ private:
 	/// Used to exchange the correct informations with the clients when a chat request is made
 	void handleChatRequest(sf::Packet& packet, sf::TcpSocket& client);
 	/// Used to remove a player from the server connection
-	void removeClient(const std::unordered_map<std::string, ClientInformations>::iterator& it);
+	void removeClient(const _iterator& it);
+	void checkPresence(const _iterator& it, sf::Packet& transmission);
 };
 
 #endif // _SERVER_HPP_

@@ -31,6 +31,8 @@ public:
 	/// \param playerName The name of the player the client wants to discuss with
 	bool startConversation(const std::string& playerName);
 
+	std::vector<std::string> getFriends(bool onlyConnected=true);
+
 	/// The function used to rest assured all conections are stopped and the client is
 	/// not waiting for entering chat connections anymore
 	void quit();
@@ -57,6 +59,8 @@ private:
 	sf::Uint16 _serverPort;
 	/// gives informations about the terminal installed on the computer
 	Terminal _userTerminal;
+	std::vector<std::string> _friends;
+	std::vector<std::string> _friendsRequest;
 
 	// private methods
 	/// The functions used to create the listening thread

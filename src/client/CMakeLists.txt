@@ -8,6 +8,7 @@ set(SOURCES
 		"../common/ini/IniFile.cpp"
 		"../common/StrToInt.cpp"
 		"../common/Terminal.cpp"
+		"../common/NotConnectedException.cpp"
 		"client.cpp"
 		# states
 		"AbstractState.cpp"

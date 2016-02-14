@@ -105,6 +105,8 @@ void Server::receiveData()
 			std::cout << "Player " << it->first << " quits the game!" << std::endl;
 			removeClient(it);
 			break;
+		case TransferType::PLAYER_CHECK_CONNECTION:
+			checkPresence(it, packet);
 		default:
 			std::cerr << "Error: unknown code " << static_cast<sf::Uint32>(type) << std::endl;
 			break;
@@ -119,7 +121,7 @@ void Server::receiveData()
 		std::cerr << "data not well received" << std::endl;
 }
 
-void Server::removeClient(const std::unordered_map<std::string, ClientInformations>::iterator& it)
+void Server::removeClient(const _iterator& it)
 {
 	// remove from the selector so it won't receive data anymore
 	_socketSelector.remove(*(it->second.socket));
@@ -182,6 +184,15 @@ void Server::quit()
 		delete it->second.socket;
 	}
 	_clients.clear();
+}
+
+void Server::checkPresence(const _iterator& it, sf::Packet& transmission)
+{
+	sf::Packet packet;
+	std::string nameToCheck;
+	transmission >> nameToCheck;
+	packet << TransferType::PLAYER_CHECK_CONNECTION << (_clients.find(nameToCheck) != _clients.end());
+	it->second.socket->send(packet);
 }
 
 static void waitQuit(std::atomic_bool *done, std::atomic_bool *running)

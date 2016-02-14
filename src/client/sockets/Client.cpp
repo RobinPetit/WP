@@ -5,6 +5,7 @@
 #include <client/sockets/Client.hpp>
 #include <common/constants.hpp>
 #include <common/sockets/TransferType.hpp>
+#include <common/NotConnectedException.hpp>
 // std-C++ headers
 #include <iostream>
 #include <thread>
@@ -49,6 +50,35 @@ bool Client::connectToServer(const sf::IpAddress& address, sf::Uint16 port)
 		return false;
 	_isConnected = true;
 	return true;
+}
+
+std::vector<std::string> Client::getFriends(bool onlyConnected)
+{
+	if(!_isConnected)
+		throw NotConnectedException();
+	else
+	{
+		if(!onlyConnected)
+			return _friends;
+		std::vector<std::string> connectedFriends;
+		for(const auto& friendName: _friends)
+		{
+			// ask the server is player is conencted
+			sf::Packet packet;
+			packet << TransferType::PLAYER_CHECK_CONNECTION << friendName;
+			_socket.send(packet);
+			_socket.receive(packet);
+			TransferType type;
+			packet >> type;
+			if(type != TransferType::PLAYER_CHECK_CONNECTION)
+				continue;
+			bool isPresent;
+			packet >> isPresent;
+			if(isPresent)
+				connectedFriends.push_back(friendName);
+		}
+		return connectedFriends;
+	}
 }
 
 bool Client::startConversation(const std::string& playerName)

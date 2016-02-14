@@ -19,6 +19,7 @@ enum class TransferType : sf::Uint32
 	// Client/Server
 	/// Used when the client quits to tell the server it disconnects
 	PLAYER_DISCONNECTION,
+	PLAYER_CHECK_CONNECTION,
 };
 
 /// Overloading of the sf::Packet operators so that a TransferType variable can be stored
