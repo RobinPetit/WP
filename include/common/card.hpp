@@ -4,21 +4,20 @@
 #include <string>
 #include "effect.hpp"
 
-template <typename Param>
 class Card{
     unsigned int _cost;
-    Effect<Param> _effect;
     std::string _name;
+    Effect _effect;
     
 public:
 
     ///Constructors
-    Card (unsigned int cost, Effect<Param> effect, std::string name):
-                            _cost(cost), _effect(effect), _name(name){};
+    Card (unsigned int cost, std::string name, Effect effect):
+                            _cost(cost), _name(name), _effect(effect){};
     
     ///Getters
     unsigned int getCost(){return _cost;};
-    Effect<Param> getEffect(){return _effect;};
+    Effect getEffect(){return _effect;};
     std::string getName(){return _name;};
 
 };
