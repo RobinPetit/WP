@@ -55,6 +55,11 @@ class AbstractState
         template <class StateType>
         void addAction(const std::string& actionName, void (StateType::*method)());
 
+        /// Ask the user to press enter to continue. This is useful to display
+        /// something just before the call to clear, so that the user has not to
+        /// scroll up in order to see what's just displayed.
+        static void waitForEnter();
+
     private:
         std::vector<std::pair<std::string, std::function<void()>>> _actions;///< All actions doable in the state.
         StateStack& _stateStack;

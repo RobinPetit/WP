@@ -39,6 +39,7 @@ void DecksManagementState::displayDeck()
     const std::size_t index{askForNumber(1, _decks.size() + 1) - 1};
     for(const auto& card : _decks[index])  // Browse the deck
         std::cout << "* " << card << "\n";
+    waitForEnter();
 }
 
 void DecksManagementState::editDeck()
@@ -81,7 +82,7 @@ void DecksManagementState::editDeck()
             for(const auto& card : _cardsCollection)
                 std::cout << static_cast<std::size_t>(card) << ". " << card << "\n";
             std::cout << "Which card do you want to put in you deck? ";
-            // Replace 666 by the number of different cards in the game
+            // \TODO Replace 666 by the number of different cards in the game
 			Card::ID replacingCard{askForNumber(0, 666)};
 			if(not _cardsCollection.contains(replacingCard))
 			{
