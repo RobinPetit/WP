@@ -5,7 +5,8 @@ set(SOURCES
 		"sockets/ChatListening.cpp"
 		# common
 		"../common/sockets/TransferType.cpp"
-		"../common/ConfigParser.cpp"
+		"../common/ini/IniFile.cpp"
+		"../common/StrToInt.cpp"
 		"../common/Terminal.cpp"
 		"client.cpp"
 		# states

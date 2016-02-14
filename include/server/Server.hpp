@@ -10,8 +10,6 @@
 #include <string>
 #include <atomic>
 #include <thread>
-// WizardPoker headers
-#include <common/ConfigData.hpp>
 
 /// structure used isnide of the server program to keep informations
 /// on a single client

@@ -9,9 +9,9 @@
 #include <client/ErrorCode.hpp>
 #include <client/sockets/Client.hpp>
 #include <common/sockets/TransferType.hpp>
-#include <common/ConfigData.hpp>
-#include <common/ConfigParser.hpp>
 #include <common/Terminal.hpp>
+#include <common/ini/IniFile.hpp>
+#include <common/StrToInt.hpp>
 // std-C++ headers
 #include <iostream>
 
@@ -24,11 +24,11 @@ int main(int argc, char **argv)
 	}
 	Client self(argv[1]);
 	std::cout << "Welcome " << argv[1] << std::endl;
-	ConfigData serverConfigData;
-	int status = ConfigParser::readFromFile(SERVER_CONFIG_FILE_PATH, serverConfigData);
+	IniFile config;
+	int status = config.readFromFile(SERVER_CONFIG_FILE_PATH);
 	if(status != SUCCESS)
 		return status;
-	if(!self.connectToServer(serverConfigData.address, serverConfigData.port))
+	if(!self.connectToServer(config["SERVER_ADDRESS"], strToInt(config["SERVER_PORT"])))
 	{
 		std::cout << "Unable to connect to server" << std::endl;
 		return UNABLE_TO_CONNECT;
