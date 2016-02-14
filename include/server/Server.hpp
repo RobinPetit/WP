@@ -62,6 +62,8 @@ private:
 	void sendFriends(const _iterator& it);
 	/// Used to update the internal data when a frienship request is made
 	void handleFriendshipRequest(const _iterator& it, sf::Packet& transmission);
+	/// Used to receive the answer of a friendship request
+	void handleFriendshipRequestResponse(const _iterator& it, sf::Packet& transmission);
 };
 
 #endif // _SERVER_HPP_

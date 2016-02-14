@@ -115,6 +115,9 @@ void Server::receiveData()
 		case TransferType::PLAYER_NEW_FRIEND:
 			handleFriendshipRequest(it, packet);
 			break;
+		case TransferType::PLAYER_RESPONSE_FRIEND_REQUEST:
+			handleFriendshipRequestResponse(it, packet);
+			break;
 		default:
 			std::cerr << "Error: unknown code " << static_cast<sf::Uint32>(type) << std::endl;
 			break;
@@ -197,6 +200,30 @@ void Server::handleFriendshipRequest(const _iterator& it, sf::Packet& transmissi
 		aimedPlayer->second.externalRequests.push_back(it->first);
 		response << TransferType::PLAYER_NEW_FRIEND;
 	}
+	it->second.socket->send(response);
+}
+
+void Server::handleFriendshipRequestResponse(const _iterator& it, sf::Packet& transmission)
+{
+	bool accepted;
+	std::string name;
+	transmission >> name >> accepted;
+	const auto& asker = _clients.find(name);
+	if(asker == _clients.end())
+	{
+		sf::Packet response;
+		response << TransferType::NOT_EXISTING_FRIEND;
+		it->second.socket->send(response);
+		return;
+	}
+	auto& extRequests = it->second.externalRequests;
+	extRequests.erase(std::find(extRequests.begin(), extRequests.end(), name));
+	auto& friendRequests = asker->second.friendshipRequests;
+	friendRequests.erase(std::find(friendRequests.begin(), friendRequests.end(), it->first));
+	if(accepted)
+		asker->second.acceptedRequests.push_back(it->first);
+	sf::Packet response;
+	response << TransferType::PLAYER_RESPONSE_FRIEND_REQUEST;
 	it->second.socket->send(response);
 }
 

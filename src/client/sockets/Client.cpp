@@ -119,6 +119,17 @@ void Client::askNewFriend(const std::string& name)
 		_friendsRequests.push_back(name);
 }
 
+void Client::acceptFriendshipRequest(const std::string& name, bool accept)
+{
+	sf::Packet packet;
+	packet << TransferType::PLAYER_RESPONSE_FRIEND_REQUEST << name << accept;
+	_socket.send(packet);
+	_socket.receive(packet);
+	TransferType status;
+	if(status == TransferType::PLAYER_RESPONSE_FRIEND_REQUEST)
+		;  // remove from list
+}
+
 bool Client::startConversation(const std::string& playerName)
 {
 	// rest assured the client is connected to a server before trying to access it

@@ -48,6 +48,11 @@ public:
 	/// \param name The name of the player asked to become a new friend
 	void askNewFriend(const std::string& name);
 
+	/// Function used to tell the server that the request is accepted
+	/// \param name The name of the player who sent the request
+	/// \param accept True to accept the request, false to refuse it
+	void acceptFriendshipRequest(const std::string& name, bool accept=true);
+
 	/// The function used to rest assured all conections are stopped and the client is
 	/// not waiting for entering chat connections anymore
 	void quit();

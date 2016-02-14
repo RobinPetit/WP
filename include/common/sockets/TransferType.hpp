@@ -23,6 +23,7 @@ enum class TransferType : sf::Uint32
 	PLAYER_ASKS_FRIENDS,
 	PLAYER_NEW_FRIEND,
 	NOT_EXISTING_FRIEND,
+	PLAYER_RESPONSE_FRIEND_REQUEST,
 };
 
 /// Overloading of the sf::Packet operators so that a TransferType variable can be stored
