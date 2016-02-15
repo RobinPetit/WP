@@ -10,6 +10,17 @@ class StateStack;
 class LadderState : public AbstractState
 {
 	public:
+		static constexpr std::size_t ladderSize = 10;  ///< The number of entries in the ladder.
+
+		/// An entry in the ladder. There is no need for further data about the
+		/// users shown in the list.
+		struct LadderEntry
+		{
+			std::string _userName;
+			unsigned int _wonGames;
+			unsigned int _loseGames;
+		};
+
 		/// Constructor.
 		LadderState(StateStack& stateStack);
 
@@ -20,7 +31,7 @@ class LadderState : public AbstractState
 	private:
 		void backMainMenu();
 
-		std::vector<std::string> _ladder;
+		std::array<LadderEntry, ladderSize> _ladder;
 };
 
 #endif// _LADDER_STATE_CLIENT_HPP
