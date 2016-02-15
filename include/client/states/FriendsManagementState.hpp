@@ -23,6 +23,7 @@ class FriendsManagementState : public AbstractState
 		void backMainMenu();
 		void checkRequests();
 		void treatRequests();
+		void startChat();
 };
 
 #endif// _FRIENDS_MANAGEMENT_STATE_CLIENT_HPP

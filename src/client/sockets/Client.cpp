@@ -179,7 +179,7 @@ void Client::acceptFriendshipRequest(const std::string& name, bool accept)
 bool Client::startConversation(const std::string& playerName)
 {
 	// rest assured the client is connected to a server before trying to access it
-	if(!_isConnected || !_userTerminal.hasKnownTerminal() || playerName == _name)
+	if(!_isConnected || !_userTerminal.hasKnownTerminal() || playerName == _name || !isFriend(playerName))
 		return false;
 	std::string cmd;
 	cmd = _userTerminal.startProgram(

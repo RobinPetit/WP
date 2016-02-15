@@ -44,7 +44,6 @@ void chatListening(sf::Uint16 *port, const std::atomic_bool *loop, Terminal term
 		sf::TcpSocket socket;
 		if(chatListener.accept(socket) == sf::Socket::Done)
 		{
-			std::cout << "connection!\n";
 			sf::Uint32 address;
 			sf::Uint16 port;
 			std::string otherName, selfName;

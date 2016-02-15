@@ -16,6 +16,7 @@ FriendsManagementState::FriendsManagementState(StateStack& stateStack, Client& c
 	addAction("Remove a friend from the list", &FriendsManagementState::removeFriend);
 	addAction("Check friendship requests", &FriendsManagementState::checkRequests);
 	addAction("Treat friendship requests", &FriendsManagementState::treatRequests);
+	addAction("Chat with a friend", &FriendsManagementState::startChat);
 }
 
 void FriendsManagementState::display()
@@ -100,6 +101,15 @@ void FriendsManagementState::treatRequests()
 		}
 
 	}
+}
+
+void FriendsManagementState::startChat()
+{
+	std::string friendName;
+	std::cout << "Who do you want to chat with? ";
+	std::getline(std::cin, friendName);
+	if(!_client.startConversation(friendName))
+		std::cout << "Unable to chat with " << friendName << std::endl;
 }
 
 void FriendsManagementState::backMainMenu()
