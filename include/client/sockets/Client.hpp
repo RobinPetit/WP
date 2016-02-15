@@ -46,23 +46,37 @@ public:
 	void updateFriends();
 
 	/// Functions used to send a friendship request to another player
+	/// \return True if the player was successfully asked to become friend and false if he was already friend
 	/// \param name The name of the player asked to become a new friend
-	void askNewFriend(const std::string& name);
+	bool askNewFriend(const std::string& name);
 
 	/// Function used to tell the server that the request is accepted
 	/// \param name The name of the player who sent the request
 	/// \param accept True to accept the request, false to refuse it
 	void acceptFriendshipRequest(const std::string& name, bool accept=true);
 
-	/// Used to ask the server if new friendship requet arrived and if requests were accepted
+	/// Used to ask the server if new friendship requet arrived
 	/// \return True if the data was correctly received and false otherwise
 	/// \param newIncomingRequests A vector containing the names of the players asking to become friend
+	bool getIncomingFriendshipRequests(std::vector<std::string>& newIncomingRequests);
+
+	/// Used to ask the server if requests were accepted
+	/// \return True if the data was correctly received and false otherwise
 	/// \param acceptedSentRequests A vector containing the names of the players who accepted to become friend
 	/// \param refusedSentRequests A vector containing the names of the players who refused to become friends
 	bool updateFriendshipRequests(
-		std::vector<std::string>& newIncomingRequests,
 		std::vector<std::string>& acceptedSentRequests,
 		std::vector<std::string>& refusedSentRequests);
+
+	/// Used to know if a particular player is a friend or not
+	/// \return True if the player is a friend of the client and false otherwise
+	/// \param name The name of the player whose friendship is tested
+	bool isFriend(const std::string& name);
+
+	/// Used to remove a friend from the friends list
+	/// \return True if the player was successfully removed and false if he is not a friend
+	/// \param name The name of the player to remove from the friends list
+	bool removeFriend(const std::string& name);
 
 	/// The function used to rest assured all conections are stopped and the client is
 	/// not waiting for entering chat connections anymore
@@ -93,7 +107,7 @@ private:
 	/// List containing the names of the friends
 	std::vector<std::string> _friends;
 	/// \TODO use this!
-	/// List containing the names of the friendship requests
+	/// List containing the names of the friendship requests the client made
 	std::vector<std::string> _friendsRequests;
 
 	// private methods

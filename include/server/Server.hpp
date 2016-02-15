@@ -65,6 +65,8 @@ private:
 	void handleFriendshipRequest(const _iterator& it, sf::Packet& transmission);
 	/// Used to receive the answer of a friendship request
 	void handleFriendshipRequestResponse(const _iterator& it, sf::Packet& transmission);
+	/// Used to send to a client the friendship request he received
+	void sendFriendshipRequests(const _iterator& it);
 	/// Used to send to a client the current state of the friendship requests state
 	void sendFriendshipRequestsState(const _iterator& it);
 };

@@ -50,15 +50,15 @@ bool Client::connectToServer(const sf::IpAddress& address, sf::Uint16 port)
 	       << static_cast<sf::Uint16>(_chatListenerPort);
 	if(_socket.send(packet) != sf::Socket::Done)
 		return false;
-	updateFriends();
 	_isConnected = true;
+	updateFriends();
 	return true;
 }
 
 std::vector<std::string> Client::getFriends(bool onlyConnected)
 {
 	if(!_isConnected)
-		throw NotConnectedException();
+		throw NotConnectedException("Unable to send friends");
 	else
 	{
 		if(!onlyConnected)
@@ -88,7 +88,7 @@ std::vector<std::string> Client::getFriends(bool onlyConnected)
 void Client::updateFriends()
 {
 	if(!_isConnected)
-		throw NotConnectedException();
+		throw NotConnectedException("Unable to update friends");
 	sf::Packet packet;
 	// send that friends list is asked
 	packet << TransferType::PLAYER_ASKS_FRIENDS;
@@ -98,16 +98,16 @@ void Client::updateFriends()
 	packet >> _friends;
 }
 
-void Client::askNewFriend(const std::string& name)
+bool Client::askNewFriend(const std::string& name)
 {
 	if(!_isConnected)
-		throw NotConnectedException();
+		throw NotConnectedException("Unable to ask a new friend");
 	// Cannot be friend with yourself
 	if(name == _name)
-		return;
+		return false;
 	// Don't ask a friend to become your friend
-	if(std::find(_friends.begin(), _friends.end(), name) != _friends.end())
-		return;
+	if(isFriend(name))
+		return false;
 	sf::Packet packet;
 	packet << TransferType::PLAYER_NEW_FRIEND << name;
 	_socket.send(packet);
@@ -117,10 +117,24 @@ void Client::askNewFriend(const std::string& name)
 	packet >> type;
 	if(type == TransferType::PLAYER_NEW_FRIEND)
 		_friendsRequests.push_back(name);
+	return true;
 }
 
-bool Client::updateFriendshipRequests(std::vector<std::string>& newIncomingRequests,
-	std::vector<std::string>& acceptedSentRequests,
+bool Client::getIncomingFriendshipRequests(std::vector<std::string>& incomingRequests)
+{
+	sf::Packet packet;
+	packet << TransferType::PLAYER_GETTING_FRIEND_REQUESTS;
+	_socket.send(packet);
+	_socket.receive(packet);
+	TransferType type;
+	packet >> type;
+	if(type != TransferType::PLAYER_GETTING_FRIEND_REQUESTS)
+		return false;
+	packet >> incomingRequests;
+	return true;
+}
+
+bool Client::updateFriendshipRequests(std::vector<std::string>& acceptedSentRequests,
 	std::vector<std::string>& refusedSentRequests)
 {
 	sf::Packet packet;
@@ -131,7 +145,20 @@ bool Client::updateFriendshipRequests(std::vector<std::string>& newIncomingReque
 	packet >> type;
 	if(type != TransferType::PLAYER_GETTING_FRIEND_REQUESTS_STATE)
 		return false;
-	packet >> newIncomingRequests >> acceptedSentRequests >> refusedSentRequests;
+	packet >> acceptedSentRequests >> refusedSentRequests;
+	return true;
+}
+
+bool Client::isFriend(const std::string& name)
+{
+	return std::find(_friends.cbegin(), _friends.cend(), name) != _friends.cend();
+}
+
+bool Client::removeFriend(const std::string& name)
+{
+	if(!isFriend(name))
+		return false;
+	_friends.erase(std::find(_friends.cbegin(), _friends.cend(), name));
 	return true;
 }
 

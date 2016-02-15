@@ -11,7 +11,8 @@ class ChatSelectionState : public AbstractState
 		virtual void display() override;
 
 	private:
-
+		void backMainMenu();
+		void chooseFriend();
 };
 
 #endif  // _CHAT_SELECTION_STATE_HPP_

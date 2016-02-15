@@ -123,6 +123,9 @@ void Server::receiveData()
 		case TransferType::PLAYER_GETTING_FRIEND_REQUESTS_STATE:
 			sendFriendshipRequestsState(it);
 			break;
+		case TransferType::PLAYER_GETTING_FRIEND_REQUESTS:
+			sendFriendshipRequests(it);
+			break;
 		default:
 			std::cerr << "Error: unknown code " << static_cast<sf::Uint32>(type) << std::endl;
 			break;
@@ -235,14 +238,25 @@ void Server::handleFriendshipRequestResponse(const _iterator& it, sf::Packet& tr
 	it->second.socket->send(response);
 }
 
+void Server::sendFriendshipRequests(const _iterator& it)
+{
+	sf::Packet response;
+	response << TransferType::PLAYER_GETTING_FRIEND_REQUESTS << it->second.externalRequests;
+	it->second.socket->send(response);
+}
+
 void Server::sendFriendshipRequestsState(const _iterator& it)
 {
 	sf::Packet response;
 	response << TransferType::PLAYER_GETTING_FRIEND_REQUESTS_STATE
-	         << it->second.externalRequests
 	         << it->second.acceptedRequests
 	         << it->second.refusedRequests;
 	it->second.socket->send(response);
+	// Remove the temporary data that are the accepted and refused friendship lists
+	auto& accepted = it->second.acceptedRequests;
+	auto& refused = it->second.refusedRequests;
+	accepted.erase(accepted.cbegin(), accepted.cend());
+	refused.erase(refused.cbegin(), refused.cend());
 }
 
 void Server::quit()
