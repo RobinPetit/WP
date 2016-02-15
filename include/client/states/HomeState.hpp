@@ -9,18 +9,18 @@ class StateStack;
 /// Cannot be more explicit.
 class HomeState : public AbstractState
 {
-    public:
-        /// Constructor.
-        HomeState(StateStack& stateStack);
+	public:
+		/// Constructor.
+		HomeState(StateStack& stateStack);
 
-        /// The display function.
-        /// It must do all things related to drawing or printing stuff on the screen.
-        virtual void display() override;
+		/// The display function.
+		/// It must do all things related to drawing or printing stuff on the screen.
+		virtual void display() override;
 
-    private:
-        void connect();
-        void createAccount();
-        void quit();
+	private:
+		void connect();
+		void createAccount();
+		void quit();
 
 };
 

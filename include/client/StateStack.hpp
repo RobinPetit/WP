@@ -22,53 +22,52 @@ class AbstractState;
 /// \see AbstractState
 class StateStack
 {
-    public:
-        /// Destructor.
-        /// This declarations is here in order to avoid a warning about inlining.
-        ~StateStack() = default;
+	public:
+		/// Destructor.
+		/// This declarations is here in order to avoid a warning about inlining.
+		~StateStack() = default;
 
-        /// Call the display() function of the top state.
-        void display();
+		/// Call the display() function of the top state.
+		void display();
 
-        /// Call the handleInput() function of the top state.
-        void handleInput(const std::string& input);
+		/// Call the handleInput() function of the top state.
+		void handleInput(const std::string& input);
 
-        /// Add a new state of the template type to the top of the stack.
-        /// \tparam StateType The type of the state to construct.
-        template <typename StateType>
-        void push();
+		/// Add a new state of the template type to the top of the stack.
+		/// \tparam StateType The type of the state to construct.
+		template <typename StateType>
+		void push();
 
-        /// Delete the top state.
-        void pop();
+		/// Delete the top state.
+		void pop();
 
-        /// Delete all the states.
-        void clear();
+		/// Delete all the states.
+		void clear();
 
-        /// Check if the stack is empty or not.
-        /// \return True if the stack is empty, false otherwise.
-        bool isEmpty() const;
+		/// Check if the stack is empty or not.
+		/// \return True if the stack is empty, false otherwise.
+		bool isEmpty() const;
 
-    private:
-        std::vector<std::unique_ptr<AbstractState>> _stack;  ///< Vector of state.
-        std::vector<std::unique_ptr<AbstractState>>::iterator _stackIterator;  ///< Iterator for _stack
-		bool _empty = false;
+	private:
+		std::vector<std::unique_ptr<AbstractState>> _stack;  ///< Vector of state.
+		std::vector<std::unique_ptr<AbstractState>>::iterator _stackIterator;  ///< Iterator on _stack.
+		bool _empty = false;  ///< Indicates wether clear() gets called.
 };
 
 template <typename StateType>
 void StateStack::push()
 {
-	_stackIterator++;  // Increase iterator
-
-	if (_stackIterator != _stack.end()) // If there are elements further down the stack
+	// If we do the first push or if the iterator is at TOS
+	if(_stack.empty() or *_stackIterator == _stack.back())  //
 	{
-		// If the menu to push is different than the one at _stackIterator
-		if(typeid(StateType) != typeid(**_stackIterator))
-		{
-			_stackIterator->reset(new StateType(*this));
-		}
+		_stack.emplace_back(new StateType(*this));
+		_stackIterator = _stack.end() - 1;
 	}
-	else // If stackIterator is at TOS
-    	_stack.emplace_back(new StateType(*this));
+	else if(typeid(StateType) != typeid(**_stackIterator))  // If we must store another state type at *_stackIterator
+	{
+		_stackIterator++;
+		_stackIterator->reset(new StateType(*this));
+	}
 }
 
 #endif// _STATE_STACK_CLIENT_HPP

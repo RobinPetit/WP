@@ -3,12 +3,12 @@
 
 void StateStack::display()
 {
-    (*_stackIterator)->display();
+	(*_stackIterator)->display();
 }
 
 void StateStack::handleInput(const std::string& input)
 {
-    (*_stackIterator)->handleInput(input);
+	(*_stackIterator)->handleInput(input);
 }
 
 void StateStack::pop()
@@ -18,11 +18,11 @@ void StateStack::pop()
 
 void StateStack::clear()
 {
-    _empty = true;
+	_empty = true;
 }
 
 bool StateStack::isEmpty() const
 {
-    return _stack.empty() or _empty;
+	return _stack.empty() or _empty;
 }
 
