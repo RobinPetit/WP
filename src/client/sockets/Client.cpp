@@ -55,34 +55,36 @@ bool Client::connectToServer(const sf::IpAddress& address, sf::Uint16 port)
 	return true;
 }
 
-std::vector<std::string> Client::getFriends(bool onlyConnected)
+const std::vector<std::string>& Client::getFriends()
 {
 	if(!_isConnected)
 		throw NotConnectedException("Unable to send friends");
-	else
+	return _friends;
+}
+
+std::vector<std::string> Client::getConnectedFriends()
+{
+	if(!_isConnected)
+		throw NotConnectedException("Unable to send connected friends");
+	std::vector<std::string> connectedFriends;
+	for(const auto& friendName: _friends)
 	{
-		if(!onlyConnected)
-			return _friends;
-		std::vector<std::string> connectedFriends;
-		for(const auto& friendName: _friends)
-		{
-			// ask the server is player is conencted
-			sf::Packet packet;
-			packet << TransferType::PLAYER_CHECK_CONNECTION << friendName;
-			_socket.send(packet);
-			_socket.receive(packet);
-			TransferType type;
-			packet >> type;
-			if(type != TransferType::PLAYER_CHECK_CONNECTION)
-				continue;
-			bool isPresent;
-			packet >> isPresent;
-			// add to vector only if friend is present
-			if(isPresent)
-				connectedFriends.push_back(friendName);
-		}
-		return connectedFriends;
+		// ask the server if player is conencted
+		sf::Packet packet;
+		packet << TransferType::PLAYER_CHECK_CONNECTION << friendName;
+		_socket.send(packet);
+		_socket.receive(packet);
+		TransferType type;
+		packet >> type;
+		if(type != TransferType::PLAYER_CHECK_CONNECTION)
+			continue;
+		bool isPresent;
+		packet >> isPresent;
+		// add to vector only if friend is present
+		if(isPresent)
+			connectedFriends.push_back(friendName);
 	}
+	return connectedFriends;
 }
 
 void Client::updateFriends()

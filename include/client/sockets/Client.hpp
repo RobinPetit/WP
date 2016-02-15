@@ -35,10 +35,13 @@ public:
 
 	/// The function used to to get a list of the user's friends
 	/// \return A vector of names representing all of the friends
-	/// \param onlyConnected Boolean precising if non-connected players must be considered or not
-	/// \throw NotConnectedException if onlyConnected is set to true
-	/// and connectToServer has not been called before
-	std::vector<std::string> getFriends(bool onlyConnected=true);
+	/// \throw NotConnectedException if connectToServer has not been called before
+	const std::vector<std::string>& getFriends();
+
+	/// The function used to get a list of the user's friends who are connected
+	/// \return A vector of names representing all of the connected friends
+	/// \throw NotConnectedException if connectedToServer has not been called before
+	std::vector<std::string> getConnectedFriends();
 
 	/// Function used to ask the friends list to the server. The list containing the
 	/// names is the attribute _friends
