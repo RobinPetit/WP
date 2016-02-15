@@ -6,7 +6,7 @@
 class ChatSelectionState : public AbstractState
 {
 	public:
-		ChatSelectionState(StateStack& stateStack);
+		ChatSelectionState(StateStack& stateStack, Client& client);
 
 		virtual void display() override;
 

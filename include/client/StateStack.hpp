@@ -7,6 +7,7 @@
 #include <memory>
 #include <functional>
 #include <SFML/System.hpp>
+#include "client/sockets/Client.hpp"
 
 //Forward declarations
 class AbstractState;
@@ -22,6 +23,9 @@ class AbstractState;
 class StateStack : private sf::NonCopyable
 {
 	public:
+		/// Constructor
+		StateStack(Client& client);
+
 		/// Destructor.
 		/// This declarations is here in order to avoid a warning about inlining.
 		~StateStack() = default;
@@ -58,14 +62,15 @@ class StateStack : private sf::NonCopyable
 		/// (and the clear) we avoid this undefined behavior.
 		void doPendingChanges();
 
-		std::stack<std::unique_ptr<AbstractState>> _stack;///< Stack of state.
-		std::queue<std::function<void()>> _pendingChanges;///< Pending changes to do on the stack.
+		std::stack<std::unique_ptr<AbstractState>> _stack;  ///< Stack of state.
+		std::queue<std::function<void()>> _pendingChanges;  ///< Pending changes to do on the stack.
+		Client& _client;
 };
 
 template <typename StateType>
 void StateStack::push()
 {
-	_stack.emplace(new StateType(*this));
+	_stack.emplace(new StateType(*this, _client));
 }
 
 #endif// _STATE_STACK_CLIENT_HPP

@@ -11,7 +11,7 @@ class CardsCollectionState : public AbstractState
 {
 	public:
 		/// Constructor.
-		CardsCollectionState(StateStack& stateStack);
+		CardsCollectionState(StateStack& stateStack, Client& client);
 
 		/// The display function.
 		/// It must do all things related to drawing or printing stuff on the screen.

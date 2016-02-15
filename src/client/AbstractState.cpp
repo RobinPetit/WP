@@ -2,8 +2,9 @@
 #include <cassert>
 #include "client/AbstractState.hpp"
 
-AbstractState::AbstractState(StateStack& stateStack):
-	_stateStack{stateStack}
+AbstractState::AbstractState(StateStack& stateStack, Client& client):
+	_stateStack{stateStack},
+	_client{client}
 {
 
 }

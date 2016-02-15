@@ -4,6 +4,7 @@
 // SFML headers
 #include <SFML/Network/TcpSocket.hpp>
 #include <SFML/Network/TcpListener.hpp>
+#include <SFML/Network/IpAddress.hpp>
 // std-C++ headers
 #include <string>
 #include <vector>

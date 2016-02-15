@@ -1,6 +1,14 @@
 #include "client/AbstractState.hpp"
 #include "client/StateStack.hpp"
 
+StateStack::StateStack(Client& client):
+	_stack(),
+	_pendingChanges(),
+	_client{client}
+{
+
+}
+
 void StateStack::display()
 {
 	_stack.top()->display();

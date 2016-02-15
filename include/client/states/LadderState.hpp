@@ -11,7 +11,7 @@ class LadderState : public AbstractState
 {
 	public:
 		/// Constructor.
-		LadderState(StateStack& stateStack);
+		LadderState(StateStack& stateStack, Client& client);
 
 		/// The display function.
 		/// It must do all things related to drawing or printing stuff on the screen.

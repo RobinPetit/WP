@@ -2,8 +2,8 @@
 #include "client/states/MainMenuState.hpp"
 #include "client/states/HomeState.hpp"
 
-HomeState::HomeState(StateStack& stateStack):
-	AbstractState(stateStack)
+HomeState::HomeState(StateStack& stateStack, Client& client):
+	AbstractState(stateStack, client)
 {
 	addAction("Quit", &HomeState::quit);
 	addAction("Connect with your account", &HomeState::connect);

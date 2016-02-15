@@ -11,7 +11,7 @@ class DecksManagementState : public AbstractState
 {
 	public:
 		/// Constructor.
-		DecksManagementState(StateStack& stateStack);
+		DecksManagementState(StateStack& stateStack, Client& client);
 
 		/// The display function.
 		/// It must do all things related to drawing or printing stuff on the screen.

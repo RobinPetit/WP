@@ -1,8 +1,8 @@
 #include <iostream>
 #include "client/states/LadderState.hpp"
 
-LadderState::LadderState(StateStack& stateStack):
-	AbstractState(stateStack)
+LadderState::LadderState(StateStack& stateStack, Client& client):
+	AbstractState(stateStack, client)
 {
 	addAction("Back to main menu", &LadderState::backMainMenu);
 	// Get the list of user from the server...

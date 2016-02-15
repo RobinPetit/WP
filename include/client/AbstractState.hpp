@@ -3,10 +3,11 @@
 
 #include <memory>
 #include <vector>
-#include <utility>// std::pair
+#include <utility>  // std::pair
 #include <string>
-#include <functional>// std::function and std::bind
+#include <functional>  // std::function and std::bind
 #include "client/StateStack.hpp"
+#include "client/sockets/Client.hpp"
 
 /// Base class for the various states.
 /// A state is basically a screen of the application, such as a menu,
@@ -20,7 +21,8 @@ class AbstractState
 	public:
 		/// Constructor.
 		/// \param stateStack The stack that manages this state.
-		AbstractState(StateStack& stateStack);
+		/// \param client The client connected to the server
+		AbstractState(StateStack& stateStack, Client& client);
 
 		/// Destructor.
 		virtual ~AbstractState() = default;
@@ -55,8 +57,10 @@ class AbstractState
 		template <class StateType>
 		void addAction(const std::string& actionName, void (StateType::*method)());
 
+		Client& _client;
+
 	private:
-		std::vector<std::pair<std::string, std::function<void()>>> _actions;///< All actions doable in the state.
+		std::vector<std::pair<std::string, std::function<void()>>> _actions;  ///< All actions doable in the state.
 		StateStack& _stateStack;
 };
 

@@ -1,8 +1,8 @@
 #include <iostream>
 #include "client/states/FriendsManagementState.hpp"
 
-FriendsManagementState::FriendsManagementState(StateStack& stateStack):
-	AbstractState(stateStack)
+FriendsManagementState::FriendsManagementState(StateStack& stateStack, Client& client):
+	AbstractState(stateStack, client)
 {
 	addAction("Back to main menu", &FriendsManagementState::backMainMenu);
 	addAction("Add a friend to the list", &FriendsManagementState::addFriend);

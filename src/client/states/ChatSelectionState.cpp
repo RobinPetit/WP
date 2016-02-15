@@ -1,7 +1,7 @@
 #include "client/states/ChatSelectionState.hpp"
 
-ChatSelectionState::ChatSelectionState(StateStack& stateStack):
-	AbstractState(StateStack)
+ChatSelectionState::ChatSelectionState(StateStack& stateStack, Client& client):
+	AbstractState(StateStack, client)
 {
 
 }

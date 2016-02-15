@@ -11,7 +11,7 @@ class MainMenuState : public AbstractState
 {
 	public:
 		/// Constructor.
-		MainMenuState(StateStack& stateStack);
+		MainMenuState(StateStack& stateStack, Client& client);
 
 		/// The display function.
 		/// It must do all things related to drawing or printing stuff on the screen.
