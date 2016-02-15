@@ -9,22 +9,22 @@ class StateStack;
 /// Cannot be more explicit.
 class MainMenuState : public AbstractState
 {
-    public:
-        /// Constructor.
-        MainMenuState(StateStack& stateStack);
+	public:
+		/// Constructor.
+		MainMenuState(StateStack& stateStack);
 
-        /// The display function.
-        /// It must do all things related to drawing or printing stuff on the screen.
-        virtual void display() override;
+		/// The display function.
+		/// It must do all things related to drawing or printing stuff on the screen.
+		virtual void display() override;
 
-    private:
-        void findGame();
-        void manageDecks();
-        void seeCollection();
-        void seeLadder();
-        void manageFriends();
-        void logOut();
-        void quit();
+	private:
+		void findGame();
+		void manageDecks();
+		void seeCollection();
+		void seeLadder();
+		void manageFriends();
+		void logOut();
+		void quit();
 };
 
 #endif// _MAIN_MENU_STATE_CLIENT_HPP

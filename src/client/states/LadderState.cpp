@@ -2,27 +2,27 @@
 #include "client/states/LadderState.hpp"
 
 LadderState::LadderState(StateStack& stateStack):
-    AbstractState(stateStack)
+	AbstractState(stateStack)
 {
-    addAction("Back to main menu", &LadderState::backMainMenu);
-    // Get the list of user from the server...
-    _ladder = {"Emile", "Marc-Henry", "Sigmund"};
+	addAction("Back to main menu", &LadderState::backMainMenu);
+	// Get the list of user from the server...
+	_ladder = {"Emile", "Marc-Henry", "Sigmund"};
 }
 
 void LadderState::display()
 {
-    std::cout << "Here is the ladder:\n";
-    unsigned int i{0U};
+	std::cout << "Here is the ladder:\n";
+	unsigned int i{0U};
 	for(const auto& user : _ladder)
 		std::cout << ++i << ". " << user << "\n";
 
-    // Display the actions
-    AbstractState::display();
+	// Display the actions
+	AbstractState::display();
 }
 
 void LadderState::backMainMenu()
 {
-    stackPop();
+	stackPop();
 }
 
 

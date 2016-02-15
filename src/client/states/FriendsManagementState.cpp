@@ -2,23 +2,23 @@
 #include "client/states/FriendsManagementState.hpp"
 
 FriendsManagementState::FriendsManagementState(StateStack& stateStack):
-    AbstractState(stateStack)
+	AbstractState(stateStack)
 {
-    addAction("Back to main menu", &FriendsManagementState::backMainMenu);
+	addAction("Back to main menu", &FriendsManagementState::backMainMenu);
 	addAction("Add a friend to the list", &FriendsManagementState::addFriend);
 	addAction("Remove a friend from the list", &FriendsManagementState::removeFriend);
-    // Get the list of friends...
-    _friends = {"Emile", "Marc-Henry", "Sigmund"};
+	// Get the list of friends...
+	_friends = {"Emile", "Marc-Henry", "Sigmund"};
 }
 
 void FriendsManagementState::display()
 {
-    std::cout << "Here are your friends:\n";
+	std::cout << "Here are your friends:\n";
 	for(const auto& friendName : _friends)
 		std::cout << "* " << friendName << "\n";
 
-    // Display the actions
-    AbstractState::display();
+	// Display the actions
+	AbstractState::display();
 }
 
 void FriendsManagementState::addFriend()
@@ -48,7 +48,7 @@ void FriendsManagementState::removeFriend()
 
 void FriendsManagementState::backMainMenu()
 {
-    stackPop();
+	stackPop();
 }
 
 

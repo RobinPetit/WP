@@ -10,18 +10,18 @@ class StateStack;
 /// Cannot be more explicit.
 class CardsCollectionState : public AbstractState
 {
-    public:
-        /// Constructor.
-        CardsCollectionState(StateStack& stateStack);
+	public:
+		/// Constructor.
+		CardsCollectionState(StateStack& stateStack);
 
-        /// The display function.
-        /// It must do all things related to drawing or printing stuff on the screen.
-        virtual void display() override;
+		/// The display function.
+		/// It must do all things related to drawing or printing stuff on the screen.
+		virtual void display() override;
 
-    private:
-        void backMainMenu();
+	private:
+		void backMainMenu();
 
-        CardsCollection _cardsCollection;
+		CardsCollection _cardsCollection;
 
 };
 
