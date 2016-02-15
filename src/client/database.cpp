@@ -19,6 +19,16 @@
  *   attack INTEGER NOT NULL CHECK (attack >= 0),
  *     FOREIGN KEY(id) REFERENCES Card(id)
  * );
+ *
+ * CREATE VIEW FullCard
+ *   AS SELECT * FROM Card LEFT OUTER JOIN Monster USING(id);
+ *   
+ * CREATE VIEW FullMonster
+ *   AS SELECT * FROM Card INNER JOIN Monster USING(id);
+ *
+ * CREATE VIEW FullSpell
+ *   AS SELECT Card.* FROM Card LEFT OUTER JOIN Monster USING(id)
+ *      WHERE Monster.health IS NULL;
  * 
  */
 
