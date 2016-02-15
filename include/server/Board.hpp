@@ -9,7 +9,7 @@
 class Card;
 
 /// Manages one game with two players
-class Player
+class Board
 {
     public:
         /// Destructor.
