@@ -3,13 +3,12 @@
 
 void StateStack::display()
 {
-    _stack.top()->display();
+    _stackIterator->display();
 }
 
 void StateStack::handleInput(const std::string& input)
 {
-    _stack.top()->handleInput(input);
-    doPendingChanges();
+    _stackIterator->handleInput(input);
 }
 
 void StateStack::pop()
