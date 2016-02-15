@@ -89,7 +89,7 @@ void FriendsManagementState::treatRequests()
 	{
 		for(const std::string& name: incomingRequests)
 		{
-			std::cout << name << "wants to become your friend.\n"
+			std::cout << name << " wants to become your friend.\n"
 			          << FRIENDSHIP_REQUEST_ACCEPT << ". Accept request\n"
 			          << FRIENDSHIP_REQUEST_REFUSE << ". Refuse request\n"
 			          << FRIENDSHIP_REQUEST_IGNORE << ". Ignore request\n\t";

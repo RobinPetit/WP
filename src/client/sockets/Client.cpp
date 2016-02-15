@@ -146,6 +146,8 @@ bool Client::updateFriendshipRequests(std::vector<std::string>& acceptedSentRequ
 	if(type != TransferType::PLAYER_GETTING_FRIEND_REQUESTS_STATE)
 		return false;
 	packet >> acceptedSentRequests >> refusedSentRequests;
+	for(const auto& accpeted: acceptedSentRequests)
+		_friends.push_back(accpeted);
 	return true;
 }
 
@@ -169,8 +171,9 @@ void Client::acceptFriendshipRequest(const std::string& name, bool accept)
 	_socket.send(packet);
 	_socket.receive(packet);
 	TransferType status;
-	if(status == TransferType::PLAYER_RESPONSE_FRIEND_REQUEST)
-		;  // remove from list
+	packet >> status;
+	if(status == TransferType::PLAYER_RESPONSE_FRIEND_REQUEST && accept)
+		_friends.push_back(name);
 }
 
 bool Client::startConversation(const std::string& playerName)
