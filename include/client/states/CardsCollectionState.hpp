@@ -9,17 +9,17 @@ class StateStack;
 /// Cannot be more explicit.
 class CardsCollectionState : public AbstractState
 {
-    public:
-        /// Constructor.
-        CardsCollectionState(StateStack& stateStack);
+	public:
+		/// Constructor.
+		CardsCollectionState(StateStack& stateStack);
 
-        /// The display function.
-        /// It must do all things related to drawing or printing stuff on the screen.
-        virtual void display() override;
+		/// The display function.
+		/// It must do all things related to drawing or printing stuff on the screen.
+		virtual void display() override;
 
-    private:
-        void backMainMenu();
-        std::vector<std::string> _cards;// The list of cards, use the class Card instead of std::string when it will be available
+	private:
+		void backMainMenu();
+		std::vector<std::string> _cards;// The list of cards, use the class Card instead of std::string when it will be available
 
 };
 

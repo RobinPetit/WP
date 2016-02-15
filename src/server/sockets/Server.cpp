@@ -23,7 +23,9 @@ Server::Server():
 	_done(false),
 	_threadRunning(false),
 	_quitThread()
-{}
+{
+
+}
 
 int Server::start(const sf::Uint16 listenerPort)
 {

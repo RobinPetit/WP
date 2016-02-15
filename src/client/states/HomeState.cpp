@@ -3,19 +3,19 @@
 #include "client/states/HomeState.hpp"
 
 HomeState::HomeState(StateStack& stateStack):
-    AbstractState(stateStack)
+	AbstractState(stateStack)
 {
-    addAction("Quit", &HomeState::quit);
-    addAction("Connect with your account", &HomeState::connect);
-    addAction("Create an account", &HomeState::createAccount);
+	addAction("Quit", &HomeState::quit);
+	addAction("Connect with your account", &HomeState::connect);
+	addAction("Create an account", &HomeState::createAccount);
 }
 
 void HomeState::display()
 {
-    std::cout << "Welcome to Wizard Poker!\n";
+	std::cout << "Welcome to Wizard Poker!\n";
 
-    // Display the actions
-    AbstractState::display();
+	// Display the actions
+	AbstractState::display();
 }
 
 void HomeState::connect()

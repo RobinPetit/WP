@@ -34,7 +34,7 @@ void chatListening(sf::Uint16 *port, const std::atomic_bool *loop, Terminal term
 	}
 	else
 		*port = chatListener.getLocalPort();
-        std::cout << "waiting for connections on port " << *port << std::endl;
+		std::cout << "waiting for connections on port " << *port << std::endl;
 	selector.add(chatListener);
 	while(loop->load())
 	{
