@@ -5,9 +5,7 @@ CardsCollectionState::CardsCollectionState(StateStack& stateStack):
     AbstractState(stateStack)
 {
     addAction("Back to main menu", &CardsCollectionState::backMainMenu);
-    //Get the list of cards from the server...
-    for(size_t i{0}; i < 20; ++i)
-        _cardsCollection.addCard(static_cast<Card::ID>(i));
+    //Get the list of cards from the server (for now this is the default collection).
 }
 
 void CardsCollectionState::display()
