@@ -5,9 +5,9 @@
 #include <SFML/Network/Packet.hpp>
 #include <SFML/System/Time.hpp>
 // WizardPoker headers
-#include <server/ErrorCode.hpp>
-#include <common/constants.hpp>
-#include <common/Terminal.hpp>
+#include "server/ErrorCode.hpp"
+#include "common/constants.hpp"
+#include "common/Terminal.hpp"
 // std-C++ headers
 #include <iostream>
 #include <atomic>

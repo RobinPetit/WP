@@ -1,6 +1,6 @@
 // WizardPoker headers
-#include <common/ini/IniFile.hpp>
-#include <common/ErrorCode.hpp>
+#include "common/ini/IniFile.hpp"
+#include "common/ErrorCode.hpp"
 // std-C++ headers
 #include <fstream>
 

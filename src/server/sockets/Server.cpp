@@ -2,11 +2,11 @@
 #include <SFML/Network/IpAddress.hpp>
 #include <SFML/System/Sleep.hpp>
 // WizardPoker headers
-#include <server/Server.hpp>
-#include <common/constants.hpp>
-#include <server/ErrorCode.hpp>
-#include <common/sockets/TransferType.hpp>
-#include <common/sockets/PacketOverload.hpp>
+#include "server/Server.hpp"
+#include "common/constants.hpp"
+#include "server/ErrorCode.hpp"
+#include "common/sockets/TransferType.hpp"
+#include "common/sockets/PacketOverload.hpp"
 // std-C++ headers
 #include <iostream>
 #include <algorithm>

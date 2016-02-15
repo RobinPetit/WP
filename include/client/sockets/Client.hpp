@@ -11,7 +11,7 @@
 #include <thread>
 #include <atomic>
 // WizardPoker headers
-#include <common/Terminal.hpp>
+#include "common/Terminal.hpp"
 
 /// Client is a class representing the state of the client program (not the user!)
 class Client final

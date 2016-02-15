@@ -3,10 +3,10 @@
 **/
 
 // WizardPoker headers
-#include <common/constants.hpp>
-#include <server/Server.hpp>
-#include <server/ErrorCode.hpp>
-#include <common/ini/IniFile.hpp>
+#include "common/constants.hpp"
+#include "server/Server.hpp"
+#include "server/ErrorCode.hpp"
+#include "common/ini/IniFile.hpp"
 // std-C++ headers
 #include <cstdlib>
 

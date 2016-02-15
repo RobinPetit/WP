@@ -1,5 +1,5 @@
 // WizardPoker headers
-#include <common/Terminal.hpp>
+#include "common/Terminal.hpp"
 // std-C++ headers
 #include <cstdlib>
 #include <string>

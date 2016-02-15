@@ -2,11 +2,11 @@
 #include <SFML/System/Sleep.hpp>
 #include <SFML/Network/IpAddress.hpp>
 // WizardPoker headers
-#include <client/sockets/Client.hpp>
-#include <common/constants.hpp>
-#include <common/sockets/TransferType.hpp>
-#include <common/NotConnectedException.hpp>
-#include <common/sockets/PacketOverload.hpp>
+#include "client/sockets/Client.hpp"
+#include "common/constants.hpp"
+#include "common/sockets/TransferType.hpp"
+#include "common/NotConnectedException.hpp"
+#include "common/sockets/PacketOverload.hpp"
 // std-C++ headers
 #include <iostream>
 #include <thread>
