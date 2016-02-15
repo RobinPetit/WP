@@ -18,8 +18,9 @@ class AbstractState;
 /// of the game state, and when it will be poped, the stack will naturally hand
 /// over to the previous state (no matter if it was the main menu or the game
 /// state).
-/// \see State
-class StateStack : private sf::NonCopyable
+/// TODO: ajouter explication push & pop
+/// \see AbstractState
+class StateStack
 {
     public:
         /// Destructor.
@@ -48,24 +49,26 @@ class StateStack : private sf::NonCopyable
         bool isEmpty() const;
 
     private:
-
-        /// Apply the changes that need to be done.
-        /// These changes are stored in _pendingChanges.
-        /// When a state calls pop, this state is deleted (its destructor gets
-        /// called) but when the pop is done, the stack returns to the caller of
-        /// the pop method, which is the state just popped out. Executing code
-        /// from a deleted object is undefined behavior, so by delaying the pop
-        /// (and the clear) we avoid this undefined behavior.
-        void doPendingChanges();
-
-        std::stack<std::unique_ptr<AbstractState>> _stack;///< Stack of state.
-        std::queue<std::function<void()>> _pendingChanges;///< Pending changes to do on the stack.
+        std::vector<std::unique_ptr<AbstractState>> _stack;  ///< Vector of state.
+        std::vector<std::unique_ptr<AbstractState>>::iterator _stackIterator;  ///< Iterator for _stack
+		bool _empty = false;
 };
 
 template <typename StateType>
 void StateStack::push()
 {
-    _stack.emplace(new StateType(*this));
+	_stackIterator++;  // Increase iterator
+
+	if (_stackIterator != _stack.end()) // If there are elements further down the stack
+	{
+		// If the menu to push is different than the one at _stackIterator
+		if(typeid(StateType) != typeid(**_stackIterator))
+		{
+			_stackIterator->reset(new StateType(*this));
+		}
+	}
+	else // If stackIterator is at TOS
+    	_stack.emplace_back(new StateType(*this));
 }
 
 #endif// _STATE_STACK_CLIENT_HPP
