@@ -24,3 +24,8 @@ CMakeCache.txt
 
 # Do not track executable files
 bin/
+
+# Add your IDE's temporary files extension here
+	# code::blocks
+*.cbp
+*.layout
