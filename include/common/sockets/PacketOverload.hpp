@@ -12,10 +12,6 @@ sf::Packet& operator <<(sf::Packet& packet, const std::vector<T>& vec);
 template <typename T>
 sf::Packet& operator >>(sf::Packet& packet, std::vector<T>& vec);
 
-sf::Packet& operator <<(sf::Packet& packet, long unsigned int& val);
-
-sf::Packet& operator >>(sf::Packet& packet, long unsigned int& val);
-
 
 // implementation
 
@@ -44,33 +40,5 @@ sf::Packet& operator >>(sf::Packet& packet, std::vector<T>& vec)
 	}
 	return packet;
 }
-
-// To ensure compatibility between all platforms (some did not have
-// the overloaded version of the << and >> operators)
-sf::Packet& operator <<(sf::Packet& packet, long unsigned int& val)
-{
-	if(sizeof(val) == sizeof(int))
-		packet << static_cast<int>(val);
-	else if(sizeof(val) == 2*sizeof(int))
-		packet << static_cast<int>(val) << static_cast<int>(val >> (sizeof(int)*8));
-	return packet;
-}
-
-sf::Packet& operator >>(sf::Packet& packet, long unsigned int& val)
-{
-	int a, b;
-	if(sizeof(val) == sizeof(int))
-	{
-		packet >> a;
-		val = a;
-	}
-	else
-	{
-		packet >> a >> b;
-		val = a + (b << (sizeof(int)*8));
-	}
-	return packet;
-}
-
 
 #endif  // _PACKET_OVERLOAD_HPP_
