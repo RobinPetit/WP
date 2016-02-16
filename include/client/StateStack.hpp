@@ -6,6 +6,7 @@
 #include <string>
 #include <memory>
 #include <functional>
+#include <typeinfo>
 #include <SFML/System.hpp>
 
 //Forward declarations
@@ -58,12 +59,13 @@ template <typename StateType>
 void StateStack::push()
 {
 	// If we do the first push or if the iterator is at TOS
-	if(_stack.empty() or *_stackIterator == _stack.back())  //
+	if(_stack.empty() or *_stackIterator == _stack.back())
 	{
 		_stack.emplace_back(new StateType(*this));
 		_stackIterator = _stack.end() - 1;
 	}
-	else if(typeid(StateType) != typeid(**_stackIterator))  // If we must store another state type at *_stackIterator
+	// If we must store another state type at *(_stackIterator + 1)
+	else if(typeid(StateType*) != typeid((_stackIterator + 1)->get()))
 	{
 		_stackIterator++;
 		_stackIterator->reset(new StateType(*this));
