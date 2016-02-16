@@ -31,6 +31,9 @@ add_subdirectory(src)
 # And build the SRD
 add_subdirectory(SRD)
 
+# Also build unit tests
+add_subdirectory(tests)
+
 # Move the executables created in src/client/ and src/server/
 # to the root build directory
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
