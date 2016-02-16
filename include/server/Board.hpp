@@ -11,13 +11,18 @@ class Card;
 /// Manages one game with two players
 class Board
 {
-    public:
-        /// Destructor.
-        ~Board() = default;
+	public:
+		/// Destructor.
+		~Board() = default;
 
-    private:
+		void endTurn();
+		void useCard(unsigned handIndex);
+		void quitGame(); //TODO: need identifier
 
-        std::pair<Player*> _Players;///< Pair of players that play the game
+
+	private:
+		unsigned _turn = 0;
+		Player* _activePlayer, _passivePlayer;
 };
 
 
