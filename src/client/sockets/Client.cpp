@@ -50,8 +50,8 @@ bool Client::connectToServer(const sf::IpAddress& address, sf::Uint16 port)
 	       << static_cast<sf::Uint16>(_chatListenerPort);
 	if(_socket.send(packet) != sf::Socket::Done)
 		return false;
-	updateFriends();
 	_isConnected = true;
+	updateFriends();
 	return true;
 }
 
@@ -174,11 +174,18 @@ void Client::initListener()
 
 void Client::quit()
 {
+	if(!_isConnected)
+		return;
 	// tell the server that the player leaves
 	sf::Packet packet;
 	packet << TransferType::PLAYER_DISCONNECTION;
 	_socket.send(packet);
 	_threadLoop.store(false);
 	_listenerThread.join();
+	_isConnected = false;
 }
 
+Client::~Client()
+{
+	quit();
+}
