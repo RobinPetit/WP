@@ -15,7 +15,7 @@
 
 extern void chatListening(sf::Uint16 *port, const std::atomic_bool *loop, Terminal terminal);
 
-Client::Client(const std::string& name):
+Client::Client():
 	_socket(),
 	_currentConversations(),
 	_isConnected(false),
@@ -25,15 +25,16 @@ Client::Client(const std::string& name):
 	_serverPort(0),
 	_userTerminal()
 {
-	// forces the name to not be larger than MAX_NAME_LENGTH
-	_name = (name.size() < MAX_NAME_LENGTH) ? name : name.substr(0, MAX_NAME_LENGTH);
+
 }
 
-bool Client::connectToServer(const sf::IpAddress& address, sf::Uint16 port)
+bool Client::connectToServer(const std::string& name, const sf::IpAddress& address, sf::Uint16 port)
 {
 	// if client is already connected to a server, do not try to re-connect it
 	if(_isConnected)
 		return false;
+	// forces the name to not be larger than MAX_NAME_LENGTH
+	_name = (name.size() < MAX_NAME_LENGTH) ? name : name.substr(0, MAX_NAME_LENGTH);
 	_serverAddress = address;
 	_serverPort = port;
 	if(!_userTerminal.hasKnownTerminal())

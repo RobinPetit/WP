@@ -18,14 +18,14 @@ class Client final
 {
 public:
 	/// Constructor
-	/// \param name The name of the program (a priori the same as the user's)
-	Client(const std::string& name);
+	Client();
 
 	/// The function used to make first connection with the game server
 	/// \return True if the connection succeeded and false otherwise
+	/// \param name The name of the user
 	/// \param address The address where the server stands
 	/// \param port The port the server occupies
-	bool connectToServer(const sf::IpAddress& address, sf::Uint16 port);
+	bool connectToServer(const std::string& name, const sf::IpAddress& address, sf::Uint16 port);
 
 	/// The function used to start the process of making a new discussion with the chat program
 	/// \return True if the chat program has been started and false otherwise
