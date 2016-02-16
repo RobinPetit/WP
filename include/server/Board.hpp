@@ -16,7 +16,8 @@ class Board
 		~Board() = default;
 
 		void endTurn();
-		void useCard(unsigned handIndex);
+		void cardUse(unsigned handIndex);
+		void cardAttack(unsigned boardIndex, unsigned victim);
 		void quitGame(); //TODO: need identifier
 
 

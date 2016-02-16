@@ -17,6 +17,7 @@ class Player
 
 		void cardPick(unsigned amount=0);  /// Move the card on top of the deck to the player's hand
 		void cardUse(unsigned handIndex);  /// Use the card
+		void cardAttack(unsigned boardIndex, unsigned victim);  /// Attack victim with the card
 
 		void turnEnter();
 		void turnLeave();

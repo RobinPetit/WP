@@ -28,6 +28,11 @@ void Player::cardUse(unsigned handIndex)
 	}
 }
 
+void Player::cardAttack(unsigned boardIndex, unsigned victim)
+{
+    //attack with _cardBoard.at(boardIndex) against victim
+}
+
 void Player::turnEnter(unsigned turn)
 {
 	//Communicate turn & as to play to menu

@@ -8,9 +8,14 @@ void Board::endTurn()
 	_activePlayer.turnEnter(_turn/2 +1);
 }
 
-void Board::useCard(unsigned handIndex)
+void Board::cardUse(unsigned handIndex)
 {
 	_activePlayer.cardUse(handIndex);
+}
+
+void Board::cardAttack(unsigned boardIndex, unsigned victim)
+{
+	_activePlayer.cardAttack(unsigned boardIndex, unsigned victim);
 }
 
 void Board::quitGame()
