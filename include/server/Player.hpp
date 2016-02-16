@@ -15,10 +15,11 @@ class Player
         /// Destructor.
         ~Player() = default;
 
-        void cardPick(unsigned amount=0); ///Move the card on top of the deck to the player's hand
-        void cardPlaceOnBoard(int handIndex); ///Move the card at handIndex from the player's hand to the board
-        void cardDiscardFromHand(int handIndex); ///Move the card at handIndex from the player's hand to the bin
-        void carDiscardFromBoard(int boardIndex); ///Move the card at boardIndex from the board to the bin
+        void cardPick(unsigned amount=0); // Move the card on top of the deck to the player's hand
+        void cardUse(unsigned handIndex); // Use the card
+
+        void cardDiscardFromHand(unsigned handIndex); // Move the card at handIndex from the player's hand to the bin
+        void cardDiscardFromBoard(unsigned boardIndex); // Move the card at boardIndex from the board to the bin
 
     private:
 
@@ -27,17 +28,21 @@ class Player
         std::vector<std::unique_ptr<Card>> _cardBoard; ///< Cards that are on the board (usable for attacks)
         std::vector<std::unique_ptr<Card>> _cardBin; ///< Cards that are discarded (dead creatures, used spells)
 
-        struct _constraints
+        struct
         {
-            unsigned cardPickAmount=1;
-            unsigned handSizeMaxLimit=NULL;
-        };
+            std::vector<std::pair<unsigned, unsigned>> cardPickAmount = {{1, 0}};
+            std::vector<std::pair<unsigned, unsigned>> handMaxSize = {{6, 0}};
+        } _constraints;
 
-        struct _turnData
+        std::vector<std::vector<std::pair<unsigned, unsigned>> *> _constraintsVector;
+
+        struct
         {
             unsigned cardsPicked=0;
-            unsigned cardsPutOnBoard=0;
-        };
+            unsigned cardsUsed=0;
+            unsigned creaturesPlaced=0;
+            unsigned spellsUsed=0;
+        } _turnData;
 };
 
 

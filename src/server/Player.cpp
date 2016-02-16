@@ -6,22 +6,35 @@ void Player::cardPick(unsigned amount)
     {
         amount--;
         _cardHand.push_back(_cardDeck.pop());
+        _turnData.cardsPicked++;
     }
 }
 
-void Player::cardPlaceOnBoard(int handIndex)
+void Player::cardUse(unsigned handIndex)
 {
-    _cardBoard.push_back(_cardHand.at(handIndex));
-    _cardHand.erase(handIndex);
+    _turnData.cardsUsed++;
+    // If card is a creature
+    if (true)
+    {
+        _turnData.creaturesPlaced++;
+        _cardBoard.push_back(_cardHand.at(handIndex));
+        _cardHand.erase(handIndex);
+    }
+    // If card is a spell
+    else
+    {
+        _turnData.spellsUsed++;
+        cardDiscardFromHand(handIndex);
+    }
 }
 
-void Player::cardDiscardFromHand(int handIndex)
+void Player::cardDiscardFromHand(unsigned handIndex)
 {
     _cardBin.push_back(_cardHand.at(handIndex));
     _cardHand.erase(handIndex);
 }
 
-void Player::cardDiscardFromBoard(int boardIndex)
+void Player::cardDiscardFromBoard(unsigned boardIndex)
 {
     _cardBin.push_back(_cardBoard.at(boardIndex));
     _cardBoard.erase(boardIndex);
