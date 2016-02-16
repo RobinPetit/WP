@@ -85,6 +85,9 @@ public:
 	/// not waiting for entering chat connections anymore
 	void quit();
 
+	/// Destructor
+	~Client();
+
 private:
 	/// The socket that's connected to the server
 	sf::TcpSocket _socket;

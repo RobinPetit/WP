@@ -6,6 +6,7 @@
 #include <string>
 #include <memory>
 #include <functional>
+#include <typeinfo>
 #include <SFML/System.hpp>
 #include "client/sockets/Client.hpp"
 
@@ -19,8 +20,9 @@ class AbstractState;
 /// of the game state, and when it will be poped, the stack will naturally hand
 /// over to the previous state (no matter if it was the main menu or the game
 /// state).
-/// \see State
-class StateStack : private sf::NonCopyable
+/// TODO: ajouter explication push & pop
+/// \see AbstractState
+class StateStack
 {
 	public:
 		/// Constructor
@@ -62,15 +64,27 @@ class StateStack : private sf::NonCopyable
 		/// (and the clear) we avoid this undefined behavior.
 		void doPendingChanges();
 
-		std::stack<std::unique_ptr<AbstractState>> _stack;  ///< Stack of state.
-		std::queue<std::function<void()>> _pendingChanges;  ///< Pending changes to do on the stack.
+		std::vector<std::unique_ptr<AbstractState>> _stack;  ///< Vector of state.
+		std::vector<std::unique_ptr<AbstractState>>::iterator _stackIterator;  ///< Iterator on _stack.
 		Client& _client;
+		bool _empty = false;  ///< Indicates wether clear() gets called.
 };
 
 template <typename StateType>
 void StateStack::push()
 {
-	_stack.emplace(new StateType(*this, _client));
+	// If we do the first push or if the iterator is at TOS
+	if(_stack.empty() or *_stackIterator == _stack.back())
+	{
+		_stack.emplace_back(new StateType(*this, _client));
+		_stackIterator = _stack.end() - 1;
+	}
+	// If we must store another state type at *(_stackIterator + 1)
+	else if(typeid(StateType*) != typeid((_stackIterator + 1)->get()))
+	{
+		_stackIterator++;
+		_stackIterator->reset(new StateType(*this, _client));
+	}
 }
 
 #endif// _STATE_STACK_CLIENT_HPP

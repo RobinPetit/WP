@@ -207,11 +207,18 @@ void Client::initListener()
 
 void Client::quit()
 {
+	if(!_isConnected)
+		return;
 	// tell the server that the player leaves
 	sf::Packet packet;
 	packet << TransferType::PLAYER_DISCONNECTION;
 	_socket.send(packet);
 	_threadLoop.store(false);
 	_listenerThread.join();
+	_isConnected = false;
 }
 
+Client::~Client()
+{
+	quit();
+}
