@@ -37,7 +37,6 @@ void HomeState::connect()
 	std::cout << "What is your password? ";
 	std::getline(std::cin, password);
 
-	Client self;
 	IniFile config;
 	// \TODO: write exceptions for connection errors, then catch them in main
 	// and return a status according to the exception catched.
@@ -48,7 +47,7 @@ void HomeState::connect()
 	if(config.find("SERVER_PORT") == config.end() || config.find("SERVER_ADDRESS") == config.end())
 		//return WRONG_FORMAT_CONFIG_FILE;
 		return;
-	if(!self.connectToServer(userName, config["SERVER_ADDRESS"], std::stoi(config["SERVER_PORT"], nullptr, AUTO_BASE)))
+	if(!_client.connectToServer(userName, config["SERVER_ADDRESS"], std::stoi(config["SERVER_PORT"], nullptr, AUTO_BASE)))
 	{
 		std::cout << "Unable to connect to server" << std::endl;
 		//return UNABLE_TO_CONNECT;

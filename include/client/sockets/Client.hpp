@@ -31,12 +31,12 @@ public:
 	/// \return True if the chat program has been started and false otherwise
 	/// \param playerName The name of the player the client wants to discuss with
 	/// \throw NotConnectedException if connectToServer has not been called before
-	bool startConversation(const std::string& playerName);
+	bool startConversation(const std::string& playerName) const;
 
 	/// The function used to to get a list of the user's friends
 	/// \return A vector of names representing all of the friends
 	/// \throw NotConnectedException if connectToServer has not been called before
-	const std::vector<std::string>& getFriends();
+	const std::vector<std::string>& getFriends() const;
 
 	/// The function used to get a list of the user's friends who are connected
 	/// \return A vector of names representing all of the connected friends
@@ -74,7 +74,7 @@ public:
 	/// Used to know if a particular player is a friend or not
 	/// \return True if the player is a friend of the client and false otherwise
 	/// \param name The name of the player whose friendship is tested
-	bool isFriend(const std::string& name);
+	bool isFriend(const std::string& name) const;
 
 	/// Used to remove a friend from the friends list
 	/// \return True if the player was successfully removed and false if he is not a friend

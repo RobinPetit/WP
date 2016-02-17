@@ -64,18 +64,20 @@ Terminal::Terminal():
 #endif
 }
 
-const std::string& Terminal::getTerminalName()
+const std::string& Terminal::getTerminalName() const
 {
 	return _terminalNames[_idx];
 }
 
-bool Terminal::hasKnownTerminal()
+bool Terminal::hasKnownTerminal() const
 {
 	return _idx != NO_KNOWN_TERMINAL;
 }
 
-std::string Terminal::startProgram(const std::string& name, const std::initializer_list<const std::string>& args)
+std::string Terminal::startProgram(const std::string& name, const std::initializer_list<const std::string>& args) const
 {
+	if(!hasKnownTerminal())
+		throw std::runtime_error("Unable to start new program: no known terminal on this computer");
 	std::string command;
 #ifdef __linux__
 	command = getTerminalName() + " -x ./" + name;

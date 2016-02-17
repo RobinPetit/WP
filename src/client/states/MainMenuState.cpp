@@ -55,6 +55,7 @@ void MainMenuState::manageFriends()
 void MainMenuState::logOut()
 {
 	std::cout << "Bye!...\n";
+	_client.quit();
 	stackPop();
 }
 

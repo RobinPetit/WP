@@ -56,7 +56,7 @@ bool Client::connectToServer(const std::string& name, const sf::IpAddress& addre
 	return true;
 }
 
-const std::vector<std::string>& Client::getFriends()
+const std::vector<std::string>& Client::getFriends() const
 {
 	if(!_isConnected)
 		throw NotConnectedException("Unable to send friends");
@@ -154,7 +154,7 @@ bool Client::updateFriendshipRequests(std::vector<std::string>& acceptedSentRequ
 	return true;
 }
 
-bool Client::isFriend(const std::string& name)
+bool Client::isFriend(const std::string& name) const
 {
 	return std::find(_friends.cbegin(), _friends.cend(), name) != _friends.cend();
 }
@@ -179,7 +179,7 @@ void Client::acceptFriendshipRequest(const std::string& name, bool accept)
 		_friends.push_back(name);
 }
 
-bool Client::startConversation(const std::string& playerName)
+bool Client::startConversation(const std::string& playerName) const
 {
 	// rest assured the client is connected to a server before trying to access it
 	if(!_isConnected || !_userTerminal.hasKnownTerminal() || playerName == _name || !isFriend(playerName))
