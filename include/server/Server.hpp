@@ -37,6 +37,9 @@ public:
 	/// Allows to free correctly the connected sockets
 	void quit();
 
+	/// Destructor
+	~Server();
+
 private:
 	typedef std::unordered_map<std::string, ClientInformations>::iterator _iterator;
 

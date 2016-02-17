@@ -291,6 +291,11 @@ void Server::sendFriends(const _iterator& it)
 	it->second.socket->send(packet);
 }
 
+Server::~Server()
+{
+	quit();
+}
+
 static void waitQuit(std::atomic_bool *done, std::atomic_bool *running)
 {
 	std::cout << "Type '" << quitPrompt << "' to end the server" << std::endl;
