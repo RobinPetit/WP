@@ -2,10 +2,13 @@
 #define _PLAYER_HPP
 
 #include <SFML/System.hpp>
-#include <cstdlib>
-#include "Board.hpp"
-#include "Card.hpp"
+// #include <cstdlib>
+#include <stack>
+// #include "server/Board.hpp"
+#include "server/Card.hpp"
+#include "server/Constraints.hpp"
 
+class Board;
 
 /// Represents one of the two players for a given game.
 class Player
@@ -24,7 +27,7 @@ class Player
 
 		/// Effects
 		void setConstraint(std::vector<unsigned> args);
-		void loseHandCards(std::vector<unsigned> args);
+		// void loseHandCards(std::vector<unsigned> args);
 		void damageBoardCreatures(std::vector<unsigned> args);
 
 
@@ -32,18 +35,19 @@ class Player
 		void cardDiscardFromHand(unsigned handIndex);  /// Move the card at handIndex from the player's hand to the bin
 		void cardDiscardFromBoard(unsigned boardIndex);  /// Move the card at boardIndex from the board to the bin
 
-		std::stack<std::unique_ptr<Card>> _cardDeck;  ///< Cards that are in the deck (not usable yet)
-		std::vector<std::unique_ptr<Card>> _cardHand;  ///< Cards that are in the player's hand (usable)
-		std::vector<std::unique_ptr<Card>> _cardBoard;  ///< Cards that are on the board (usable for attacks)
-		std::vector<std::unique_ptr<Card>> _cardBin;  ///< Cards that are discarded (dead creatures, used spells)
+		std::stack<Card *> _cardDeck;  ///< Cards that are in the deck (not usable yet)
+		std::vector<Card *> _cardHand;  ///< Cards that are in the player's hand (usable)
+		std::vector<Card *> _cardBoard;  ///< Cards that are on the board (usable for attacks)
+		std::vector<Card *> _cardBin;  ///< Cards that are discarded (dead creatures, used spells)
 
 		unsigned _energyPoints;
 		unsigned _lifePoints;
 
 		Board* _board;
 
-		std::vector<std::pair<unsigned, unsigned> *> _constraintsArray [constraintCount];
+		std::vector<std::pair<unsigned, unsigned>> _constraintsArray [constraintCount];
 		unsigned getConstraint(unsigned constraintID);
+		void setConstraint(unsigned constraintID, unsigned value, unsigned turns);
 
 		struct
 		{

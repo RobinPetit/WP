@@ -1,5 +1,5 @@
 #include "server/Player.hpp"
-
+#include "server/Board.hpp"
 
 /*--------------------------- BOARD INTERFACE */
 void Player::cardPick(unsigned amount)
@@ -7,20 +7,23 @@ void Player::cardPick(unsigned amount)
 	while (not _cardDeck.empty() and amount>0)
 	{
 		amount--;
-		_cardHand.push_back(_cardDeck.pop());
+		_cardHand.push_back(_cardDeck.top());
+		_cardDeck.pop();
 		_turnData.cardsPicked++;
 	}
 }
 
 void Player::cardUse(unsigned handIndex)
 {
+	// TODO: verify that handIndex is not out_of_range
+	const auto& handIt = std::find(_cardHand.begin(), _cardHand.end(), _cardHand[handIndex]);
 	_turnData.cardsUsed++;
 	// If card is a creature
 	if (true)
 	{
 		_turnData.creaturesPlaced++;
 		_cardBoard.push_back(_cardHand.at(handIndex));
-		_cardHand.erase(handIndex);
+		_cardHand.erase(handIt);
 	}
 	// If card is a spell
 	else
@@ -54,13 +57,15 @@ void Player::setConstraint(unsigned constraintID, unsigned value, unsigned turns
 
 unsigned Player::getConstraint(unsigned constraintID)
 {
-    if (_constraintsArray[constraintID].empty()) return _board.getDefaultConstraint(constraintID);
-    else return _constraintsArray[constraintID].rbegin().first();
+    if (_constraintsArray[constraintID].empty())
+	return _board->getDefaultConstraint(constraintID);
+    else
+	return _constraintsArray[constraintID].rbegin()->first;
 }
 
 
 /*--------------------------- EFFECTS */
-void Player::loseHandCards(unsigned amount)
+/*void Player::loseHandCards(unsigned amount)
 {
 	while (not _cardHand.empty() and amount>0)
 	{
@@ -68,19 +73,22 @@ void Player::loseHandCards(unsigned amount)
 		unsigned handIndex = rand() % _cardHand.size();
 		cardDiscardFromHand(handIndex);
 	}
-}
+}*/
 
 
 /*--------------------------- PRIVATE */
 void Player::cardDiscardFromHand(unsigned handIndex)
 {
+	// TODO: treat properly case of handIndex being out of range
+	const auto& handIt = std::find(_cardHand.begin(), _cardHand.end(), _cardHand[handIndex]);
 	_cardBin.push_back(_cardHand.at(handIndex));
-	_cardHand.erase(handIndex);
+	_cardHand.erase(handIt);
 }
 
 void Player::cardDiscardFromBoard(unsigned boardIndex)
 {
+	const auto& boardIt = std::find(_cardBoard.begin(), _cardBoard.end(), _cardBoard[boardIndex]);
 	_cardBin.push_back(_cardBoard.at(boardIndex));
-	_cardBoard.erase(boardIndex);
+	_cardBoard.erase(boardIt);
 }
 

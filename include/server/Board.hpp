@@ -3,24 +3,7 @@
 
 #include <SFML/System.hpp>
 #include "Player.hpp"
-#include "Card.hpp"
-
-
-//Effects
-constexpr struct {
-	unsigned setConstraint=0;			//set a constraint for the player
-	unsigned loseHandCards=1;			//lose an amount of random cards from the hand
-	unsigned damageBoardCreatures=2;	//damage all the player's creatures on the board
-} effectIDs;
-
-//Constraints
-constexpr unsigned constraintCount=2; //total number of constraints
-
-constexpr struct {
-	unsigned cardPickAmount = 0; 	//amount of cards to pick each turn
-	unsigned attackBackfire = 1; 	//number of attacks that will backfire
-} constraintIDs;
-
+#include "server/Card.hpp"
 
 /// Manages one game with two players
 class Board
@@ -43,17 +26,19 @@ class Board
 
 	private:
 		unsigned _turn = 0;
-		Player* _activePlayer, _passivePlayer;
+		Player *_activePlayer, *_passivePlayer;
 
 		//Effects
-		void* [] _effects = {
-			Player::*setConstraint(),
-			Player::*loseHandCards(),
-			Player::*damageBoardCreatures()
+		void (Player::*_effects[3])(std::vector<unsigned>) =
+		{
+			&Player::setConstraint,
+			//&Player::loseHandCards,
+			&Player::damageBoardCreatures
 		};
 
 		//Constraints
-		unsigned [] _constraintDefaults ={
+		unsigned _constraintDefaults[2] =
+		{
 			1,	//pick one card each turn
 			0	//no attack will backfire
 		};

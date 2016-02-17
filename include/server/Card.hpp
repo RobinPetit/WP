@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include "Board.hpp"
 
 
 class Card
@@ -16,8 +15,8 @@ class Card
 public:
 
     ///Constructors
-    Card(unsigned int cost = 0, std::string name = "No name" , std::vector<vector<unsigned>> effect = {{}}):
-            _cost(cost), _name(name), _effect(effect){};
+    Card(unsigned int cost = 0, std::string name = "No name" , std::vector<std::vector<unsigned>> effect = {{}}):
+            _cost(cost), _name(name), _effects(effect){};
 
     ///Getters
     unsigned int getCost(){return _cost;}

@@ -1,5 +1,8 @@
 set(SOURCES
 		"server.cpp"
+		"Board.cpp"
+		"Player.cpp"
+		
 		# sockets
 		"sockets/Server.cpp"
 		# common
