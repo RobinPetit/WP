@@ -30,6 +30,6 @@ add_latex_document(
 	)
 
 add_custom_command(TARGET srd_pdf POST_BUILD
-                   COMMAND ${CMAKE_COMMAND} -E copy
-                       ${PROJECT_SOURCE_DIR}/SRD/build/srd.pdf
-                       ${PROJECT_SOURCE_DIR}/srd.pdf)
+				   COMMAND ${CMAKE_COMMAND} -E copy
+					   ${PROJECT_SOURCE_DIR}/SRD/build/srd.pdf
+					   ${PROJECT_SOURCE_DIR}/srd.pdf)

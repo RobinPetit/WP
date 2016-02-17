@@ -1,3 +1,8 @@
+/**
+	client main file (entry point)
+**/
+
+// std-C++ headers
 #include <iostream>
 #include <cstdlib>
 #include "client/StateStack.hpp"
@@ -5,7 +10,7 @@
 
 int main()
 {
-	StateStack stack;
+	/*StateStack stack;
 	stack.push<HomeState>();
 	while(not stack.isEmpty())
 	{
@@ -15,6 +20,6 @@ int main()
 		std::string input;
 		std::getline(std::cin, input);
 		stack.handleInput(input);
-	}
+	}*/
 	return 0;
 }
