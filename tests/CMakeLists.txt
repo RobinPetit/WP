@@ -2,7 +2,7 @@
 find_package(Boost 1.57 COMPONENTS unit_test_framework REQUIRED)
 
 # Add the library to the linkage
-set(EXTERNAL_LIBRARIES ${EXTERNAL_LIBRARIES} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} pthread)
+set(EXTERNAL_LIBRARIES ${EXTERNAL_LIBRARIES} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 # Specify to Boost that it is dynamically linked
 add_definitions(-DBOOST_TEST_DYN_LINK)
@@ -26,28 +26,16 @@ set(TESTS_SOURCES
 	"server/sockets/ServerTests.cpp"
 	)
 
-set(APP_SOURCES
-	"../src/common/ini/IniFile.cpp"
-	"../src/common/sockets/TransferType.cpp"
-	"../src/common/Terminal.cpp"
-	"../src/common/NotConnectedException.cpp"
-	"../src/client/StateStack.cpp"
-	"../src/client/sockets/Client.cpp"
-	"../src/client/sockets/ChatListening.cpp"
-	"../src/client/AbstractState.cpp"
-	"../src/client/states/MainMenuState.cpp"
-	"../src/client/states/DecksManagementState.cpp"
-	"../src/client/states/HomeState.cpp"
-	"../src/client/states/CardsCollectionState.cpp"
-	"../src/client/states/FriendsManagementState.cpp"
-	"../src/client/states/LadderState.cpp"
-	"../src/server/sockets/Server.cpp"
-	)
-	
-
 set(TESTS_NAME ${PROJECT_NAME}_tests)
 
-add_executable(${TESTS_NAME} ${TESTS_SOURCES} ${APP_SOURCES})
+add_executable(${TESTS_NAME} ${TESTS_SOURCES})
 
-target_link_libraries(${TESTS_NAME} ${EXTERNAL_LIBRARIES})
+target_link_libraries(${TESTS_NAME}
+		${CLIENT_LIB_NAME}
+		${SERVER_LIB_NAME}
+		${CHAT_LIB_NAME}
+		${COMMON_LIB_NAME}
+		${EXTERNAL_LIBRARIES}
+		pthread
+		)
 

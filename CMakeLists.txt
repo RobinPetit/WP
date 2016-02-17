@@ -23,7 +23,17 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -Wall -Wextra -pedantic 
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -DNDEBUG")
 
 # This variable contains the name of all libraries that has to be linked
-set(EXTERNAL_LIBRARIES ${SFML_LIBRARIES})
+set(EXTERNAL_LIBRARIES ${SFML_LIBRARIES} pthread)
+
+# These are the names of the libs build from the common/client/server sources.
+# Libs are needed in order to compile one time source files for normal release
+# and unit test executable.
+set(COMMON_LIB_NAME ${PROJECT_NAME}_common_lib)
+set(CLIENT_LIB_NAME ${PROJECT_NAME}_client_lib)
+set(SERVER_LIB_NAME ${PROJECT_NAME}_server_lib)
+# Uncomment the following line as soon there is other source files that
+# chat.cpp to build for the chat
+#set(CHAT_LIB_NAME ${PROJECT_NAME}_chat_lib)
 
 # Tell to cmake to explore src/ to build both the server and the client
 add_subdirectory(src)

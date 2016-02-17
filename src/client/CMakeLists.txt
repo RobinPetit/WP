@@ -1,14 +1,7 @@
-set(SOURCES
-		"client.cpp"
+add_library(${CLIENT_LIB_NAME}
 		# sockets
 		"sockets/Client.cpp"
 		"sockets/ChatListening.cpp"
-		# common
-		"../common/sockets/TransferType.cpp"
-		"../common/ini/IniFile.cpp"
-		"../common/Terminal.cpp"
-		"../common/NotConnectedException.cpp"
-		"client.cpp"
 		# states
 		"AbstractState.cpp"
 		"StateStack.cpp"
@@ -23,8 +16,12 @@ set(SOURCES
 set(CLIENT_NAME "${PROJECT_NAME}_client")
 
 # Create the executable
-add_executable(${CLIENT_NAME} "${SOURCES}")
+add_executable(${CLIENT_NAME} "client.cpp")
 
 # Link the executable to the libraries
-target_link_libraries(${CLIENT_NAME} ${EXTERNAL_LIBRARIES} pthread)
+target_link_libraries(${CLIENT_NAME}
+		${CLIENT_LIB_NAME}
+		${COMMON_LIB_NAME}
+		${EXTERNAL_LIBRARIES}
+		)
 
