@@ -8,6 +8,7 @@
 #include <functional>
 #include <typeinfo>
 #include <SFML/System.hpp>
+#include "client/sockets/Client.hpp"
 
 //Forward declarations
 class AbstractState;
@@ -24,6 +25,9 @@ class AbstractState;
 class StateStack
 {
 	public:
+		/// Constructor
+		StateStack(Client& client);
+
 		/// Destructor.
 		/// This declarations is here in order to avoid a warning about inlining.
 		~StateStack() = default;
@@ -50,8 +54,19 @@ class StateStack
 		bool isEmpty() const;
 
 	private:
+
+		/// Apply the changes that need to be done.
+		/// These changes are stored in _pendingChanges.
+		/// When a state calls pop, this state is deleted (its destructor gets
+		/// called) but when the pop is done, the stack returns to the caller of
+		/// the pop method, which is the state just popped out. Executing code
+		/// from a deleted object is undefined behavior, so by delaying the pop
+		/// (and the clear) we avoid this undefined behavior.
+		void doPendingChanges();
+
 		std::vector<std::unique_ptr<AbstractState>> _stack;  ///< Vector of state.
 		std::vector<std::unique_ptr<AbstractState>>::iterator _stackIterator;  ///< Iterator on _stack.
+		Client& _client;
 		bool _empty = false;  ///< Indicates wether clear() gets called.
 };
 
@@ -61,14 +76,14 @@ void StateStack::push()
 	// If we do the first push or if the iterator is at TOS
 	if(_stack.empty() or *_stackIterator == _stack.back())
 	{
-		_stack.emplace_back(new StateType(*this));
+		_stack.emplace_back(new StateType(*this, _client));
 		_stackIterator = _stack.end() - 1;
 	}
 	// If we must store another state type at *(_stackIterator + 1)
 	else if(typeid(StateType*) != typeid((_stackIterator + 1)->get()))
 	{
 		_stackIterator++;
-		_stackIterator->reset(new StateType(*this));
+		_stackIterator->reset(new StateType(*this, _client));
 	}
 }
 

@@ -11,7 +11,7 @@ class HomeState : public AbstractState
 {
 	public:
 		/// Constructor.
-		HomeState(StateStack& stateStack);
+		HomeState(StateStack& stateStack, Client& client);
 
 		/// The display function.
 		/// It must do all things related to drawing or printing stuff on the screen.

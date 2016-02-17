@@ -1,6 +1,13 @@
 #include "client/AbstractState.hpp"
 #include "client/StateStack.hpp"
 
+StateStack::StateStack(Client& client):
+	_stack(),
+	_client{client}
+{
+
+}
+
 void StateStack::display()
 {
 	(*_stackIterator)->display();
@@ -25,4 +32,3 @@ bool StateStack::isEmpty() const
 {
 	return _stack.empty() or _empty;
 }
-

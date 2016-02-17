@@ -11,7 +11,7 @@ class FriendsManagementState : public AbstractState
 {
 	public:
 		/// Constructor.
-		FriendsManagementState(StateStack& stateStack);
+		FriendsManagementState(StateStack& stateStack, Client& client);
 
 		/// The display function.
 		/// It must do all things related to drawing or printing stuff on the screen.
@@ -21,8 +21,9 @@ class FriendsManagementState : public AbstractState
 		void addFriend();
 		void removeFriend();
 		void backMainMenu();
-
-		std::vector<std::string> _friends;///< The list of friends.
+		void checkRequests();
+		void treatRequests();
+		void startChat();
 };
 
 #endif// _FRIENDS_MANAGEMENT_STATE_CLIENT_HPP

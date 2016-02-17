@@ -37,6 +37,9 @@ public:
 	/// Allows to free correctly the connected sockets
 	void quit();
 
+	/// Destructor
+	~Server();
+
 private:
 	typedef std::unordered_map<std::string, ClientInformations>::iterator _iterator;
 
@@ -47,12 +50,21 @@ private:
 	std::atomic_bool _done;
 	std::atomic_bool _threadRunning;
 	std::thread _quitThread;
+	std::string _waitingPlayer;
+	bool _isAPlayerWaiting;
+	const std::string _quitPrompt;
 
 	// private methods
 	/// Used to handle a newconnection request (when the listener gets a packet)
 	void takeConnection();
 	/// Used to handle data sent by a logged user
 	void receiveData();
+
+	/// Handle the input in stdin and quit the server if asked
+	void waitQuit();
+
+	// Friends management
+
 	/// Used to exchange the correct informations with the clients when a chat request is made
 	void handleChatRequest(sf::Packet& packet, sf::TcpSocket& client);
 	/// Used to remove a player from the server connection
@@ -65,8 +77,15 @@ private:
 	void handleFriendshipRequest(const _iterator& it, sf::Packet& transmission);
 	/// Used to receive the answer of a friendship request
 	void handleFriendshipRequestResponse(const _iterator& it, sf::Packet& transmission);
+	/// Used to send to a client the friendship request he received
+	void sendFriendshipRequests(const _iterator& it);
 	/// Used to send to a client the current state of the friendship requests state
 	void sendFriendshipRequestsState(const _iterator& it);
+
+	// Game management
+
+	/// Used when a player want to play with another player
+	void findOpponent(const _iterator& it);
 };
 
 #endif // _SERVER_HPP_

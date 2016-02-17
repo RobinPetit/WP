@@ -1,11 +1,11 @@
 #include <iostream>
 #include "client/states/CardsCollectionState.hpp"
 
-CardsCollectionState::CardsCollectionState(StateStack& stateStack):
-	AbstractState(stateStack)
+CardsCollectionState::CardsCollectionState(StateStack& stateStack, Client& client):
+	AbstractState(stateStack, client)
 {
 	addAction("Back to main menu", &CardsCollectionState::backMainMenu);
-	//Get the list of cards from the server (for now this is the default collection).
+	// Get the list of cards from the server...
 }
 
 void CardsCollectionState::display()

@@ -5,8 +5,8 @@
 #include "client/states/LadderState.hpp"
 #include "client/states/MainMenuState.hpp"
 
-MainMenuState::MainMenuState(StateStack& stateStack):
-	AbstractState(stateStack)
+MainMenuState::MainMenuState(StateStack& stateStack, Client& client):
+	AbstractState(stateStack, client)
 {
 	addAction("Quit", &MainMenuState::quit);
 	addAction("Find a game", &MainMenuState::findGame);
@@ -30,6 +30,7 @@ void MainMenuState::display()
 void MainMenuState::findGame()
 {
 	std::cout << "So, let's find an opponent...\n";
+	_client.startGame();
 }
 
 void MainMenuState::manageDecks()
@@ -55,6 +56,7 @@ void MainMenuState::manageFriends()
 void MainMenuState::logOut()
 {
 	std::cout << "Bye!...\n";
+	_client.quit();
 	stackPop();
 }
 

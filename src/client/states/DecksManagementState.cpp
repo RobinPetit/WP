@@ -1,8 +1,8 @@
 #include <iostream>
 #include "client/states/DecksManagementState.hpp"
 
-DecksManagementState::DecksManagementState(StateStack& stateStack):
-	AbstractState(stateStack)
+DecksManagementState::DecksManagementState(StateStack& stateStack, Client& client):
+	AbstractState(stateStack, client)
 {
 	addAction("Back to main menu", &DecksManagementState::backMainMenu);
 	addAction("Display a deck", &DecksManagementState::displayDeck);

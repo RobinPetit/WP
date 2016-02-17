@@ -5,12 +5,15 @@
 // std-C++ headers
 #include <iostream>
 #include <cstdlib>
+// WizardPoker heaaders
 #include "client/StateStack.hpp"
 #include "client/states/HomeState.hpp"
+#include "client/sockets/Client.hpp"
 
 int main()
 {
-	StateStack stack;
+	Client client;
+	StateStack stack(client);
 	stack.push<HomeState>();
 	while(not stack.isEmpty())
 	{
