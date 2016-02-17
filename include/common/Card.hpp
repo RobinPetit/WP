@@ -9,17 +9,17 @@ class Card
 {
     unsigned int _cost;
     std::string _name;
-    std::vector<int> _effect;    //~ Create an empty Vector which will contain all the required variables for his effect.
+    std::vector<std::vector<unsigned>> _effect;    //~ Create an empty Vector which will contain all the required variables for his effect.
 
 public:
 
     ///Constructors
-    Card(unsigned int cost = 0, std::string name = "No name" , std::vector<int> effect = {0}):
+    Card(unsigned int cost = 0, std::string name = "No name" , std::vector<vector<unsigned>> effect = {{}}):
             _cost(cost), _name(name), _effect(effect){};
 
     ///Getters
     unsigned int getCost(){return _cost;}
-    int getEffect(){return _effect[0];}
+    std::vector<std::vector<unsigned>> getEffect(){return _effect;}
     std::string getName(){return _name;}
 
     ///Methodes
