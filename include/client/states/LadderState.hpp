@@ -10,6 +10,15 @@ class StateStack;
 class LadderState : public AbstractState
 {
 	public:
+		/// An entry in the ladder. There is no need for further data about the
+		/// users shown in the list.
+		struct LadderEntry
+		{
+			std::string _userName;
+			unsigned int _wonGames;
+			unsigned int _loseGames;
+		};
+
 		/// Constructor.
 		LadderState(StateStack& stateStack, Client& client);
 
@@ -20,7 +29,7 @@ class LadderState : public AbstractState
 	private:
 		void backMainMenu();
 
-		std::vector<std::string> _ladder;
+		std::vector<LadderEntry> _ladder;
 };
 
 #endif// _LADDER_STATE_CLIENT_HPP

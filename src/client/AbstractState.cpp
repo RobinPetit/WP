@@ -45,4 +45,9 @@ void AbstractState::stackClear()
 	_stateStack.clear();
 }
 
-
+void AbstractState::waitForEnter()
+{
+	std::cout << "Press Enter to continue...";
+	std::string tmp;
+	std::getline(std::cin, tmp);
+}
