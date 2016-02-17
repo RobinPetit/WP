@@ -56,10 +56,11 @@ bool Client::connectToServer(const std::string& name, const sf::IpAddress& addre
 	return true;
 }
 
-const std::vector<std::string>& Client::getFriends() const
+const std::vector<std::string>& Client::getFriends()
 {
 	if(!_isConnected)
 		throw NotConnectedException("Unable to send friends");
+	updateFriends();
 	return _friends;
 }
 
