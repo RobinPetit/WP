@@ -24,6 +24,8 @@ public:
 
     ///Methodes
     virtual void print() {std::cout << _name;}
+    virtual isCreature();
+    virtual isSpell();
     
     virtual ~Card()=default;
 
