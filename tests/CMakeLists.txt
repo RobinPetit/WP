@@ -9,6 +9,7 @@ add_definitions(-DBOOST_TEST_DYN_LINK)
 
 set(TESTS_SOURCES
 	"common/ini/IniFileTests.cpp"
+	"common/sockets/PacketOverloadTests.cpp"
 	"common/NotConnectedExceptionTests.cpp"
 	"common/sockets/TransferTypeTests.cpp"
 	"common/TerminalTests.cpp"
