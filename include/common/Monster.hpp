@@ -40,7 +40,7 @@ void Monster::incrHealth(unsigned int LP) {_health+=LP;}
 
 void Monster::decrHealth(unsigned int LP)
 {
-    if(_health < LP){
+    if(_health > LP){
         _health -= LP;}
     else
         _health = 0;
@@ -51,7 +51,7 @@ void Monster::incrAttack(unsigned int attack) {_attack+=attack;}
 
 void Monster::decrAttack(unsigned int attack)
 {
-    if(_attack < attack){
+    if(_attack > attack){
         _attack -= attack;}
     else
         _attack = 0;
