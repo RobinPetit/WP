@@ -33,14 +33,14 @@ struct AbstractStateTestsFixture
 	StateStack stack;
 	TestState testState;
 
-    AbstractStateTestsFixture():
+	AbstractStateTestsFixture():
 		testState{stack}
-    {
-    }
+	{
+	}
 
-    ~AbstractStateTestsFixture()
-    {
-    }
+	~AbstractStateTestsFixture()
+	{
+	}
 };
 
 BOOST_FIXTURE_TEST_SUITE(AbstractStateTests, AbstractStateTestsFixture)
