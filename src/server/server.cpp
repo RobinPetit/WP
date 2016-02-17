@@ -20,6 +20,5 @@ int main()
 	if(config.find("SERVER_PORT") == config.end())
 		return WRONG_FORMAT_CONFIG_FILE;
 	int serverStatus = server.start(std::stoi(config["SERVER_PORT"], nullptr, AUTO_BASE));
-	server.quit();
 	return serverStatus;
 }
