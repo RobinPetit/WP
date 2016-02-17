@@ -1,5 +1,7 @@
 #include <server/Player.hpp>
 
+
+/*--------------------------- BOARD INTERFACE */
 void Player::cardPick(unsigned amount)
 {
 	while (not _cardDeck.empty() and amount>0)
@@ -41,9 +43,35 @@ void Player::turnEnter(unsigned turn)
 void Player::turnLeave(unsigned turn)
 {
 	//Communicate turn & ask to wait to menu
-
 }
 
+
+/*--------------------------- CONSTRAINTS */
+void Player::setConstraint(unsigned constraintID, unsigned value, unsigned turns)
+{
+	_constraintsArray[constraintID].push_back(std::make_pair(value, turns));
+}
+
+unsigned Player::getConstraint(unsigned constraintID)
+{
+    if (_constraintsArray[constraintID].empty()) return _board.getDefaultConstraint(constraintID);
+    else return _constraintsArray[constraintID].rbegin().first();
+}
+
+
+/*--------------------------- EFFECTS */
+void Player::loseHandCards(unsigned amount)
+{
+	while (not _cardHand.empty() and amount>0)
+	{
+		amount--;
+		unsigned handIndex = rand() % _cardHand.size();
+		cardDiscardFromHand(handIndex);
+	}
+}
+
+
+/*--------------------------- PRIVATE */
 void Player::cardDiscardFromHand(unsigned handIndex)
 {
 	_cardBin.push_back(_cardHand.at(handIndex));
@@ -55,3 +83,4 @@ void Player::cardDiscardFromBoard(unsigned boardIndex)
 	_cardBin.push_back(_cardBoard.at(boardIndex));
 	_cardBoard.erase(boardIndex);
 }
+

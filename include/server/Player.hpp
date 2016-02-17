@@ -1,26 +1,35 @@
 #ifndef _PLAYER_HPP
 #define _PLAYER_HPP
 
-#include <stack>
 #include <SFML/System.hpp>
+#include <cstdlib>
 #include <Board.hpp>
+#include <Constraints.hpp>
 
 //Forward declarations
 class Card;
+
 
 /// Represents one of the two players for a given game.
 class Player
 {
 	public:
-		///  Destructor.
+		/// Destructor.
 		~Player() = default;
+
+		/// Interface for basic gameplay (board)
+		void turnEnter();
+		void turnLeave();
 
 		void cardPick(unsigned amount=0);  /// Move the card on top of the deck to the player's hand
 		void cardUse(unsigned handIndex);  /// Use the card
 		void cardAttack(unsigned boardIndex, unsigned victim);  /// Attack victim with the card
 
-		void turnEnter();
-		void turnLeave();
+		/// Effects
+		void setConstraint(std::vector<unsigned> args);
+		void loseHandCards(std::vector<unsigned> args);
+		void damageBoardCreatures(std::vector<unsigned> args);
+
 
 	private:
 		void cardDiscardFromHand(unsigned handIndex);  /// Move the card at handIndex from the player's hand to the bin
@@ -34,14 +43,10 @@ class Player
 		unsigned _energyPoints;
 		unsigned _lifePoints;
 
-		struct
-		{
-			//Vector of pairs(data, remainingTurns)
-			std::vector<std::pair<unsigned, unsigned>> cardPickAmount = {{1, 0}};
-			std::vector<std::pair<unsigned, unsigned>> handMaxSize = {{6, 0}};
-		} _constraints;  ///< Contains variables used for applying effects to game
+		Board* _board;
 
-		std::vector<std::vector<std::pair<unsigned, unsigned>> *> _constraintsVector;
+		std::vector<std::pair<unsigned, unsigned> *> _constraintsArray [constraintCount];
+		unsigned getConstraint(unsigned constraintID);
 
 		struct
 		{
