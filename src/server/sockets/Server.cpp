@@ -11,11 +11,6 @@
 #include <iostream>
 #include <algorithm>
 
-const std::string quitPrompt = ":QUIT";
-
-// static functions prototypes
-static void waitQuit(std::atomic_bool *done, std::atomic_bool *running);
-
 Server::Server():
 	_clients(),
 	_listener(),
@@ -24,7 +19,8 @@ Server::Server():
 	_threadRunning(false),
 	_quitThread(),
 	_waitingPlayer(),
-	_isAPlayerWaiting(false)
+	_isAPlayerWaiting(false),
+	_quitPrompt(":QUIT")
 {
 
 }
@@ -33,7 +29,7 @@ int Server::start(const sf::Uint16 listenerPort)
 {
 	if(_listener.listen(listenerPort) != sf::Socket::Done)
 		return UNABLE_TO_LISTEN;
-	_quitThread = std::thread(waitQuit, &_done, &_threadRunning);
+	_quitThread = std::thread(&Server::waitQuit, this);
 	_threadRunning.store(true);
 	sf::sleep(SOCKET_TIME_SLEEP);
 	_socketSelector.add(_listener);
@@ -157,6 +153,15 @@ void Server::removeClient(const _iterator& it)
 	_clients.erase(it);
 }
 
+void Server::checkPresence(const _iterator& it, sf::Packet& transmission)
+{
+	sf::Packet packet;
+	std::string nameToCheck;
+	transmission >> nameToCheck;
+	packet << TransferType::PLAYER_CHECK_CONNECTION << (_clients.find(nameToCheck) != _clients.end());
+	it->second.socket->send(packet);
+}
+
 void Server::quit()
 {
 	// in case the method is called even though server has not been manually ended
@@ -171,42 +176,26 @@ void Server::quit()
 	_clients.clear();
 }
 
-void Server::checkPresence(const _iterator& it, sf::Packet& transmission)
-{
-	sf::Packet packet;
-	std::string nameToCheck;
-	transmission >> nameToCheck;
-	packet << TransferType::PLAYER_CHECK_CONNECTION << (_clients.find(nameToCheck) != _clients.end());
-	it->second.socket->send(packet);
-}
-
-void Server::sendFriends(const _iterator& it)
-{
-	std::vector<std::string> friends;
-	/// \TODO use database to find the friends
-	sf::Packet packet;
-	packet << friends;
-	it->second.socket->send(packet);
-}
-
 Server::~Server()
 {
 	quit();
 }
 
-static void waitQuit(std::atomic_bool *done, std::atomic_bool *running)
+void Server::waitQuit()
 {
-	std::cout << "Type '" << quitPrompt << "' to end the server" << std::endl;
+	std::cout << "Type '" << _quitPrompt << "' to end the server" << std::endl;
 	std::string input;
-	while(!done->load())
+	while(!_done.load())
 	{
 		std::cin >> input;
-		if(input == quitPrompt)
-			done->store(true);
+		if(input == _quitPrompt)
+			_done.store(true);
 	}
-	running->store(false);
+	_threadRunning.store(false);
 	std::cout << "ending server..." << std::endl;
 }
+
+
 
 // Game management
 
@@ -345,3 +334,13 @@ void Server::sendFriendshipRequestsState(const _iterator& it)
 	accepted.erase(accepted.cbegin(), accepted.cend());
 	refused.erase(refused.cbegin(), refused.cend());
 }
+
+void Server::sendFriends(const _iterator& it)
+{
+	std::vector<std::string> friends;
+	/// \TODO use database to find the friends
+	sf::Packet packet;
+	packet << friends;
+	it->second.socket->send(packet);
+}
+

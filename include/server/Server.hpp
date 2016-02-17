@@ -52,12 +52,16 @@ private:
 	std::thread _quitThread;
 	std::string _waitingPlayer;
 	bool _isAPlayerWaiting;
+	const std::string _quitPrompt;
 
 	// private methods
 	/// Used to handle a newconnection request (when the listener gets a packet)
 	void takeConnection();
 	/// Used to handle data sent by a logged user
 	void receiveData();
+
+	/// Handle the input in stdin and quit the server if asked
+	void waitQuit();
 
 	// Friends management
 
