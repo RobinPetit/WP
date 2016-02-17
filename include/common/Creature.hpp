@@ -1,11 +1,11 @@
-#ifndef MONSTER_COMMON_HPP
-#define MONSTER_COMMON_HPP
+#ifndef CREATURE_COMMON_HPP
+#define CREATURE_COMMON_HPP
 
 #include "Card.hpp"
 
 
-///Monster card : One of the 2 playables card
-class Monster : public Card
+///Creature card : One of the 2 playables card
+class Creature : public Card
 {
 	unsigned int _attack;
 	unsigned int _health;
@@ -13,7 +13,7 @@ class Monster : public Card
 public:
 
 	///Constructors
-    Monster(unsigned int cost = 0 , std::string name = "No name", std::vector<int> effect = {0},
+    Creature(unsigned int cost = 0 , std::string name = "No name", std::vector<int> effect = {0},
              unsigned int attack = 1, unsigned int health = 1): Card(cost, name, effect),
               _attack(attack), _health(health){};
 
@@ -36,9 +36,9 @@ public:
 	inline bool hasEffect() {return (this->getEffect()!= 0);}
 };
 
-void Monster::incrHealth(unsigned int LP) {_health+=LP;}
+void Creature::incrHealth(unsigned int LP) {_health+=LP;}
 
-void Monster::decrHealth(unsigned int LP)
+void Creature::decrHealth(unsigned int LP)
 {
     if(_health > LP){
         _health -= LP;}
@@ -47,9 +47,9 @@ void Monster::decrHealth(unsigned int LP)
 
 }
 
-void Monster::incrAttack(unsigned int attack) {_attack+=attack;}
+void Creature::incrAttack(unsigned int attack) {_attack+=attack;}
 
-void Monster::decrAttack(unsigned int attack)
+void Creature::decrAttack(unsigned int attack)
 {
     if(_attack > attack){
         _attack -= attack;}
@@ -57,4 +57,4 @@ void Monster::decrAttack(unsigned int attack)
         _attack = 0;
 }
 
-#endif // MONSTER_COMMON_HPP
+#endif // CREATURE_COMMON_HPP
