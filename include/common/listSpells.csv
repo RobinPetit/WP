@@ -1,4 +1,4 @@
-Name,Cost,Effect
+Name,Cost,Effect,Description
 Block,9,0,"Block all attacks for the next X turns"
 Care,5,0,"Give to a monster X health points"
 Exchange,7,0,"Allow the player using this effect to exchange a card of his choice with his opponent"
