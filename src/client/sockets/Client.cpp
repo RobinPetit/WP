@@ -99,6 +99,7 @@ void Client::updateFriends()
 	_socket.send(packet);
 	_socket.receive(packet);
 	// std::vector packing has been defined in PacketOverload.hpp
+	_friends.clear();
 	packet >> _friends;
 }
 
