@@ -18,6 +18,8 @@ Server::Server():
 	_done(false),
 	_threadRunning(false),
 	_quitThread(),
+	_waitingPlayer(),
+	_isAPlayerWaiting(false),
 	_quitPrompt(":QUIT")
 {
 
@@ -104,6 +106,7 @@ void Server::receiveData()
 			std::cout << "Player " << it->first << " quits the game!" << std::endl;
 			removeClient(it);
 			break;
+		// Friendship management
 		case TransferType::PLAYER_CHECK_CONNECTION:
 			checkPresence(it, packet);
 			break;
@@ -124,6 +127,10 @@ void Server::receiveData()
 			break;
 		case TransferType::PLAYER_GETTING_FRIEND_REQUESTS:
 			sendFriendshipRequests(it);
+			break;
+		// Game management
+		case TransferType::GAME_REQUEST:
+			findOpponent(it);
 			break;
 		default:
 			std::cerr << "Error: unknown code " << static_cast<sf::Uint32>(type) << std::endl;
@@ -148,6 +155,79 @@ void Server::removeClient(const _iterator& it)
 	// remove from the map
 	_clients.erase(it);
 }
+
+void Server::checkPresence(const _iterator& it, sf::Packet& transmission)
+{
+	sf::Packet packet;
+	std::string nameToCheck;
+	transmission >> nameToCheck;
+	packet << TransferType::PLAYER_CHECK_CONNECTION << (_clients.find(nameToCheck) != _clients.end());
+	it->second.socket->send(packet);
+}
+
+void Server::quit()
+{
+	// in case the method is called even though server has not been manually ended
+	_done.store(true);
+	_quitThread.join();
+	_threadRunning.store(false);
+	for(auto it = _clients.begin(); it != _clients.end(); ++it)
+	{
+		_socketSelector.remove(*(it->second.socket));
+		delete it->second.socket;
+	}
+	_clients.clear();
+}
+
+Server::~Server()
+{
+	quit();
+}
+
+void Server::waitQuit()
+{
+	std::cout << "Type '" << _quitPrompt << "' to end the server" << std::endl;
+	std::string input;
+	while(!_done.load())
+	{
+		std::cin >> input;
+		if(input == _quitPrompt)
+			_done.store(true);
+	}
+	_threadRunning.store(false);
+	std::cout << "ending server..." << std::endl;
+}
+
+
+
+// Game management
+
+void Server::findOpponent(const _iterator& it)
+{
+	if(!_isAPlayerWaiting)
+	{
+		_isAPlayerWaiting = true;
+		_waitingPlayer = it->first;
+	}
+	else
+	{
+		const auto& waitingPlayer = _clients.find(_waitingPlayer);
+		// if waiting player is not present anymore
+		if(waitingPlayer == _clients.end())
+			_waitingPlayer = it->first;
+		else
+		{
+			sf::Packet toFirst, toSecond;
+			toFirst << it->first;
+			toSecond << _waitingPlayer;
+			it->second.socket->send(toSecond);
+			waitingPlayer->second.socket->send(toFirst);
+			_isAPlayerWaiting = false;
+		}
+	}
+}
+
+// Friends management
 
 void Server::handleChatRequest(sf::Packet& packet, sf::TcpSocket& client)
 {
@@ -256,29 +336,6 @@ void Server::sendFriendshipRequestsState(const _iterator& it)
 	auto& refused = it->second.refusedRequests;
 	accepted.erase(accepted.cbegin(), accepted.cend());
 	refused.erase(refused.cbegin(), refused.cend());
-}
-
-void Server::quit()
-{
-	// in case the method is called even though server has not been manually ended
-	_done.store(true);
-	_quitThread.join();
-	_threadRunning.store(false);
-	for(auto it = _clients.begin(); it != _clients.end(); ++it)
-	{
-		_socketSelector.remove(*(it->second.socket));
-		delete it->second.socket;
-	}
-	_clients.clear();
-}
-
-void Server::checkPresence(const _iterator& it, sf::Packet& transmission)
-{
-	sf::Packet packet;
-	std::string nameToCheck;
-	transmission >> nameToCheck;
-	packet << TransferType::PLAYER_CHECK_CONNECTION << (_clients.find(nameToCheck) != _clients.end());
-	it->second.socket->send(packet);
 }
 
 void Server::sendFriends(const _iterator& it)
