@@ -32,7 +32,6 @@ public:
     void decrAttack(unsigned int);
 
 	/// Methods
-	inline bool hasEffect() {return (this->getEffect().size());}
 	virtual inline bool isCreature() { return true; } override;
 	virtual inline bool isSpell() { return false; } override;
 
