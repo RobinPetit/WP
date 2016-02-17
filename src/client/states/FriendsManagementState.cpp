@@ -21,9 +21,15 @@ FriendsManagementState::FriendsManagementState(StateStack& stateStack, Client& c
 
 void FriendsManagementState::display()
 {
-	std::cout << "Here are your friends:\n";
-	for(const auto& friendName : _client.getFriends())
-		std::cout << "* " << friendName << "\n";
+	const auto& friends(_client.getFriends());
+	if(friends.empty())
+		std::cout << "You have no friend yet!\n";
+	else
+	{
+		std::cout << "Here is your friends list:\n";
+		for(const auto& friendName : _client.getFriends())
+			std::cout << "* " << friendName << "\n";
+	}
 
 	// Display the actions
 	AbstractState::display();
