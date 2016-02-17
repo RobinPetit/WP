@@ -1,11 +1,11 @@
 Name,Cost,Effect
-Block,9,0
-Care,5,0
-Exchange,7,0
-Hypnosis,4,0
-Mirror,6,0
-Paralyze,3,0
-Resurrection,15,0
-Reverse,10,0
-Shield,2,0
-Stealing,8,0
+Block,9,0,"Block all attacks for the next X turns"
+Care,5,0,"Give to a monster X health points"
+Exchange,7,0,"Allow the player using this effect to exchange a card of his choice with his opponent"
+Hypnosis,4,0,"Allow the player using this effet to use an opponent's card for X turns"
+Mirror,6,0,"Send back an attack to the opponent"
+Paralyze,3,0,"Forbid the opponent to use a card for X turns"
+Resurrection,9,0,"Allow the player using this effect to get a discarded card"
+Reverse,10,0,"Reverse the board for the rest of the game"
+Shield,2,0,"Cancel a monster's attack"
+Stealing,8,0,"Allow the player using this effet to steal a card for the rest of the game"
