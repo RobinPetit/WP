@@ -19,9 +19,9 @@ class CardsCollectionState : public AbstractState
 
 	private:
 		void backMainMenu();
-		std::vector<std::string> _cards;// The list of cards, use the class Card instead of std::string when it will be available
+		std::vector<std::string> _cards;  // The list of cards, use the class Card instead of std::string when it will be available
 
 };
 
-#endif// _CARDS_COLLECTION_STATE_CLIENT_HPP
+#endif  // _CARDS_COLLECTION_STATE_CLIENT_HPP
 

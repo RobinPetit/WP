@@ -5,7 +5,7 @@ CardsCollectionState::CardsCollectionState(StateStack& stateStack, Client& clien
 	AbstractState(stateStack, client)
 {
 	addAction("Back to main menu", &CardsCollectionState::backMainMenu);
-	//Get the list of cards from the server...
+	// Get the list of cards from the server...
 	_cards.emplace_back("Saruman the White");
 	_cards.emplace_back("Gandalf the Grey");
 	_cards.emplace_back("Aragorn, heir of Isildur");

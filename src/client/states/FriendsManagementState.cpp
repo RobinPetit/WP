@@ -64,13 +64,13 @@ void FriendsManagementState::checkRequests()
 	if(acceptedRequests.size() != 0)
 	{
 		std::cout << "\nThe following players accepted your friendship requests:" << std::endl;
-		for(const std::string& name: acceptedRequests)
+		for(const auto& name: acceptedRequests)
 			std::cout << "+ " << name << std::endl;
 	}
 	if(refusedRequests.size() != 0)
 	{
 		std::cout << "\nThe following players refused you friendship requests:" << std::endl;
-		for(const std::string& name: refusedRequests)
+		for(const auto& name: refusedRequests)
 			std::cout << "+ " << name << std::endl;
 	}
 
@@ -88,7 +88,7 @@ void FriendsManagementState::treatRequests()
 		std::cout << "You have no incoming friendship request" << std::endl;
 	else
 	{
-		for(const std::string& name: incomingRequests)
+		for(const auto& name: incomingRequests)
 		{
 			std::cout << name << " wants to become your friend.\n"
 			          << FRIENDSHIP_REQUEST_ACCEPT << ". Accept request\n"
@@ -96,8 +96,10 @@ void FriendsManagementState::treatRequests()
 			          << FRIENDSHIP_REQUEST_IGNORE << ". Ignore request\n\t";
 			int choice;
 			std::cin >> choice;
-			if(choice == FRIENDSHIP_REQUEST_ACCEPT || choice == FRIENDSHIP_REQUEST_REFUSE)
-				_client.acceptFriendshipRequest(name, choice == FRIENDSHIP_REQUEST_ACCEPT);
+			if(choice == FRIENDSHIP_REQUEST_ACCEPT)
+				_client.acceptFriendshipRequest(name);
+			else if (choice == FRIENDSHIP_REQUEST_REFUSE)
+				_client.acceptFriendshipRequest(name, false);
 		}
 
 	}
