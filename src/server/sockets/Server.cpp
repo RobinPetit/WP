@@ -11,18 +11,14 @@
 #include <iostream>
 #include <algorithm>
 
-const std::string quitPrompt = ":QUIT";
-
-// static functions prototypes
-static void waitQuit(std::atomic_bool *done, std::atomic_bool *running);
-
 Server::Server():
 	_clients(),
 	_listener(),
 	_socketSelector(),
 	_done(false),
 	_threadRunning(false),
-	_quitThread()
+	_quitThread(),
+	_quitPrompt(":QUIT")
 {
 
 }
@@ -31,7 +27,7 @@ int Server::start(const sf::Uint16 listenerPort)
 {
 	if(_listener.listen(listenerPort) != sf::Socket::Done)
 		return UNABLE_TO_LISTEN;
-	_quitThread = std::thread(waitQuit, &_done, &_threadRunning);
+	_quitThread = std::thread(&Server::waitQuit, this);
 	_threadRunning.store(true);
 	sf::sleep(SOCKET_TIME_SLEEP);
 	_socketSelector.add(_listener);
@@ -296,17 +292,17 @@ Server::~Server()
 	quit();
 }
 
-static void waitQuit(std::atomic_bool *done, std::atomic_bool *running)
+void Server::waitQuit()
 {
-	std::cout << "Type '" << quitPrompt << "' to end the server" << std::endl;
+	std::cout << "Type '" << _quitPrompt << "' to end the server" << std::endl;
 	std::string input;
-	while(!done->load())
+	while(!_done.load())
 	{
 		std::cin >> input;
-		if(input == quitPrompt)
-			done->store(true);
+		if(input == _quitPrompt)
+			_done.store(true);
 	}
-	running->store(false);
+	_threadRunning.store(false);
 	std::cout << "ending server..." << std::endl;
 }
 

@@ -50,6 +50,8 @@ private:
 	std::atomic_bool _done;
 	std::atomic_bool _threadRunning;
 	std::thread _quitThread;
+	const std::string _quitPrompt;
+
 
 	// private methods
 	/// Used to handle a newconnection request (when the listener gets a packet)
@@ -72,6 +74,9 @@ private:
 	void sendFriendshipRequests(const _iterator& it);
 	/// Used to send to a client the current state of the friendship requests state
 	void sendFriendshipRequestsState(const _iterator& it);
+	/// Handle the input in stdin and quit the server if asked
+	void waitQuit();
+
 };
 
 #endif // _SERVER_HPP_
