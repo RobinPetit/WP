@@ -27,6 +27,8 @@ public:
 	/// \param port The port the server occupies
 	bool connectToServer(const std::string& name, const sf::IpAddress& address, sf::Uint16 port);
 
+	// Friends management
+
 	/// The function used to start the process of making a new discussion with the chat program
 	/// \return True if the chat program has been started and false otherwise
 	/// \param playerName The name of the player the client wants to discuss with
@@ -80,6 +82,10 @@ public:
 	/// \return True if the player was successfully removed and false if he is not a friend
 	/// \param name The name of the player to remove from the friends list
 	bool removeFriend(const std::string& name);
+
+	// Game management
+	/// \TODO Complete this method (and its signature)
+	void startGame();
 
 	/// The function used to rest assured all conections are stopped and the client is
 	/// not waiting for entering chat connections anymore

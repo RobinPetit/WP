@@ -56,6 +56,45 @@ bool Client::connectToServer(const std::string& name, const sf::IpAddress& addre
 	return true;
 }
 
+void Client::initListener()
+{
+	_threadLoop.store(true);
+	_listenerThread = std::thread(chatListening, &_chatListenerPort, &_threadLoop, _userTerminal);
+}
+
+void Client::quit()
+{
+	if(!_isConnected)
+		return;
+	// tell the server that the player leaves
+	sf::Packet packet;
+	packet << TransferType::PLAYER_DISCONNECTION;
+	_socket.send(packet);
+	_threadLoop.store(false);
+	_listenerThread.join();
+	_isConnected = false;
+}
+
+Client::~Client()
+{
+	quit();
+}
+
+// Game management
+
+void Client::startGame()
+{
+	sf::Packet packet;
+	packet << TransferType::GAME_REQUEST;
+	_socket.send(packet);
+	_socket.receive(packet);
+	std::string opponentName;
+	packet >> opponentName;
+	std::cout << "opponent found: " << opponentName << std::endl;
+}
+
+// Friends management
+
 const std::vector<std::string>& Client::getFriends() const
 {
 	if(!_isConnected)
@@ -199,26 +238,3 @@ bool Client::startConversation(const std::string& playerName) const
 	return true;
 }
 
-void Client::initListener()
-{
-	_threadLoop.store(true);
-	_listenerThread = std::thread(chatListening, &_chatListenerPort, &_threadLoop, _userTerminal);
-}
-
-void Client::quit()
-{
-	if(!_isConnected)
-		return;
-	// tell the server that the player leaves
-	sf::Packet packet;
-	packet << TransferType::PLAYER_DISCONNECTION;
-	_socket.send(packet);
-	_threadLoop.store(false);
-	_listenerThread.join();
-	_isConnected = false;
-}
-
-Client::~Client()
-{
-	quit();
-}

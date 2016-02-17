@@ -30,6 +30,7 @@ void MainMenuState::display()
 void MainMenuState::findGame()
 {
 	std::cout << "So, let's find an opponent...\n";
+	_client.startGame();
 }
 
 void MainMenuState::manageDecks()
