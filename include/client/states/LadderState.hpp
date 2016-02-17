@@ -10,8 +10,6 @@ class StateStack;
 class LadderState : public AbstractState
 {
 	public:
-		static constexpr std::size_t ladderSize = 10;  ///< The number of entries in the ladder.
-
 		/// An entry in the ladder. There is no need for further data about the
 		/// users shown in the list.
 		struct LadderEntry
@@ -31,7 +29,7 @@ class LadderState : public AbstractState
 	private:
 		void backMainMenu();
 
-		std::array<LadderEntry, ladderSize> _ladder;
+		std::vector<LadderEntry> _ladder;
 };
 
 #endif// _LADDER_STATE_CLIENT_HPP

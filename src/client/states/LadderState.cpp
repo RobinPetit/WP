@@ -6,16 +6,10 @@ LadderState::LadderState(StateStack& stateStack):
 {
 	addAction("Back to main menu", &LadderState::backMainMenu);
 	// Get the list of user from the server...
-	_ladder[0] = {"Emile", 0, 1};
-	_ladder[1] = {"Marc-Henry", 0, 0};
-	_ladder[2] = {"Sigmund", 1, 0};
-	_ladder[3] = {"Jean-jacques", 1, 1};
-	_ladder[4] = {"Bertrand-Ernest", 10, 9};
-	_ladder[5] = {"Rodalf", 6, 6};
-	_ladder[6] = {"Björn", 666, 666};
-	_ladder[7] = {"Sylvain", 4, 9};
-	_ladder[8] = {"Bernard", 1, 10};
-	_ladder[9] = {"Serge", 3, 1};
+	_ladder = {{"Emile", 0, 1}, {"Marc-Henry", 0, 0}, {"Sigmund", 1, 0},
+			{"Jean-jacques", 1, 1}, {"Bertrand-Ernest", 10, 9}, {"Rodalf", 6, 6},
+			{"Björn", 666, 666}, {"Sylvain", 4, 9}, {"Bernard", 1, 10},
+			{"Serge", 3, 1}};
 	// Sort the ladder according to user's win games/played games ratio
 	// This sorting criterion can really be improved
 	std::sort(_ladder.begin(), _ladder.end(), [](const LadderEntry& lhs, const LadderEntry& rhs)
