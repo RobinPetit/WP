@@ -21,9 +21,15 @@ FriendsManagementState::FriendsManagementState(StateStack& stateStack, Client& c
 
 void FriendsManagementState::display()
 {
-	std::cout << "Here are your friends:\n";
-	for(const auto& friendName : _client.getFriends())
-		std::cout << "* " << friendName << "\n";
+	const auto& friends(_client.getFriends());
+	if(friends.empty())
+		std::cout << "You have no friend yet!\n";
+	else
+	{
+		std::cout << "Here is your friends list:\n";
+		for(const auto& friendName : _client.getFriends())
+			std::cout << "* " << friendName << "\n";
+	}
 
 	// Display the actions
 	AbstractState::display();
@@ -36,9 +42,10 @@ void FriendsManagementState::addFriend()
 	std::getline(std::cin, input);
 	// Get the user data from the user name (input)...
 	if(_client.askNewFriend(input))
-		std::cout << "A friendship request has been sent to " << input << std::endl;
+		std::cout << "A friendship request has been sent to " << input << ".\n";
 	else
 		std::cout << "It seems that " << input << " is already in your friends list.\n";
+	waitForEnter();
 }
 
 void FriendsManagementState::removeFriend()
@@ -47,9 +54,10 @@ void FriendsManagementState::removeFriend()
 	std::string input;
 	std::getline(std::cin, input);
 	if(_client.removeFriend(input))
-		std::cout << input << "has been removed from you friend list" << std::endl;
+		std::cout << input << "has been removed from you friend list.\n";
 	else
 		std::cout << "It seems that " << input << " is not in your friends list.\n";
+	waitForEnter();
 }
 
 void FriendsManagementState::checkRequests()
@@ -58,21 +66,24 @@ void FriendsManagementState::checkRequests()
 	std::vector<std::string> refusedRequests;
 	if(!_client.updateFriendshipRequests(acceptedRequests, refusedRequests))
 	{
-		std::cerr << "Unable to get requests state from the server" << std::endl;
+		std::cerr << "Unable to get requests state from the server.\n";
 		return;
 	}
-	if(acceptedRequests.size() != 0)
+	if(not acceptedRequests.empty())
 	{
-		std::cout << "\nThe following players accepted your friendship requests:" << std::endl;
+		std::cout << "\nThe following players accepted your friendship requests:\n";
 		for(const auto& name: acceptedRequests)
 			std::cout << "+ " << name << std::endl;
 	}
-	if(refusedRequests.size() != 0)
+	if(not refusedRequests.empty())
 	{
-		std::cout << "\nThe following players refused you friendship requests:" << std::endl;
+		std::cout << "\nThe following players refused you friendship requests:\n";
 		for(const auto& name: refusedRequests)
 			std::cout << "+ " << name << std::endl;
 	}
+	if(acceptedRequests.empty() and refusedRequests.empty())
+		std::cout << "There is nothing new with your friendship requests.\n";
+	waitForEnter();
 
 }
 
@@ -81,11 +92,11 @@ void FriendsManagementState::treatRequests()
 	std::vector<std::string> incomingRequests;
 	if(!_client.getIncomingFriendshipRequests(incomingRequests))
 	{
-		std::cerr << "Unable to get requests state from the server" << std::endl;
+		std::cerr << "Unable to get requests state from the server.\n";
 		return;
 	}
 	if(incomingRequests.size() == 0)
-		std::cout << "You have no incoming friendship request" << std::endl;
+		std::cout << "You have no incoming friendship request.\n";
 	else
 	{
 		for(const auto& name: incomingRequests)
@@ -103,6 +114,7 @@ void FriendsManagementState::treatRequests()
 		}
 
 	}
+	waitForEnter();
 }
 
 void FriendsManagementState::startChat()
@@ -111,7 +123,8 @@ void FriendsManagementState::startChat()
 	std::cout << "Who do you want to chat with? ";
 	std::getline(std::cin, friendName);
 	if(!_client.startConversation(friendName))
-		std::cout << "Unable to chat with " << friendName << std::endl;
+		std::cout << "Unable to chat with " << friendName << ".\n";
+	waitForEnter();
 }
 
 void FriendsManagementState::backMainMenu()
