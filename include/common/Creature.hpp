@@ -13,9 +13,9 @@ class Creature : public Card
 public:
 
 	///Constructors
-    Creature(unsigned int cost = 0 , std::string name = "No name", std::vector<int> effect = {0},
-             unsigned int attack = 1, unsigned int health = 1): Card(cost, name, effect),
-              _attack(attack), _health(health){};
+    Creature(unsigned int cost = 0 , std::string name = "No name", std::vector<std::vector<unsigned>> effect = {},
+            unsigned int attack = 1, unsigned int health = 1): Card(cost, name, effect),        //ici
+                _attack(attack), _health(health){};
 
     ///Getters
     inline unsigned int getHealth(){return _health;}
@@ -33,7 +33,7 @@ public:
     
 
 	///Methods
-	inline bool hasEffect() {return (this->getEffect()!= 0);}
+	inline bool hasEffect() {return (this->getEffect().size());}
 };
 
 void Creature::incrHealth(unsigned int LP) {_health+=LP;}
