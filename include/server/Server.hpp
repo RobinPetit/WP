@@ -66,6 +66,8 @@ private:
 	void checkPresence(const _iterator& it, sf::Packet& transmission);
 	/// Used to send the list of friends of a user
 	void sendFriends(const _iterator& it);
+	/// Used to update the database when an user remove an entry in its friend list
+	void handleRemoveFriend(const _iterator& it, sf::Packet& transmission);
 	/// Used to update the internal data when a frienship request is made
 	void handleFriendshipRequest(const _iterator& it, sf::Packet& transmission);
 	/// Used to receive the answer of a friendship request

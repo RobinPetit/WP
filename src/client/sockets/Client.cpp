@@ -162,9 +162,15 @@ bool Client::isFriend(const std::string& name) const
 
 bool Client::removeFriend(const std::string& name)
 {
+	if(!_isConnected)
+		throw NotConnectedException("Unable to remove friend");
 	if(!isFriend(name))
 		return false;
-	_friends.erase(std::find(_friends.cbegin(), _friends.cend(), name));
+	sf::Packet packet;
+	// send that the user remove name from its friend list
+	packet << TransferType::PLAYER_REMOVE_FRIEND;
+	packet << name;
+	_socket.send(packet);
 	return true;
 }
 

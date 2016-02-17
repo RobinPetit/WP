@@ -113,6 +113,9 @@ void Server::receiveData()
 		case TransferType::PLAYER_NEW_FRIEND:
 			handleFriendshipRequest(it, packet);
 			break;
+		case TransferType::PLAYER_REMOVE_FRIEND:
+			handleRemoveFriend(it, packet);
+			break;
 		case TransferType::PLAYER_RESPONSE_FRIEND_REQUEST:
 			handleFriendshipRequestResponse(it, packet);
 			break;
@@ -285,6 +288,13 @@ void Server::sendFriends(const _iterator& it)
 	sf::Packet packet;
 	packet << friends;
 	it->second.socket->send(packet);
+}
+
+void Server::handleRemoveFriend(const _iterator& it, sf::Packet& transmission)
+{
+	std::string removedFriend;
+	transmission >> removedFriend;
+	// TODO update database, remove removedFriend from the friend list of it
 }
 
 Server::~Server()
