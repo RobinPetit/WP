@@ -9,7 +9,7 @@
 class Card;
 
 //Effects
-struct {
+constexpr struct {
 	unsigned setConstraint=0;			//set a constraint for the player
 	unsigned loseHandCards=1;			//lose an amount of random cards from the hand
 	unsigned damageBoardCreatures=2;	//damage all the player's creatures on the board
@@ -28,7 +28,7 @@ constexpr struct {
 class Board
 {
 	public:
-		/// Destructor.
+		/// Destructor
 		~Board() = default;
 
 		/// Interface for user
@@ -49,7 +49,7 @@ class Board
 
 		//Effects
 		void* [] _effects = {
-			Player::*setConstraint()
+			Player::*setConstraint(),
 			Player::*loseHandCards(),
 			Player::*damageBoardCreatures()
 		};

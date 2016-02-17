@@ -18,8 +18,8 @@ class Player
 		~Player() = default;
 
 		/// Interface for basic gameplay (board)
-		void turnEnter();
-		void turnLeave();
+		void turnEnter(unsigned turn);
+		void turnLeave(unsigned turn);
 
 		void cardPick(unsigned amount=0);  /// Move the card on top of the deck to the player's hand
 		void cardUse(unsigned handIndex);  /// Use the card
