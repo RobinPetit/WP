@@ -27,7 +27,7 @@ void FriendsManagementState::display()
 	else
 	{
 		std::cout << "Here is your friends list:\n";
-		for(const auto& friendName : _client.getFriends())
+		for(const auto& friendName : friends)
 			std::cout << "* " << friendName << "\n";
 	}
 
