@@ -1,12 +1,10 @@
 #ifndef _BOARD_HPP
 #define _BOARD_HPP
 
-#include <stack>
 #include <SFML/System.hpp>
-#include <Player.hpp>
+#include "Player.hpp"
+#include "Card.hpp"
 
-//Forward declarations
-class Card;
 
 //Effects
 constexpr struct {

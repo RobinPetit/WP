@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include "Board.hpp"
+
 
 class Card
 {

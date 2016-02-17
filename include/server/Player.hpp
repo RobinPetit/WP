@@ -3,11 +3,8 @@
 
 #include <SFML/System.hpp>
 #include <cstdlib>
-#include <Board.hpp>
-#include <Constraints.hpp>
-
-//Forward declarations
-class Card;
+#include "Board.hpp"
+#include "Card.hpp"
 
 
 /// Represents one of the two players for a given game.
