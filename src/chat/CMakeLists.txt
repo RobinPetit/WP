@@ -1,5 +1,5 @@
 # For now there is no file to compile for the chat other than chat.cpp
-# But ass soon there is one or more, uncomment and add them here
+# But as soon there is one or more, uncomment and add them here
 #add_library(${CHAT_LIB_NAME}
 #		)
 
