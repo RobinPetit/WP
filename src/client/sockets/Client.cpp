@@ -95,10 +95,11 @@ void Client::startGame()
 
 // Friends management
 
-const std::vector<std::string>& Client::getFriends() const
+const std::vector<std::string>& Client::getFriends()
 {
 	if(!_isConnected)
 		throw NotConnectedException("Unable to send friends");
+	updateFriends();
 	return _friends;
 }
 
@@ -137,6 +138,7 @@ void Client::updateFriends()
 	_socket.send(packet);
 	_socket.receive(packet);
 	// std::vector packing has been defined in PacketOverload.hpp
+	_friends.clear();
 	packet >> _friends;
 }
 
@@ -200,9 +202,15 @@ bool Client::isFriend(const std::string& name) const
 
 bool Client::removeFriend(const std::string& name)
 {
+	if(!_isConnected)
+		throw NotConnectedException("Unable to remove friend");
 	if(!isFriend(name))
 		return false;
-	_friends.erase(std::find(_friends.cbegin(), _friends.cend(), name));
+	sf::Packet packet;
+	// send that the user remove name from its friend list
+	packet << TransferType::PLAYER_REMOVE_FRIEND;
+	packet << name;
+	_socket.send(packet);
 	return true;
 }
 
