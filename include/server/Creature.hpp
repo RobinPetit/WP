@@ -1,5 +1,5 @@
-#ifndef CREATURE_COMMON_HPP
-#define CREATURE_COMMON_HPP
+#ifndef CREATURE_SERVER_HPP
+#define CREATURE_SERVER_HPP
 
 #include "Card.hpp"
 
@@ -57,4 +57,4 @@ void Creature::decrAttack(unsigned int attack)
         _attack = 0;
 }
 
-#endif // CREATURE_COMMON_HPP
+#endif // CREATURE_SERVER_HPP

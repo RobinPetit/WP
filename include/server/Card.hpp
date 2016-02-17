@@ -1,5 +1,5 @@
-#ifndef _CARD_COMMON_HPP
-#define _CARD_COMMON_HPP
+#ifndef _CARD_SERVER_HPP
+#define _CARD_SERVER_HPP
 
 #include <string>
 #include <vector>
@@ -31,4 +31,4 @@ public:
 
 };
 
-#endif //_CARD_COMMON_HPP
+#endif //_CARD_SERVER_HPP

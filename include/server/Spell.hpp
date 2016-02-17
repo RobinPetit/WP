@@ -1,5 +1,5 @@
-#ifndef _SPELL_COMMON_HPP
-#define _SPELL_COMMON_HPP
+#ifndef _SPELL_SERVER_HPP
+#define _SPELL_SERVER_HPP
 
 #include "Card.hpp"
 
@@ -8,4 +8,4 @@ class Spell: public Card
 {
 };
 
-#endif //_SPELL_COMMON_HPP
+#endif //_SPELL_SERVER_HPP
