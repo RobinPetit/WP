@@ -103,7 +103,7 @@ unsigned Player::getConstraint(unsigned constraintID)
 
 void Player::timeOutConstraints()
 {
-    for (int i=0; i<P_CONSTRAINTS_COUNT; i++)
+    for (unsigned i=0; i<P_CONSTRAINTS_COUNT; i++)
     {
         std::vector<std::pair<unsigned, unsigned>> vect = _constraintsArray[i];
         for (std::vector<std::pair<unsigned, unsigned>>::iterator vectIt=vect.begin(); vectIt!=vect.end();)
@@ -212,7 +212,7 @@ void Player::cardPlaceOnBoard(unsigned handIndex)
 {
 	// TODO: treat properly case of handIndex being out of range
 	const auto& handIt = std::find(_cardHand.begin(), _cardHand.end(), _cardHand[handIndex]);
-	_cardBoard.push_back(Creature* dynamic_cast<Card*> (_cardHand.at(handIndex)));
+	_cardBoard.push_back(dynamic_cast<Creature*>(_cardHand.at(handIndex)));
 	_cardHand.erase(handIt);
     //NETWORK: BOARD_CHANGED
     //NETWORK: DECK_CHANGED

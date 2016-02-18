@@ -8,18 +8,19 @@
 class Creature : public Card
 {
 private:
-	unsigned int _attack, _attackInit;
-	unsigned int _health, _healthInit;
+	unsigned _attack, _attackInit;
+	unsigned _health, _healthInit;
+	unsigned _shield, _shieldInit;
     std::vector<std::vector<unsigned>> _turnByTurnEffects;
     std::vector<std::vector<unsigned>> _endingEffects;
 
 public:
 
 	/// Constructors
-    Creature(unsigned int cost = 0 , std::string name = "No name", std::vector<std::vector<unsigned>> instantEffects = {{}},
-    		std::vector<std::vector<unsigned>> turnEffects = {{}}, std::vector<std::vector<unsigned>> endingEffects = {{}},
-            	unsigned int attack = 0, unsigned int health = 1): Card(cost, name, instantEffects),
-            		 _turnByTurnEffects(turnEffects), _endingEffects(endingEffects), _attack(attack), _health(health){};
+    Creature(unsigned cost=0, unsigned attack=0, unsigned health=1, unsigned shield=0,
+			std::vector<std::vector<unsigned>> instantEffects = {{}},
+    		std::vector<std::vector<unsigned>> turnEffects = {{}},
+    		std::vector<std::vector<unsigned>> endingEffects = {{}});
 
     /// Getters
     inline unsigned int getHealth(){return _health;}
@@ -29,12 +30,20 @@ public:
     inline std::vector<std::vector<unsigned>> getEndingEffects()     {return _endingEffects;}
 
     /// Effects
+    void resetAttack(std::vector<unsigned> args);
 	void resetHealth(std::vector<unsigned> args);
-	void resetAttack(std::vector<unsigned> args);
+	void resetShield(std::vector<unsigned> args);
+
+	void addAttack(std::vector<unsigned> args);
     void addHealth(std::vector<unsigned> args);
+    void addShield(std::vector<unsigned> args);
+
+	void subAttack(std::vector<unsigned> args);
     void subHealth(std::vector<unsigned> args);
-    void addAttack(std::vector<unsigned> args);
-    void subAttack(std::vector<unsigned> args);
+    void subShield(std::vector<unsigned> args);
+
+	void subForcedAttack(std::vector<unsigned> args);
+
 
 	/// Methods
 	virtual inline bool isCreature() override { return true; };

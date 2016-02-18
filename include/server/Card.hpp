@@ -10,22 +10,19 @@ class Card
 {
 private:
     unsigned _cost;
-    std::string _name;
-    std::vector<std::vector<unsigned>> _instantEffects;    //~ One type of effects
+    std::vector<std::vector<unsigned>> _instantEffects;    //Effects that apply immediately
 
 public:
 
-    ///Constructors
-    Card(unsigned cost = 0, std::string name = "No name" , std::vector<std::vector<unsigned>> effect = {{}});
+    /// Constructor
+    Card(unsigned cost = 0, std::vector<std::vector<unsigned>> effects = {{}});
 
-    ///Getters
+    /// Getters
     unsigned getCost(){return _cost;}
     std::vector<std::vector<unsigned>> getInstantEffects();
-    //inline std::string getName(){return _name;}
 
 
-    ///Methodes
-    //virtual void print() {std::cout << _name;}
+    /// Methods
     virtual bool isCreature()=0;
     virtual bool isSpell()=0;
 

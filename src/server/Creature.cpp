@@ -21,10 +21,34 @@ void Creature::resetHealth(std::vector<unsigned> args)
 	 _health = _healthInit;
 }
 
+void Creature::resetShield(std::vector<unsigned> args)
+{
+	 _shield = _shieldInit;
+}
+
 void Creature::addHealth(std::vector<unsigned> args)
 {
 	unsigned points = args.at(0);
 	_health += points;
+}
+
+void Creature::addAttack(std::vector<unsigned> args)
+{
+	unsigned points = args.at(0);
+	_attack += points;
+}
+
+void Creature::addShield(std::vector<unsigned> args)
+{
+	unsigned points = args.at(0);
+	_shield += points;
+}
+
+void Creature::subAttack(std::vector<unsigned> args)
+{
+	unsigned points = args.at(0);
+    if(_attack > points) _attack -= points;
+    else _attack = 0;
 }
 
 void Creature::subHealth(std::vector<unsigned> args)
@@ -38,15 +62,9 @@ void Creature::subHealth(std::vector<unsigned> args)
 	}
 }
 
-void Creature::addAttack(std::vector<unsigned> args)
+void Creature::subShield(std::vector<unsigned> args)
 {
 	unsigned points = args.at(0);
-	_attack += points;
-}
-
-void Creature::subAttack(std::vector<unsigned> args)
-{
-	unsigned points = args.at(0);
-    if(_attack > points) _attack -= points;
-    else _attack = 0;
+    if(_shield > points) _shield -= points;
+    else _shield = 0;
 }
