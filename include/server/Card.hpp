@@ -9,24 +9,23 @@
 class Card
 {
 private:
-    unsigned int _cost;
+    unsigned _cost;
     std::string _name;
     std::vector<std::vector<unsigned>> _instantEffects;    //~ One type of effects
 
 public:
 
     ///Constructors
-    Card(unsigned int cost = 0, std::string name = "No name" , std::vector<std::vector<unsigned>> effect = {{}}):
-            _cost(cost), _name(name), _instantEffects(effect){};
+    Card(unsigned cost = 0, std::string name = "No name" , std::vector<std::vector<unsigned>> effect = {{}});
 
     ///Getters
-    unsigned int getCost(){return _cost;}
-    inline std::vector<std::vector<unsigned>> getInstantEffects()   {return _instantEffects;}
-    inline std::string getName(){return _name;}
+    unsigned getCost(){return _cost;}
+    std::vector<std::vector<unsigned>> getInstantEffects();
+    //inline std::string getName(){return _name;}
 
 
     ///Methodes
-    virtual void print() {std::cout << _name;}
+    //virtual void print() {std::cout << _name;}
     virtual bool isCreature()=0;
     virtual bool isSpell()=0;
 
