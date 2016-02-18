@@ -10,7 +10,7 @@ class Card
 {
     unsigned int _cost;
     std::string _name;
-    std::vector<std::vector<unsigned>> _effects;    //~ Create an empty Vector which will contain all the effects and their variables.
+    std::vector<std::vector<unsigned>> _instantEffects;    //~ One type of effects
 
 public:
 
@@ -20,14 +20,15 @@ public:
 
     ///Getters
     unsigned int getCost(){return _cost;}
-    std::vector<std::vector<unsigned>> getEffects() {return _effects;}
-    std::string getName(){return _name;}
+    inline std::vector<std::vector<unsigned>> getInstantEffects()   {return _instantEffects;}
+    inline std::string getName(){return _name;}
+    
 
     ///Methodes
     virtual void print() {std::cout << _name;}
     virtual bool isCreature()=0;
     virtual bool isSpell()=0;
-    virtual bool hasEffects() { return not _effects.empty(); };
+    virtual bool hasEffects() { return not (_startingEffects.empty() && _turnByTurnEffects.empty() && _endingEffects.empty()); };
 
     virtual ~Card()=default;
 
