@@ -19,11 +19,11 @@ void Player::enterTurn(unsigned turn)
 {
 	//Player's turn-based rules
 	_turnData = _emptyTurnData; //Clear the turn data
-	cardPickFromDeck(getConstraint(CARD_PICK_AMOUNT));
-	setEnergyPoints(getConstraint(START_ENERGY_POINTS));
-	addLifePoints({getConstraint(ADDED_LIFE_POINTS)});
-	subLifePoints({getConstraint(SUBED_LIFE_POINTS)});
-	if (_cardDeck.empty()) subLifePoints({getConstraint(SUBED_LIFE_POINTS_DECK_EMPTY)});
+	cardPickFromDeck(getConstraint(P_CARD_PICK_AMOUNT));
+	setEnergyPoints(getConstraint(P_START_ENERGY_POINTS));
+	addLifePoints({getConstraint(P_ADDED_LIFE_POINTS)});
+	subLifePoints({getConstraint(P_SUBED_LIFE_POINTS)});
+	if (_cardDeck.empty()) subLifePoints({getConstraint(P_SUBED_LIFE_POINTS_DECK_EMPTY)});
 	//Call creature's turn-based rules
 	//NETWORK: TURN_STARTED
 }
@@ -38,7 +38,7 @@ void Player::useCard(unsigned handIndex)
 {
 	//TODO: verify that handIndex is not out_of_range
 
-    if (getConstraint(USE_CARD_LIMIT) == _turnData.cardsUsed)
+    if (getConstraint(P_USE_CARD_LIMIT) == _turnData.cardsUsed)
     {
         //NETWORK: USE_CARDS_LIMIT
         return;
@@ -48,7 +48,7 @@ void Player::useCard(unsigned handIndex)
 	// If card is a creature
 	if (usedCard->isCreature())
 	{
-		if (getConstraint(PLACE_CREATURE_LIMIT) == _turnData.creaturesPlaced)
+		if (getConstraint(P_PLACE_CREATURE_LIMIT) == _turnData.creaturesPlaced)
 		{
             //NETWORK: PLACE_CREATURES_LIMIT
             return;
@@ -63,7 +63,7 @@ void Player::useCard(unsigned handIndex)
 	// If card is a spell
 	else
 	{
-		if (getConstraint(CALL_SPELL_LIMIT) == _turnData.spellCalls)
+		if (getConstraint(P_CALL_SPELL_LIMIT) == _turnData.spellCalls)
 		{
 			//NETWORK: CALL_SPELLS_LIMIT
 			return;
@@ -78,7 +78,7 @@ void Player::useCard(unsigned handIndex)
 
 void Player::attackWithCreature(unsigned boardIndex, unsigned victim)
 {
-	if (getConstraint(ATTACK_WITH_CREATURE_LIMIT) == _turnData.creatureAttacks)
+	if (getConstraint(P_ATTACK_WITH_CREATURE_LIMIT) == _turnData.creatureAttacks)
 	{
 		//NETWORK: CREATURE_ATTACKS_LIMIT
 		return;
@@ -102,7 +102,7 @@ unsigned Player::getConstraint(unsigned constraintID)
 
 void Player::timeOutConstraints()
 {
-    for (int i=0; i<CONSTRAINTS_COUNT; i++)
+    for (int i=0; i<P_CONSTRAINTS_COUNT; i++)
     {
         std::vector<std::pair<unsigned, unsigned>> vect = _constraintsArray[i];
         for (std::vector<std::pair<unsigned, unsigned>>::iterator vectIt=vect.begin(); vectIt!=vect.end();)

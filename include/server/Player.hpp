@@ -64,7 +64,7 @@ class Player
 		unsigned _id;
 
 		//Constraints
-		unsigned _constraintDefaults[CONSTRAINTS_COUNT] =
+		unsigned _constraintDefaults[P_CONSTRAINTS_COUNT] =
 		{
 			//TURN-BASED CONSTRAINTS
 			1,		//pick one card
@@ -80,7 +80,7 @@ class Player
 			6		//arbitrary limit for amount of creatures on board
 		};
 
-		std::vector<std::pair<unsigned, unsigned>> _constraintsArray [CONSTRAINTS_COUNT];
+		std::vector<std::pair<unsigned, unsigned>> _constraintsArray [P_CONSTRAINTS_COUNT];
 		unsigned getConstraint(unsigned constraintID);
 		void setConstraint(unsigned constraintID, unsigned value, unsigned turns);
 		void timeOutConstraints();
