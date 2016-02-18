@@ -93,7 +93,7 @@ void Player::setConstraint(unsigned constraintID, unsigned value, unsigned turns
 unsigned Player::getConstraint(unsigned constraintID)
 {
     if (_constraintsArray[constraintID].empty())
-	return _board->getDefaultConstraint(constraintID);
+	return _constraintDefaults[constraintID];
     else
 	return _constraintsArray[constraintID].rbegin()->first;
 }
@@ -108,7 +108,7 @@ void Player::timeOutConstraints()
             if (*vectIt.second == 1) vectIt = vect.erase(vectIt)
             else
             {
-				*vectIt.second--;
+				vectIt->second--;
 				vectIt++;
             }
         }
