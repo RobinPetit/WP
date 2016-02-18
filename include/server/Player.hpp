@@ -15,6 +15,7 @@ class Player
 	public:
 		/// Constructor
 		Player(unsigned id);
+		void setOpponent(Player* opponent); //Complementary
 
 		/// Destructor.
 		~Player() = default;
@@ -39,7 +40,10 @@ class Player
 
 
 	private:
-		void pickCards(unsigned amount);
+		void exploitCardEffects(Card* usedCard);
+
+		void cardPickFromDeck(unsigned amount);
+		void cardPlaceOnBoard(unsigned handIndex);
 		void cardDiscardFromHand(unsigned handIndex);  /// Move the card at handIndex from the player's hand to the bin
 		void cardDiscardFromBoard(unsigned boardIndex);  /// Move the card at boardIndex from the board to the bin
 		Card* cardRemoveFromHand();
@@ -56,11 +60,11 @@ class Player
 		void setEnergyPoints(unsigned points);
 
 		Board* _board;
-		Player* opponent = nullptr;
+		Player* _opponent = nullptr;
 		unsigned _id;
 
 		//Constraints
-		unsigned _constraintDefaults[constraintCount] =
+		unsigned _constraintDefaults[CONSTRAINTS_COUNT] =
 		{
 			//TURN-BASED CONSTRAINTS
 			1,		//pick one card
@@ -76,7 +80,7 @@ class Player
 			6		//arbitrary limit for amount of creatures on board
 		};
 
-		std::vector<std::pair<unsigned, unsigned>> _constraintsArray [constraintCount];
+		std::vector<std::pair<unsigned, unsigned>> _constraintsArray [CONSTRAINTS_COUNT];
 		unsigned getConstraint(unsigned constraintID);
 		void setConstraint(unsigned constraintID, unsigned value, unsigned turns);
 		void timeOutConstraints();

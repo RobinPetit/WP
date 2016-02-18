@@ -10,20 +10,20 @@ constexpr struct
 } effectIDs;
 
 //Constraints
-constexpr unsigned constraintCount = 10; //total number of constraints
+constexpr unsigned CONSTRAINTS_COUNT = 10; //total number of constraints
 
-constexpr enum : unsigned
+enum Constraints : unsigned
 {
-	cardPickAmount=0, 		//amount of cards to pick each turn
-	startEnergyPoints,		//initial amount of energy points each turn
-	addLifePoints,			//amount of life points given each turn
-	subLifePoints, 			//amount of life points taken each turn
-	emptyDeckSubLifePoints,	//amount of life points taken each turn when deck is empty
-	useCardLimit,			//limit for using cards
-	callSpellLimit,			//limit for calling spells
-	attackWithCreatureLimit,//limit for attacking with creatures
-	placeCreatureLimit,		//limit for placing creatures on board
-	creaturesOnBoardLimit	//limit for number of creatures on the board
-} Constraint;
+	CARD_PICK_AMOUNT, 			//amount of cards to pick each turn
+	START_ENERGY_POINTS,		//initial amount of energy points each turn
+	ADDED_LIFE_POINTS,			//amount of life points given each turn
+	SUBED_LIFE_POINTS, 			//amount of life points taken each turn
+	SUBED_LIFE_POINTS_DECK_EMPTY,	//amount of life points taken each turn when deck is empty
+	USE_CARD_LIMIT,				//limit for using cards
+	CALL_SPELL_LIMIT,			//limit for calling spells
+	ATTACK_WITH_CREATURE_LIMIT,//limit for attacking with creatures
+	PLACE_CREATURE_LIMIT,		//limit for placing creatures on board
+	CREATURES_ON_BOARD_LIMIT	//limit for number of creatures on the board
+};
 
 #endif  // _CONSTRAINTS_HPP_

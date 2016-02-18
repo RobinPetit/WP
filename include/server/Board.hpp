@@ -26,19 +26,19 @@ class Board
 		void applyEffect(std::vector<unsigned> effect);
 
 		/// Interface for Player class
-		unsigned getDefaultConstraint(unsigned constraintID);
 
 	private:
 		unsigned _turn = 0;
 		Player *_activePlayer, *_passivePlayer;
 
 		//Effects
+		/*
 		void (Player::*_effects[3])(std::vector<unsigned>) =
 		{
 			&Player::setConstraint,
 			//&Player::loseHandCards,
 			//&Player::damageBoardCreatures
-		};
+		};*/
 
 };
 
