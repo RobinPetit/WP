@@ -10,7 +10,7 @@ constexpr struct
 } effectIDs;
 
 //Constraints
-constexpr unsigned constraintCount = 2; //total number of constraints
+constexpr unsigned constraintCount = 10; //total number of constraints
 
 constexpr struct
 {

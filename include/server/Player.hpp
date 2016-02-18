@@ -54,7 +54,7 @@ class Player
 		unsigned _id;
 
 		//Constraints
-		unsigned _constraintDefaults[10] =
+		unsigned _constraintDefaults[constraintCount] =
 		{
 			//TURN-BASED CONSTRAINTS
 			1,		//pick one card
@@ -73,6 +73,7 @@ class Player
 		std::vector<std::pair<unsigned, unsigned>> _constraintsArray [constraintCount];
 		unsigned getConstraint(unsigned constraintID);
 		void setConstraint(unsigned constraintID, unsigned value, unsigned turns);
+		void timeOutConstraints();
 
 		struct TurnData
 		{

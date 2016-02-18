@@ -22,6 +22,7 @@ void Player::enterTurn(unsigned turn)
 
 void Player::leaveTurn(unsigned turn)
 {
+	timeOutConstraints();
 	//Communicate turn & ask to wait to menu
 }
 
@@ -97,6 +98,22 @@ unsigned Player::getConstraint(unsigned constraintID)
 	return _constraintsArray[constraintID].rbegin()->first;
 }
 
+void Player::timeOutConstraints()
+{
+    for (int i=0; i<_constraintsArray.size(); i++)
+    {
+        std::vector<std::pair<unsigned, unsigned>> vect = _constraintsArray.at(i);
+        for (std::vector<std::pair<unsigned, unsigned>>::iterator vectIt=vect.begin(); vectIt!=vect.end();)
+        {
+            if (*vectIt.second == 1) vectIt = vect.erase(vectIt)
+            else
+            {
+				*vectIt.second--;
+				vectIt++;
+            }
+        }
+    }
+}
 
 /*--------------------------- EFFECTS */
 void Player::loseHandCards(std::vector<unsigned> args)
