@@ -7,10 +7,11 @@
 ///Creature card : One of the 2 playables card
 class Creature : public Card
 {
+private:
 	unsigned int _attack, _attackInit;
 	unsigned int _health, _healthInit;
-    std::vector<std::vector<unsigned>> _turnByTurnEffects; 
-    std::vector<std::vector<unsigned>> _endingEffects; 
+    std::vector<std::vector<unsigned>> _turnByTurnEffects;
+    std::vector<std::vector<unsigned>> _endingEffects;
 
 public:
 
@@ -22,9 +23,9 @@ public:
     /// Getters
     inline unsigned int getHealth(){return _health;}
     inline unsigned int getAttack(){return _attack;}
-    
+
     inline std::vector<std::vector<unsigned>> getTurnByTurnEffects() {return _turnByTurnEffects;}
-    inline std::vector<std::vector<unsigned>> getEndingEffects()     {return _endingEffectss;}
+    inline std::vector<std::vector<unsigned>> getEndingEffects()     {return _endingEffects;}
 
     /// Re-Setters
 	inline void resetHealth() {_health = _healthInit;}
@@ -37,9 +38,8 @@ public:
     void decrAttack(unsigned int);
 
 	/// Methods
-	virtual inline bool isCreature() { return true; } override;
-	virtual inline bool isSpell() { return false; } override;
-	virtual bool hasEffects() { return not (_instantEffects.empty() && _turnByTurnEffects.empty() && _endingEffect.empty()) ;} override;
+	virtual inline bool isCreature() override { return true; };
+	virtual inline bool isSpell() override { return false; };
 
 };
 

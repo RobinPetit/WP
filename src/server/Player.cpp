@@ -46,6 +46,7 @@ void Player::useCard(unsigned handIndex)
 	Card* usedCard = _cardHand.at(handIndex);
 
 	// If card is a creature
+	//TODO: use typeinfo ?
 	if (usedCard->isCreature())
 	{
 		if (getConstraint(P_PLACE_CREATURE_LIMIT) == _turnData.creaturesPlaced)
@@ -211,7 +212,7 @@ void Player::cardPlaceOnBoard(unsigned handIndex)
 {
 	// TODO: treat properly case of handIndex being out of range
 	const auto& handIt = std::find(_cardHand.begin(), _cardHand.end(), _cardHand[handIndex]);
-	_cardBoard.push_back(_cardHand.at(handIndex));
+	_cardBoard.push_back(Creature* dynamic_cast<Card*> (_cardHand.at(handIndex)));
 	_cardHand.erase(handIt);
     //NETWORK: BOARD_CHANGED
     //NETWORK: DECK_CHANGED

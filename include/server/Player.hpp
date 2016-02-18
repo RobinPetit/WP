@@ -5,6 +5,8 @@
 #include <cstdlib>
 #include <stack>
 #include "server/Card.hpp"
+#include "server/Spell.hpp"
+#include "server/Creature.hpp"
 #include "server/Constraints.hpp"
 
 class Board;
@@ -51,7 +53,7 @@ class Player
 
 		std::stack<Card *> _cardDeck;  ///< Cards that are in the deck (not usable yet)
 		std::vector<Card *> _cardHand;  ///< Cards that are in the player's hand (usable)
-		std::vector<Card *> _cardBoard;  ///< Cards that are on the board (usable for attacks)
+		std::vector<Creature *> _cardBoard;  ///< Cards that are on the board (usable for attacks)
 		std::vector<Card *> _cardBin;  ///< Cards that are discarded (dead creatures, used spells)
 
 		unsigned _energyPoints;

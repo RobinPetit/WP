@@ -8,6 +8,7 @@
 
 class Card
 {
+private:
     unsigned int _cost;
     std::string _name;
     std::vector<std::vector<unsigned>> _instantEffects;    //~ One type of effects
@@ -22,13 +23,12 @@ public:
     unsigned int getCost(){return _cost;}
     inline std::vector<std::vector<unsigned>> getInstantEffects()   {return _instantEffects;}
     inline std::string getName(){return _name;}
-    
+
 
     ///Methodes
     virtual void print() {std::cout << _name;}
     virtual bool isCreature()=0;
     virtual bool isSpell()=0;
-    virtual bool hasEffects() { return not _instantEffects.empty(); };
 
     virtual ~Card()=default;
 
