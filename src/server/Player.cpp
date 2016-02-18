@@ -39,11 +39,23 @@ void Player::pickCards(unsigned amount)
 void Player::useCard(unsigned handIndex)
 {
 	// TODO: verify that handIndex is not out_of_range
-	const auto& handIt = std::find(_cardHand.begin(), _cardHand.end(), _cardHand[handIndex]);
+	const auto& handIt = std::find(_cardHand.begin(), _cardHand.end(), _cardHand[handIndex]); //Iterator
+
+    if (getConstraint(constraintIDs.useCardLimit) == _turnData.cardsUsed)
+    {
+        //Throw some kind of error back to user
+        return;
+    }
 	_turnData.cardsUsed++;
+
 	// If card is a creature
-	if (true)
+	if (_cardHand.at(handIndex).isCreature())
 	{
+		if (getConstraint(constraintIDs.placeCreatureLimit) == _turnData.creaturesPlaced)
+		{
+            //Throw some kind of error back to user
+            return;
+		}
 		_turnData.creaturesPlaced++;
 		_cardBoard.push_back(_cardHand.at(handIndex));
 		_cardHand.erase(handIt);
@@ -51,13 +63,23 @@ void Player::useCard(unsigned handIndex)
 	// If card is a spell
 	else
 	{
-		_turnData.spellsUsed++;
+		if (getConstraint(constraintIDs.callSpellLimit) == _turnData.spellCalls)
+		{
+			//Throw some kind of error back to user
+			return;
+		}
+		_turnData.spellCalls++;
 		cardDiscardFromHand(handIndex);
 	}
 }
 
 void Player::attackWithCreature(unsigned boardIndex, unsigned victim)
 {
+	if (getConstraint(constraintIDs.attackWithCreatureLimit) == _turnData.creatureAttacks)
+	{
+		//Throw some kind of error back to user
+		return;
+	}
     //attack with _cardBoard.at(boardIndex) against victim
 }
 

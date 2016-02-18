@@ -77,7 +77,7 @@ class Player
 		struct TurnData
 		{
 			unsigned cardsUsed=0;
-			unsigned cardsPlaced=0;
+			unsigned creaturesPlaced=0;
 			unsigned creatureAttacks=0;
 			unsigned spellCalls=0;
 		} _emptyTurnData;
