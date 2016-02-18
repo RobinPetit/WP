@@ -23,7 +23,7 @@ class Board
 		void quitGame(); //TODO: need identifier
 
 		/// Interface for Card class
-		void applyEffect(unsigned player, unsigned effectID, std::vector<unsigned> effectArgs);
+		void applyEffect(std::vector<unsigned> effect);
 
 		/// Interface for Player class
 		unsigned getDefaultConstraint(unsigned constraintID);

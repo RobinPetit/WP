@@ -31,6 +31,9 @@ class Player
 		void loseHandCards(std::vector<unsigned> args);
         void stealHandCard(std::vector<unsigned> args);
         void exchangeHandCard(std::vector<unsigned> args);
+
+        void addEnergyPoints(std::vector<unsigned> args);
+        void subEnergyPoints(std::vector<unsigned> args);
 		void addLifePoints(std::vector<unsigned> args);
 		void subLifePoints(std::vector<unsigned> args);
 

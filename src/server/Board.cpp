@@ -36,7 +36,7 @@ void Board::quitGame()
 }
 
 /*--------------------------- CARD INTERFACE */
-void Board::applyEffect(unsigned player, unsigned effectID, std::vector<unsigned> effectArgs)
+void Board::applyEffect(std::vector<unsigned> effect)
 {
     Player *effectSubject = (player==0 ? _activePlayer : _passivePlayer);
     // (effectSubject->(_effects[effectID-constraintsCount]*))(effectArgs);

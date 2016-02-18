@@ -5,7 +5,7 @@
 void Player::Player(unsigned id, Player* opponent):
 	_id(id)
 {
-
+	//NETWORK: GREETINGS_USER
 }
 
 void Player::setOpponent(Player* opponent)
@@ -25,48 +25,55 @@ void Player::enterTurn(unsigned turn)
 	subLifePoints(getConstraint(constraintIDs.subLifePoints));
 	if (_cardDeck.empty()) subLifePoints(getConstraint(constraintIDs.emptyDeckSubLifePoitns));
 	//Call creature's turn-based rules
+	//NETWORK: TURN_STARTED
 }
 
 void Player::leaveTurn(unsigned turn)
 {
 	timeOutConstraints();
-	//Communicate turn & ask to wait to menu
+	//NETWORK: TURN_ENDED
 }
 
 void Player::useCard(unsigned handIndex)
 {
-	// TODO: verify that handIndex is not out_of_range
+	//TODO: verify that handIndex is not out_of_range
 	const auto& handIt = std::find(_cardHand.begin(), _cardHand.end(), _cardHand[handIndex]); //Iterator
 
     if (getConstraint(constraintIDs.useCardLimit) == _turnData.cardsUsed)
     {
-        //Throw some kind of error back to user
+        //NETWORK: USE_CARDS_LIMIT
         return;
     }
-	_turnData.cardsUsed++;
 
 	// If card is a creature
 	if (_cardHand.at(handIndex).isCreature())
 	{
 		if (getConstraint(constraintIDs.placeCreatureLimit) == _turnData.creaturesPlaced)
 		{
-            //Throw some kind of error back to user
+            //NETWORK: PLACE_CREATURES_LIMIT
             return;
 		}
+		_turnData.cardsUsed++;
 		_turnData.creaturesPlaced++;
 		_cardBoard.push_back(_cardHand.at(handIndex));
 		_cardHand.erase(handIt);
+		//NETWORK: BOARD_CHANGED
+		//NETWORK: CREATURE_PLACED
 	}
+
 	// If card is a spell
 	else
 	{
 		if (getConstraint(constraintIDs.callSpellLimit) == _turnData.spellCalls)
 		{
-			//Throw some kind of error back to user
+			//NETWORK: CALL_SPELLS_LIMIT
 			return;
 		}
+		_turnData.cardsUsed++;
 		_turnData.spellCalls++;
 		cardDiscardFromHand(handIndex);
+		//NETWORK: BOARD_CHANGED
+		//NETWORK: SPELL_CALLED
 	}
 }
 
@@ -74,7 +81,7 @@ void Player::attackWithCreature(unsigned boardIndex, unsigned victim)
 {
 	if (getConstraint(constraintIDs.attackWithCreatureLimit) == _turnData.creatureAttacks)
 	{
-		//Throw some kind of error back to user
+		//NETWORK: CREATURE_ATTACKS_LIMIT
 		return;
 	}
     //attack with _cardBoard.at(boardIndex) against victim
@@ -146,6 +153,24 @@ void exchangeHandCard(std::vector<unsigned> args)
 	}
 }
 
+void Player::addEnergyPoints(std::vector<unsigned> args)
+{
+	unsigned points = args.at(0);
+	_energyPoints += points;
+}
+
+void subEnergyPoints(std::vector<unsigned> args)
+{
+	unsigned points = args.at(0);
+    if (_energyPoints > points) _energyPoints -= points
+    else
+    {
+		_energyPoints = 0;
+		//NETWORK NO_MORE_ENERGY
+		//call endTurn()
+    }
+}
+
 void Player::addLifePoints(std::vector<unsigned> args)
 {
 	unsigned points = args.at(0);
@@ -159,7 +184,7 @@ void Player::subLifePoints(std::vector<unsigned> args)
     else
     {
 		_lifePoints = 0;
-		//DEAD
+		//call die()
     }
 }
 
