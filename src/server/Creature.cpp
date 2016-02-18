@@ -1,11 +1,11 @@
 #include "server/Creature.hpp"
 
-Creature::Creature(	unsigned cost, std::string name,
+Creature::Creature(	unsigned cost, unsigned attack, unsigned health, unsigned shield, unsigned shieldType,
 					std::vector<std::vector<unsigned>> instantEffects,
 					std::vector<std::vector<unsigned>> turnEffects,
-					std::vector<std::vector<unsigned>> endingEffects,
-					unsigned attack, unsigned health):
-	Card(cost, name, instantEffects), _turnByTurnEffects(turnEffects), _endingEffects(endingEffects), _attack(attack), _health(health)
+					std::vector<std::vector<unsigned>> endingEffects):
+	Card(cost, instantEffects), _turnEffects(turnEffects), _endingEffects(endingEffects),
+	_attack(attack), _health(health), _shield(shield), _shieldType(shieldType)
 {
 
 }
@@ -53,6 +53,28 @@ void Creature::subAttack(std::vector<unsigned> args)
 
 void Creature::subHealth(std::vector<unsigned> args)
 {
+	unsigned points = args.at(0);
+    switch (_shieldType)
+    {
+		case 0:
+			points-= _shield;	//Blue shield, can allow part of the attack to deal damage
+		case 1:
+			if (points <= _shield) points=0;	//Orange shield, only stronger attacks go through
+		case 2:
+			points=0;	//Legendary shield, regular attacks don't go through
+    }
+
+    if(_health > points) _health -= points;
+    else
+	{
+		_health = 0;
+		//TODO: creature_dead
+	}
+}
+
+void Creature::forcedSubHealth(std::vector<unsigned> args)
+{
+	//Shields are not able to stop this attack
 	unsigned points = args.at(0);
     if(_health > points) _health -= points;
     else

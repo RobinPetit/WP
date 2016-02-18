@@ -11,13 +11,14 @@ private:
 	unsigned _attack, _attackInit;
 	unsigned _health, _healthInit;
 	unsigned _shield, _shieldInit;
+	unsigned _shieldType;
     std::vector<std::vector<unsigned>> _turnByTurnEffects;
     std::vector<std::vector<unsigned>> _endingEffects;
 
 public:
 
 	/// Constructors
-    Creature(unsigned cost=0, unsigned attack=0, unsigned health=1, unsigned shield=0,
+    Creature(unsigned cost=0, unsigned attack=0, unsigned health=1, unsigned shield=0, unsigned shieldType=0,
 			std::vector<std::vector<unsigned>> instantEffects = {{}},
     		std::vector<std::vector<unsigned>> turnEffects = {{}},
     		std::vector<std::vector<unsigned>> endingEffects = {{}});
@@ -42,7 +43,7 @@ public:
     void subHealth(std::vector<unsigned> args);
     void subShield(std::vector<unsigned> args);
 
-	void subForcedAttack(std::vector<unsigned> args);
+	void forcedSubHealth(std::vector<unsigned> args);
 
 
 	/// Methods
