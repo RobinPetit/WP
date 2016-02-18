@@ -1,4 +1,4 @@
-#include "Creature.hpp"
+#include "server/Creature.hpp"
 
 void Creature::incrHealth(unsigned int LP) {_health+=LP;}
 
