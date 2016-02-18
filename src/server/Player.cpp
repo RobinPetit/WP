@@ -1,6 +1,14 @@
 #include "server/Player.hpp"
 #include "server/Board.hpp"
 
+
+void Player::Player(unsigned id):
+	_id(id)
+{
+
+}
+
+
 /*--------------------------- BOARD INTERFACE */
 void Player::cardPick(unsigned amount)
 {

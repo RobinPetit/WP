@@ -13,6 +13,9 @@ class Board;
 class Player
 {
 	public:
+		/// Constructor
+		Player(unsigned id);
+
 		/// Destructor.
 		~Player() = default;
 
@@ -43,6 +46,7 @@ class Player
 		unsigned _lifePoints;
 
 		Board* _board;
+		unsigned _id;
 
 		std::vector<std::pair<unsigned, unsigned>> _constraintsArray [constraintCount];
 		unsigned getConstraint(unsigned constraintID);
