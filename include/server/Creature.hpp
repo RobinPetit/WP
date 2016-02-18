@@ -39,6 +39,7 @@ public:
 	/// Methods
 	virtual inline bool isCreature() { return true; } override;
 	virtual inline bool isSpell() { return false; } override;
+	virtual bool hasEffects() { return not (_instantEffects.empty() && _turnByTurnEffects.empty() && _endingEffect.empty()) ;} override;
 
 };
 
