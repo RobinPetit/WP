@@ -20,10 +20,10 @@ void Player::enterTurn(unsigned turn)
 	//Player's turn-based rules
 	_turnData = _emptyTurnData; //Clear the turn data
 	cardPickFromDeck(getConstraint(P_CARD_PICK_AMOUNT));
-	setEnergyPoints(getConstraint(P_START_ENERGY_POINTS));
-	addLifePoints({getConstraint(P_ADDED_LIFE_POINTS)});
-	subLifePoints({getConstraint(P_SUBED_LIFE_POINTS)});
-	if (_cardDeck.empty()) subLifePoints({getConstraint(P_SUBED_LIFE_POINTS_DECK_EMPTY)});
+	setEnergyPoints(getConstraint(P_ENERGY_POINTS_VALUE));
+	addLifePoints({getConstraint(P_LIFE_POINTS_GAIN)});
+	subLifePoints({getConstraint(P_LIFE_POINTS_LOSS)});
+	if (_cardDeck.empty()) subLifePoints({getConstraint(P_LIFE_POINTS_LOSS_DECK_EMPTY)});
 	//Call creature's turn-based rules
 	//NETWORK: TURN_STARTED
 }
