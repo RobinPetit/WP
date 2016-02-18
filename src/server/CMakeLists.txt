@@ -1,8 +1,11 @@
 set(SOURCES
 		"server.cpp"
 		"Board.cpp"
+		"Card.cpp"
+		"Creature.cpp"
+		"Spell.cpp"
 		"Player.cpp"
-		
+		"Constraints.cpp"
 		# sockets
 		"sockets/Server.cpp"
 		# common

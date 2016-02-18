@@ -23,7 +23,8 @@ void Player::enterTurn(unsigned turn)
 	setEnergyPoints(_constraints.getConstraint(P_ENERGY_POINTS_VALUE));
 	addLifePoints({_constraints.getConstraint(P_LIFE_POINTS_GAIN)});
 	subLifePoints({_constraints.getConstraint(P_LIFE_POINTS_LOSS)});
-	if (_cardDeck.empty()) subLifePoints({_constraints.getConstraint(P_LIFE_POINTS_LOSS_DECK_EMPTY)});
+	if (_cardDeck.empty())
+		subLifePoints({_constraints.getConstraint(P_LIFE_POINTS_LOSS_DECK_EMPTY)});
 	//Call creature's turn-based rules
 	//NETWORK: TURN_STARTED
 }
