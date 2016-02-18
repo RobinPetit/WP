@@ -18,8 +18,8 @@
 #include <fstream>
 #include <mutex>
 // WizardPoker headers
-#include <common/sockets/TransferType.hpp>
-#include <common/constants.hpp>
+#include "common/sockets/TransferType.hpp"
+#include "common/constants.hpp"
 
 std::mutex loggerMutex;
 std::ofstream logFile;

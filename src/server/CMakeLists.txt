@@ -11,4 +11,5 @@ target_link_libraries(${SERVER_NAME}
 		${SERVER_LIB_NAME}
 		${COMMON_LIB_NAME}
 		${EXTERNAL_LIBRARIES}
-		)
+		pthread
+	)

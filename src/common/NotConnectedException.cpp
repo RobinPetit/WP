@@ -1,4 +1,4 @@
-#include <common/NotConnectedException.hpp>
+#include "common/NotConnectedException.hpp"
 
 NotConnectedException::NotConnectedException(const std::string& message):
 	std::runtime_error(message)

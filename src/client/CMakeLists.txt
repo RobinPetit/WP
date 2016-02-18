@@ -23,5 +23,6 @@ target_link_libraries(${CLIENT_NAME}
 		${CLIENT_LIB_NAME}
 		${COMMON_LIB_NAME}
 		${EXTERNAL_LIBRARIES}
-		)
+		pthread
+	)
 

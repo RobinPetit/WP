@@ -38,8 +38,11 @@ set(SERVER_LIB_NAME ${PROJECT_NAME}_server_lib)
 # Tell to cmake to explore src/ to build both the server and the client
 add_subdirectory(src)
 
-# And build the SRD
-add_subdirectory(SRD)
+add_custom_target(srd
+		COMMAND make -C ${PROJECT_SOURCE_DIR}/SRD/ srd.pdf
+		COMMAND cp ${PROJECT_SOURCE_DIR}/SRD/srd.pdf ${PROJECT_SOURCE_DIR}/srd.pdf
+	)
+add_custom_target(cleansrd COMMAND make -C ${PROJECT_SOURCE_DIR}/SRD/ mrproper)
 
 # Also build unit tests
 add_subdirectory(tests)
@@ -47,3 +50,4 @@ add_subdirectory(tests)
 # Move the executables created in src/client/ and src/server/
 # to the root build directory
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+

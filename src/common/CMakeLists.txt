@@ -3,4 +3,6 @@ add_library(${COMMON_LIB_NAME}
 		"Terminal.cpp"
 		"sockets/TransferType.cpp"
 		"ini/IniFile.cpp"
-		)
+		"Deck.cpp"
+		"CardsCollection.cpp"
+	)
