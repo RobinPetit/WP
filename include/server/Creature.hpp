@@ -9,6 +9,8 @@ class Creature : public Card
 {
 	unsigned int _attack, _attackInit;
 	unsigned int _health, _healthInit;
+    std::vector<std::vector<unsigned>> _turnByTurnEffects; 
+    std::vector<std::vector<unsigned>> _endingEffects; 
 
 public:
 
@@ -20,6 +22,9 @@ public:
     /// Getters
     inline unsigned int getHealth(){return _health;}
     inline unsigned int getAttack(){return _attack;}
+    
+    inline std::vector<std::vector<unsigned>> getTurnByTurnEffects() {return _turnByTurnEffects;}
+    inline std::vector<std::vector<unsigned>> getEndingEffects()     {return _endingEffectss;}
 
     /// Re-Setters
 	inline void resetHealth() {_health = _healthInit;}
@@ -34,6 +39,7 @@ public:
 	/// Methods
 	virtual inline bool isCreature() { return true; } override;
 	virtual inline bool isSpell() { return false; } override;
+	virtual bool hasEffects() { return not (_instantEffects.empty() && _turnByTurnEffects.empty() && _endingEffect.empty()) ;} override;
 
 };
 
