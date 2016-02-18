@@ -35,6 +35,7 @@ public:
 	void stealHandCard(std::vector<unsigned> args);
 	void exchangeHandCard(std::vector<unsigned> args);
 
+	void setEnergyPoints(std::vector<unsigned> args);
 	void addEnergyPoints(std::vector<unsigned> args);
 	void subEnergyPoints(std::vector<unsigned> args);
 	void addLifePoints(std::vector<unsigned> args);
@@ -58,8 +59,6 @@ private:
 
 	unsigned _energyPoints;
 	unsigned _lifePoints;
-
-	void setEnergyPoints(unsigned points);
 
 	Board* _board;
 	Player* _opponent = nullptr;
