@@ -4,14 +4,15 @@ Creature::Creature(	unsigned cost, unsigned attack, unsigned health, unsigned sh
 					std::vector<std::vector<unsigned>> instantEffects,
 					std::vector<std::vector<unsigned>> turnEffects,
 					std::vector<std::vector<unsigned>> endingEffects):
-	Card(cost, instantEffects), _turnEffects(turnEffects), _endingEffects(endingEffects),
-	_attack(attack), _health(health), _shield(shield), _shieldType(shieldType)
+	Card(cost, instantEffects),
+	_attack(attack), _health(health), _shield(shield), _shieldType(shieldType),
+	_turnEffects(turnEffects), _endingEffects(endingEffects)
 {
 
 }
 
 /*--------------------------- EFFECTS */
-void Creature::resetAtttack(std::vector<unsigned> args)
+void Creature::resetAttack(std::vector<unsigned> args)
 {
 	 _attack = _attackInit;
 }

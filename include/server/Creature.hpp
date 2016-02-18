@@ -12,7 +12,7 @@ private:
 	unsigned _health, _healthInit;
 	unsigned _shield, _shieldInit;
 	unsigned _shieldType;
-    std::vector<std::vector<unsigned>> _turnByTurnEffects;
+    std::vector<std::vector<unsigned>> _turnEffects;
     std::vector<std::vector<unsigned>> _endingEffects;
 
 public:
@@ -27,8 +27,8 @@ public:
     inline unsigned int getHealth(){return _health;}
     inline unsigned int getAttack(){return _attack;}
 
-    inline std::vector<std::vector<unsigned>> getTurnByTurnEffects() {return _turnByTurnEffects;}
-    inline std::vector<std::vector<unsigned>> getEndingEffects()     {return _endingEffects;}
+    inline std::vector<std::vector<unsigned>> getTurnEffects() {return _turnEffects;}
+    inline std::vector<std::vector<unsigned>> getEndingEffects() {return _endingEffects;}
 
     /// Effects
     void resetAttack(std::vector<unsigned> args);

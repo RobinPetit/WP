@@ -13,9 +13,8 @@ private:
     std::vector<std::vector<unsigned>> _instantEffects;    //Effects that apply immediately
 
 public:
-
     /// Constructor
-    Card(unsigned cost = 0, std::vector<std::vector<unsigned>> effects = {{}});
+    Card(unsigned cost=0, std::vector<std::vector<unsigned>> instantEffects = {{}});
 
     /// Getters
     unsigned getCost(){return _cost;}
