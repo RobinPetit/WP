@@ -7,7 +7,7 @@ Board::Board(unsigned player1, unsigned player2)
     if (rand() % 2 == 0) std::swap(player1, player2);
     _activePlayer = new Player(player1);
     _activePlayer = new Player(player2);
-};
+}
 
 /*--------------------------- USER INTERFACE */
 void Board::endTurn()
