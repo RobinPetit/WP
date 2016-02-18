@@ -16,7 +16,7 @@ public:
 
     ///Constructors
     Card(unsigned int cost = 0, std::string name = "No name" , std::vector<std::vector<unsigned>> effect = {{}}):
-            _cost(cost), _name(name), _effects(effect){};
+            _cost(cost), _name(name), _instantEffects(effect){};
 
     ///Getters
     unsigned int getCost(){return _cost;}
