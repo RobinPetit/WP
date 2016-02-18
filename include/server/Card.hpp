@@ -28,7 +28,7 @@ public:
     virtual void print() {std::cout << _name;}
     virtual bool isCreature()=0;
     virtual bool isSpell()=0;
-    virtual bool hasEffects() { return not (_startingEffects.empty() && _turnByTurnEffects.empty() && _endingEffects.empty()); };
+    virtual bool hasEffects() { return not _instantEffects.empty(); };
 
     virtual ~Card()=default;
 
