@@ -2,6 +2,7 @@
 #define _BOARD_HPP
 
 #include <SFML/System.hpp>
+#include <cstdlib>
 #include "Player.hpp"
 #include "server/Card.hpp"
 
@@ -9,6 +10,9 @@
 class Board
 {
 	public:
+		/// Constructor
+		Board(unsigned player1, unsigned player2);
+
 		/// Destructor
 		~Board() = default;
 
