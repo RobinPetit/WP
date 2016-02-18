@@ -13,7 +13,11 @@ void Player::Player(unsigned id):
 void Player::enterTurn(unsigned turn)
 {
 	_turnData = _emptyTurnData; //Clear the turn data
-	pickCard()
+	pickCards(getConstraint(constraintIDs.cardPickAmount));
+	setEnergyPoints(getConstraint(constraintIDs.startEnergyPoints));
+	addLifePoints(getConstraint(constraintIDs.addLifePoints));
+	subLifePoints(getConstraint(constraintIDs.subLifePoints));
+	if (_cardDeck.empty()) subLifePoints(getConstraint(constraintIDs.emptyDeckSubLifePoitns));
 }
 
 void Player::leaveTurn(unsigned turn)
@@ -21,7 +25,7 @@ void Player::leaveTurn(unsigned turn)
 	//Communicate turn & ask to wait to menu
 }
 
-void Player::pickCard(unsigned amount)
+void Player::pickCards(unsigned amount)
 {
 	while (not _cardDeck.empty() and amount>0)
 	{
@@ -82,6 +86,21 @@ void Player::loseHandCards(std::vector<unsigned> args)
 		unsigned handIndex = rand() % _cardHand.size();
 		cardDiscardFromHand(handIndex);
 	}
+}
+
+void Player::addLifePoints(unsigned points)
+{
+    _lifePoints += points;
+}
+
+void Player::subLifePoints(unsigned points)
+{
+    if (_lifePoints > points) _lifePoints -= points
+    else
+    {
+		_lifePoints = 0;
+		//DEAD
+    }
 }
 
 

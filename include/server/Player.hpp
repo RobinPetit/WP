@@ -23,7 +23,7 @@ class Player
 		void enterTurn(unsigned turn);
 		void leaveTurn(unsigned turn);
 
-		void pickCard(unsigned amount=0);  /// Move the card on top of the deck to the player's hand
+		void pickCards(unsigned amount=0);  /// Move the card on top of the deck to the player's hand
 		void useCard(unsigned handIndex);  /// Use the card
 		void attackWithCreature(unsigned boardIndex, unsigned victim);  /// Attack victim with the card
 
@@ -31,6 +31,9 @@ class Player
 		void setConstraint(std::vector<unsigned> args);
 		// void loseHandCards(std::vector<unsigned> args);
 		void damageBoardCreatures(std::vector<unsigned> args);
+
+		void addLifePoints(unsigned points);
+		void subLifePoints(unsigned points);
 
 
 	private:
@@ -45,6 +48,8 @@ class Player
 		unsigned _energyPoints;
 		unsigned _lifePoints;
 
+		void setEnergyPoints(unsigned points);
+
 		Board* _board;
 		unsigned _id;
 
@@ -53,7 +58,7 @@ class Player
 		{
 			//TURN-BASED CONSTRAINTS
 			1,		//pick one card
-			10,		//energy points set at 10
+			10,		//energy points start at 10
 			0, 		//sub 0 life points
 			0,		//add 0 life points
 			5, 		//if deck empty, sub 5 life points
