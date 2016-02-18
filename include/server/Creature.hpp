@@ -16,9 +16,10 @@ private:
 public:
 
 	/// Constructors
-    Creature(unsigned int cost = 0 , std::string name = "No name", std::vector<std::vector<unsigned>> effect = {},
-            unsigned int attack = 1, unsigned int health = 1): Card(cost, name, effect),        //ici
-                _attack(attack), _health(health){};
+    Creature(unsigned int cost = 0 , std::string name = "No name", std::vector<std::vector<unsigned>> instantEffects = {{}},
+    		std::vector<std::vector<unsigned>> turnEffects = {{}}, std::vector<std::vector<unsigned>> endingEffects = {{}},
+            	unsigned int attack = 0, unsigned int health = 1): Card(cost, name, instantEffects),
+            		 _turnByTurnEffects(turnEffects), _endingEffects(endingEffects), _attack(attack), _health(health){};
 
     /// Getters
     inline unsigned int getHealth(){return _health;}
