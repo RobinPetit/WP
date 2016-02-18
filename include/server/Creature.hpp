@@ -1,7 +1,8 @@
 #ifndef CREATURE_SERVER_HPP
 #define CREATURE_SERVER_HPP
 
-#include "Card.hpp"
+#include "server/Card.hpp"
+#include "server/Constraints.hpp"
 
 
 ///Creature card : One of the 2 playables card
@@ -14,6 +15,9 @@ private:
 	unsigned _shieldType;
     std::vector<std::vector<unsigned>> _turnEffects;
     std::vector<std::vector<unsigned>> _endingEffects;
+
+    //Constraints
+    ConstraintList _constraints = ConstraintList(C_CONSTRAINT_DEFAULTS, C_CONSTRAINTS_COUNT);
 
 public:
 
@@ -31,6 +35,8 @@ public:
     inline std::vector<std::vector<unsigned>> getEndingEffects() {return _endingEffects;}
 
     /// Effects
+    void setConstraint(std::vector<unsigned> args);
+
     void resetAttack(std::vector<unsigned> args);
 	void resetHealth(std::vector<unsigned> args);
 	void resetShield(std::vector<unsigned> args);

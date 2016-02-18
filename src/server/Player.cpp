@@ -19,18 +19,18 @@ void Player::enterTurn(unsigned turn)
 {
 	//Player's turn-based rules
 	_turnData = _emptyTurnData; //Clear the turn data
-	cardPickFromDeck(getConstraint(P_CARD_PICK_AMOUNT));
-	setEnergyPoints(getConstraint(P_ENERGY_POINTS_VALUE));
-	addLifePoints({getConstraint(P_LIFE_POINTS_GAIN)});
-	subLifePoints({getConstraint(P_LIFE_POINTS_LOSS)});
-	if (_cardDeck.empty()) subLifePoints({getConstraint(P_LIFE_POINTS_LOSS_DECK_EMPTY)});
+	cardPickFromDeck(_constraints.getConstraint(P_CARD_PICK_AMOUNT));
+	setEnergyPoints(_constraints.getConstraint(P_ENERGY_POINTS_VALUE));
+	addLifePoints({_constraints.getConstraint(P_LIFE_POINTS_GAIN)});
+	subLifePoints({_constraints.getConstraint(P_LIFE_POINTS_LOSS)});
+	if (_cardDeck.empty()) subLifePoints({_constraints.getConstraint(P_LIFE_POINTS_LOSS_DECK_EMPTY)});
 	//Call creature's turn-based rules
 	//NETWORK: TURN_STARTED
 }
 
 void Player::leaveTurn(unsigned turn)
 {
-	timeOutConstraints();
+	_constraints.timeOutConstraints();
 	//NETWORK: TURN_ENDED
 }
 
@@ -38,7 +38,7 @@ void Player::useCard(unsigned handIndex)
 {
 	//TODO: verify that handIndex is not out_of_range
 
-    if (getConstraint(P_USE_CARD_LIMIT) == _turnData.cardsUsed)
+    if (_constraints.getConstraint(P_USE_CARD_LIMIT) == _turnData.cardsUsed)
     {
         //NETWORK: USE_CARDS_LIMIT
         return;
@@ -49,7 +49,7 @@ void Player::useCard(unsigned handIndex)
 	//TODO: use typeinfo ?
 	if (usedCard->isCreature())
 	{
-		if (getConstraint(P_PLACE_CREATURE_LIMIT) == _turnData.creaturesPlaced)
+		if (_constraints.getConstraint(P_PLACE_CREATURE_LIMIT) == _turnData.creaturesPlaced)
 		{
             //NETWORK: PLACE_CREATURES_LIMIT
             return;
@@ -64,7 +64,7 @@ void Player::useCard(unsigned handIndex)
 	// If card is a spell
 	else
 	{
-		if (getConstraint(P_CALL_SPELL_LIMIT) == _turnData.spellCalls)
+		if (_constraints.getConstraint(P_CALL_SPELL_LIMIT) == _turnData.spellCalls)
 		{
 			//NETWORK: CALL_SPELLS_LIMIT
 			return;
@@ -79,7 +79,7 @@ void Player::useCard(unsigned handIndex)
 
 void Player::attackWithCreature(unsigned boardIndex, unsigned victim)
 {
-	if (getConstraint(P_ATTACK_WITH_CREATURE_LIMIT) == _turnData.creatureAttacks)
+	if (_constraints.getConstraint(P_ATTACK_WITH_CREATURE_LIMIT) == _turnData.creatureAttacks)
 	{
 		//NETWORK: CREATURE_ATTACKS_LIMIT
 		return;
@@ -87,38 +87,15 @@ void Player::attackWithCreature(unsigned boardIndex, unsigned victim)
     //attack with _cardBoard.at(boardIndex) against victim
 }
 
-/*--------------------------- CONSTRAINTS */
-void Player::setConstraint(unsigned constraintID, unsigned value, unsigned turns)
-{
-	_constraintsArray[constraintID].push_back(std::make_pair(value, turns));
-}
-
-unsigned Player::getConstraint(unsigned constraintID)
-{
-    if (_constraintsArray[constraintID].empty())
-	return _constraintDefaults[constraintID];
-    else
-	return _constraintsArray[constraintID].rbegin()->first;
-}
-
-void Player::timeOutConstraints()
-{
-    for (unsigned i=0; i<P_CONSTRAINTS_COUNT; i++)
-    {
-        std::vector<std::pair<unsigned, unsigned>> vect = _constraintsArray[i];
-        for (std::vector<std::pair<unsigned, unsigned>>::iterator vectIt=vect.begin(); vectIt!=vect.end();)
-        {
-            if (vectIt->second == 1) vectIt = vect.erase(vectIt);
-            else
-            {
-				vectIt->second--;
-				vectIt++;
-            }
-        }
-    }
-}
-
 /*--------------------------- EFFECTS */
+void Player::setConstraint(std::vector<unsigned> args)
+{
+	unsigned constraintID = args.at(0);
+	unsigned value = args.at(1);
+	unsigned turns = args.at(2);
+	_constraints.setConstraint(constraintID, value, turns);
+}
+
 void Player::pickSomeCards(std::vector<unsigned> args)
 {
     cardPickFromDeck(args.at(0));

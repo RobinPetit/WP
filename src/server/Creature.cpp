@@ -12,6 +12,14 @@ Creature::Creature(	unsigned cost, unsigned attack, unsigned health, unsigned sh
 }
 
 /*--------------------------- EFFECTS */
+void Creature::setConstraint(std::vector<unsigned> args)
+{
+	unsigned constraintID = args.at(0);
+	unsigned value = args.at(1);
+	unsigned turns = args.at(2);
+	_constraints.setConstraint(constraintID, value, turns);
+}
+
 void Creature::resetAttack(std::vector<unsigned> args)
 {
 	 _attack = _attackInit;
