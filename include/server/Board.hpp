@@ -37,7 +37,7 @@ class Board
 		{
 			&Player::setConstraint,
 			//&Player::loseHandCards,
-			&Player::damageBoardCreatures
+			//&Player::damageBoardCreatures
 		};
 
 };

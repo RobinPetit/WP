@@ -2,39 +2,35 @@
 #include "server/Board.hpp"
 
 
-void Player::Player(unsigned id):
+void Player::Player(unsigned id, Player* opponent):
 	_id(id)
 {
 
+}
+
+void Player::setOpponent(Player* opponent)
+{
+	_opponent = opponent;
 }
 
 
 /*--------------------------- BOARD INTERFACE */
 void Player::enterTurn(unsigned turn)
 {
+	//Player's turn-based rules
 	_turnData = _emptyTurnData; //Clear the turn data
 	pickCards(getConstraint(constraintIDs.cardPickAmount));
 	setEnergyPoints(getConstraint(constraintIDs.startEnergyPoints));
 	addLifePoints(getConstraint(constraintIDs.addLifePoints));
 	subLifePoints(getConstraint(constraintIDs.subLifePoints));
 	if (_cardDeck.empty()) subLifePoints(getConstraint(constraintIDs.emptyDeckSubLifePoitns));
+	//Call creature's turn-based rules
 }
 
 void Player::leaveTurn(unsigned turn)
 {
 	timeOutConstraints();
 	//Communicate turn & ask to wait to menu
-}
-
-void Player::pickCards(unsigned amount)
-{
-	while (not _cardDeck.empty() and amount>0)
-	{
-		amount--;
-		_cardHand.push_back(_cardDeck.top());
-		_cardDeck.pop();
-		_turnData.cardsPicked++;
-	}
 }
 
 void Player::useCard(unsigned handIndex)
@@ -116,6 +112,11 @@ void Player::timeOutConstraints()
 }
 
 /*--------------------------- EFFECTS */
+void Player::pickSomeCards(std::vector<unsigned> args)
+{
+    pickCards(args.at(0));
+}
+
 void Player::loseHandCards(std::vector<unsigned> args)
 {
 	unsigned amount = args.at(1);
@@ -127,13 +128,33 @@ void Player::loseHandCards(std::vector<unsigned> args)
 	}
 }
 
-void Player::addLifePoints(unsigned points)
+void stealHandCard(std::vector<unsigned> args)
 {
+	_cardHand.push_back(_opponent.cardRemoveFromHand());
+}
+
+void exchangeHandCard(std::vector<unsigned> args)
+{
+	unsigned myCardIndex = args.at(0);
+	Card* myCard = _cardHand.at(myCardIndex);
+
+	_cardHand.at(myCardIndex) = _opponent.cardExchangeFromHand(myCard);
+	if (_cardHand.at(myCardIndex) == nullptr)
+	{
+		const auto& handIt = std::find(_cardHand.begin(), _cardHand.end(), _cardHand[handIndex]);
+		_cardHand.erase(handIt);
+	}
+}
+
+void Player::addLifePoints(std::vector<unsigned> args)
+{
+	unsigned points = args.at(0);
     _lifePoints += points;
 }
 
-void Player::subLifePoints(unsigned points)
+void Player::subLifePoints(std::vector<unsigned> args)
 {
+	unsigned points = args.at(0);
     if (_lifePoints > points) _lifePoints -= points
     else
     {
@@ -144,6 +165,17 @@ void Player::subLifePoints(unsigned points)
 
 
 /*--------------------------- PRIVATE */
+void Player::pickCards(unsigned amount)
+{
+	if(not _cardDeck.empty() and amount>0)
+	{
+		amount--;
+		_cardHand.push_back(_cardDeck.top());
+		_cardDeck.pop();
+		_turnData.cardsPicked++;
+	}
+}
+
 void Player::cardDiscardFromHand(unsigned handIndex)
 {
 	// TODO: treat properly case of handIndex being out of range
@@ -159,3 +191,23 @@ void Player::cardDiscardFromBoard(unsigned boardIndex)
 	_cardBoard.erase(boardIt);
 }
 
+Card* Player::cardRemoveFromHand()
+{
+	if (_cardHand.empty()) return nullptr;
+
+	unsigned handIndex = rand() % _cardHand.size();
+	Card* stolen = _cardHand[handIndex];
+	const auto& handIt = std::find(_cardHand.begin(), _cardHand.end(), _cardHand[handIndex]);
+	_cardHand.erase(handIt);
+	return stolen;
+}
+
+Card* Player::cardExchangeFromHand(Card* given)
+{
+    if (_cardHand.empty()) return nullptr;
+
+    unsigned handIndex = rand() % _cardHand.size();
+	Card* stolen = _cardHand[handIndex];
+    _cardHand.at(handIndex) = given;
+    return stolen;
+}

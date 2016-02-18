@@ -22,23 +22,25 @@ class Player
 		/// Interface for basic gameplay (board)
 		void enterTurn(unsigned turn);
 		void leaveTurn(unsigned turn);
-
-		void pickCards(unsigned amount=0);  /// Move the card on top of the deck to the player's hand
-		void useCard(unsigned handIndex);  /// Use the card
-		void attackWithCreature(unsigned boardIndex, unsigned victim);  /// Attack victim with the card
+		void useCard(unsigned handIndex); 	/// Use a card
+		void attackWithCreature(unsigned boardIndex, unsigned victim);  /// Attack victim with a card
 
 		/// Effects
 		void setConstraint(std::vector<unsigned> args);
+		void pickSomeCards(std::vector<unsigned> args);
 		void loseHandCards(std::vector<unsigned> args);
-		void damageBoardCreatures(std::vector<unsigned> args);
-
-		void addLifePoints(unsigned points);
-		void subLifePoints(unsigned points);
+        void stealHandCard(std::vector<unsigned> args);
+        void exchangeHandCard(std::vector<unsigned> args);
+		void addLifePoints(std::vector<unsigned> args);
+		void subLifePoints(std::vector<unsigned> args);
 
 
 	private:
+		void pickCards(unsigned amount);
 		void cardDiscardFromHand(unsigned handIndex);  /// Move the card at handIndex from the player's hand to the bin
 		void cardDiscardFromBoard(unsigned boardIndex);  /// Move the card at boardIndex from the board to the bin
+		Card* cardRemoveFromHand();
+		Card* cardExchangeFromHand(Card* given);
 
 		std::stack<Card *> _cardDeck;  ///< Cards that are in the deck (not usable yet)
 		std::vector<Card *> _cardHand;  ///< Cards that are in the player's hand (usable)
@@ -51,6 +53,7 @@ class Player
 		void setEnergyPoints(unsigned points);
 
 		Board* _board;
+		Player* opponent = nullptr;
 		unsigned _id;
 
 		//Constraints
