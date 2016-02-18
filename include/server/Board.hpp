@@ -4,14 +4,14 @@
 #include <SFML/System.hpp>
 #include <cstdlib>
 #include "Player.hpp"
-#include "server/Card.hpp"
+#include "Card.hpp"
 
 /// Manages one game with two players
 class Board
 {
 	public:
 		/// Constructor
-		Board(unsigned player1, unsigned player2);
+		Board(unsigned int player1, unsigned int player2);
 
 		/// Destructor
 		~Board() = default;

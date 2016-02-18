@@ -49,7 +49,7 @@ class Player
 		unsigned _id;
 
 		//Constraints
-		unsigned _constraintDefaults[2] =
+		unsigned _constraintDefaults[10] =
 		{
 			//TURN-BASED CONSTRAINTS
 			1,		//pick one card
