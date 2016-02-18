@@ -1,5 +1,4 @@
 #include <boost/test/unit_test.hpp>
-#include "client/StateStack.hpp"
 
 struct StateStackTestsFixture
 {

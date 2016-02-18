@@ -37,13 +37,13 @@ bool Client::connectToServer(const std::string& name, const sf::IpAddress& addre
 	_name = (name.size() < MAX_NAME_LENGTH) ? name : name.substr(0, MAX_NAME_LENGTH);
 	_serverAddress = address;
 	_serverPort = port;
+	if(_socket.connect(address, port) != sf::Socket::Done)
+		return false;
 	if(!_userTerminal.hasKnownTerminal())
 		std::cout << "Warning: as no known terminal has been found, chat is disabled" << std::endl;
 	else
 		initListener();  // creates the new thread which listens for entring chat conenctions
 	// if connection does not work, don't go further
-	if(_socket.connect(address, port) != sf::Socket::Done)
-		return false;
 	sf::sleep(SOCKET_TIME_SLEEP);  // wait a quarter second to let the listening thread init the port
 	sf::Packet packet;
 	packet << TransferType::GAME_CONNECTION  // precise

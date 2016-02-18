@@ -1,12 +1,11 @@
 #include <boost/test/unit_test.hpp>
 #include "client/AbstractState.hpp"
-#include "client/StateStack.hpp"
 
 class TestState : public AbstractState
 {
 	public:
-		TestState(StateStack& stateStack):
-			AbstractState(stateStack),
+		TestState(StateStack& stateStack, Client& c):
+			AbstractState(stateStack, c),
 			_fHasBeenCalled{false},
 			_gHasBeenCalled{false}
 		{
@@ -30,11 +29,14 @@ class TestState : public AbstractState
 
 struct AbstractStateTestsFixture
 {
+	Client c;
 	StateStack stack;
 	TestState testState;
 
 	AbstractStateTestsFixture():
-		testState{stack}
+		c{},
+		stack{c},
+		testState{stack, c}
 	{
 	}
 
@@ -54,3 +56,4 @@ BOOST_AUTO_TEST_CASE(MenuCallback)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
+
