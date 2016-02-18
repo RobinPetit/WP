@@ -65,15 +65,16 @@ unsigned Player::getConstraint(unsigned constraintID)
 
 
 /*--------------------------- EFFECTS */
-/*void Player::loseHandCards(unsigned amount)
+void Player::loseHandCards(std::vector<unsigned> args)
 {
+	unsigned amount = args.at(1);
 	while (not _cardHand.empty() and amount>0)
 	{
 		amount--;
 		unsigned handIndex = rand() % _cardHand.size();
 		cardDiscardFromHand(handIndex);
 	}
-}*/
+}
 
 
 /*--------------------------- PRIVATE */

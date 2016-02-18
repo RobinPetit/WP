@@ -2,9 +2,8 @@
 #define _PLAYER_HPP
 
 #include <SFML/System.hpp>
-// #include <cstdlib>
+#include <cstdlib>
 #include <stack>
-// #include "server/Board.hpp"
 #include "server/Card.hpp"
 #include "server/Constraints.hpp"
 
