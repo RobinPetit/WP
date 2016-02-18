@@ -29,7 +29,7 @@ class Player
 
 		/// Effects
 		void setConstraint(std::vector<unsigned> args);
-		// void loseHandCards(std::vector<unsigned> args);
+		void loseHandCards(std::vector<unsigned> args);
 		void damageBoardCreatures(std::vector<unsigned> args);
 
 		void addLifePoints(unsigned points);
