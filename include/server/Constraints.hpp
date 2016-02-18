@@ -5,13 +5,21 @@
 
 
 // Effects: mettre ailleurs ?
-/*
-constexpr struct
+
+enum SPELL_EFFECTS : unsigned
 {
-	unsigned setConstraint = 0;			//set a constraint for the player
-	unsigned loseHandCards = 1;			//lose an amount of random cards from the hand
-	unsigned damageBoardCreatures = 2;	//damage all the player's creatures on the board
-} effectIDs;*/
+	S_BLOCK,			// Block the next X attacks
+	S_CARE,				// Give to a monster X lifePoints
+	S_EXCHANGE,			// Each player chose an opponent's card and trade them
+	S-HYPNOSIS,			// Take control of an ennemy creature for X turn
+	S_MIRROR,			// Send back the next opponent's attack ( trap )
+	S_PARALYZE,			// Forbid the opponent to use a card for X turns
+	S_RESURRECTION,			// Allow the player using this effect to get a discarded card
+	S_SHIELD,			// Absord the next opponent's attack
+	S_STEALING,			// Take a random card from the opponent's deck
+	S_STICKY,			// Your opponent's spell cost X more next Turn
+	S_TRAP				// Deal 3 damage or summon two 1/1 snacks
+};
 
 
 /// PLAYER CONSTRAINTS
