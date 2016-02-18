@@ -4,23 +4,27 @@
 #include <vector>
 
 
-// Effects: mettre ailleurs ?
-
-enum SPELL_EFFECTS : unsigned
+/// PLAYER EFFECTS
+enum CREATURE_EFFECTS : unsigned
 {
-	S_BLOCK,			// Block the next X attacks
-	S_CARE,				// Give to a monster X lifePoints
-	S_EXCHANGE,			// Each player chose an opponent's card and trade them
-	S_HYPNOSIS,			// Take control of an ennemy creature for X turn
-	S_MIRROR,			// Send back the next opponent's attack ( trap )
-	S_PARALYZE,			// Forbid the opponent to use a card for X turns
-	S_RESURRECTION,			// Allow the player using this effect to get a discarded card
-	S_SHIELD,			// Absord the next opponent's attack
-	S_STEALING,			// Take a random card from the opponent's deck
-	S_STICKY,			// Your opponent's spell cost X more next Turn
-	S_TRAP				// Deal 3 damage or summon two 1/1 snacks
+	TODO
 };
 
+/// CREATURE EFFECTS
+enum CREATURE_EFFECTS : unsigned
+{
+	C_BLOCK,			// Block the next X attacks
+	C_CARE,				// Give to a monster X lifePoints
+	C_EXCHANGE,			// Each player chose an opponent's card and trade them
+	C_HYPNOSIS,			// Take control of an ennemy creature for X turn
+	C_MIRROR,			// Send back the next opponent's attack ( trap )
+	C_PARALYZE,			// Forbid the opponent to use a card for X turns
+	C_RESURRECTION,		// Allow the player using this effect to get a discarded card
+	C_SHIELD,			// Absord the next opponent's attack
+	C_STEALING,			// Take a random card from the opponent's deck
+	C_STICKY,			// Your opponent's spell cost X more next Turn
+	C_TRAP				// Deal 3 damage or summon two 1/1 snacks
+};
 
 /// PLAYER CONSTRAINTS
 constexpr unsigned P_CONSTRAINTS_COUNT = 10; //number of player constraints
