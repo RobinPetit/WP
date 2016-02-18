@@ -1,3 +1,3 @@
 #include "server/Card.hpp"
 
-//~ For additionnals methods
+//~ For additional methods
