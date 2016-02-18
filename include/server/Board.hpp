@@ -40,13 +40,6 @@ class Board
 			&Player::damageBoardCreatures
 		};
 
-		//Constraints
-		unsigned _constraintDefaults[2] =
-		{
-			1,	//pick one card each turn
-			0	//no attack will backfire
-		};
-
 };
 
 

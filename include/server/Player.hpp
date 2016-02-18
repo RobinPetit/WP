@@ -48,6 +48,23 @@ class Player
 		Board* _board;
 		unsigned _id;
 
+		//Constraints
+		unsigned _constraintDefaults[2] =
+		{
+			//TURN-BASED CONSTRAINTS
+			1,		//pick one card
+			10,		//energy points set at 10
+			0, 		//sub 0 life points
+			0,		//add 0 life points
+			5, 		//if deck empty, sub 5 life points
+			//PASSIVE CONSTRAINTS
+			100,	//no limit for using cards
+			100,	//no limit for calling spells
+			100, 	//no limit for attacking with creatures
+			6,		//arbitrary limit for placing creatures (TODO: discuss)
+			6		//arbitrary limit for amount of creatures on board
+		};
+
 		std::vector<std::pair<unsigned, unsigned>> _constraintsArray [constraintCount];
 		unsigned getConstraint(unsigned constraintID);
 		void setConstraint(unsigned constraintID, unsigned value, unsigned turns);
