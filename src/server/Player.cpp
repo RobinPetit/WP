@@ -10,7 +10,18 @@ void Player::Player(unsigned id):
 
 
 /*--------------------------- BOARD INTERFACE */
-void Player::cardPick(unsigned amount)
+void Player::enterTurn(unsigned turn)
+{
+	_turnData = _emptyTurnData; //Clear the turn data
+	pickCard()
+}
+
+void Player::leaveTurn(unsigned turn)
+{
+	//Communicate turn & ask to wait to menu
+}
+
+void Player::pickCard(unsigned amount)
 {
 	while (not _cardDeck.empty() and amount>0)
 	{
@@ -21,7 +32,7 @@ void Player::cardPick(unsigned amount)
 	}
 }
 
-void Player::cardUse(unsigned handIndex)
+void Player::useCard(unsigned handIndex)
 {
 	// TODO: verify that handIndex is not out_of_range
 	const auto& handIt = std::find(_cardHand.begin(), _cardHand.end(), _cardHand[handIndex]);
@@ -41,21 +52,10 @@ void Player::cardUse(unsigned handIndex)
 	}
 }
 
-void Player::cardAttack(unsigned boardIndex, unsigned victim)
+void Player::attackWithCreature(unsigned boardIndex, unsigned victim)
 {
     //attack with _cardBoard.at(boardIndex) against victim
 }
-
-void Player::turnEnter(unsigned turn)
-{
-	//Communicate turn & as to play to menu
-}
-
-void Player::turnLeave(unsigned turn)
-{
-	//Communicate turn & ask to wait to menu
-}
-
 
 /*--------------------------- CONSTRAINTS */
 void Player::setConstraint(unsigned constraintID, unsigned value, unsigned turns)

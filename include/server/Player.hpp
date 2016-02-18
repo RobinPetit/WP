@@ -20,12 +20,12 @@ class Player
 		~Player() = default;
 
 		/// Interface for basic gameplay (board)
-		void turnEnter(unsigned turn);
-		void turnLeave(unsigned turn);
+		void enterTurn(unsigned turn);
+		void leaveTurn(unsigned turn);
 
-		void cardPick(unsigned amount=0);  /// Move the card on top of the deck to the player's hand
-		void cardUse(unsigned handIndex);  /// Use the card
-		void cardAttack(unsigned boardIndex, unsigned victim);  /// Attack victim with the card
+		void pickCard(unsigned amount=0);  /// Move the card on top of the deck to the player's hand
+		void useCard(unsigned handIndex);  /// Use the card
+		void attackWithCreature(unsigned boardIndex, unsigned victim);  /// Attack victim with the card
 
 		/// Effects
 		void setConstraint(std::vector<unsigned> args);
@@ -52,13 +52,16 @@ class Player
 		unsigned getConstraint(unsigned constraintID);
 		void setConstraint(unsigned constraintID, unsigned value, unsigned turns);
 
-		struct
+		struct TurnData
 		{
-			unsigned cardsPicked=0;
 			unsigned cardsUsed=0;
-			unsigned creaturesPlaced=0;
-			unsigned spellsUsed=0;
-		} _turnData;
+			unsigned cardsPlaced=0;
+			unsigned creatureAttacks=0;
+			unsigned spellCalls=0;
+		} _emptyTurnData;
+
+		TurnData _turnData;
+
 };
 
 
