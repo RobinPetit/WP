@@ -28,15 +28,13 @@ public:
     inline std::vector<std::vector<unsigned>> getTurnByTurnEffects() {return _turnByTurnEffects;}
     inline std::vector<std::vector<unsigned>> getEndingEffects()     {return _endingEffects;}
 
-    /// Re-Setters
-	inline void resetHealth() {_health = _healthInit;}
-	inline void resetAttack() {_attack = _attackInit;}
-
-    /// Increments-Decrements
-    void incrHealth(unsigned int);
-    void decrHealth(unsigned int);
-    void incrAttack(unsigned int);
-    void decrAttack(unsigned int);
+    /// Effects
+	void resetHealth(std::vector<unsigned> args);
+	void resetAttack(std::vector<unsigned> args);
+    void addHealth(std::vector<unsigned> args);
+    void subHealth(std::vector<unsigned> args);
+    void addAttack(std::vector<unsigned> args);
+    void subAttack(std::vector<unsigned> args);
 
 	/// Methods
 	virtual inline bool isCreature() override { return true; };
