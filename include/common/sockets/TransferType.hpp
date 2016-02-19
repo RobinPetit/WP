@@ -27,6 +27,8 @@ enum class TransferType : sf::Uint32
 	PLAYER_ASKS_FRIENDS,
 	/// Used when a client asks another player to be his friend
 	PLAYER_NEW_FRIEND,
+	/// Used when a player remove anotther player from its friend list
+	PLAYER_REMOVE_FRIEND,
 	/// Used as an "error-value" for acknowledgement of friendship requests
 	NOT_EXISTING_FRIEND,
 	/// Used when a client answers a friendship request

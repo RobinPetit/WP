@@ -54,16 +54,6 @@ class StateStack
 		bool isEmpty() const;
 
 	private:
-
-		/// Apply the changes that need to be done.
-		/// These changes are stored in _pendingChanges.
-		/// When a state calls pop, this state is deleted (its destructor gets
-		/// called) but when the pop is done, the stack returns to the caller of
-		/// the pop method, which is the state just popped out. Executing code
-		/// from a deleted object is undefined behavior, so by delaying the pop
-		/// (and the clear) we avoid this undefined behavior.
-		void doPendingChanges();
-
 		std::vector<std::unique_ptr<AbstractState>> _stack;  ///< Vector of state.
 		std::vector<std::unique_ptr<AbstractState>>::iterator _stackIterator;  ///< Iterator on _stack.
 		Client& _client;
