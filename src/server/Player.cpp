@@ -131,6 +131,12 @@ void Player::exchangeHandCard(std::vector<unsigned> args)
 	}
 }
 
+void Player::setEnergyPoints(std::vector<unsigned> args)
+{
+    unsigned points = args.at(0);
+    _energyPoints = points;
+}
+
 void Player::addEnergyPoints(std::vector<unsigned> args)
 {
 	unsigned points = args.at(0);
