@@ -1,5 +1,6 @@
 #include "server/Player.hpp"
 #include "server/Board.hpp"
+#include "server/Creature.hpp"
 
 
 Player::Player(unsigned id):
@@ -17,21 +18,30 @@ void Player::setOpponent(Player* opponent)
 /*--------------------------- BOARD INTERFACE */
 void Player::enterTurn(unsigned turn)
 {
-	//Player's turn-based rules
 	_turnData = _emptyTurnData; //Clear the turn data
+
+	//Player's turn-based rules
 	cardDeckToHand(_constraints.getConstraint(PC_CARD_PICK_AMOUNT));
 	setEnergyPoints({_constraints.getConstraint(PC_ENERGY_POINTS_INIT)});
 	addLifePoints({_constraints.getConstraint(PC_HEALTH_POINTS_GAIN)});
 	subLifePoints({_constraints.getConstraint(PC_HEALTH_POINTS_LOSS)});
 	if (_cardDeck.empty())
 		subLifePoints({_constraints.getConstraint(PC_HEALTH_POINTS_LOSS_DECK_EMPTY)});
-	//Call creature's turn-based rules
+
+	//Will call creature's turn-based rules
+    for (unsigned i=0; i<_cardBoard.size(); i++) _cardBoard.at(i)->enterTurn(this, _opponent);
+
 	//NETWORK: TURN_STARTED
 }
 
 void Player::leaveTurn(unsigned turn)
 {
+	//Time out player constraints
 	_constraints.timeOutConstraints();
+
+	//Time out player's creature's constraints
+    for (unsigned i=0; i<_cardBoard.size(); i++) _cardBoard.at(i)->leaveTurn();
+
 	//NETWORK: TURN_ENDED
 }
 
@@ -86,6 +96,21 @@ void Player::attackWithCreature(unsigned boardIndex, unsigned victim)
 		return;
 	}
 	//attack with _cardBoard.at(boardIndex) against victim
+}
+
+/*--------------------------- BOARD AND CREATURE INTERFACE */
+void Player::applyEffectToCreature(unsigned boardIndex, unsigned method, const std::vector<unsigned>& effectArgs)
+{
+	Creature* usedCreature = _cardBoard.at(boardIndex);
+	(usedCreature->*(usedCreature->effectMethods[method]))(effectArgs);
+}
+
+void Player::applyEffectToCreatures(unsigned method, const std::vector<unsigned>& effectArgs)
+{
+	for (unsigned i=0; i<_cardBoard.size(); i++)
+	{
+        applyEffectToCreature(i, method, effectArgs);
+	}
 }
 
 /*--------------------------- EFFECTS */

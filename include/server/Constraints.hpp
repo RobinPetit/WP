@@ -92,23 +92,23 @@ constexpr unsigned C_CONSTRAINTS_COUNT = 6; //number of creature constraints
 enum CREATURE_CONSTRAINTS : unsigned
 {
 	//turn-by-turn
-	CE_SELF_HEALTH_GAIN,			// Gain X health points
-	CE_TEAM_HEALTH_GAIN,			// Team gains X health points
-	CE_SELF_HEALTH_LOSS,
-	CE_TEAM_HEALTH_LOSS,
-	CE_SELF_ATTACK_GAIN,			// Gain X attack points
-	CE_TEAM_ATTACK_GAIN,			// Team gains X attack points
-	CE_SELF_ATTACK_LOSS,
-	CE_TEAM_ATTACK_LOSS,
-	CE_SELF_SHIELD_LOSS,			// Lose X shield points
+	CC_SELF_HEALTH_GAIN,			// Gain X health points
+	CC_TEAM_HEALTH_GAIN,			// Team gains X health points
+	CC_SELF_HEALTH_LOSS,
+	CC_TEAM_HEALTH_LOSS,
+	CC_SELF_ATTACK_GAIN,			// Gain X attack points
+	CC_TEAM_ATTACK_GAIN,			// Team gains X attack points
+	CC_SELF_ATTACK_LOSS,
+	CC_TEAM_ATTACK_LOSS,
+	CC_SELF_SHIELD_LOSS,			// Lose X shield points
 	//passive
-	CE_SELF_ATTACK_BLOCK,		// Block the next X attacks on himself
-	CE_TEAM_ATTACK_BLOCK,		// Block the next X attacks on team
-	CE_SELF_PARALYZED,			// Can not be used
+	CC_SELF_ATTACK_BLOCK,		// Block the next X attacks on himself
+	CC_TEAM_ATTACK_BLOCK,		// Block the next X attacks on team
+	CC_SELF_PARALYZED,			// Can not be used
 	//ending (when creature dies)
-    CE_END_TEAM_HEALTH_GAIN,
-    CE_END_TEAM_ATTACK_LOSS,
-    CE_END_TEAM_SHIELD_LOSS
+    CC_END_TEAM_HEALTH_GAIN,
+    CC_END_TEAM_ATTACK_LOSS,
+    CC_END_TEAM_SHIELD_LOSS
 	//TODO
 	//CE_SELF_HYPNOTIZED,			// Can only be used by opponent
 	//C_STICKY,			// Your opponent's spell cost X more next Turn

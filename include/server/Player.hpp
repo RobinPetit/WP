@@ -6,10 +6,10 @@
 #include <stack>
 #include "server/Card.hpp"
 #include "server/Spell.hpp"
-#include "server/Creature.hpp"
 #include "server/Constraints.hpp"
 
 class Board;
+class Creature;
 
 /// Represents one of the two players for a given game.
 class Player
@@ -27,7 +27,6 @@ public:
 	void leaveTurn(unsigned turn);
 	void useCard(unsigned handIndex); 	/// Use a card
 	void attackWithCreature(unsigned boardIndex, unsigned victim);  /// Attack victim with a card
-	std::vector<Creature*> getBoardCreatures() { return _cardBoard; };
 
 	/// Effects
 	void setConstraint(const std::vector<unsigned>& args);
@@ -61,6 +60,9 @@ public:
 		&Player::subLifePoints,
 	};
 
+	///Pass along effects to creatures
+    void applyEffectToCreatures(unsigned method, const std::vector<unsigned>& effectArgs);
+    void applyEffectToCreature(unsigned boardIndex, unsigned method, const std::vector<unsigned>& effectArgs);
 
 private:
 	Board* _board;

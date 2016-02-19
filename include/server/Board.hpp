@@ -24,7 +24,7 @@ public:
 	void attackWithCard(unsigned boardIndex, unsigned victim);
 	void quitGame(); //TODO: need identifier
 
-	/// Interface for Player class
+	/// Interface for Player and Card classes
 	void applyEffect(Card* usedCard, std::vector<unsigned> effect);
 
 private:

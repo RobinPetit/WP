@@ -28,6 +28,25 @@ bool Creature::isSpell()
 	return false;
 }
 
+void Creature::enterTurn(Player* owner, Player* opponent)
+{
+	//Creature's turn-based rules
+	addHealth({_constraints.getConstraint(CC_SELF_HEALTH_GAIN)});
+	owner->applyEffectToCreatures(CE_ADD_HEALTH, {_constraints.getConstraint(CC_TEAM_HEALTH_GAIN)});
+	forcedSubHealth({_constraints.getConstraint(CC_SELF_HEALTH_LOSS)});
+	owner->applyEffectToCreatures(CE_FORCED_SUB_HEALTH, {_constraints.getConstraint(CC_TEAM_HEALTH_LOSS)});
+	addAttack({_constraints.getConstraint(CC_SELF_ATTACK_GAIN)});
+	owner->applyEffectToCreatures(CE_ADD_ATTACK, {_constraints.getConstraint(CC_TEAM_ATTACK_GAIN)});
+	subAttack({_constraints.getConstraint(CC_SELF_ATTACK_LOSS)});
+	owner->applyEffectToCreatures(CE_SUB_ATTACK, {_constraints.getConstraint(CC_TEAM_ATTACK_LOSS)});
+	subShield({_constraints.getConstraint(CC_SELF_SHIELD_LOSS)});
+}
+
+void Creature::leaveTurn()
+{
+    _constraints.timeOutConstraints();
+}
+
 /*--------------------------- EFFECTS */
 void Creature::setConstraint(const std::vector<unsigned>& args)
 {

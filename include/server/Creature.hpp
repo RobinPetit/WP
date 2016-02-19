@@ -2,6 +2,7 @@
 #define CREATURE_SERVER_HPP
 
 #include "server/Card.hpp"
+#include "server/Player.hpp"
 #include "server/Constraints.hpp"
 
 
@@ -18,7 +19,6 @@ private:
 	ConstraintList _constraints = ConstraintList(C_CONSTRAINT_DEFAULTS, C_CONSTRAINTS_COUNT);
 
 public:
-
 	/// Constructors
 	Creature(unsigned cost=0, unsigned attack=0, unsigned health=1, unsigned shield=0, unsigned shieldType=0,
 			std::vector<std::vector<unsigned>> effects = {{}});
@@ -26,6 +26,12 @@ public:
 	/// Getters
 	inline unsigned int getHealth();
 	inline unsigned int getAttack();
+
+	/// Methods
+	virtual inline bool isCreature() override;
+	virtual inline bool isSpell() override;
+    void enterTurn(Player* owner, Player* opponent);
+    void leaveTurn();
 
 	/// Effects
 	void setConstraint(const std::vector<unsigned>& args);
@@ -54,12 +60,6 @@ public:
 		&Creature::subShield,
 		&Creature::forcedSubHealth
 	};
-
-
-	/// Methods
-	virtual inline bool isCreature() override;
-	virtual inline bool isSpell() override;
-
 };
 
 #endif // CREATURE_SERVER_HPP
