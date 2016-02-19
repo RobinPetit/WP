@@ -5,9 +5,9 @@
 #include <SFML/Network/Packet.hpp>
 #include <SFML/System/Time.hpp>
 // WizardPoker headers
-#include <server/ErrorCode.hpp>
-#include <common/constants.hpp>
-#include <common/Terminal.hpp>
+#include "server/ErrorCode.hpp"
+#include "common/constants.hpp"
+#include "common/Terminal.hpp"
 // std-C++ headers
 #include <iostream>
 #include <atomic>
@@ -34,7 +34,7 @@ void chatListening(sf::Uint16 *port, const std::atomic_bool *loop, Terminal term
 	}
 	else
 		*port = chatListener.getLocalPort();
-        std::cout << "waiting for connections on port " << *port << std::endl;
+		std::cout << "waiting for connections on port " << *port << std::endl;
 	selector.add(chatListener);
 	while(loop->load())
 	{
@@ -44,7 +44,6 @@ void chatListening(sf::Uint16 *port, const std::atomic_bool *loop, Terminal term
 		sf::TcpSocket socket;
 		if(chatListener.accept(socket) == sf::Socket::Done)
 		{
-			std::cout << "connection!\n";
 			sf::Uint32 address;
 			sf::Uint16 port;
 			std::string otherName, selfName;

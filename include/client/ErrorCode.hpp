@@ -4,7 +4,7 @@
 // std-C++ headers
 #include <cstdlib>
 // WizardPoker headers
-#include <common/ErrorCode.hpp>
+#include "common/ErrorCode.hpp"
 
 /// enum used to define the return status of the client program
 enum
