@@ -16,7 +16,7 @@ enum EFFECT_SUBJECTS : unsigned
 };
 
 /// PLAYER EFFECTS
-constexpr unsigned P_EFFECTS_COUNT = 10;
+constexpr unsigned P_EFFECTS_COUNT = 11;
 enum PLAYER_EFFECTS : unsigned
 {
 	//constraints
@@ -24,8 +24,9 @@ enum PLAYER_EFFECTS : unsigned
 	//other effects
 	PE_PICK_DECK_CARDS,
 	PE_LOSE_HAND_CARDS,
-	PE_STEAL_HAND_CARDS,
-	PE_EXCHG_HAND_CARDS,
+	PE_REVIVE_BIN_CARD,
+	PE_STEAL_HAND_CARD,
+	PE_EXCHG_HAND_CARD,
 	PE_SET_ENERGY_POINTS,
 	PE_ADD_ENERGY_POINTS,
 	PE_SUB_ENERGY_POINTs,

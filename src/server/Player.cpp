@@ -19,7 +19,7 @@ void Player::enterTurn(unsigned turn)
 {
 	//Player's turn-based rules
 	_turnData = _emptyTurnData; //Clear the turn data
-	cardPickFromDeck(_constraints.getConstraint(PC_CARD_PICK_AMOUNT));
+	cardDeckToHand(_constraints.getConstraint(PC_CARD_PICK_AMOUNT));
 	setEnergyPoints({_constraints.getConstraint(PC_ENERGY_POINTS_INIT)});
 	addLifePoints({_constraints.getConstraint(PC_HEALTH_POINTS_GAIN)});
 	subLifePoints({_constraints.getConstraint(PC_HEALTH_POINTS_LOSS)});
@@ -57,7 +57,7 @@ void Player::useCard(unsigned handIndex)
 		}
 		_turnData.cardsUsed++;
 		_turnData.creaturesPlaced++;
-		cardPlaceOnBoard(handIndex);
+		cardHandToBoard(handIndex);
 		exploitCardEffects(usedCard);
 		//NETWORK: CREATURE_PLACED
 	}
@@ -72,7 +72,7 @@ void Player::useCard(unsigned handIndex)
 		}
 		_turnData.cardsUsed++;
 		_turnData.spellCalls++;
-		cardDiscardFromHand(handIndex);
+		cardHandToBin(handIndex);
 		exploitCardEffects(usedCard);
 		//NETWORK: SPELL_CALLED
 	}
@@ -99,7 +99,7 @@ void Player::setConstraint(const std::vector<unsigned>& args)
 
 void Player::pickDeckCards(const std::vector<unsigned>& args)
 {
-	cardPickFromDeck(args.at(0));
+	cardDeckToHand(args.at(0));
 }
 
 void Player::loseHandCards(const std::vector<unsigned>& args)
@@ -109,25 +109,35 @@ void Player::loseHandCards(const std::vector<unsigned>& args)
 	{
 		amount--;
 		unsigned handIndex = rand() % _cardHand.size();
-		cardDiscardFromHand(handIndex);
+		cardHandToBin(handIndex);
 	}
+}
+
+void Player::reviveBinCard(const std::vector<unsigned>& args)
+{
+    unsigned binIndex = args.at(0);
+	cardBinToHand(binIndex);
 }
 
 void Player::stealHandCard(const std::vector<unsigned>& args)
 {
-	_cardHand.push_back(_opponent->cardRemoveFromHand());
+    cardAddToHand(_opponent->cardRemoveFromHand());
 }
 
 void Player::exchgHandCard(const std::vector<unsigned>& args)
 {
+	//TODO: check index
 	unsigned myCardIndex = args.at(0);
 	Card* myCard = _cardHand.at(myCardIndex);
+	Card* hisCard =  _opponent->cardExchangeFromHand(myCard);
 
-	_cardHand.at(myCardIndex) = _opponent->cardExchangeFromHand(myCard);
-	if (_cardHand.at(myCardIndex) == nullptr)
+	if (hisCard == nullptr)
 	{
-		const auto& handIt = std::find(_cardHand.begin(), _cardHand.end(), _cardHand[myCardIndex]);
-		_cardHand.erase(handIt);
+		//NETWORK: COULD_NOT_EXCHANGE
+	}
+	else
+	{
+        cardExchangeFromHand(hisCard, myCardIndex);
 	}
 }
 
@@ -183,7 +193,7 @@ void Player::exploitCardEffects(Card* usedCard)
 	}
 }
 
-void Player::cardPickFromDeck(unsigned amount)
+void Player::cardDeckToHand(unsigned amount)
 {
 	if(not _cardDeck.empty() and amount>0)
 	{
@@ -192,31 +202,31 @@ void Player::cardPickFromDeck(unsigned amount)
 		_cardDeck.pop();
 		//NETWORK: DECK_EMPTY
 	}
-	//NETWORK: BOARD_CHANGED
 	//NETWORK: DECK_CHANGED
+	//NETWORK: HAND_CHANGED
 }
 
-void Player::cardPlaceOnBoard(unsigned handIndex)
+void Player::cardHandToBoard(unsigned handIndex)
 {
 	// TODO: treat properly case of handIndex being out of range
 	const auto& handIt = std::find(_cardHand.begin(), _cardHand.end(), _cardHand[handIndex]);
 	_cardBoard.push_back(dynamic_cast<Creature*>(_cardHand.at(handIndex)));
 	_cardHand.erase(handIt);
+	//NETWORK: HAND_CHANGED
 	//NETWORK: BOARD_CHANGED
-	//NETWORK: DECK_CHANGED
 }
 
-void Player::cardDiscardFromHand(unsigned handIndex)
+void Player::cardHandToBin(unsigned handIndex)
 {
 	// TODO: treat properly case of handIndex being out of range
 	const auto& handIt = std::find(_cardHand.begin(), _cardHand.end(), _cardHand[handIndex]);
 	_cardBin.push_back(_cardHand.at(handIndex));
 	_cardHand.erase(handIt);
-	//NETWORK: BIN_CHANGED
 	//NETWORK: HAND_CHANGED
+	//NETWORK: BIN_CHANGED
 }
 
-void Player::cardDiscardFromBoard(unsigned boardIndex)
+void Player::cardBoardToBin(unsigned boardIndex)
 {
 	const auto& boardIt = std::find(_cardBoard.begin(), _cardBoard.end(), _cardBoard[boardIndex]);
 	_cardBin.push_back(_cardBoard.at(boardIndex));
@@ -225,26 +235,47 @@ void Player::cardDiscardFromBoard(unsigned boardIndex)
 	//NETWORK: BIN_CHANGED
 }
 
+void Player::cardBinToHand(unsigned binIndex)
+{
+	const auto& binIt = std::find(_cardBin.begin(), _cardBin.end(), _cardBin[binIndex]);
+	_cardHand.push_back(_cardBin.at(binIndex));
+	_cardBin.erase(binIt);
+	//NETWORK: BIN_CHANGED
+	//NETWORK: HAND_CHANGED
+}
+
+void Player::cardAddToHand(Card* givenCard)
+{
+    _cardHand.push_back(givenCard);
+    //NETWORK: HAND_CHANGED
+    //NETWORK: CARD_WON
+}
+
 Card* Player::cardRemoveFromHand()
 {
 	if (_cardHand.empty()) return nullptr;
 
 	unsigned handIndex = rand() % _cardHand.size();
-	Card* stolen = _cardHand[handIndex];
+	Card* stolenCard = _cardHand[handIndex];
 	const auto& handIt = std::find(_cardHand.begin(), _cardHand.end(), _cardHand[handIndex]);
 	_cardHand.erase(handIt);
 	//NETWORK: HAND_CHANGED
 	//NETWORK: CARD_STOLEN
-	return stolen;
+	return stolenCard;
 }
 
-Card* Player::cardExchangeFromHand(Card* given)
+Card* Player::cardExchangeFromHand(Card* givenCard)
+{
+	unsigned handIndex = rand() % _cardHand.size();
+	return cardExchangeFromHand(givenCard, handIndex);
+}
+
+Card* Player::cardExchangeFromHand(Card* givenCard, unsigned handIndex)
 {
 	if (_cardHand.empty()) return nullptr;
 
-	unsigned handIndex = rand() % _cardHand.size();
 	Card* stolen = _cardHand[handIndex];
-	_cardHand.at(handIndex) = given;
+	_cardHand.at(handIndex) = givenCard;
 	//NETWORK: HAND_CHANGED
 	//NETWORK: CARD_EXCHANGED
 	return stolen;

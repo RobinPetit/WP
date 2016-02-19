@@ -33,9 +33,11 @@ public:
 	void setConstraint(const std::vector<unsigned>& args);
 	void pickDeckCards(const std::vector<unsigned>& args);
 	void loseHandCards(const std::vector<unsigned>& args);
+	void reviveBinCard(const std::vector<unsigned>& args);
+
 	void stealHandCard(const std::vector<unsigned>& args);
 	void exchgHandCard(const std::vector<unsigned>& args);
-	//void reviveBinCard(std::vector<unsigned>& args);
+
 	void setEnergyPoints(const std::vector<unsigned>& args);
 	void addEnergyPoints(const std::vector<unsigned>& args);
 	void subEnergyPoints(const std::vector<unsigned>& args);
@@ -47,9 +49,11 @@ public:
 		&Player::setConstraint,
 		&Player::pickDeckCards,
 		&Player::loseHandCards,
+		&Player::reviveBinCard,
+
 		&Player::stealHandCard,
 		&Player::exchgHandCard,
-		//&Player::reviveBinCard,
+
 		&Player::setEnergyPoints,
 		&Player::addEnergyPoints,
 		&Player::subEnergyPoints,
@@ -59,26 +63,12 @@ public:
 
 
 private:
-	void exploitCardEffects(Card* usedCard);
-
-	void cardPickFromDeck(unsigned amount);
-	void cardPlaceOnBoard(unsigned handIndex);
-	void cardDiscardFromHand(unsigned handIndex);  /// Move the card at handIndex from the player's hand to the bin
-	void cardDiscardFromBoard(unsigned boardIndex);  /// Move the card at boardIndex from the board to the bin
-	Card* cardRemoveFromHand();
-	Card* cardExchangeFromHand(Card* given);
-
-	std::stack<Card *> _cardDeck;  ///< Cards that are in the deck (not usable yet)
-	std::vector<Card *> _cardHand;  ///< Cards that are in the player's hand (usable)
-	std::vector<Creature *> _cardBoard;  ///< Cards that are on the board (usable for attacks)
-	std::vector<Card *> _cardBin;  ///< Cards that are discarded (dead creatures, used spells)
+	Board* _board;
+	Player* _opponent = nullptr;
+	unsigned _id; //@RobinPetit change this to whatever helps communicate over network
 
 	unsigned _energyPoints;
 	unsigned _healthPoints;
-
-	Board* _board;
-	Player* _opponent = nullptr;
-	unsigned _id;
 
 	//Constraints
 	ConstraintList _constraints = ConstraintList(P_CONSTRAINT_DEFAULTS, P_CONSTRAINTS_COUNT);
@@ -92,6 +82,25 @@ private:
 	} _emptyTurnData;
 
 	TurnData _turnData;
+
+	//Card holders
+	std::stack<Card *> _cardDeck;  ///< Cards that are in the deck (not usable yet)
+	std::vector<Card *> _cardHand;  ///< Cards that are in the player's hand (usable)
+	std::vector<Creature *> _cardBoard;  ///< Cards that are on the board (usable for attacks)
+	std::vector<Card *> _cardBin;  ///< Cards that are discarded (dead creatures, used spells)
+
+	//Private methods
+	void exploitCardEffects(Card* usedCard);
+
+	void cardDeckToHand(unsigned amount);
+	void cardHandToBoard(unsigned handIndex);
+	void cardHandToBin(unsigned handIndex);  /// Move the card at handIndex from the player's hand to the bin
+	void cardBoardToBin(unsigned boardIndex);  /// Move the card at boardIndex from the board to the bin
+	void cardBinToHand(unsigned binIndex);
+	void cardAddToHand(Card* given);
+	Card* cardRemoveFromHand();
+	Card* cardExchangeFromHand(Card* given);
+	Card* cardExchangeFromHand(Card* given, unsigned handIndex);
 };
 
 
