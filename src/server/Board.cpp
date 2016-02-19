@@ -44,9 +44,9 @@ void Board::quitGame()
 void Board::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 {
 	unsigned subject = effectArgs.front();
-	effectArgs.pop_front();
+	effectArgs.erase(effectArgs.begin());
 	unsigned method = effectArgs.front();
-	effectArgs.pop_front();
+	effectArgs.erase(effectArgs.begin());
 
 	switch (subject)
 	{
@@ -71,8 +71,8 @@ void Board::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 
 		case CREATURE_ONE_OPPO:
 			{
-				unsigned boardIndex = *effectIt;
-				effectArgs.erase(effectIt);
+				unsigned boardIndex = effectArgs.front();
+				effectArgs.erase(effectArgs.begin());
 				_passivePlayer->applyEffectToCreature(boardIndex, method, effectArgs);
 			}
 			break;
