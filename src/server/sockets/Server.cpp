@@ -234,9 +234,14 @@ void Server::findOpponent(const _iterator& it)
 	}
 }
 
-void Server::startGame(std::size_t len)
+void Server::startGame(std::size_t idx)
 {
-	std::cout << "Game " << len << " is starting\n";
+        GameThread& selfThread(*_runningGames[idx]);
+        const auto& finderById = [&](int playerId) { return [=](const std::pair<std::string, ClientInformations>& it) {return it.second.id == playerId;}; };
+        const auto& player1 = std::find_if(_clients.begin(), _clients.end(), finderById(selfThread._player1ID));
+        const auto& player2 = std::find_if(_clients.begin(), _clients.end(), finderById(selfThread._player2ID));
+	std::cout << "Game " << idx << " is starting: " << player1->first << " vs. " << player2->first << "\n";
+        selfThread.establishSockets(player1->second, player2->second);
 }
 
 void Server::createGame(unsigned ID1, unsigned ID2)

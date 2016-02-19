@@ -17,8 +17,6 @@
 #include <atomic>
 #include <string>
 
-// extern void chatListening(sf::Uint16 *port, const std::atomic_bool *loop, Terminal terminal);
-
 Client::Client():
 	_socket(),
 	_currentConversations(),
@@ -255,6 +253,8 @@ void Client::startConversation(const std::string& playerName) const
 	system(cmd.c_str());
 }
 
+////////////// Listening thread
+
 // function called by a new thread only
 void Client::inputListening()
 {
@@ -286,6 +286,8 @@ void Client::inputListening()
 			packet >> type;
 			if(type == TransferType::CHAT_PLAYER_IP)
 				startChat(socket, packet);
+			else if(type == TransferType::NEW_GAME_SERVER_CONNECTION)
+				initInGameConnection(socket, packet);
 			else
 				std::cerr << "Unknown type of message\n";
 			std::cin.ignore();
@@ -310,4 +312,11 @@ void Client::startChat(sf::TcpSocket& socket, sf::Packet& transmission)
 			otherName
 		});
 	system(cmd.c_str());
+}
+
+void Client::initInGameConnection(sf::TcpSocket& socket, sf::Packet& transmission)
+{
+	sf::Uint16 serverInGamePort;
+	transmission >> serverInGamePort;
+	_inGameSocket.connect(_socket.getRemoteAddress(), serverInGamePort);
 }

@@ -132,6 +132,8 @@ private:
 	void inputListening();
 	///
 	void startChat(sf::TcpSocket& socket, sf::Packet& transmission);
+	///
+	void initInGameConnection(sf::TcpSocket& socket, sf::Packet& transmission);
 };
 
 #endif // _CONNECTION_HPP_
