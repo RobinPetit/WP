@@ -84,10 +84,13 @@ void Creature::subHealth(const std::vector<unsigned>& args)
 	{
 		case 0:
 			points-= _shield;	//Blue shield, can allow part of the attack to deal damage
+			break;
 		case 1:
 			if (points <= _shield) points=0;	//Orange shield, only stronger attacks go through
+			break;
 		case 2:
 			points=0;	//Legendary shield, regular attacks don't go through
+			break;
 	}
 
 	if(_health > points) _health -= points;
