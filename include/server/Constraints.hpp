@@ -16,7 +16,6 @@ enum EFFECT_SUBJECTS : unsigned
 };
 
 /// PLAYER EFFECTS
-constexpr unsigned P_EFFECTS_COUNT = 11;
 enum PLAYER_EFFECTS : unsigned
 {
 	//constraints
@@ -31,11 +30,12 @@ enum PLAYER_EFFECTS : unsigned
 	PE_ADD_ENERGY_POINTS,
 	PE_SUB_ENERGY_POINTs,
 	PE_ADD_HEALTH_POINTS,
-	PE_SUB_HEALTH_POINTS
+	PE_SUB_HEALTH_POINTS,
+	//count
+	P_EFFECTS_COUNT
 };
 
 /// PLAYER CONSTRAINTS
-constexpr unsigned P_CONSTRAINTS_COUNT = 10; //number of player constraints
 enum PLAYER_CONSTRAINTS : unsigned
 {
 	//turn-by-turn
@@ -49,7 +49,9 @@ enum PLAYER_CONSTRAINTS : unsigned
 	PC_CALL_SPELL_LIMIT,			//limit for calling spells
 	PC_ATTACK_WITH_CREATURE_LIMIT,	//limit for attacking with creatures
 	PC_PLACE_CREATURE_LIMIT,		//limit for placing creatures on board
-	PC_CREATURES_ON_BOARD_LIMIT		//limit for number of creatures on the board
+	PC_CREATURES_ON_BOARD_LIMIT,	//limit for number of creatures on the board
+	//count
+	P_CONSTRAINTS_COUNT
 };
 
 constexpr unsigned P_CONSTRAINT_DEFAULTS[P_CONSTRAINTS_COUNT] =
@@ -69,7 +71,6 @@ constexpr unsigned P_CONSTRAINT_DEFAULTS[P_CONSTRAINTS_COUNT] =
 };
 
 /// CREATURE EFFECTS
-constexpr unsigned C_EFFECTS_COUNT = 11;
 enum CREATURE_EFFECTS : unsigned
 {
 	//constraints
@@ -84,11 +85,12 @@ enum CREATURE_EFFECTS : unsigned
 	CE_SUB_ATTACK,
 	CE_SUB_HEALTH,
 	CE_SUB_SHIELD,
-	CE_FORCED_SUB_HEALTH
+	CE_FORCED_SUB_HEALTH,
+	//count
+	C_EFFECTS_COUNT
 };
 
 /// CREATURE CONSTRAINTS
-constexpr unsigned C_CONSTRAINTS_COUNT = 6; //number of creature constraints
 enum CREATURE_CONSTRAINTS : unsigned
 {
 	//turn-by-turn
@@ -108,7 +110,9 @@ enum CREATURE_CONSTRAINTS : unsigned
 	//ending (when creature dies)
     CC_END_TEAM_HEALTH_GAIN,
     CC_END_TEAM_ATTACK_LOSS,
-    CC_END_TEAM_SHIELD_LOSS
+    CC_END_TEAM_SHIELD_LOSS,
+    //count
+    C_CONSTRAINTS_COUNT
 	//TODO
 	//CE_SELF_HYPNOTIZED,			// Can only be used by opponent
 	//C_STICKY,			// Your opponent's spell cost X more next Turn
