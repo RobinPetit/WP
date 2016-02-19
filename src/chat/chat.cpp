@@ -29,8 +29,8 @@ std::ostream& outStream = std::cout;  // define the text output is stdout
 static void input(sf::TcpSocket *inputSocket, const std::atomic_bool *wait, const std::string& otherName, std::atomic_bool *presence);
 static inline sf::Packet formatOutputMessage(const std::string& message);
 static inline std::string setBold(const std::string& message);
-static void output(sf::TcpSocket& out, const std::string& name);
-static inline void endDiscussion(bool& running, sf::TcpSocket& socket);
+static void output(sf::TcpSocket& out, const std::string& name, const std::atomic_bool &presence);
+static inline void endDiscussion(bool& running, sf::TcpSocket& socket, bool sending);
 static void display(std::ostream& outputStream, const std::string& name, const std::string& message, bool setAsComment=false);
 static inline std::string getDiscussionFileName(const std::string& otherName, const std::string& name);
 static void restoreOldDiscussion(const std::string& otherName, const std::string& name);

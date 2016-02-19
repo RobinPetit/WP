@@ -19,9 +19,9 @@
 
 Client::Client():
 	_socket(),
+	_chatListenerPort(0),
 	_currentConversations(),
 	_isConnected(false),
-	_chatListenerPort(0),
 	_threadLoop(0),
 	_serverAddress(),
 	_serverPort(0),
@@ -285,9 +285,9 @@ void Client::inputListening()
 			TransferType type;
 			packet >> type;
 			if(type == TransferType::CHAT_PLAYER_IP)
-				startChat(socket, packet);
+				startChat(packet);
 			else if(type == TransferType::NEW_GAME_SERVER_CONNECTION)
-				initInGameConnection(socket, packet);
+				initInGameConnection(packet);
 			else
 				std::cerr << "Unknown type of message\n";
 			std::cin.ignore();
@@ -295,7 +295,7 @@ void Client::inputListening()
 	}
 }
 
-void Client::startChat(sf::TcpSocket& socket, sf::Packet& transmission)
+void Client::startChat(sf::Packet& transmission)
 {
 	sf::Uint32 address;
 	sf::Uint16 port;
@@ -314,7 +314,7 @@ void Client::startChat(sf::TcpSocket& socket, sf::Packet& transmission)
 	system(cmd.c_str());
 }
 
-void Client::initInGameConnection(sf::TcpSocket& socket, sf::Packet& transmission)
+void Client::initInGameConnection(sf::Packet& transmission)
 {
 	sf::Uint16 serverInGamePort;
 	transmission >> serverInGamePort;

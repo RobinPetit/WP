@@ -7,10 +7,10 @@
 
 GameThread::GameThread(unsigned player1ID, unsigned player2ID):
 	std::thread(),
-	_running(false),
-	_gameBoard(player1ID, player2ID),
 	_player1ID(player1ID),
-	_player2ID(player2ID)
+	_player2ID(player2ID),
+	_running(false),
+	_gameBoard(player1ID, player2ID)
 {
 
 }

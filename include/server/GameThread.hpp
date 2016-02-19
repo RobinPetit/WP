@@ -43,10 +43,10 @@ private:
 template <typename Function, class... Args>
 GameThread::GameThread(unsigned player1ID, unsigned player2ID, Function&& function, Args&&... args):
 	std::thread(function, args...),
-	_running(true),
-	_gameBoard(player1ID, player2ID),
 	_player1ID(player1ID),
-	_player2ID(player2ID)
+	_player2ID(player2ID),
+	_running(true),
+	_gameBoard(player1ID, player2ID)
 {
 
 }

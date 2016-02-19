@@ -16,7 +16,7 @@ void Player::setOpponent(Player* opponent)
 
 
 /*--------------------------- BOARD INTERFACE */
-void Player::enterTurn(unsigned turn)
+void Player::enterTurn(unsigned)
 {
 	_turnData = _emptyTurnData; //Clear the turn data
 
@@ -29,18 +29,20 @@ void Player::enterTurn(unsigned turn)
 		subLifePoints({_constraints.getConstraint(PC_HEALTH_POINTS_LOSS_DECK_EMPTY)});
 
 	//Will call creature's turn-based rules
-    for (unsigned i=0; i<_cardBoard.size(); i++) _cardBoard.at(i)->enterTurn();
+	for (unsigned i=0; i<_cardBoard.size(); i++)
+		_cardBoard.at(i)->enterTurn();
 
 	//NETWORK: TURN_STARTED
 }
 
-void Player::leaveTurn(unsigned turn)
+void Player::leaveTurn(unsigned)
 {
 	//Time out player constraints
 	_constraints.timeOutConstraints();
 
 	//Time out player's creature's constraints
-    for (unsigned i=0; i<_cardBoard.size(); i++) _cardBoard.at(i)->leaveTurn();
+	for (unsigned i=0; i<_cardBoard.size(); i++)
+		_cardBoard.at(i)->leaveTurn();
 
 	//NETWORK: TURN_ENDED
 }
@@ -96,7 +98,7 @@ void Player::attackWithCreature(unsigned boardIndex, unsigned victim)
 		return;
 	}
 	unsigned attackPoints = _cardBoard.at(boardIndex)->getAttack();
-    _opponent->applyEffectToCreature(victim, CE_SUB_HEALTH, {attackPoints});
+	_opponent->applyEffectToCreature(victim, CE_SUB_HEALTH, {attackPoints});
 }
 
 /*--------------------------- BOARD AND CREATURE INTERFACE */
@@ -110,7 +112,7 @@ void Player::applyEffectToCreatures(unsigned method, const std::vector<unsigned>
 {
 	for (unsigned i=0; i<_cardBoard.size(); i++)
 	{
-        applyEffectToCreature(i, method, effectArgs);
+		applyEffectToCreature(i, method, effectArgs);
 	}
 }
 
@@ -119,9 +121,10 @@ std::pair<unsigned, unsigned> Player::getTeamConstraint(unsigned constraintID)
     for (unsigned i=0; i<_cardBoard.size(); i++)
     {
         unsigned value = _cardBoard.at(i)->getConstraint(constraintID);
-        if (value != 0) return std::make_pair(value, i);
+        if (value != 0)
+		return std::make_pair(value, i);
     }
-    return std::make_pair<unsigned, unsigned>(0,0);
+    return std::make_pair(0U,0U);
 }
 
 /*--------------------------- EFFECTS */
@@ -155,7 +158,7 @@ void Player::reviveBinCard(const std::vector<unsigned>& args)
 	cardBinToHand(binIndex);
 }
 
-void Player::stealHandCard(const std::vector<unsigned>& args)
+void Player::stealHandCard(const std::vector<unsigned>&)
 {
     cardAddToHand(_opponent->cardRemoveFromHand());
 }
@@ -173,7 +176,7 @@ void Player::exchgHandCard(const std::vector<unsigned>& args)
 	}
 	else
 	{
-        cardExchangeFromHand(hisCard, myCardIndex);
+		cardExchangeFromHand(hisCard, myCardIndex);
 	}
 }
 
@@ -192,7 +195,8 @@ void Player::addEnergyPoints(const std::vector<unsigned>& args)
 void Player::subEnergyPoints(const std::vector<unsigned>& args)
 {
 	unsigned points = args.at(0);
-	if (_energyPoints > points) _energyPoints -= points;
+	if (_energyPoints > points)
+		_energyPoints -= points;
 	else
 	{
 		_energyPoints = 0;
@@ -210,7 +214,8 @@ void Player::addLifePoints(const std::vector<unsigned>& args)
 void Player::subLifePoints(const std::vector<unsigned>& args)
 {
 	unsigned points = args.at(0);
-	if (_healthPoints > points) _healthPoints -= points;
+	if (_healthPoints > points)
+		_healthPoints -= points;
 	else
 	{
 		_healthPoints = 0;

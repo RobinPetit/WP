@@ -1,9 +1,12 @@
 #include "server/Creature.hpp"
 
-Creature::Creature(	unsigned cost, unsigned attack, unsigned health, unsigned shield, unsigned shieldType,
+Creature::Creature(unsigned cost, unsigned attack, unsigned health, unsigned shield, unsigned shieldType,
 					std::vector<std::vector<unsigned>> effects):
 	Card(cost, effects),
-	_attack(attack), _health(health), _shield(shield), _shieldType(shieldType)
+	_attack(attack),
+	_health(health),
+	_shield(shield),
+	_shieldType(shieldType)
 {
 
 }
@@ -63,17 +66,17 @@ void Creature::setConstraint(const std::vector<unsigned>& args)
 	_constraints.setConstraint(constraintID, value, turns);
 }
 
-void Creature::resetAttack(const std::vector<unsigned>& args)
+void Creature::resetAttack(const std::vector<unsigned>&)
 {
 	 _attack = _attackInit;
 }
 
-void Creature::resetHealth(const std::vector<unsigned>& args)
+void Creature::resetHealth(const std::vector<unsigned>&)
 {
 	 _health = _healthInit;
 }
 
-void Creature::resetShield(const std::vector<unsigned>& args)
+void Creature::resetShield(const std::vector<unsigned>&)
 {
 	 _shield = _shieldInit;
 }

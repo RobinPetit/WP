@@ -32,7 +32,7 @@ sf::Packet& operator >>(sf::Packet& packet, std::vector<T>& vec)
 	typename std::vector<T>::size_type length;
 	packet >> tmp;
 	length = tmp;
-	for(int i = 0; i < length; ++i)
+	for(sf::Uint32 i = 0; i < tmp; ++i)
 	{
 		T value;
 		packet >> value;

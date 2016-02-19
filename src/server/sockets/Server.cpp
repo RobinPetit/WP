@@ -118,7 +118,7 @@ void Server::receiveData()
 			handleFriendshipRequest(it, packet);
 			break;
 		case TransferType::PLAYER_REMOVE_FRIEND:
-			handleRemoveFriend(it, packet);
+			handleRemoveFriend(packet);
 			break;
 		case TransferType::PLAYER_RESPONSE_FRIEND_REQUEST:
 			handleFriendshipRequestResponse(it, packet);
@@ -237,7 +237,13 @@ void Server::findOpponent(const _iterator& it)
 void Server::startGame(std::size_t idx)
 {
         GameThread& selfThread(*_runningGames[idx]);
-        const auto& finderById = [&](int playerId) { return [=](const std::pair<std::string, ClientInformations>& it) {return it.second.id == playerId;}; };
+        const auto& finderById = [&](unsigned playerId)
+        {
+		return [=](const std::pair<std::string, ClientInformations>& it)
+		{
+			return it.second.id == playerId;
+		};
+	};
         const auto& player1 = std::find_if(_clients.begin(), _clients.end(), finderById(selfThread._player1ID));
         const auto& player2 = std::find_if(_clients.begin(), _clients.end(), finderById(selfThread._player2ID));
 	std::cout << "Game " << idx << " is starting: " << player1->first << " vs. " << player2->first << "\n";
@@ -371,7 +377,7 @@ void Server::sendFriends(const _iterator& it)
 	it->second.socket->send(packet);
 }
 
-void Server::handleRemoveFriend(const _iterator& it, sf::Packet& transmission)
+void Server::handleRemoveFriend(sf::Packet& transmission)
 {
 	std::string removedFriend;
 	transmission >> removedFriend;
