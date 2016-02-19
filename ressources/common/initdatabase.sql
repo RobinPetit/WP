@@ -1,3 +1,4 @@
+-- WARNING: run this script reset database
 -- run with: sqlite3 :memory: ".read ressources/common/initdatabase.sql"
 
 .log stderr
@@ -35,7 +36,7 @@ BEGIN;
 SELECT "Cards";
 
 SELECT "Cards/Tables";
-CREATE TABLE IF NOT EXISTS Card (
+CREATE TABLE Card (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT UNIQUE NOT NULL, -- only used by client but due to SQLite3 behaviour...
     description TEXT NOT NULL, -- ... store it here to simplify the management of adding cards
@@ -46,20 +47,20 @@ CREATE TABLE IF NOT EXISTS Card (
 );
 
 -- qualified table names are not allowed on INSERT, UPDATE, and DELETE statements within triggers
-CREATE TABLE IF NOT EXISTS Monster (
+CREATE TABLE Monster (
     id UNIQUE NOT NULL REFERENCES Card,
     health INTEGER NOT NULL CHECK (health >= 0),
     attack INTEGER NOT NULL CHECK (attack >= 0)
 );
 
 SELECT "Cards/Views";
-CREATE VIEW IF NOT EXISTS FullCard
+CREATE VIEW FullCard
     AS SELECT * FROM Card LEFT OUTER JOIN Monster USING(id);
 
-CREATE VIEW IF NOT EXISTS MonsterCard
+CREATE VIEW MonsterCard
     AS SELECT * FROM Card INNER JOIN Monster USING(id);
 
-CREATE VIEW IF NOT EXISTS SpellCard
+CREATE VIEW SpellCard
     AS SELECT Card.*
         FROM Card LEFT OUTER JOIN Monster USING(id)
         WHERE Monster.health IS NULL;
@@ -70,7 +71,7 @@ CREATE VIEW IF NOT EXISTS SpellCard
 --ATTACH DATABASE "file:ressources/client/database.db" AS client;
 
 SELECT "Cards/Triggers";
-CREATE TRIGGER IF NOT EXISTS addMonsterCard
+CREATE TRIGGER addMonsterCard
     INSTEAD OF INSERT ON MonsterCard
     FOR EACH ROW
     BEGIN
@@ -82,7 +83,7 @@ CREATE TRIGGER IF NOT EXISTS addMonsterCard
                 NEW.health, NEW.attack);
     END;
 
-CREATE TRIGGER IF NOT EXISTS addSpellCard
+CREATE TRIGGER addSpellCard
     INSTEAD OF INSERT ON SpellCard
     FOR EACH ROW
     BEGIN
@@ -99,8 +100,8 @@ CREATE TRIGGER IF NOT EXISTS addSpellCard
 SELECT "Accounts";
 
 SELECT "Accounts/Tables";
-CREATE TABLE IF NOT EXISTS Account (
-    id INTEGER PRIMARY KEY ASC, -- no AUTOINCREMENT because id may be reused if previously deleted
+CREATE TABLE Account (
+    id INTEGER PRIMARY KEY ASC,
     login UNIQUE NOT NULL,
     password BLOB NOT NULL,
     victories INTEGER NOT NULL DEFAULT 0,
@@ -117,20 +118,20 @@ CREATE TABLE IF NOT EXISTS Account (
     -- another way to store cards is to use another table: GivenCard
 );
 
-CREATE TABLE IF NOT EXISTS GivenCard (
+CREATE TABLE GivenCard (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     card INTEGER REFERENCES Card,
     owner INTEGER REFERENCES Account
 );
 
-CREATE INDEX IF NOT EXISTS givenCardOwner ON givenCard(owner);
+CREATE INDEX givenCardOwner ON givenCard(owner);
 
 ----------------------
 -- Decks
 SELECT "Decks";
 
 SELECT "Decks/Table";
-CREATE TABLE IF NOT EXISTS Deck (
+CREATE TABLE Deck (
 -- Do not check "less than 2 times in same deck"
     owner INTEGER NOT NULL REFERENCES Account, -- allows indexing
     card0  INTEGER NOT NULL REFERENCES GivenCard,
@@ -159,10 +160,10 @@ CREATE TABLE IF NOT EXISTS Deck (
     -- -> TRIGGER ownCardAddedToDeck
 );
 
-CREATE INDEX IF NOT EXISTS deckOwner ON Deck(owner);
+CREATE INDEX deckOwner ON Deck(owner);
 
 SELECT "Decks/Trigger";
-CREATE TRIGGER IF NOT EXISTS ownCardAddedToDeck
+CREATE TRIGGER ownCardAddedToDeck
     BEFORE INSERT ON Deck
     FOR EACH ROW
     WHEN(NEW.owner != (SELECT owner FROM GivenCard WHERE id == NEW.card0)
@@ -194,7 +195,7 @@ CREATE TRIGGER IF NOT EXISTS ownCardAddedToDeck
 SELECT "Friends";
 
 SELECT "Friends/Table";
-CREATE TABLE IF NOT EXISTS Friend (
+CREATE TABLE Friend (
 ------
 -- Case1: Asymmetric friendship relations: if not mutual it is a friend request.
 -- Cons: Table 2 times bigger. Heavy request to differenciates friends and friend request.
@@ -213,12 +214,12 @@ CREATE TABLE IF NOT EXISTS Friend (
     UNIQUE(first,second)
 );
 
-CREATE INDEX IF NOT EXISTS friendFirst ON Friend(first);
+CREATE INDEX friendFirst ON Friend(first);
 
-CREATE INDEX IF NOT EXISTS friendSecond ON Friend(second);
+CREATE INDEX friendSecond ON Friend(second);
 
 SELECT "Friends/Trigger";
-CREATE TRIGGER IF NOT EXISTS orderFriend
+CREATE TRIGGER orderFriend
     AFTER INSERT ON Friend
     FOR EACH ROW
     WHEN(NEW.first > NEW.second)
@@ -228,7 +229,7 @@ CREATE TRIGGER IF NOT EXISTS orderFriend
     END;
 
 SELECT "Friends/Table (requests)";
-CREATE TABLE IF NOT EXISTS FriendRequest (
+CREATE TABLE FriendRequest (
     from_ INTEGER REFERENCES Account,
     to_ INTEGER REFERENCES Account,
 
@@ -237,7 +238,7 @@ CREATE TABLE IF NOT EXISTS FriendRequest (
 );
 
 SELECT "Friends/Triggers (requests)";
-CREATE TRIGGER IF NOT EXISTS avoidAlreadyFriendRequest
+CREATE TRIGGER avoidAlreadyFriendRequest
     BEFORE INSERT ON FriendRequest
     FOR EACH ROW
     WHEN(SELECT 1 FROM Friend
@@ -247,7 +248,7 @@ CREATE TRIGGER IF NOT EXISTS avoidAlreadyFriendRequest
         SELECT RAISE (ROLLBACK, "Error: request for a friend already friend");
     END;
 
-CREATE TRIGGER IF NOT EXISTS confirmSymmetricalFriendRequest
+CREATE TRIGGER confirmSymmetricalFriendRequest
     AFTER INSERT ON FriendRequest
     FOR EACH ROW
     WHEN(SELECT 1 FROM FriendRequest WHERE (from_ = NEW.to_ AND to_ = NEW.from_))
