@@ -1,5 +1,5 @@
 # Find the Boost unit test package
-find_package(Boost 1.57 COMPONENTS unit_test_framework REQUIRED)
+find_package(Boost 1.32 COMPONENTS unit_test_framework REQUIRED)
 
 # Add the library to the linkage
 set(EXTERNAL_LIBRARIES ${EXTERNAL_LIBRARIES} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
