@@ -5,7 +5,8 @@
 #include <SFML/Network/Packet.hpp>
 #include <SFML/System/Time.hpp>
 // WizardPoker headers
-#include "server/ErrorCode.hpp"
+#include "client/sockets/Client.hpp"
+#include "client/ErrorCode.hpp"
 #include "common/constants.hpp"
 #include "common/Terminal.hpp"
 #include "common/sockets/TransferType.hpp"
@@ -15,15 +16,8 @@
 #include <string>
 #include <cstdlib>
 
-static void startChat(sf::TcpSocket& socket, sf::Packet& transmission, Terminal& terminal);
-
 // function called by a new thread only
-/// chatListening is the function used by the client to make a new thread listening for entring connections
-/// (players that want to make a discussion)
-/// \param port A pointer to an integer which will contain the port of the listening socket
-/// \param loop A thread-safe boolean to tell whether the thread has to keep waiting for connections or has to stop
-/// \param terminal An instance of the Terminal class allowing to have a better management of the command system
-void chatListening(sf::Uint16 *port, const std::atomic_bool *loop, Terminal terminal)
+void Client::chatListening()
 {
 	//bool volatile _continue = *loop;
 	sf::TcpListener chatListener;
@@ -32,14 +26,14 @@ void chatListening(sf::Uint16 *port, const std::atomic_bool *loop, Terminal term
 	if(chatListener.listen(sf::Socket::AnyPort) != sf::Socket::Done)
 	{
 		std::cerr << "Unable to listen to arriving chat connections!" << std::endl;
-		*port = 0;
+		_chatListenerPort = 0;
 		exit(UNABLE_TO_LISTEN);
 	}
 	else
-		*port = chatListener.getLocalPort();
-		std::cout << "waiting for connections on port " << *port << std::endl;
+		_chatListenerPort = chatListener.getLocalPort();
+	std::cout << "waiting for connections on port " << _chatListenerPort << std::endl;
 	selector.add(chatListener);
-	while(loop->load())
+	while(_threadLoop.load())
 	{
 		// set waiting to 0.1 second so that the loop variable is checked frequently enough
 		if(!selector.wait(SOCKET_TIME_SLEEP))
@@ -52,7 +46,7 @@ void chatListening(sf::Uint16 *port, const std::atomic_bool *loop, Terminal term
 			TransferType type;
 			packet >> type;
 			if(type == TransferType::CHAT_PLAYER_IP)
-				startChat(socket, packet, terminal);
+				startChat(socket, packet);
 			else
 				std::cerr << "Unknown type of message\n";
 			std::cin.ignore();
@@ -60,14 +54,14 @@ void chatListening(sf::Uint16 *port, const std::atomic_bool *loop, Terminal term
 	}
 }
 
-static void startChat(sf::TcpSocket& socket, sf::Packet& transmission, Terminal& terminal)
+void Client::startChat(sf::TcpSocket& socket, sf::Packet& transmission)
 {
 	sf::Uint32 address;
 	sf::Uint16 port;
 	std::string otherName, selfName;
 	transmission >> address >> port >> selfName >> otherName;
 	std::string cmd;
-	cmd = terminal.startProgram(
+	cmd = _userTerminal.startProgram(
 		"WizardPoker_chat",
 		{
 			"callee",

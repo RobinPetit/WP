@@ -13,7 +13,7 @@
 #include <cstdlib>
 #include <algorithm>
 
-extern void chatListening(sf::Uint16 *port, const std::atomic_bool *loop, Terminal terminal);
+// extern void chatListening(sf::Uint16 *port, const std::atomic_bool *loop, Terminal terminal);
 
 Client::Client():
 	_socket(),
@@ -59,7 +59,7 @@ bool Client::connectToServer(const std::string& name, const sf::IpAddress& addre
 void Client::initListener()
 {
 	_threadLoop.store(true);
-	_listenerThread = std::thread(chatListening, &_chatListenerPort, &_threadLoop, _userTerminal);
+	_listenerThread = std::thread(&Client::chatListening, this);  //, &_chatListenerPort, &_threadLoop, _userTerminal);
 }
 
 void Client::quit()
