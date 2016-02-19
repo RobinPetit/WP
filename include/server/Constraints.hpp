@@ -3,6 +3,8 @@
 
 #include <vector>
 
+typedef std::vector<unsigned> EffectParamsCollection;
+
 /// WHO IS AFFECTED BY THE EFFECT ?
 enum EFFECT_SUBJECTS : unsigned
 {

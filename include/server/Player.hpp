@@ -17,7 +17,7 @@ class Creature;
 class Player
 {
 public:
-	typedef void (Player::*PlayerEffectMethod)(const std::vector<unsigned>&);
+	typedef void (Player::*PlayerEffectMethod)(const EffectParamsCollection&);
 	typedef std::size_t ID;
 	/// Constructor
 	Player(Player::ID id);
@@ -33,19 +33,19 @@ public:
 	void attackWithCreature(unsigned boardIndex, unsigned victim);  ///< Attack victim with a card
 
 	/// Effects
-	void setConstraint(const std::vector<unsigned>& args);
-	void pickDeckCards(const std::vector<unsigned>& args);
-	void loseHandCards(const std::vector<unsigned>& args);
-	void reviveBinCard(const std::vector<unsigned>& args);
+	void setConstraint(const EffectParamsCollection& args);
+	void pickDeckCards(const EffectParamsCollection& args);
+	void loseHandCards(const EffectParamsCollection& args);
+	void reviveBinCard(const EffectParamsCollection& args);
 
-	void stealHandCard(const std::vector<unsigned>& args);
-	void exchgHandCard(const std::vector<unsigned>& args);
+	void stealHandCard(const EffectParamsCollection& args);
+	void exchgHandCard(const EffectParamsCollection& args);
 
-	void setEnergyPoints(const std::vector<unsigned>& args);
-	void addEnergyPoints(const std::vector<unsigned>& args);
-	void subEnergyPoints(const std::vector<unsigned>& args);
-	void addLifePoints(const std::vector<unsigned>& args);
-	void subLifePoints(const std::vector<unsigned>& args);
+	void setEnergyPoints(const EffectParamsCollection& args);
+	void addEnergyPoints(const EffectParamsCollection& args);
+	void subEnergyPoints(const EffectParamsCollection& args);
+	void addLifePoints(const EffectParamsCollection& args);
+	void subLifePoints(const EffectParamsCollection& args);
 
 	PlayerEffectMethod effectMethods[P_EFFECTS_COUNT] =
 	{
@@ -65,8 +65,8 @@ public:
 	};
 
 	///Pass along effects to creatures
-	void applyEffectToCreatures(unsigned method, const std::vector<unsigned>& effectArgs);
-	void applyEffectToCreature(unsigned boardIndex, unsigned method, const std::vector<unsigned>& effectArgs);
+	void applyEffectToCreatures(unsigned method, const EffectParamsCollection& effectArgs);
+	void applyEffectToCreature(unsigned boardIndex, unsigned method, const EffectParamsCollection& effectArgs);
 	std::pair<unsigned, unsigned> getTeamConstraint(unsigned constraintID);
 
 private:

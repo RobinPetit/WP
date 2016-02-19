@@ -4,21 +4,23 @@
 // std-C++ headers
 #include <string>
 #include <vector>
+// WizardPoker headers
+#include "server/Constraints.hpp"
 
 class Card
 {
 private:
 	unsigned _cost;
 	unsigned _cardID;  //Will be needed for communicating modification to player's hand/deck/...
-	std::vector<std::vector<unsigned>> _effects;	//Effects
+	std::vector<EffectParamsCollection> _effects;	//Effects
 
 public:
 	/// Constructor
-	Card(unsigned cost=0, std::vector<std::vector<unsigned>> effects = {{}});
+	Card(unsigned cost=0, std::vector<EffectParamsCollection> effects = {{}});
 
 	/// Getters
 	unsigned getCost();
-	std::vector<std::vector<unsigned>> getEffects();
+	std::vector<EffectParamsCollection> getEffects();
 
 
 	/// Methods

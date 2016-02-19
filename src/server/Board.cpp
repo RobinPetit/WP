@@ -41,7 +41,7 @@ void Board::quitGame()
 }
 
 /*--------------------------- CARD INTERFACE */
-void Board::applyEffect(Card* usedCard, std::vector<unsigned> effectArgs)
+void Board::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 {
 	const auto& effectIt = effectArgs.begin();
 	unsigned subject = *effectIt;

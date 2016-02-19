@@ -21,10 +21,10 @@ private:
 	ConstraintList _constraints = ConstraintList(C_CONSTRAINT_DEFAULTS, C_CONSTRAINTS_COUNT);
 
 public:
-	typedef void (Creature::*CreatureEffectMethod)(const std::vector<unsigned>&);
+	typedef void (Creature::*CreatureEffectMethod)(const EffectParamsCollection&);
 	/// Constructors
 	Creature(unsigned cost=0, unsigned attack=0, unsigned health=1, unsigned shield=0, unsigned shieldType=0,
-			std::vector<std::vector<unsigned>> effects = {{}});
+			std::vector<EffectParamsCollection> effects = {{}});
 
 	/// Getters
 	unsigned getAttack();
@@ -38,17 +38,17 @@ public:
 	void leaveTurn();
 
 	/// Effects
-	void setConstraint(const std::vector<unsigned>& args);
-	void resetAttack(const std::vector<unsigned>& args);
-	void resetHealth(const std::vector<unsigned>& args);
-	void resetShield(const std::vector<unsigned>& args);
-	void addAttack(const std::vector<unsigned>& args);
-	void addHealth(const std::vector<unsigned>& args);
-	void addShield(const std::vector<unsigned>& args);
-	void subAttack(const std::vector<unsigned>& args);
-	void subHealth(const std::vector<unsigned>& args);
-	void subShield(const std::vector<unsigned>& args);
-	void forcedSubHealth(const std::vector<unsigned>& args);
+	void setConstraint(const EffectParamsCollection& args);
+	void resetAttack(const EffectParamsCollection& args);
+	void resetHealth(const EffectParamsCollection& args);
+	void resetShield(const EffectParamsCollection& args);
+	void addAttack(const EffectParamsCollection& args);
+	void addHealth(const EffectParamsCollection& args);
+	void addShield(const EffectParamsCollection& args);
+	void subAttack(const EffectParamsCollection& args);
+	void subHealth(const EffectParamsCollection& args);
+	void subShield(const EffectParamsCollection& args);
+	void forcedSubHealth(const EffectParamsCollection& args);
 
 	CreatureEffectMethod effectMethods[C_EFFECTS_COUNT] =
 	{

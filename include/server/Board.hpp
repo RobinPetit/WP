@@ -24,7 +24,7 @@ public:
 	void quitGame(); //TODO: need identifier
 
 	/// Interface for Player and Card classes
-	void applyEffect(Card* usedCard, std::vector<unsigned> effect);
+	void applyEffect(Card* usedCard, EffectParamsCollection effect);
 
 private:
 	unsigned _turn = 0;

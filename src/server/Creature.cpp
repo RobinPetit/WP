@@ -1,7 +1,7 @@
 #include "server/Creature.hpp"
 
 Creature::Creature(unsigned cost, unsigned attack, unsigned health, unsigned shield, unsigned shieldType,
-					std::vector<std::vector<unsigned>> effects):
+					std::vector<EffectParamsCollection> effects):
 	Card(cost, effects),
 	_attack(attack),
 	_health(health),
@@ -58,7 +58,7 @@ void Creature::leaveTurn()
 }
 
 /*--------------------------- EFFECTS */
-void Creature::setConstraint(const std::vector<unsigned>& args)
+void Creature::setConstraint(const EffectParamsCollection& args)
 {
 	unsigned constraintID = args.at(0);
 	unsigned value = args.at(1);
@@ -66,47 +66,47 @@ void Creature::setConstraint(const std::vector<unsigned>& args)
 	_constraints.setConstraint(constraintID, value, turns);
 }
 
-void Creature::resetAttack(const std::vector<unsigned>&)
+void Creature::resetAttack(const EffectParamsCollection&)
 {
 	 _attack = _attackInit;
 }
 
-void Creature::resetHealth(const std::vector<unsigned>&)
+void Creature::resetHealth(const EffectParamsCollection&)
 {
 	 _health = _healthInit;
 }
 
-void Creature::resetShield(const std::vector<unsigned>&)
+void Creature::resetShield(const EffectParamsCollection&)
 {
 	 _shield = _shieldInit;
 }
 
-void Creature::addHealth(const std::vector<unsigned>& args)
+void Creature::addHealth(const EffectParamsCollection& args)
 {
 	unsigned points = args.at(0);
 	_health += points;
 }
 
-void Creature::addAttack(const std::vector<unsigned>& args)
+void Creature::addAttack(const EffectParamsCollection& args)
 {
 	unsigned points = args.at(0);
 	_attack += points;
 }
 
-void Creature::addShield(const std::vector<unsigned>& args)
+void Creature::addShield(const EffectParamsCollection& args)
 {
 	unsigned points = args.at(0);
 	_shield += points;
 }
 
-void Creature::subAttack(const std::vector<unsigned>& args)
+void Creature::subAttack(const EffectParamsCollection& args)
 {
 	unsigned points = args.at(0);
 	if(_attack > points) _attack -= points;
 	else _attack = 0;
 }
 
-void Creature::subHealth(const std::vector<unsigned>& args)
+void Creature::subHealth(const EffectParamsCollection& args)
 {
 	unsigned points = args.at(0);
 	switch (_shieldType)
@@ -130,7 +130,7 @@ void Creature::subHealth(const std::vector<unsigned>& args)
 	}
 }
 
-void Creature::forcedSubHealth(const std::vector<unsigned>& args)
+void Creature::forcedSubHealth(const EffectParamsCollection& args)
 {
 	//Shields are not able to stop this attack
 	unsigned points = args.at(0);
@@ -142,7 +142,7 @@ void Creature::forcedSubHealth(const std::vector<unsigned>& args)
 	}
 }
 
-void Creature::subShield(const std::vector<unsigned>& args)
+void Creature::subShield(const EffectParamsCollection& args)
 {
 	unsigned points = args.at(0);
 	if(_shield > points) _shield -= points;

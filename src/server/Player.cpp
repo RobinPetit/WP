@@ -105,13 +105,13 @@ void Player::attackWithCreature(unsigned boardIndex, unsigned victim)
 }
 
 /*--------------------------- BOARD AND CREATURE INTERFACE */
-void Player::applyEffectToCreature(unsigned boardIndex, unsigned method, const std::vector<unsigned>& effectArgs)
+void Player::applyEffectToCreature(unsigned boardIndex, unsigned method, const EffectParamsCollection& effectArgs)
 {
 	Creature* usedCreature = _cardBoard.at(boardIndex);
 	(usedCreature->*(usedCreature->effectMethods[method]))(effectArgs);
 }
 
-void Player::applyEffectToCreatures(unsigned method, const std::vector<unsigned>& effectArgs)
+void Player::applyEffectToCreatures(unsigned method, const EffectParamsCollection& effectArgs)
 {
 	for (unsigned i=0; i<_cardBoard.size(); i++)
 	{
@@ -131,7 +131,7 @@ std::pair<unsigned, unsigned> Player::getTeamConstraint(unsigned constraintID)
 }
 
 /*--------------------------- EFFECTS */
-void Player::setConstraint(const std::vector<unsigned>& args)
+void Player::setConstraint(const EffectParamsCollection& args)
 {
 	unsigned constraintID = args.at(0);
 	unsigned value = args.at(1);
@@ -139,12 +139,12 @@ void Player::setConstraint(const std::vector<unsigned>& args)
 	_constraints.setConstraint(constraintID, value, turns);
 }
 
-void Player::pickDeckCards(const std::vector<unsigned>& args)
+void Player::pickDeckCards(const EffectParamsCollection& args)
 {
 	cardDeckToHand(args.at(0));
 }
 
-void Player::loseHandCards(const std::vector<unsigned>& args)
+void Player::loseHandCards(const EffectParamsCollection& args)
 {
 	unsigned amount = args.at(1);
 	while (not _cardHand.empty() and amount>0)
@@ -155,18 +155,18 @@ void Player::loseHandCards(const std::vector<unsigned>& args)
 	}
 }
 
-void Player::reviveBinCard(const std::vector<unsigned>& args)
+void Player::reviveBinCard(const EffectParamsCollection& args)
 {
     unsigned binIndex = args.at(0);
 	cardBinToHand(binIndex);
 }
 
-void Player::stealHandCard(const std::vector<unsigned>&)
+void Player::stealHandCard(const EffectParamsCollection&)
 {
     cardAddToHand(_opponent->cardRemoveFromHand());
 }
 
-void Player::exchgHandCard(const std::vector<unsigned>& args)
+void Player::exchgHandCard(const EffectParamsCollection& args)
 {
 	//TODO: check index
 	unsigned myCardIndex = args.at(0);
@@ -183,19 +183,19 @@ void Player::exchgHandCard(const std::vector<unsigned>& args)
 	}
 }
 
-void Player::setEnergyPoints(const std::vector<unsigned>& args)
+void Player::setEnergyPoints(const EffectParamsCollection& args)
 {
 	unsigned points = args.at(0);
 	_energyPoints = points;
 }
 
-void Player::addEnergyPoints(const std::vector<unsigned>& args)
+void Player::addEnergyPoints(const EffectParamsCollection& args)
 {
 	unsigned points = args.at(0);
 	_energyPoints += points;
 }
 
-void Player::subEnergyPoints(const std::vector<unsigned>& args)
+void Player::subEnergyPoints(const EffectParamsCollection& args)
 {
 	unsigned points = args.at(0);
 	if (_energyPoints > points)
@@ -208,13 +208,13 @@ void Player::subEnergyPoints(const std::vector<unsigned>& args)
 	}
 }
 
-void Player::addLifePoints(const std::vector<unsigned>& args)
+void Player::addLifePoints(const EffectParamsCollection& args)
 {
 	unsigned points = args.at(0);
 	_healthPoints += points;
 }
 
-void Player::subLifePoints(const std::vector<unsigned>& args)
+void Player::subLifePoints(const EffectParamsCollection& args)
 {
 	unsigned points = args.at(0);
 	if (_healthPoints > points)
@@ -230,7 +230,7 @@ void Player::subLifePoints(const std::vector<unsigned>& args)
 /*--------------------------- PRIVATE */
 void Player::exploitCardEffects(Card* usedCard)
 {
-	std::vector<std::vector<unsigned>> effects = usedCard->getEffects();
+	std::vector<EffectParamsCollection> effects = usedCard->getEffects();
 	for (unsigned i=0; i<effects.size(); i++) //for each effect of the card
 	{
 		_board->applyEffect(usedCard, effects.at(i)); //apply it

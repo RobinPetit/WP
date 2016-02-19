@@ -1,12 +1,12 @@
 #include "server/Card.hpp"
 
-Card::Card(unsigned cost, std::vector<std::vector<unsigned>> effects):
+Card::Card(unsigned cost, std::vector<EffectParamsCollection> effects):
 	_cost(cost), _effects(effects)
 {
 
 }
 
-std::vector<std::vector<unsigned>> Card::getEffects()
+std::vector<EffectParamsCollection> Card::getEffects()
 {
 	return _effects;
 }
