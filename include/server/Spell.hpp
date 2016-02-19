@@ -8,8 +8,8 @@
 class Spell: public Card
 {
 public:
-	virtual inline bool isCreature() override { return true; };
-	virtual inline bool isSpell() override { return false; };
+	virtual inline bool isCreature() override;
+	virtual inline bool isSpell() override;
 };
 
 #endif //_SPELL_SERVER_HPP

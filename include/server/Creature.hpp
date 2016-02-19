@@ -24,8 +24,8 @@ public:
 			std::vector<std::vector<unsigned>> effects = {{}});
 
 	/// Getters
-	inline unsigned int getHealth(){return _health;}
-	inline unsigned int getAttack(){return _attack;}
+	inline unsigned int getHealth();
+	inline unsigned int getAttack();
 
 	/// Effects
 	void setConstraint(std::vector<unsigned> args);
@@ -46,8 +46,8 @@ public:
 
 
 	/// Methods
-	virtual inline bool isCreature() override { return true; };
-	virtual inline bool isSpell() override { return false; };
+	virtual inline bool isCreature() override;
+	virtual inline bool isSpell() override;
 
 };
 

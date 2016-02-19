@@ -8,6 +8,26 @@ Creature::Creature(	unsigned cost, unsigned attack, unsigned health, unsigned sh
 
 }
 
+unsigned Creature::getAttack()
+{
+	return _attack;
+}
+
+unsigned Creature::getHealth()
+{
+	return _health;
+}
+
+bool Creature::isCreature()
+{
+	return true;
+}
+
+bool Creature::isSpell()
+{
+	return false;
+}
+
 /*--------------------------- EFFECTS */
 void Creature::setConstraint(std::vector<unsigned> args)
 {

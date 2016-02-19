@@ -17,7 +17,7 @@ public:
 	Card(unsigned cost=0, std::vector<std::vector<unsigned>> effects = {{}});
 
 	/// Getters
-	unsigned getCost(){return _cost;}
+	unsigned getCost();
 	std::vector<std::vector<unsigned>> getEffects();
 
 
