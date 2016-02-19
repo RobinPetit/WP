@@ -91,6 +91,10 @@ enum CREATURE_CONSTRAINTS : unsigned
 	CE_SELF_ATTACK_BLOCK,		// Block the next X attacks on himself
 	CE_TEAM_ATTACK_BLOCK,		// Block the next X attacks on team
 	CE_SELF_PARALYZED,			// Can not be used
+	//ending (when creature dies)
+    CE_END_TEAM_HEALTH_GAIN,
+    CE_END_TEAM_ATTACK_LOSS,
+    CE_END_TEAM_SHIELD_LOSS
 	//TODO
 	//CE_SELF_HYPNOTIZED,			// Can only be used by opponent
 	//C_STICKY,			// Your opponent's spell cost X more next Turn

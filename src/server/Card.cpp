@@ -1,12 +1,12 @@
 #include "server/Card.hpp"
 
-Card::Card(unsigned cost, std::vector<std::vector<unsigned>> instantEffects):
-	_cost(cost), _instantEffects(instantEffects)
+Card::Card(unsigned cost, std::vector<std::vector<unsigned>> effects):
+	_cost(cost), _effects(effects)
 {
 
 }
 
-std::vector<std::vector<unsigned>> Card::getInstantEffects()
+std::vector<std::vector<unsigned>> Card::getEffects()
 {
-	return _instantEffects;
+	return _effects;
 }

@@ -22,10 +22,8 @@ public:
 	void attackWithCard(unsigned boardIndex, unsigned victim);
 	void quitGame(); //TODO: need identifier
 
-	/// Interface for Card class
-	void applyEffect(std::vector<unsigned> effect);
-
 	/// Interface for Player class
+	void applyEffect(std::vector<unsigned> effect);
 
 private:
 	unsigned _turn = 0;

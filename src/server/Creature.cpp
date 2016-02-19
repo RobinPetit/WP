@@ -1,12 +1,9 @@
 #include "server/Creature.hpp"
 
 Creature::Creature(	unsigned cost, unsigned attack, unsigned health, unsigned shield, unsigned shieldType,
-					std::vector<std::vector<unsigned>> instantEffects,
-					std::vector<std::vector<unsigned>> turnEffects,
-					std::vector<std::vector<unsigned>> endingEffects):
-	Card(cost, instantEffects),
-	_attack(attack), _health(health), _shield(shield), _shieldType(shieldType),
-	_turnEffects(turnEffects), _endingEffects(endingEffects)
+					std::vector<std::vector<unsigned>> effects):
+	Card(cost, effects),
+	_attack(attack), _health(health), _shield(shield), _shieldType(shieldType)
 {
 
 }

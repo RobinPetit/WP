@@ -10,15 +10,15 @@ class Card
 {
 private:
 	unsigned _cost;
-	std::vector<std::vector<unsigned>> _instantEffects;	//Effects that apply immediately
+	std::vector<std::vector<unsigned>> _effects;	//Effects
 
 public:
 	/// Constructor
-	Card(unsigned cost=0, std::vector<std::vector<unsigned>> instantEffects = {{}});
+	Card(unsigned cost=0, std::vector<std::vector<unsigned>> effects = {{}});
 
 	/// Getters
 	unsigned getCost(){return _cost;}
-	std::vector<std::vector<unsigned>> getInstantEffects();
+	std::vector<std::vector<unsigned>> getEffects();
 
 
 	/// Methods

@@ -176,7 +176,11 @@ void Player::subLifePoints(std::vector<unsigned> args)
 /*--------------------------- PRIVATE */
 void Player::exploitCardEffects(Card* usedCard)
 {
-	/**/
+	std::vector<std::vector<unsigned>> effects = usedCard->getEffects();
+	for (unsigned i=0; i<effects.size(); i++) //for each instant effect of the card
+	{
+		_board->applyEffect(effects.at(i));
+	}
 }
 
 void Player::cardPickFromDeck(unsigned amount)

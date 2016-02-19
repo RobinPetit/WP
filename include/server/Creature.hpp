@@ -13,8 +13,6 @@ private:
 	unsigned _health, _healthInit;
 	unsigned _shield, _shieldInit;
 	unsigned _shieldType;
-	std::vector<std::vector<unsigned>> _turnEffects;
-	std::vector<std::vector<unsigned>> _endingEffects;
 
 	//Constraints
 	ConstraintList _constraints = ConstraintList(C_CONSTRAINT_DEFAULTS, C_CONSTRAINTS_COUNT);
@@ -23,16 +21,11 @@ public:
 
 	/// Constructors
 	Creature(unsigned cost=0, unsigned attack=0, unsigned health=1, unsigned shield=0, unsigned shieldType=0,
-			std::vector<std::vector<unsigned>> instantEffects = {{}},
-			std::vector<std::vector<unsigned>> turnEffects = {{}},
-			std::vector<std::vector<unsigned>> endingEffects = {{}});
+			std::vector<std::vector<unsigned>> effects = {{}});
 
 	/// Getters
 	inline unsigned int getHealth(){return _health;}
 	inline unsigned int getAttack(){return _attack;}
-
-	inline std::vector<std::vector<unsigned>> getTurnEffects() {return _turnEffects;}
-	inline std::vector<std::vector<unsigned>> getEndingEffects() {return _endingEffects;}
 
 	/// Effects
 	void setConstraint(std::vector<unsigned> args);
