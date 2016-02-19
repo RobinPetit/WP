@@ -1,7 +1,6 @@
 set(SOURCES	"client.cpp"
 		# sockets
 		"sockets/Client.cpp"
-		"sockets/ChatListening.cpp"
 		"client.cpp"
 		# states
 		"AbstractState.cpp"

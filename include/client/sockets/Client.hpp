@@ -121,6 +121,8 @@ private:
 	/// \TODO use this!
 	/// List containing the names of the friendship requests the client made
 	std::vector<std::string> _friendsRequests;
+	/// Socket used only when a game is started to communicate with the specialized thread in the server
+	sf::TcpSocket _inGameSocket;
 
 	// private methods
 	/// The functions used to create the listening thread
