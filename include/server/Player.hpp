@@ -42,7 +42,7 @@ public:
 	void addLifePoints(const std::vector<unsigned>& args);
 	void subLifePoints(const std::vector<unsigned>& args);
 
-	void (Player::*effectMethods[P_EFFECTS_COUNT])(std::vector<unsigned>&) =
+	void (Player::*effectMethods[P_EFFECTS_COUNT])(const std::vector<unsigned>&) =
 	{
 		&Player::setConstraint,
 		&Player::pickDeckCards,
