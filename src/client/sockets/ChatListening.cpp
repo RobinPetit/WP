@@ -17,7 +17,7 @@
 #include <cstdlib>
 
 // function called by a new thread only
-void Client::chatListening()
+void Client::inputListening()
 {
 	//bool volatile _continue = *loop;
 	sf::TcpListener chatListener;

@@ -127,7 +127,7 @@ private:
 	void initListener();
 	/// chatListening is the function used by the client to make a new thread listening for entring connections
 	/// (players that want to make a discussion)
-	void chatListening();
+	void inputListening();
 	///
 	void startChat(sf::TcpSocket& socket, sf::Packet& transmission);
 };

@@ -59,7 +59,7 @@ bool Client::connectToServer(const std::string& name, const sf::IpAddress& addre
 void Client::initListener()
 {
 	_threadLoop.store(true);
-	_listenerThread = std::thread(&Client::chatListening, this);  //, &_chatListenerPort, &_threadLoop, _userTerminal);
+	_listenerThread = std::thread(&Client::inputListening, this);
 }
 
 void Client::quit()
