@@ -19,6 +19,6 @@ int main()
 	Server server;
 	if(config.find("SERVER_PORT") == config.end())
 		return WRONG_FORMAT_CONFIG_FILE;
-	int serverStatus = server.start(std::stoi(config["SERVER_PORT"], nullptr, AUTO_BASE));
+	int serverStatus = server.start(static_cast<sf::Uint16>(std::stoi(config["SERVER_PORT"], nullptr, AUTO_BASE)));
 	return serverStatus;
 }

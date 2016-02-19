@@ -150,11 +150,11 @@ static void restoreOldDiscussion(const std::string& otherName, const std::string
 	// backup does not need to be thread tested with mutex::lock because no other thread has yet been created
 	char *buffer;
 	backup.seekg(0, backup.end);
-	std::streamsize length = backup.tellg();
+	std::ifstream::pos_type length = backup.tellg();
 	std::cout << "size is: " << length << std::endl;
 	backup.seekg(0, backup.beg);
 	buffer = new char[length];
-	backup.read(buffer, length);
+	backup.read(buffer, static_cast<std::streamsize>(length));
 	outStream << buffer;
 	delete[] buffer;
 	backup.close();

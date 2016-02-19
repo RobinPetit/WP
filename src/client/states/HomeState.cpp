@@ -46,7 +46,7 @@ void HomeState::connect()
 	if(config.find("SERVER_PORT") == config.end() || config.find("SERVER_ADDRESS") == config.end())
 		//return WRONG_FORMAT_CONFIG_FILE;
 		return;
-	if(!_client.connectToServer(userName, config["SERVER_ADDRESS"], std::stoi(config["SERVER_PORT"], nullptr, AUTO_BASE)))
+	if(!_client.connectToServer(userName, config["SERVER_ADDRESS"], static_cast<sf::Uint16>(std::stoi(config["SERVER_PORT"], nullptr, AUTO_BASE))))
 	{
 		std::cout << "Unable to connect to server" << std::endl;
 		//return UNABLE_TO_CONNECT;
