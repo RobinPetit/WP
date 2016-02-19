@@ -8,7 +8,8 @@
 build/
 
 # Only keep sources and diagrams for SRD
-SRD/bin/
+SRD/*
+!SRD/*.tex
 
 # Keep only CMakeLists files and do not take Makefiles
 Makefile
@@ -24,3 +25,10 @@ CMakeCache.txt
 
 # Do not track executable files
 bin/
+
+# Add your IDE's temporary files extension here
+	# code::blocks
+*.cbp
+*.layout
+	# Geany
+*.geany
