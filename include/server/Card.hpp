@@ -10,6 +10,7 @@ class Card
 {
 private:
 	unsigned _cost;
+	unsigned _cardID;  //Will be needed for communicating modification to player's hand/deck/...
 	std::vector<std::vector<unsigned>> _effects;	//Effects
 
 public:

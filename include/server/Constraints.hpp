@@ -4,6 +4,17 @@
 #include <vector>
 
 
+/// WHO IS AFFECTED BY THE EFFECT ?
+enum EFFECT_SUBJECTS : unsigned
+{
+    PLAYER_SELF,
+    PLAYER_OPPO,
+    CREATURE_SELF,
+    CREATURE_TEAM,
+    CREATURE_ONE_OPPO,
+	CREATURE_ALL_OPPO
+};
+
 /// PLAYER EFFECTS
 enum PLAYER_EFFECTS : unsigned
 {
@@ -12,17 +23,19 @@ enum PLAYER_EFFECTS : unsigned
 	//other effects
 	PE_PICK_DECK_CARDS,
 	PE_LOSE_HAND_CARDS,
-	PE_STEAL_HAND_CARDS,
-	PE_EXCHG_HAND_CARDS,
+	PE_REVIVE_BIN_CARD,
+	PE_STEAL_HAND_CARD,
+	PE_EXCHG_HAND_CARD,
 	PE_SET_ENERGY_POINTS,
 	PE_ADD_ENERGY_POINTS,
 	PE_SUB_ENERGY_POINTs,
 	PE_ADD_HEALTH_POINTS,
-	PE_SUB_HEALTH_POINTS
+	PE_SUB_HEALTH_POINTS,
+	//count
+	P_EFFECTS_COUNT
 };
 
 /// PLAYER CONSTRAINTS
-constexpr unsigned P_CONSTRAINTS_COUNT = 10; //number of player constraints
 enum PLAYER_CONSTRAINTS : unsigned
 {
 	//turn-by-turn
@@ -36,7 +49,9 @@ enum PLAYER_CONSTRAINTS : unsigned
 	PC_CALL_SPELL_LIMIT,			//limit for calling spells
 	PC_ATTACK_WITH_CREATURE_LIMIT,	//limit for attacking with creatures
 	PC_PLACE_CREATURE_LIMIT,		//limit for placing creatures on board
-	PC_CREATURES_ON_BOARD_LIMIT		//limit for number of creatures on the board
+	PC_CREATURES_ON_BOARD_LIMIT,	//limit for number of creatures on the board
+	//count
+	P_CONSTRAINTS_COUNT
 };
 
 constexpr unsigned P_CONSTRAINT_DEFAULTS[P_CONSTRAINTS_COUNT] =
@@ -70,31 +85,34 @@ enum CREATURE_EFFECTS : unsigned
 	CE_SUB_ATTACK,
 	CE_SUB_HEALTH,
 	CE_SUB_SHIELD,
-	CE_FORCED_SUB_HEALTH
+	CE_FORCED_SUB_HEALTH,
+	//count
+	C_EFFECTS_COUNT
 };
 
 /// CREATURE CONSTRAINTS
-constexpr unsigned C_CONSTRAINTS_COUNT = 6; //number of creature constraints
 enum CREATURE_CONSTRAINTS : unsigned
 {
 	//turn-by-turn
-	CE_SELF_HEALTH_GAIN,			// Gain X health points
-	CE_TEAM_HEALTH_GAIN,			// Team gains X health points
-	CE_SELF_HEALTH_LOSS,
-	CE_TEAM_HEALTH_LOSS,
-	CE_SELF_ATTACK_GAIN,			// Gain X attack points
-	CE_TEAM_ATTACK_GAIN,			// Team gains X attack points
-	CE_SELF_ATTACK_LOSS,
-	CE_TEAM_ATTACK_LOSS,
-	CE_SELF_SHIELD_LOSS,			// Lose X shield points
+	CC_SELF_HEALTH_GAIN,			// Gain X health points
+	CC_TEAM_HEALTH_GAIN,			// Team gains X health points
+	CC_SELF_HEALTH_LOSS,
+	CC_TEAM_HEALTH_LOSS,
+	CC_SELF_ATTACK_GAIN,			// Gain X attack points
+	CC_TEAM_ATTACK_GAIN,			// Team gains X attack points
+	CC_SELF_ATTACK_LOSS,
+	CC_TEAM_ATTACK_LOSS,
+	CC_SELF_SHIELD_LOSS,			// Lose X shield points
 	//passive
-	CE_SELF_ATTACK_BLOCK,		// Block the next X attacks on himself
-	CE_TEAM_ATTACK_BLOCK,		// Block the next X attacks on team
-	CE_SELF_PARALYZED,			// Can not be used
+	CC_SELF_ATTACK_BLOCK,		// Block the next X attacks on himself
+	CC_TEAM_ATTACK_BLOCK,		// Block the next X attacks on team
+	CC_SELF_PARALYZED,			// Can not be used
 	//ending (when creature dies)
-    CE_END_TEAM_HEALTH_GAIN,
-    CE_END_TEAM_ATTACK_LOSS,
-    CE_END_TEAM_SHIELD_LOSS
+    CC_END_TEAM_HEALTH_GAIN,
+    CC_END_TEAM_ATTACK_LOSS,
+    CC_END_TEAM_SHIELD_LOSS,
+    //count
+    C_CONSTRAINTS_COUNT
 	//TODO
 	//CE_SELF_HYPNOTIZED,			// Can only be used by opponent
 	//C_STICKY,			// Your opponent's spell cost X more next Turn

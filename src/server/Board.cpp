@@ -36,13 +36,47 @@ void Board::quitGame()
 }
 
 /*--------------------------- CARD INTERFACE */
-void Board::applyEffect(std::vector<unsigned> effect)
+void Board::applyEffect(Card* usedCard, std::vector<unsigned> effectArgs)
 {
-	//FIRST UNSIGNED: pointer to object
-	//SECOND UNSIGNED: pointer to method
-	//OTHER UNSIGNED: arguments
-	//Player *effectSubject = (player==0 ? _activePlayer : _passivePlayer);
-	// (effectSubject->(_effects[effectID-constraintsCount]*))(effectArgs);
+	const auto& effectIt = effectArgs.begin();
+	unsigned subject = *effectIt;
+	effectArgs.erase(effectIt);
+	unsigned method = *effectIt;
+	effectArgs.erase(effectIt);
+
+	switch (subject)
+	{
+		case PLAYER_SELF:
+			(_activePlayer->*(_activePlayer->effectMethods[method]))(effectArgs);
+			break;
+
+		case PLAYER_OPPO:
+			(_passivePlayer->*(_passivePlayer->effectMethods[method]))(effectArgs);
+			break;
+
+		case CREATURE_SELF:
+			{
+				Creature* usedCreature = dynamic_cast<Creature*>(usedCard);
+				(usedCreature->*(usedCreature->effectMethods[method]))(effectArgs);
+			}
+			break;
+
+		case CREATURE_TEAM:
+			_activePlayer->applyEffectToCreatures(method, effectArgs);
+			break;
+
+		case CREATURE_ONE_OPPO:
+			{
+				unsigned boardIndex = *effectIt;
+				effectArgs.erase(effectIt);
+				_passivePlayer->applyEffectToCreature(boardIndex, method, effectArgs);
+			}
+			break;
+
+		case CREATURE_ALL_OPPO:
+			_passivePlayer->applyEffectToCreatures(method, effectArgs);
+			break;
+	}
 }
 
 /*--------------------------- PLAYER INTERFACE */

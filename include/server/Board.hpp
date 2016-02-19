@@ -5,6 +5,8 @@
 #include <cstdlib>
 #include "Player.hpp"
 #include "Card.hpp"
+#include "Creature.hpp"
+#include "Constraints.hpp"
 
 /// Manages one game with two players
 class Board
@@ -22,21 +24,12 @@ public:
 	void attackWithCard(unsigned boardIndex, unsigned victim);
 	void quitGame(); //TODO: need identifier
 
-	/// Interface for Player class
-	void applyEffect(std::vector<unsigned> effect);
+	/// Interface for Player and Card classes
+	void applyEffect(Card* usedCard, std::vector<unsigned> effect);
 
 private:
 	unsigned _turn = 0;
 	Player *_activePlayer, *_passivePlayer;
-
-	//Effects
-	/*
-	void (Player::*_effects[3])(std::vector<unsigned>) =
-	{
-		&Player::setConstraint,
-		//&Player::loseHandCards,
-		//&Player::damageBoardCreatures
-	};*/
 };
 
 
