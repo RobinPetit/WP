@@ -38,7 +38,7 @@ SELECT "Cards";
 SELECT "Cards/Tables";
 CREATE TABLE Card (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT UNIQUE NOT NULL, -- only used by client but due to SQLite3 behaviour...
+    name TEXT UNIQUE NOT NULL COLLATE NOCASE, -- only used by client but due to SQLite3 behaviour...
     description TEXT NOT NULL, -- ... store it here to simplify the management of adding cards
     effect INTEGER NOT NULL, -- used as effects[difference_type]
     -- parametersListSize INTEGER, -- not stored because it is sizeof(parameters)/sizeof(int32_t)
