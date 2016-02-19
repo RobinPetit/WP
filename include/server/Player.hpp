@@ -29,17 +29,17 @@ public:
 	void attackWithCreature(unsigned boardIndex, unsigned victim);  /// Attack victim with a card
 
 	/// Effects
-	void setConstraint(std::vector<unsigned> args);
-	void pickDeckCards(std::vector<unsigned> args);
-	void loseHandCards(std::vector<unsigned> args);
-	void stealHandCard(std::vector<unsigned> args);
-	void exchgHandCard(std::vector<unsigned> args);
+	void setConstraint(const std::vector<unsigned>& args);
+	void pickDeckCards(const std::vector<unsigned>& args);
+	void loseHandCards(const std::vector<unsigned>& args);
+	void stealHandCard(const std::vector<unsigned>& args);
+	void exchgHandCard(const std::vector<unsigned>& args);
 
-	void setEnergyPoints(std::vector<unsigned> args);
-	void addEnergyPoints(std::vector<unsigned> args);
-	void subEnergyPoints(std::vector<unsigned> args);
-	void addLifePoints(std::vector<unsigned> args);
-	void subLifePoints(std::vector<unsigned> args);
+	void setEnergyPoints(const std::vector<unsigned>& args);
+	void addEnergyPoints(const std::vector<unsigned>& args);
+	void subEnergyPoints(const std::vector<unsigned>& args);
+	void addLifePoints(const std::vector<unsigned>& args);
+	void subLifePoints(const std::vector<unsigned>& args);
 
 
 private:

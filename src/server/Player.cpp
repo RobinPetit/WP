@@ -89,7 +89,7 @@ void Player::attackWithCreature(unsigned boardIndex, unsigned victim)
 }
 
 /*--------------------------- EFFECTS */
-void Player::setConstraint(std::vector<unsigned> args)
+void Player::setConstraint(const std::vector<unsigned>& args)
 {
 	unsigned constraintID = args.at(0);
 	unsigned value = args.at(1);
@@ -97,12 +97,12 @@ void Player::setConstraint(std::vector<unsigned> args)
 	_constraints.setConstraint(constraintID, value, turns);
 }
 
-void Player::pickDeckCards(std::vector<unsigned> args)
+void Player::pickDeckCards(const std::vector<unsigned>& args)
 {
 	cardPickFromDeck(args.at(0));
 }
 
-void Player::loseHandCards(std::vector<unsigned> args)
+void Player::loseHandCards(const std::vector<unsigned>& args)
 {
 	unsigned amount = args.at(1);
 	while (not _cardHand.empty() and amount>0)
@@ -113,12 +113,12 @@ void Player::loseHandCards(std::vector<unsigned> args)
 	}
 }
 
-void Player::stealHandCard(std::vector<unsigned> args)
+void Player::stealHandCard(const std::vector<unsigned>& args)
 {
 	_cardHand.push_back(_opponent->cardRemoveFromHand());
 }
 
-void Player::exchgHandCard(std::vector<unsigned> args)
+void Player::exchgHandCard(const std::vector<unsigned>& args)
 {
 	unsigned myCardIndex = args.at(0);
 	Card* myCard = _cardHand.at(myCardIndex);
@@ -131,19 +131,19 @@ void Player::exchgHandCard(std::vector<unsigned> args)
 	}
 }
 
-void Player::setEnergyPoints(std::vector<unsigned> args)
+void Player::setEnergyPoints(const std::vector<unsigned>& args)
 {
 	unsigned points = args.at(0);
 	_energyPoints = points;
 }
 
-void Player::addEnergyPoints(std::vector<unsigned> args)
+void Player::addEnergyPoints(const std::vector<unsigned>& args)
 {
 	unsigned points = args.at(0);
 	_energyPoints += points;
 }
 
-void Player::subEnergyPoints(std::vector<unsigned> args)
+void Player::subEnergyPoints(const std::vector<unsigned>& args)
 {
 	unsigned points = args.at(0);
 	if (_energyPoints > points) _energyPoints -= points;
@@ -155,13 +155,13 @@ void Player::subEnergyPoints(std::vector<unsigned> args)
 	}
 }
 
-void Player::addLifePoints(std::vector<unsigned> args)
+void Player::addLifePoints(const std::vector<unsigned>& args)
 {
 	unsigned points = args.at(0);
 	_healthPoints += points;
 }
 
-void Player::subLifePoints(std::vector<unsigned> args)
+void Player::subLifePoints(const std::vector<unsigned>& args)
 {
 	unsigned points = args.at(0);
 	if (_healthPoints > points) _healthPoints -= points;
