@@ -1,8 +1,6 @@
 #ifndef _ERROR_CODE_CLIENT_HPP_
 #define _ERROR_CODE_CLIENT_HPP_
 
-// std-C++ headers
-#include <cstdlib>
 // WizardPoker headers
 #include "common/ErrorCode.hpp"
 

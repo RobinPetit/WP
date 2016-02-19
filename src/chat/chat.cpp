@@ -9,7 +9,6 @@
 #include <SFML/Network/Packet.hpp>
 #include <SFML/System/Sleep.hpp>
 // std-C++ headers
-#include <cstdlib>
 #include <iostream>
 #include <sstream>
 #include <thread>

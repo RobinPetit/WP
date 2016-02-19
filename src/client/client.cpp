@@ -4,7 +4,6 @@
 
 // std-C++ headers
 #include <iostream>
-#include <cstdlib>
 // WizardPoker heaaders
 #include "client/StateStack.hpp"
 #include "client/states/HomeState.hpp"

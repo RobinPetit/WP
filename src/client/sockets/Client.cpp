@@ -12,7 +12,6 @@
 // std-C++ headers
 #include <iostream>
 #include <thread>
-#include <cstdlib>
 #include <algorithm>
 #include <atomic>
 #include <string>

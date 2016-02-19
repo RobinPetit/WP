@@ -1,6 +1,5 @@
 // std-C++ headers
 #include <iostream>
-#include <cstdlib>
 // SFML headers
 #include <SFML/Network/IpAddress.hpp>
 // WizardPoker headers
