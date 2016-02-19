@@ -9,23 +9,23 @@
 class Card
 {
 private:
-    unsigned _cost;
-    std::vector<std::vector<unsigned>> _instantEffects;    //Effects that apply immediately
+	unsigned _cost;
+	std::vector<std::vector<unsigned>> _instantEffects;	//Effects that apply immediately
 
 public:
-    /// Constructor
-    Card(unsigned cost=0, std::vector<std::vector<unsigned>> instantEffects = {{}});
+	/// Constructor
+	Card(unsigned cost=0, std::vector<std::vector<unsigned>> instantEffects = {{}});
 
-    /// Getters
-    unsigned getCost(){return _cost;}
-    std::vector<std::vector<unsigned>> getInstantEffects();
+	/// Getters
+	unsigned getCost(){return _cost;}
+	std::vector<std::vector<unsigned>> getInstantEffects();
 
 
-    /// Methods
-    virtual bool isCreature()=0;
-    virtual bool isSpell()=0;
+	/// Methods
+	virtual bool isCreature()=0;
+	virtual bool isSpell()=0;
 
-    virtual ~Card()=default;
+	virtual ~Card()=default;
 
 };
 

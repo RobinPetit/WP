@@ -77,8 +77,8 @@ enum CREATURE_EFFECTS : unsigned
 constexpr unsigned C_CONSTRAINTS_COUNT = 6; //number of creature constraints
 enum CREATURE_CONSTRAINTS : unsigned
 {
-    //turn-by-turn
-    CE_SELF_HEALTH_GAIN,			// Gain X health points
+	//turn-by-turn
+	CE_SELF_HEALTH_GAIN,			// Gain X health points
 	CE_TEAM_HEALTH_GAIN,			// Team gains X health points
 	CE_SELF_HEALTH_LOSS,
 	CE_TEAM_HEALTH_LOSS,
@@ -87,7 +87,7 @@ enum CREATURE_CONSTRAINTS : unsigned
 	CE_SELF_ATTACK_LOSS,
 	CE_TEAM_ATTACK_LOSS,
 	CE_SELF_SHIELD_LOSS,			// Lose X shield points
-    //passive
+	//passive
 	CE_SELF_ATTACK_BLOCK,		// Block the next X attacks on himself
 	CE_TEAM_ATTACK_BLOCK,		// Block the next X attacks on team
 	CE_SELF_PARALYZED,			// Can not be used

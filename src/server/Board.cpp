@@ -4,11 +4,11 @@
 Board::Board(unsigned player1, unsigned player2)
 {
 	// A random player starts the game
-    if (rand() % 2 == 0) std::swap(player1, player2);
-    _activePlayer = new Player(player1);
-    _passivePlayer = new Player(player2);
-    _activePlayer->setOpponent(_passivePlayer);
-    _passivePlayer->setOpponent(_activePlayer);
+	if (rand() % 2 == 0) std::swap(player1, player2);
+	_activePlayer = new Player(player1);
+	_passivePlayer = new Player(player2);
+	_activePlayer->setOpponent(_passivePlayer);
+	_passivePlayer->setOpponent(_activePlayer);
 }
 
 /*--------------------------- USER INTERFACE */
@@ -38,11 +38,11 @@ void Board::quitGame()
 /*--------------------------- CARD INTERFACE */
 void Board::applyEffect(std::vector<unsigned> effect)
 {
-    //FIRST UNSIGNED: pointer to object
-    //SECOND UNSIGNED: pointer to method
-    //OTHER UNSIGNED: arguments
-    //Player *effectSubject = (player==0 ? _activePlayer : _passivePlayer);
-    // (effectSubject->(_effects[effectID-constraintsCount]*))(effectArgs);
+	//FIRST UNSIGNED: pointer to object
+	//SECOND UNSIGNED: pointer to method
+	//OTHER UNSIGNED: arguments
+	//Player *effectSubject = (player==0 ? _activePlayer : _passivePlayer);
+	// (effectSubject->(_effects[effectID-constraintsCount]*))(effectArgs);
 }
 
 /*--------------------------- PLAYER INTERFACE */

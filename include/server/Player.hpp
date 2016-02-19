@@ -58,7 +58,7 @@ private:
 	std::vector<Card *> _cardBin;  ///< Cards that are discarded (dead creatures, used spells)
 
 	unsigned _energyPoints;
-	unsigned _lifePoints;
+	unsigned _healthPoints;
 
 	Board* _board;
 	Player* _opponent = nullptr;
