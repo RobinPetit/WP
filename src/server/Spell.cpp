@@ -1,3 +1,11 @@
 #include "server/Spell.hpp"
 
-//~ For additional methods
+bool Spell::isCreature()
+{
+	return false;
+}
+
+bool Spell::isSpell()
+{
+	return true;
+}

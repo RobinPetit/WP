@@ -24,23 +24,23 @@ public:
 			std::vector<std::vector<unsigned>> effects = {{}});
 
 	/// Getters
-	inline unsigned int getHealth(){return _health;}
-	inline unsigned int getAttack(){return _attack;}
+	inline unsigned int getHealth();
+	inline unsigned int getAttack();
 
 	/// Effects
-	void setConstraint(std::vector<unsigned> args);
-	void resetAttack(std::vector<unsigned> args);
-	void resetHealth(std::vector<unsigned> args);
-	void resetShield(std::vector<unsigned> args);
-	void addAttack(std::vector<unsigned> args);
-	void addHealth(std::vector<unsigned> args);
-	void addShield(std::vector<unsigned> args);
-	void subAttack(std::vector<unsigned> args);
-	void subHealth(std::vector<unsigned> args);
-	void subShield(std::vector<unsigned> args);
+	void setConstraint(std::vector<unsigned>& args);
+	void resetAttack(std::vector<unsigned>& args);
+	void resetHealth(std::vector<unsigned>& args);
+	void resetShield(std::vector<unsigned>& args);
+	void addAttack(std::vector<unsigned>& args);
+	void addHealth(std::vector<unsigned>& args);
+	void addShield(std::vector<unsigned>& args);
+	void subAttack(std::vector<unsigned>& args);
+	void subHealth(std::vector<unsigned>& args);
+	void subShield(std::vector<unsigned>& args);
 	void forcedSubHealth(std::vector<unsigned> args);
 
-	void (Creature::*effectMethods[C_EFFECTS_COUNT])(std::vector<unsigned>) =
+	void (Creature::*effectMethods[C_EFFECTS_COUNT])(std::vector<unsigned>&) =
 	{
 		&Creature::setConstraint,
 		&Creature::resetAttack,
@@ -57,8 +57,8 @@ public:
 
 
 	/// Methods
-	virtual inline bool isCreature() override { return true; };
-	virtual inline bool isSpell() override { return false; };
+	virtual inline bool isCreature() override;
+	virtual inline bool isSpell() override;
 
 };
 

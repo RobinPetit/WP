@@ -10,3 +10,8 @@ std::vector<std::vector<unsigned>> Card::getEffects()
 {
 	return _effects;
 }
+
+unsigned Card::getCost()
+{
+	return _cost;
+}

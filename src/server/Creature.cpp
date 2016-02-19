@@ -8,8 +8,28 @@ Creature::Creature(	unsigned cost, unsigned attack, unsigned health, unsigned sh
 
 }
 
+unsigned Creature::getAttack()
+{
+	return _attack;
+}
+
+unsigned Creature::getHealth()
+{
+	return _health;
+}
+
+bool Creature::isCreature()
+{
+	return true;
+}
+
+bool Creature::isSpell()
+{
+	return false;
+}
+
 /*--------------------------- EFFECTS */
-void Creature::setConstraint(std::vector<unsigned> args)
+void Creature::setConstraint(std::vector<unsigned>& args)
 {
 	unsigned constraintID = args.at(0);
 	unsigned value = args.at(1);
@@ -17,47 +37,47 @@ void Creature::setConstraint(std::vector<unsigned> args)
 	_constraints.setConstraint(constraintID, value, turns);
 }
 
-void Creature::resetAttack(std::vector<unsigned> args)
+void Creature::resetAttack(std::vector<unsigned>& args)
 {
 	 _attack = _attackInit;
 }
 
-void Creature::resetHealth(std::vector<unsigned> args)
+void Creature::resetHealth(std::vector<unsigned>& args)
 {
 	 _health = _healthInit;
 }
 
-void Creature::resetShield(std::vector<unsigned> args)
+void Creature::resetShield(std::vector<unsigned>& args)
 {
 	 _shield = _shieldInit;
 }
 
-void Creature::addHealth(std::vector<unsigned> args)
+void Creature::addHealth(std::vector<unsigned>& args)
 {
 	unsigned points = args.at(0);
 	_health += points;
 }
 
-void Creature::addAttack(std::vector<unsigned> args)
+void Creature::addAttack(std::vector<unsigned>& args)
 {
 	unsigned points = args.at(0);
 	_attack += points;
 }
 
-void Creature::addShield(std::vector<unsigned> args)
+void Creature::addShield(std::vector<unsigned>& args)
 {
 	unsigned points = args.at(0);
 	_shield += points;
 }
 
-void Creature::subAttack(std::vector<unsigned> args)
+void Creature::subAttack(std::vector<unsigned>& args)
 {
 	unsigned points = args.at(0);
 	if(_attack > points) _attack -= points;
 	else _attack = 0;
 }
 
-void Creature::subHealth(std::vector<unsigned> args)
+void Creature::subHealth(std::vector<unsigned>& args)
 {
 	unsigned points = args.at(0);
 	switch (_shieldType)
@@ -78,7 +98,7 @@ void Creature::subHealth(std::vector<unsigned> args)
 	}
 }
 
-void Creature::forcedSubHealth(std::vector<unsigned> args)
+void Creature::forcedSubHealth(std::vector<unsigned>& args)
 {
 	//Shields are not able to stop this attack
 	unsigned points = args.at(0);
@@ -90,7 +110,7 @@ void Creature::forcedSubHealth(std::vector<unsigned> args)
 	}
 }
 
-void Creature::subShield(std::vector<unsigned> args)
+void Creature::subShield(std::vector<unsigned>& args)
 {
 	unsigned points = args.at(0);
 	if(_shield > points) _shield -= points;

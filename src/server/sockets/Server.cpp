@@ -354,22 +354,3 @@ void Server::handleRemoveFriend(const _iterator& it, sf::Packet& transmission)
 	// TODO update database, remove removedFriend from the friend list of it
 }
 
-Server::~Server()
-{
-	quit();
-}
-
-void Server::waitQuit()
-{
-	std::cout << "Type '" << _quitPrompt << "' to end the server" << std::endl;
-	std::string input;
-	while(!_done.load())
-	{
-		std::cin >> input;
-		if(input == _quitPrompt)
-			_done.store(true);
-	}
-	_threadRunning.store(false);
-	std::cout << "ending server..." << std::endl;
-}
-
