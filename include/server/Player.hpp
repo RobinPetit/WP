@@ -30,10 +30,10 @@ public:
 
 	/// Effects
 	void setConstraint(std::vector<unsigned> args);
-	void pickSomeCards(std::vector<unsigned> args);
+	void pickDeckCards(std::vector<unsigned> args);
 	void loseHandCards(std::vector<unsigned> args);
 	void stealHandCard(std::vector<unsigned> args);
-	void exchangeHandCard(std::vector<unsigned> args);
+	void exchgHandCard(std::vector<unsigned> args);
 
 	void setEnergyPoints(std::vector<unsigned> args);
 	void addEnergyPoints(std::vector<unsigned> args);

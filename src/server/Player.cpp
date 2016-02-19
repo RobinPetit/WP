@@ -97,7 +97,7 @@ void Player::setConstraint(std::vector<unsigned> args)
 	_constraints.setConstraint(constraintID, value, turns);
 }
 
-void Player::pickSomeCards(std::vector<unsigned> args)
+void Player::pickDeckCards(std::vector<unsigned> args)
 {
     cardPickFromDeck(args.at(0));
 }
@@ -118,7 +118,7 @@ void Player::stealHandCard(std::vector<unsigned> args)
 	_cardHand.push_back(_opponent->cardRemoveFromHand());
 }
 
-void Player::exchangeHandCard(std::vector<unsigned> args)
+void Player::exchgHandCard(std::vector<unsigned> args)
 {
 	unsigned myCardIndex = args.at(0);
 	Card* myCard = _cardHand.at(myCardIndex);
