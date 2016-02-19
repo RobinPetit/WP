@@ -20,7 +20,8 @@ Server::Server():
 	_quitThread(),
 	_waitingPlayer(),
 	_isAPlayerWaiting(false),
-	_quitPrompt(":QUIT")
+	_quitPrompt(":QUIT"),
+	_last_id(0)
 {
 
 }
@@ -69,7 +70,7 @@ void Server::takeConnection()
 		/// \TODO receive the password and check the connection right here
 		std::cout << "new player connected: " << playerName << std::endl;
 		// add the new socket to the clients
-		_clients[playerName] = {newClient, clientPort};
+		_clients[playerName] = {newClient, clientPort, {}, {}, {}, {}, _last_id++};
 		// and add this client to the selector so that its receivals are handled properly
 		_socketSelector.add(*newClient);
 	}
@@ -167,14 +168,21 @@ void Server::checkPresence(const _iterator& it, sf::Packet& transmission)
 
 void Server::quit()
 {
+	// End game threads
+	for(auto& gameThread: _runningGames)
+	{
+		gameThread->interruptGame();
+		gameThread->join();
+	}
+	_runningGames.clear();
 	// in case the method is called even though server has not been manually ended
 	_done.store(true);
 	_quitThread.join();
 	_threadRunning.store(false);
-	for(auto it = _clients.begin(); it != _clients.end(); ++it)
+	for(auto& client : _clients)
 	{
-		_socketSelector.remove(*(it->second.socket));
-		delete it->second.socket;
+		_socketSelector.remove(*(client.second.socket));
+		delete client.second.socket;
 	}
 	_clients.clear();
 }
@@ -197,8 +205,6 @@ void Server::waitQuit()
 	_threadRunning.store(false);
 	std::cout << "ending server..." << std::endl;
 }
-
-
 
 // Game management
 
@@ -223,8 +229,20 @@ void Server::findOpponent(const _iterator& it)
 			it->second.socket->send(toSecond);
 			waitingPlayer->second.socket->send(toFirst);
 			_isAPlayerWaiting = false;
+			createGame(waitingPlayer->second.id, it->second.id);
 		}
 	}
+}
+
+void Server::startGame(std::size_t len)
+{
+	std::cout << "Game " << len << " is starting\n";
+}
+
+void Server::createGame(unsigned ID1, unsigned ID2)
+{
+	GameThread *g = new GameThread(ID1, ID2, &Server::startGame, this, _runningGames.size());
+	_runningGames.push_back(g);
 }
 
 // Friends management
