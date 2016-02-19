@@ -95,7 +95,7 @@ void FriendsManagementState::treatRequests()
 		std::cerr << "Unable to get requests state from the server.\n";
 		return;
 	}
-	if(incomingRequests.size() == 0)
+	if(incomingRequests.empty())
 		std::cout << "You have no incoming friendship request.\n";
 	else
 	{
@@ -122,8 +122,14 @@ void FriendsManagementState::startChat()
 	std::string friendName;
 	std::cout << "Who do you want to chat with? ";
 	std::getline(std::cin, friendName);
-	if(!_client.startConversation(friendName))
-		std::cout << "Unable to chat with " << friendName << ".\n";
+	try
+	{
+		_client.startConversation(friendName);
+	}
+	catch(const std::runtime_error& error)
+	{
+		std::cerr << "Unable to chat with " << friendName << ": " << error.what();
+	}
 	waitForEnter();
 }
 

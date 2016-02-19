@@ -18,6 +18,8 @@ enum class TransferType : sf::Uint32
 	GAME_CONNECTION,
 	/// Used when a player asks to find an opponent
 	GAME_REQUEST,
+	///
+	NEW_GAME_SERVER_CONNECTION,
 	// Client/Server
 	/// Used when the client quits to tell the server it disconnects
 	PLAYER_DISCONNECTION,

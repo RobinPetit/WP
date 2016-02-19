@@ -8,7 +8,7 @@ set(SOURCES
 		"Constraints.cpp"
 		# sockets
 		"sockets/Server.cpp"
-		# common
+		"sockets/GameThread.cpp"
 	)
 
 set(SERVER_NAME "${PROJECT_NAME}_server")

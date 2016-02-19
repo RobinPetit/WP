@@ -1,8 +1,10 @@
 // SFML headers
 #include <SFML/System/Sleep.hpp>
 #include <SFML/Network/IpAddress.hpp>
+#include <SFML/Network/SocketSelector.hpp>
 // WizardPoker headers
 #include "client/sockets/Client.hpp"
+#include "client/ErrorCode.hpp"
 #include "common/constants.hpp"
 #include "common/sockets/TransferType.hpp"
 #include "common/NotConnectedException.hpp"
@@ -12,8 +14,8 @@
 #include <thread>
 #include <cstdlib>
 #include <algorithm>
-
-extern void chatListening(sf::Uint16 *port, const std::atomic_bool *loop, Terminal terminal);
+#include <atomic>
+#include <string>
 
 Client::Client():
 	_socket(),
@@ -59,7 +61,7 @@ bool Client::connectToServer(const std::string& name, const sf::IpAddress& addre
 void Client::initListener()
 {
 	_threadLoop.store(true);
-	_listenerThread = std::thread(chatListening, &_chatListenerPort, &_threadLoop, _userTerminal);
+	_listenerThread = std::thread(&Client::inputListening, this);
 }
 
 void Client::quit()
@@ -226,11 +228,17 @@ void Client::acceptFriendshipRequest(const std::string& name, bool accept)
 		_friends.push_back(name);
 }
 
-bool Client::startConversation(const std::string& playerName) const
+void Client::startConversation(const std::string& playerName) const
 {
 	// rest assured the client is connected to a server before trying to access it
-	if(!_isConnected || !_userTerminal.hasKnownTerminal() || playerName == _name || !isFriend(playerName))
-		return false;
+	if(!_isConnected)
+		throw NotConnectedException("Not connected");
+	else if(!_userTerminal.hasKnownTerminal())
+		throw std::runtime_error("No known terminal");
+	else if(playerName == _name)
+		throw std::runtime_error("Chatting with yourself is not allowed");
+	else if(!isFriend(playerName))
+		throw std::runtime_error("You are only allowed to chat with your friends");
 	std::string cmd;
 	cmd = _userTerminal.startProgram(
 		"WizardPoker_chat",
@@ -243,6 +251,72 @@ bool Client::startConversation(const std::string& playerName) const
 			// there is not more parameters!
 		});
 	system(cmd.c_str());
-	return true;
 }
 
+////////////// Listening thread
+
+// function called by a new thread only
+void Client::inputListening()
+{
+	//bool volatile _continue = *loop;
+	sf::TcpListener chatListener;
+	//~ use of a selector to be non-blocking. There may be a better idea
+	sf::SocketSelector selector;
+	if(chatListener.listen(sf::Socket::AnyPort) != sf::Socket::Done)
+	{
+		std::cerr << "Unable to listen to arriving chat connections!" << std::endl;
+		_chatListenerPort = 0;
+		exit(UNABLE_TO_LISTEN);
+	}
+	else
+		_chatListenerPort = chatListener.getLocalPort();
+	std::cout << "waiting for connections on port " << _chatListenerPort << std::endl;
+	selector.add(chatListener);
+	while(_threadLoop.load())
+	{
+		// set waiting to 0.1 second so that the loop variable is checked frequently enough
+		if(!selector.wait(SOCKET_TIME_SLEEP))
+			continue;
+		sf::TcpSocket socket;
+		if(chatListener.accept(socket) == sf::Socket::Done)
+		{
+			sf::Packet packet;
+			socket.receive(packet);
+			TransferType type;
+			packet >> type;
+			if(type == TransferType::CHAT_PLAYER_IP)
+				startChat(socket, packet);
+			else if(type == TransferType::NEW_GAME_SERVER_CONNECTION)
+				initInGameConnection(socket, packet);
+			else
+				std::cerr << "Unknown type of message\n";
+			std::cin.ignore();
+		}
+	}
+}
+
+void Client::startChat(sf::TcpSocket& socket, sf::Packet& transmission)
+{
+	sf::Uint32 address;
+	sf::Uint16 port;
+	std::string otherName, selfName;
+	transmission >> address >> port >> selfName >> otherName;
+	std::string cmd;
+	cmd = _userTerminal.startProgram(
+		"WizardPoker_chat",
+		{
+			"callee",
+			std::to_string(address),
+			std::to_string(port),
+			selfName,
+			otherName
+		});
+	system(cmd.c_str());
+}
+
+void Client::initInGameConnection(sf::TcpSocket& socket, sf::Packet& transmission)
+{
+	sf::Uint16 serverInGamePort;
+	transmission >> serverInGamePort;
+	_inGameSocket.connect(_socket.getRemoteAddress(), serverInGamePort);
+}

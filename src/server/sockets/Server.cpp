@@ -20,7 +20,8 @@ Server::Server():
 	_quitThread(),
 	_waitingPlayer(),
 	_isAPlayerWaiting(false),
-	_quitPrompt(":QUIT")
+	_quitPrompt(":QUIT"),
+	_last_id(0)
 {
 
 }
@@ -69,7 +70,7 @@ void Server::takeConnection()
 		/// \TODO receive the password and check the connection right here
 		std::cout << "new player connected: " << playerName << std::endl;
 		// add the new socket to the clients
-		_clients[playerName] = {newClient, clientPort};
+		_clients[playerName] = {newClient, clientPort, {}, {}, {}, {}, {}, _last_id++};
 		// and add this client to the selector so that its receivals are handled properly
 		_socketSelector.add(*newClient);
 	}
@@ -167,14 +168,21 @@ void Server::checkPresence(const _iterator& it, sf::Packet& transmission)
 
 void Server::quit()
 {
+	// End game threads
+	for(auto& gameThread: _runningGames)
+	{
+		gameThread->interruptGame();
+		gameThread->join();
+	}
+	_runningGames.clear();
 	// in case the method is called even though server has not been manually ended
 	_done.store(true);
 	_quitThread.join();
 	_threadRunning.store(false);
-	for(auto it = _clients.begin(); it != _clients.end(); ++it)
+	for(auto& client : _clients)
 	{
-		_socketSelector.remove(*(it->second.socket));
-		delete it->second.socket;
+		_socketSelector.remove(*(client.second.socket));
+		delete client.second.socket;
 	}
 	_clients.clear();
 }
@@ -197,8 +205,6 @@ void Server::waitQuit()
 	_threadRunning.store(false);
 	std::cout << "ending server..." << std::endl;
 }
-
-
 
 // Game management
 
@@ -223,8 +229,25 @@ void Server::findOpponent(const _iterator& it)
 			it->second.socket->send(toSecond);
 			waitingPlayer->second.socket->send(toFirst);
 			_isAPlayerWaiting = false;
+			createGame(waitingPlayer->second.id, it->second.id);
 		}
 	}
+}
+
+void Server::startGame(std::size_t idx)
+{
+        GameThread& selfThread(*_runningGames[idx]);
+        const auto& finderById = [&](int playerId) { return [=](const std::pair<std::string, ClientInformations>& it) {return it.second.id == playerId;}; };
+        const auto& player1 = std::find_if(_clients.begin(), _clients.end(), finderById(selfThread._player1ID));
+        const auto& player2 = std::find_if(_clients.begin(), _clients.end(), finderById(selfThread._player2ID));
+	std::cout << "Game " << idx << " is starting: " << player1->first << " vs. " << player2->first << "\n";
+        selfThread.establishSockets(player1->second, player2->second);
+}
+
+void Server::createGame(unsigned ID1, unsigned ID2)
+{
+	GameThread *g = new GameThread(ID1, ID2, &Server::startGame, this, _runningGames.size());
+	_runningGames.push_back(g);
 }
 
 // Friends management
@@ -253,13 +276,11 @@ void Server::handleChatRequest(sf::Packet& packet, sf::TcpSocket& client)
 		sf::TcpSocket toCallee;
 		std::cout << "address is " << _clients[calleeName].socket->getRemoteAddress() << " and port is " << _clients[calleeName].listeningPort << std::endl;
 		if(toCallee.connect(_clients[calleeName].socket->getRemoteAddress(), _clients[calleeName].listeningPort) != sf::Socket::Done)
-			std::cerr << "Unable to connect to calle (" << calleeName << ")\n";
+			std::cerr << "Unable to connect to callee (" << calleeName << ")\n";
 		else
 		{
 			std::cout << "connected\n";
-			// as the listening port has a delay, set communications as blokcing
-			toCallee.setBlocking(true);
-			packetToCalle << client.getRemoteAddress().toInteger() << callerPort << calleeName << callerName;
+			packetToCalle << TransferType::CHAT_PLAYER_IP << client.getRemoteAddress().toInteger() << callerPort << calleeName << callerName;
 			std::cout << "sending to callee\n";
 			if(toCallee.send(packetToCalle) != sf::Socket::Done)
 				std::cerr << "unable to send to calle\n";
@@ -315,6 +336,9 @@ void Server::handleFriendshipRequestResponse(const _iterator& it, sf::Packet& tr
 	sf::Packet response;
 	response << TransferType::PLAYER_RESPONSE_FRIEND_REQUEST;
 	it->second.socket->send(response);
+	// make the friendship relation
+	it->second.friends.push_back(name);
+	asker->second.friends.push_back(it->first);
 }
 
 void Server::sendFriendshipRequests(const _iterator& it)
@@ -340,7 +364,7 @@ void Server::sendFriendshipRequestsState(const _iterator& it)
 
 void Server::sendFriends(const _iterator& it)
 {
-	std::vector<std::string> friends;
+	std::vector<std::string>& friends(it->second.friends);
 	/// \TODO use database to find the friends
 	sf::Packet packet;
 	packet << friends;

@@ -10,7 +10,9 @@
 enum
 {
 	/// return code in case of unability to reach the server
-	UNABLE_TO_CONNECT
+	UNABLE_TO_CONNECT,
+	///
+	UNABLE_TO_LISTEN
 };
 
 #endif // _ERROR_CODE_CLIENT_HPP_
