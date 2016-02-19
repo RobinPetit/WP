@@ -24,12 +24,12 @@ public:
 			std::vector<std::vector<unsigned>> effects = {{}});
 
 	/// Getters
-	inline unsigned int getHealth();
-	inline unsigned int getAttack();
+	unsigned getAttack();
+	unsigned getHealth();
 
 	/// Methods
-	virtual inline bool isCreature() override;
-	virtual inline bool isSpell() override;
+	virtual bool isCreature() override;
+	virtual bool isSpell() override;
     void enterTurn(Player* owner, Player* opponent);
     void leaveTurn();
 

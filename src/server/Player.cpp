@@ -95,7 +95,8 @@ void Player::attackWithCreature(unsigned boardIndex, unsigned victim)
 		//NETWORK: CREATURE_ATTACKS_LIMIT
 		return;
 	}
-	//attack with _cardBoard.at(boardIndex) against victim
+	unsigned attackPoints = _cardBoard.at(boardIndex)->getAttack();
+    _opponent->applyEffectToCreature(victim, CE_SUB_HEALTH, {attackPoints});
 }
 
 /*--------------------------- BOARD AND CREATURE INTERFACE */
