@@ -8,11 +8,14 @@
 #include "server/ErrorCode.hpp"
 #include "common/constants.hpp"
 #include "common/Terminal.hpp"
+#include "common/sockets/TransferType.hpp"
 // std-C++ headers
 #include <iostream>
 #include <atomic>
 #include <string>
 #include <cstdlib>
+
+static void startChat(sf::TcpSocket& socket, sf::Packet& transmission, Terminal& terminal);
 
 // function called by a new thread only
 /// chatListening is the function used by the client to make a new thread listening for entring connections
@@ -44,23 +47,34 @@ void chatListening(sf::Uint16 *port, const std::atomic_bool *loop, Terminal term
 		sf::TcpSocket socket;
 		if(chatListener.accept(socket) == sf::Socket::Done)
 		{
-			sf::Uint32 address;
-			sf::Uint16 port;
-			std::string otherName, selfName;
 			sf::Packet packet;
 			socket.receive(packet);
-			packet >> address >> port >> selfName >> otherName;
-			std::string cmd;
-			cmd = terminal.startProgram(
-				"WizardPoker_chat",
-				{
-					"callee",
-					std::to_string(address),
-					std::to_string(port),
-					selfName,
-					otherName
-				});
-			system(cmd.c_str());
+			TransferType type;
+			packet >> type;
+			if(type == TransferType::CHAT_PLAYER_IP)
+				startChat(socket, packet, terminal);
+			else
+				std::cerr << "Unknown type of message\n";
+			std::cin.ignore();
 		}
 	}
+}
+
+static void startChat(sf::TcpSocket& socket, sf::Packet& transmission, Terminal& terminal)
+{
+	sf::Uint32 address;
+	sf::Uint16 port;
+	std::string otherName, selfName;
+	transmission >> address >> port >> selfName >> otherName;
+	std::string cmd;
+	cmd = terminal.startProgram(
+		"WizardPoker_chat",
+		{
+			"callee",
+			std::to_string(address),
+			std::to_string(port),
+			selfName,
+			otherName
+		});
+	system(cmd.c_str());
 }

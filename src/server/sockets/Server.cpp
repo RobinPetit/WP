@@ -70,7 +70,7 @@ void Server::takeConnection()
 		/// \TODO receive the password and check the connection right here
 		std::cout << "new player connected: " << playerName << std::endl;
 		// add the new socket to the clients
-		_clients[playerName] = {newClient, clientPort, {}, {}, {}, {}, _last_id++};
+		_clients[playerName] = {newClient, clientPort, {}, {}, {}, {}, {}, _last_id++};
 		// and add this client to the selector so that its receivals are handled properly
 		_socketSelector.add(*newClient);
 	}
@@ -271,13 +271,11 @@ void Server::handleChatRequest(sf::Packet& packet, sf::TcpSocket& client)
 		sf::TcpSocket toCallee;
 		std::cout << "address is " << _clients[calleeName].socket->getRemoteAddress() << " and port is " << _clients[calleeName].listeningPort << std::endl;
 		if(toCallee.connect(_clients[calleeName].socket->getRemoteAddress(), _clients[calleeName].listeningPort) != sf::Socket::Done)
-			std::cerr << "Unable to connect to calle (" << calleeName << ")\n";
+			std::cerr << "Unable to connect to callee (" << calleeName << ")\n";
 		else
 		{
 			std::cout << "connected\n";
-			// as the listening port has a delay, set communications as blokcing
-			toCallee.setBlocking(true);
-			packetToCalle << client.getRemoteAddress().toInteger() << callerPort << calleeName << callerName;
+			packetToCalle << TransferType::CHAT_PLAYER_IP << client.getRemoteAddress().toInteger() << callerPort << calleeName << callerName;
 			std::cout << "sending to callee\n";
 			if(toCallee.send(packetToCalle) != sf::Socket::Done)
 				std::cerr << "unable to send to calle\n";
@@ -333,6 +331,9 @@ void Server::handleFriendshipRequestResponse(const _iterator& it, sf::Packet& tr
 	sf::Packet response;
 	response << TransferType::PLAYER_RESPONSE_FRIEND_REQUEST;
 	it->second.socket->send(response);
+	// make the friendship relation
+	it->second.friends.push_back(name);
+	asker->second.friends.push_back(it->first);
 }
 
 void Server::sendFriendshipRequests(const _iterator& it)
@@ -358,7 +359,7 @@ void Server::sendFriendshipRequestsState(const _iterator& it)
 
 void Server::sendFriends(const _iterator& it)
 {
-	std::vector<std::string> friends;
+	std::vector<std::string>& friends(it->second.friends);
 	/// \TODO use database to find the friends
 	sf::Packet packet;
 	packet << friends;

@@ -6,6 +6,8 @@
 #include <atomic>
 // WizardPoker headers
 #include "server/Board.hpp"
+// SFML headers
+#include <SFML/Network/TcpSocket.hpp>
 
 class GameThread final : public std::thread
 {
@@ -20,12 +22,16 @@ public:
 	/// Functions which stops the running thread (abortion)
 	void interruptGame();
 
+	void establishSockets();
+
 	/// Destructor
 	~GameThread() = default;
 
 private:
 	std::atomic_bool _running;
 	Board _gameBoard;
+	sf::TcpSocket *_socketPlayer1;
+	sf::TcpSocket *_socketPlayer2;
 };
 
 template <typename Function, class... Args>

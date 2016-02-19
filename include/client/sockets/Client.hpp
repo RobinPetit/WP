@@ -30,10 +30,10 @@ public:
 	// Friends management
 
 	/// The function used to start the process of making a new discussion with the chat program
-	/// \return True if the chat program has been started and false otherwise
 	/// \param playerName The name of the player the client wants to discuss with
 	/// \throw NotConnectedException if connectToServer has not been called before
-	bool startConversation(const std::string& playerName) const;
+	/// \throw std::runtime_error if connection or chatting is impossible
+	void startConversation(const std::string& playerName) const;
 
 	/// The function used to to get a list of the user's friends
 	/// \return A vector of names representing all of the friends

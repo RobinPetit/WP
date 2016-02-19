@@ -226,11 +226,17 @@ void Client::acceptFriendshipRequest(const std::string& name, bool accept)
 		_friends.push_back(name);
 }
 
-bool Client::startConversation(const std::string& playerName) const
+void Client::startConversation(const std::string& playerName) const
 {
 	// rest assured the client is connected to a server before trying to access it
-	if(!_isConnected || !_userTerminal.hasKnownTerminal() || playerName == _name || !isFriend(playerName))
-		return false;
+	if(!_isConnected)
+		throw NotConnectedException("Not connected");
+	else if(!_userTerminal.hasKnownTerminal())
+		throw std::runtime_error("No known terminal");
+	else if(playerName == _name)
+		throw std::runtime_error("Chatting with yourself is not allowed");
+	else if(!isFriend(playerName))
+		throw std::runtime_error("You are only allowed to chat with your friends");
 	std::string cmd;
 	cmd = _userTerminal.startProgram(
 		"WizardPoker_chat",
@@ -243,6 +249,5 @@ bool Client::startConversation(const std::string& playerName) const
 			// there is not more parameters!
 		});
 	system(cmd.c_str());
-	return true;
 }
 
