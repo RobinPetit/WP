@@ -43,11 +43,10 @@ void Board::quitGame()
 /*--------------------------- CARD INTERFACE */
 void Board::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 {
-	const auto& effectIt = effectArgs.begin();
-	unsigned subject = *effectIt;
-	effectArgs.erase(effectIt);
-	unsigned method = *effectIt;
-	effectArgs.erase(effectIt);
+	unsigned subject = effectArgs.front();
+	effectArgs.pop_front();
+	unsigned method = effectArgs.front();
+	effectArgs.pop_front();
 
 	switch (subject)
 	{
