@@ -5,57 +5,59 @@
 #include "client/states/LadderState.hpp"
 #include "client/states/MainMenuState.hpp"
 
-MainMenuState::MainMenuState(StateStack& stateStack):
-    AbstractState(stateStack)
+MainMenuState::MainMenuState(StateStack& stateStack, Client& client):
+	AbstractState(stateStack, client)
 {
-    addAction("Quit", &MainMenuState::quit);
-    addAction("Find a game", &MainMenuState::findGame);
-    addAction("Manage your decks", &MainMenuState::manageDecks);
-    addAction("See your collection of cards", &MainMenuState::seeCollection);
-    addAction("Manage your friends", &MainMenuState::manageFriends);
-    addAction("See the ladder", &MainMenuState::seeLadder);
-    addAction("Log out", &MainMenuState::logOut);
+	addAction("Quit", &MainMenuState::quit);
+	addAction("Find a game", &MainMenuState::findGame);
+	addAction("Manage your decks", &MainMenuState::manageDecks);
+	addAction("See your collection of cards", &MainMenuState::seeCollection);
+	addAction("Manage your friends", &MainMenuState::manageFriends);
+	addAction("See the ladder", &MainMenuState::seeLadder);
+	addAction("Log out", &MainMenuState::logOut);
 }
 
 void MainMenuState::display()
 {
-    // The menu is not that pretty, it can be improved
-    std::cout << std::string(40, '*') << "\n";
-    std::cout << "Main menu:\n";
+	// The menu is not that pretty, it can be improved
+	std::cout << std::string(40, '*') << "\n";
+	std::cout << "Main menu:\n";
 
-    // Display the actions
-    AbstractState::display();
+	// Display the actions
+	AbstractState::display();
 }
 
 void MainMenuState::findGame()
 {
-    std::cout << "So, let's find an opponent...\n";
+	std::cout << "So, let's find an opponent...\n";
+	_client.startGame();
 }
 
 void MainMenuState::manageDecks()
 {
-    stackPush<DecksManagementState>();
+	stackPush<DecksManagementState>();
 }
 
 void MainMenuState::seeCollection()
 {
-    stackPush<CardsCollectionState>();
+	stackPush<CardsCollectionState>();
 }
 
 void MainMenuState::seeLadder()
 {
-    stackPush<LadderState>();
+	stackPush<LadderState>();
 }
 
 void MainMenuState::manageFriends()
 {
-    stackPush<FriendsManagementState>();
+	stackPush<FriendsManagementState>();
 }
 
 void MainMenuState::logOut()
 {
-    std::cout << "Bye!...\n";
-    stackPop();
+	std::cout << "Bye!...\n";
+	_client.quit();
+	stackPop();
 }
 
 void MainMenuState::quit()

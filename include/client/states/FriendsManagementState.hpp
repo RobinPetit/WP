@@ -9,20 +9,21 @@ class StateStack;
 /// Cannot be more explicit.
 class FriendsManagementState : public AbstractState
 {
-    public:
-        /// Constructor.
-        FriendsManagementState(StateStack& stateStack);
+	public:
+		/// Constructor.
+		FriendsManagementState(StateStack& stateStack, Client& client);
 
-        /// The display function.
-        /// It must do all things related to drawing or printing stuff on the screen.
-        virtual void display() override;
+		/// The display function.
+		/// It must do all things related to drawing or printing stuff on the screen.
+		virtual void display() override;
 
-    private:
+	private:
 		void addFriend();
 		void removeFriend();
-        void backMainMenu();
-
-        std::vector<std::string> _friends;///< The list of friends.
+		void backMainMenu();
+		void checkRequests();
+		void treatRequests();
+		void startChat();
 };
 
 #endif// _FRIENDS_MANAGEMENT_STATE_CLIENT_HPP

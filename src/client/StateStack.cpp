@@ -1,45 +1,34 @@
 #include "client/AbstractState.hpp"
 #include "client/StateStack.hpp"
 
+StateStack::StateStack(Client& client):
+	_stack(),
+	_client{client}
+{
+
+}
+
 void StateStack::display()
 {
-    _stack.top()->display();
+	(*_stackIterator)->display();
 }
 
 void StateStack::handleInput(const std::string& input)
 {
-    _stack.top()->handleInput(input);
-    doPendingChanges();
+	(*_stackIterator)->handleInput(input);
 }
 
 void StateStack::pop()
 {
-    _pendingChanges.emplace([this]()
-    {
-        _stack.pop();
-    });
+	_stackIterator--;
 }
 
 void StateStack::clear()
 {
-    _pendingChanges.emplace([this]()
-    {
-        _stack = std::stack<std::unique_ptr<AbstractState>>();
-    });
-
+	_empty = true;
 }
 
 bool StateStack::isEmpty() const
 {
-    return _stack.empty();
-}
-
-void StateStack::doPendingChanges()
-{
-    while(not _pendingChanges.empty())
-    {
-		// Call the method on top of the queue, then pop it from the queue
-        _pendingChanges.front()();
-        _pendingChanges.pop();
-    }
+	return _stack.empty() or _empty;
 }

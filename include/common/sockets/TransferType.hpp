@@ -16,6 +16,8 @@ enum class TransferType : sf::Uint32
 	// GAME
 	/// Not used yet, will be when the game core will be coded
 	GAME_CONNECTION,
+	/// Used when a player asks to find an opponent
+	GAME_REQUEST,
 	// Client/Server
 	/// Used when the client quits to tell the server it disconnects
 	PLAYER_DISCONNECTION,
@@ -29,8 +31,10 @@ enum class TransferType : sf::Uint32
 	NOT_EXISTING_FRIEND,
 	/// Used when a client answers a friendship request
 	PLAYER_RESPONSE_FRIEND_REQUEST,
-	/// Used when a client asks what friendship requests he got and which of his own requests were accepted/refused
+	/// Used when a client asks which of his own requests were accepted/refused
 	PLAYER_GETTING_FRIEND_REQUESTS_STATE,
+	/// Used when a client asks what friendship requests he got
+	PLAYER_GETTING_FRIEND_REQUESTS,
 };
 
 /// Overloading of the sf::Packet operators so that a TransferType variable can be stored

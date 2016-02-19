@@ -12,12 +12,14 @@ sf::Packet& operator <<(sf::Packet& packet, const std::vector<T>& vec);
 template <typename T>
 sf::Packet& operator >>(sf::Packet& packet, std::vector<T>& vec);
 
+
 // implementation
 
 template <typename T>
 sf::Packet& operator <<(sf::Packet& packet, const std::vector<T>& vec)
 {
-	packet << vec.size();
+	sf::Uint32 tmp = static_cast<sf::Uint32>(vec.size());
+	packet << tmp;
 	for(const auto& element: vec)
 		packet << element;
 	return packet;
@@ -26,8 +28,10 @@ sf::Packet& operator <<(sf::Packet& packet, const std::vector<T>& vec)
 template <typename T>
 sf::Packet& operator >>(sf::Packet& packet, std::vector<T>& vec)
 {
+	sf::Uint32 tmp;
 	typename std::vector<T>::size_type length;
-	packet >> length;
+	packet >> tmp;
+	length = tmp;
 	for(int i = 0; i < length; ++i)
 	{
 		T value;
@@ -36,6 +40,5 @@ sf::Packet& operator >>(sf::Packet& packet, std::vector<T>& vec)
 	}
 	return packet;
 }
-
 
 #endif  // _PACKET_OVERLOAD_HPP_
