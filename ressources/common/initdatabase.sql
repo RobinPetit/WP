@@ -121,10 +121,20 @@ CREATE TABLE Account (
 CREATE TABLE GivenCard (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     card INTEGER REFERENCES Card,
-    owner INTEGER REFERENCES Account
+    owner INTEGER REFERENCES Account,
+    counter INTEGER CHECK(counter > 0), -- TODO
+    UNIQUE(card, owner)
 );
 
 CREATE INDEX givenCardOwner ON givenCard(owner);
+
+SELECT "Accounts/Trigger";
+CREATE TRIGGER removeFromGivenCard
+    AFTER UPDATE ON GivenCard
+    WHEN(NEW.counter == 0)
+    BEGIN
+        DELETE FROM GivenCard WHERE id == NEW.id;
+    END;
 
 ----------------------
 -- Decks
