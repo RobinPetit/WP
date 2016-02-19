@@ -29,20 +29,31 @@ public:
 
 	/// Effects
 	void setConstraint(std::vector<unsigned> args);
-
 	void resetAttack(std::vector<unsigned> args);
 	void resetHealth(std::vector<unsigned> args);
 	void resetShield(std::vector<unsigned> args);
-
 	void addAttack(std::vector<unsigned> args);
 	void addHealth(std::vector<unsigned> args);
 	void addShield(std::vector<unsigned> args);
-
 	void subAttack(std::vector<unsigned> args);
 	void subHealth(std::vector<unsigned> args);
 	void subShield(std::vector<unsigned> args);
-
 	void forcedSubHealth(std::vector<unsigned> args);
+
+	void (Creature::*effectMethods[C_EFFECTS_COUNT])(std::vector<unsigned>) =
+	{
+		&Creature::setConstraint,
+		&Creature::resetAttack,
+		&Creature::resetHealth,
+		&Creature::resetShield,
+		&Creature::addAttack,
+		&Creature::addHealth,
+		&Creature::addShield,
+		&Creature::subAttack,
+		&Creature::subHealth,
+		&Creature::subShield,
+		&Creature::forcedSubHealth
+	};
 
 
 	/// Methods

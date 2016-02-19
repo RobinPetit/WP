@@ -27,6 +27,7 @@ public:
 	void leaveTurn(unsigned turn);
 	void useCard(unsigned handIndex); 	/// Use a card
 	void attackWithCreature(unsigned boardIndex, unsigned victim);  /// Attack victim with a card
+	std::vector<Creature*> getBoardCreatures() { return _cardBoard; };
 
 	/// Effects
 	void setConstraint(std::vector<unsigned> args);
@@ -34,12 +35,27 @@ public:
 	void loseHandCards(std::vector<unsigned> args);
 	void stealHandCard(std::vector<unsigned> args);
 	void exchgHandCard(std::vector<unsigned> args);
-
+	//void reviveBinCard(std::vector<unsigned> args);
 	void setEnergyPoints(std::vector<unsigned> args);
 	void addEnergyPoints(std::vector<unsigned> args);
 	void subEnergyPoints(std::vector<unsigned> args);
 	void addLifePoints(std::vector<unsigned> args);
 	void subLifePoints(std::vector<unsigned> args);
+
+	void (Player::*effectMethods[P_EFFECTS_COUNT])(std::vector<unsigned>) =
+	{
+		&Player::setConstraint,
+		&Player::pickDeckCards,
+		&Player::loseHandCards,
+		&Player::stealHandCard,
+		&Player::exchgHandCard,
+		//&Player::reviveBinCard,
+		&Player::setEnergyPoints,
+		&Player::addEnergyPoints,
+		&Player::subEnergyPoints,
+		&Player::addLifePoints,
+		&Player::subLifePoints,
+	};
 
 
 private:

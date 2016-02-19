@@ -4,7 +4,19 @@
 #include <vector>
 
 
+/// WHO IS AFFECTED BY THE EFFECT ?
+enum EFFECT_SUBJECTS : unsigned
+{
+    PLAYER_SELF,
+    PLAYER_OPPO,
+    CREATURE_SELF,
+    CREATURE_TEAM,
+    CREATURE_ONE_OPPO,
+	CREATURE_ALL_OPPO
+};
+
 /// PLAYER EFFECTS
+constexpr unsigned P_EFFECTS_COUNT = 10;
 enum PLAYER_EFFECTS : unsigned
 {
 	//constraints
@@ -56,6 +68,7 @@ constexpr unsigned P_CONSTRAINT_DEFAULTS[P_CONSTRAINTS_COUNT] =
 };
 
 /// CREATURE EFFECTS
+constexpr unsigned C_EFFECTS_COUNT = 11;
 enum CREATURE_EFFECTS : unsigned
 {
 	//constraints

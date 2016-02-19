@@ -177,9 +177,9 @@ void Player::subLifePoints(std::vector<unsigned> args)
 void Player::exploitCardEffects(Card* usedCard)
 {
 	std::vector<std::vector<unsigned>> effects = usedCard->getEffects();
-	for (unsigned i=0; i<effects.size(); i++) //for each instant effect of the card
+	for (unsigned i=0; i<effects.size(); i++) //for each effect of the card
 	{
-		_board->applyEffect(effects.at(i));
+		_board->applyEffect(usedCard, effects.at(i)); //apply it
 	}
 }
 
