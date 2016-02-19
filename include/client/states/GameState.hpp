@@ -16,8 +16,17 @@ class GameState : public AbstractState
 		/// The display function.
 		/// It must do all things related to drawing or printing stuff on the screen.
 		virtual void display() override;
+		
+		void begin(unsigned lotsOfDataAboutStuff);
+		void startTurn();
 
 	private:
+		unsigned _lotsOfDataAboutStuff;
+		bool _myTurn=false;
+
+		void useCard();
+		void attackWithCreature();
+		void endTurn();
 		void quit();
 
 };
