@@ -14,11 +14,11 @@ class GameThread final : public std::thread
 {
 public:
 	/// Constructor
-	GameThread(unsigned player1ID, unsigned player2ID);
+	GameThread(Player::ID player1ID, Player::ID player2ID);
 
 	/// Constructor starting a thread
 	template <class F, class ...Args>
-	explicit GameThread(unsigned player1ID, unsigned player2ID, F&& f, Args&&... args);
+	explicit GameThread(Player::ID player1ID, Player::ID player2ID, F&& f, Args&&... args);
 
 	/// Functions which stops the running thread (abortion)
 	void interruptGame();
@@ -28,8 +28,8 @@ public:
 	/// Destructor
 	~GameThread() = default;
 
-	const unsigned _player1ID;
-	const unsigned _player2ID;
+	const Player::ID _player1ID;
+	const Player::ID _player2ID;
 
 private:
 	std::atomic_bool _running;
@@ -40,8 +40,10 @@ private:
 	void setSocket(sf::TcpSocket& socket, const ClientInformations& player);
 };
 
+///////// template code
+
 template <typename Function, class... Args>
-GameThread::GameThread(unsigned player1ID, unsigned player2ID, Function&& function, Args&&... args):
+GameThread::GameThread(Player::ID player1ID, Player::ID player2ID, Function&& function, Args&&... args):
 	std::thread(function, args...),
 	_player1ID(player1ID),
 	_player2ID(player2ID),

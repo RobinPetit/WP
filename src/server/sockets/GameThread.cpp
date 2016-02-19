@@ -5,7 +5,7 @@
 #include <SFML/Network/TcpListener.hpp>
 #include <SFML/Network/IpAddress.hpp>
 
-GameThread::GameThread(unsigned player1ID, unsigned player2ID):
+GameThread::GameThread(Player::ID player1ID, Player::ID player2ID):
 	std::thread(),
 	_player1ID(player1ID),
 	_player2ID(player2ID),

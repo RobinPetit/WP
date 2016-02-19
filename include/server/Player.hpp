@@ -4,6 +4,7 @@
 // std-C++ headers
 #include <stack>
 #include <random>
+#include <cstddef>
 // WizardPoker headers
 #include "server/Card.hpp"
 #include "server/Spell.hpp"
@@ -17,8 +18,9 @@ class Player
 {
 public:
 	typedef void (Player::*PlayerEffectMethod)(const std::vector<unsigned>&);
+	typedef std::size_t ID;
 	/// Constructor
-	Player(unsigned id);
+	Player(Player::ID id);
 	void setOpponent(Player* opponent);  // Complementary
 
 	/// Destructor.
@@ -70,7 +72,7 @@ public:
 private:
 	Board* _board;
 	Player* _opponent = nullptr;
-	unsigned _id; //@RobinPetit change this to whatever helps communicate over network
+	Player::ID _id; //@RobinPetit change this to whatever helps communicate over network
 
 	unsigned _energyPoints;
 	unsigned _healthPoints;

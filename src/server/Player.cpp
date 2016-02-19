@@ -5,7 +5,7 @@
 // std-C++ headers
 #include <algorithm>
 
-Player::Player(unsigned id):
+Player::Player(Player::ID id):
 	_id(id)
 {
 	//NETWORK: GREETINGS_USER

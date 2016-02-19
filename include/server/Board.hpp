@@ -12,7 +12,7 @@ class Board
 {
 public:
 	/// Constructor
-	Board(unsigned int player1, unsigned int player2);
+	Board(Player::ID player1, Player::ID player2);
 
 	/// Destructor
 	~Board() = default;

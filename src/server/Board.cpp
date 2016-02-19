@@ -3,7 +3,7 @@
 // std-C++ headers
 #include <random>
 
-Board::Board(unsigned player1, unsigned player2)
+Board::Board(Player::ID player1, Player::ID player2)
 {
 	// A random player starts the game
 	std::default_random_engine engine;
