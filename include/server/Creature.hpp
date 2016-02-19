@@ -15,6 +15,8 @@ private:
 	unsigned _shield, _shieldInit;
 	unsigned _shieldType;
 
+	Player* _owner;
+
 	//Constraints
 	ConstraintList _constraints = ConstraintList(C_CONSTRAINT_DEFAULTS, C_CONSTRAINTS_COUNT);
 
@@ -26,11 +28,12 @@ public:
 	/// Getters
 	unsigned getAttack();
 	unsigned getHealth();
-
-	/// Methods
 	virtual bool isCreature() override;
 	virtual bool isSpell() override;
-    void enterTurn(Player* owner, Player* opponent);
+	unsigned getConstraint(unsigned constraintID);
+
+	/// Player interface
+    void enterTurn();
     void leaveTurn();
 
 	/// Effects

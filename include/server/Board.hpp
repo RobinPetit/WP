@@ -21,7 +21,7 @@ public:
 	/// Interface for user
 	void endTurn();
 	void useCard(unsigned handIndex);
-	void attackWithCard(unsigned boardIndex, unsigned victim);
+	void attackWithCreature(unsigned boardIndex, unsigned victim);
 	void quitGame(); //TODO: need identifier
 
 	/// Interface for Player and Card classes

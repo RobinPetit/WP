@@ -29,7 +29,7 @@ void Player::enterTurn(unsigned turn)
 		subLifePoints({_constraints.getConstraint(PC_HEALTH_POINTS_LOSS_DECK_EMPTY)});
 
 	//Will call creature's turn-based rules
-    for (unsigned i=0; i<_cardBoard.size(); i++) _cardBoard.at(i)->enterTurn(this, _opponent);
+    for (unsigned i=0; i<_cardBoard.size(); i++) _cardBoard.at(i)->enterTurn();
 
 	//NETWORK: TURN_STARTED
 }
@@ -112,6 +112,16 @@ void Player::applyEffectToCreatures(unsigned method, const std::vector<unsigned>
 	{
         applyEffectToCreature(i, method, effectArgs);
 	}
+}
+
+std::pair<unsigned, unsigned> Player::getTeamConstraint(unsigned constraintID)
+{
+    for (unsigned i=0; i<_cardBoard.size(); i++)
+    {
+        unsigned value = _cardBoard.at(i)->getConstraint(constraintID);
+        if (value != 0) return std::make_pair(value, i);
+    }
+    return std::make_pair<unsigned, unsigned>(0,0);
 }
 
 /*--------------------------- EFFECTS */

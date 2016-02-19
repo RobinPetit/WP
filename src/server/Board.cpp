@@ -25,7 +25,7 @@ void Board::useCard(unsigned handIndex)
 	_activePlayer->useCard(handIndex);
 }
 
-void Board::attackWithCard(unsigned boardIndex, unsigned victim)
+void Board::attackWithCreature(unsigned boardIndex, unsigned victim)
 {
 	_activePlayer->attackWithCreature(boardIndex, victim);
 }

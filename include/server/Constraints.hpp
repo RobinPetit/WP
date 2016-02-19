@@ -104,8 +104,8 @@ enum CREATURE_CONSTRAINTS : unsigned
 	CC_TEAM_ATTACK_LOSS,
 	CC_SELF_SHIELD_LOSS,			// Lose X shield points
 	//passive
-	CC_SELF_ATTACK_BLOCK,		// Block the next X attacks on himself
-	CC_TEAM_ATTACK_BLOCK,		// Block the next X attacks on team
+	CC_SELF_BLOCK_ATTACKS,		// Block the next X attacks on himself
+	CC_TEAM_BLOCK_ATTACKS,		// Block the next X attacks on team
 	CC_SELF_PARALYZED,			// Can not be used
 	//ending (when creature dies)
     CC_END_TEAM_HEALTH_GAIN,
@@ -121,14 +121,24 @@ enum CREATURE_CONSTRAINTS : unsigned
 
 constexpr unsigned C_CONSTRAINT_DEFAULTS[C_CONSTRAINTS_COUNT] =
 {
-	//TURN-BASED CONSTRAINTS: all set to 0, change with effects
+	//turn-by-turn: all default to 0
 	0,		//
 	0,		//
 	0, 		//
 	0,		//
 	0, 		//
-	0		//
-	//PASSIVE CONSTRAINTS: to come (agro, taunt...)
+	0,		//
+	0,		//
+	0,		//
+	0,		//
+	//passive
+	0,
+	0,
+	0,
+	//ending
+	0,
+	0,
+	0
 };
 
 /// LA CLASSE!

@@ -63,6 +63,7 @@ public:
 	///Pass along effects to creatures
     void applyEffectToCreatures(unsigned method, const std::vector<unsigned>& effectArgs);
     void applyEffectToCreature(unsigned boardIndex, unsigned method, const std::vector<unsigned>& effectArgs);
+    std::pair<unsigned, unsigned> getTeamConstraint(unsigned constraintID);
 
 private:
 	Board* _board;
