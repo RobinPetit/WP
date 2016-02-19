@@ -18,9 +18,10 @@ void Player::setOpponent(Player* opponent)
 
 
 /*--------------------------- BOARD INTERFACE */
+
 void Player::enterTurn(unsigned)
 {
-	_turnData = _emptyTurnData; //Clear the turn data
+	_turnData = _emptyTurnData;  // Clear the turn data
 
 	//Player's turn-based rules
 	cardDeckToHand(_constraints.getConstraint(PC_CARD_PICK_AMOUNT));

@@ -72,7 +72,7 @@ public:
 private:
 	Board* _board;
 	Player* _opponent = nullptr;
-	Player::ID _id; //@RobinPetit change this to whatever helps communicate over network
+	Player::ID _id;
 
 	unsigned _energyPoints;
 	unsigned _healthPoints;
@@ -82,13 +82,13 @@ private:
 
 	struct TurnData
 	{
-		unsigned cardsUsed=0;
-		unsigned creaturesPlaced=0;
-		unsigned creatureAttacks=0;
-		unsigned spellCalls=0;
+		unsigned cardsUsed;
+		unsigned creaturesPlaced;
+		unsigned creatureAttacks;
+		unsigned spellCalls;
 	};
 
-	TurnData _emptyTurnData;
+	constexpr static TurnData _emptyTurnData = {0, 0, 0, 0};
 	TurnData _turnData;
 
 	//Card holders
