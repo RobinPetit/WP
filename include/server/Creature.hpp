@@ -1,10 +1,10 @@
 #ifndef CREATURE_SERVER_HPP
 #define CREATURE_SERVER_HPP
 
+// WizardPoker headers
 #include "server/Card.hpp"
 #include "server/Player.hpp"
 #include "server/Constraints.hpp"
-
 
 ///Creature card : One of the 2 playables card
 class Creature : public Card
@@ -21,6 +21,7 @@ private:
 	ConstraintList _constraints = ConstraintList(C_CONSTRAINT_DEFAULTS, C_CONSTRAINTS_COUNT);
 
 public:
+	typedef void (Creature::*CreatureEffectMethod)(const std::vector<unsigned>&);
 	/// Constructors
 	Creature(unsigned cost=0, unsigned attack=0, unsigned health=1, unsigned shield=0, unsigned shieldType=0,
 			std::vector<std::vector<unsigned>> effects = {{}});
@@ -33,8 +34,8 @@ public:
 	unsigned getConstraint(unsigned constraintID);
 
 	/// Player interface
-    void enterTurn();
-    void leaveTurn();
+	void enterTurn();
+	void leaveTurn();
 
 	/// Effects
 	void setConstraint(const std::vector<unsigned>& args);
@@ -49,7 +50,7 @@ public:
 	void subShield(const std::vector<unsigned>& args);
 	void forcedSubHealth(const std::vector<unsigned>& args);
 
-	void (Creature::*effectMethods[C_EFFECTS_COUNT])(const std::vector<unsigned>&) =
+	CreatureEffectMethod effectMethods[C_EFFECTS_COUNT] =
 	{
 		&Creature::setConstraint,
 		&Creature::resetAttack,

@@ -1,10 +1,15 @@
+// WizardPoker headers
 #include "server/Board.hpp"
-
+// std-C++ headers
+#include <random>
 
 Board::Board(unsigned player1, unsigned player2)
 {
 	// A random player starts the game
-	if (rand() % 2 == 0) std::swap(player1, player2);
+	std::default_random_engine engine;
+	std::uniform_int_distribution<unsigned> distribution(1, 2);
+	if (distribution(engine) == 1)
+		std::swap(player1, player2);
 	_activePlayer = new Player(player1);
 	_passivePlayer = new Player(player2);
 	_activePlayer->setOpponent(_passivePlayer);

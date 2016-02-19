@@ -1,10 +1,9 @@
 #ifndef _CARD_SERVER_HPP
 #define _CARD_SERVER_HPP
 
+// std-C++ headers
 #include <string>
 #include <vector>
-#include <iostream>
-
 
 class Card
 {

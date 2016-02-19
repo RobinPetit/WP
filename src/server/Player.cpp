@@ -1,7 +1,9 @@
+// WizardPoker headers
 #include "server/Player.hpp"
 #include "server/Board.hpp"
 #include "server/Creature.hpp"
-
+// std-C++ headers
+#include <algorithm>
 
 Player::Player(unsigned id):
 	_id(id)
@@ -147,7 +149,7 @@ void Player::loseHandCards(const std::vector<unsigned>& args)
 	while (not _cardHand.empty() and amount>0)
 	{
 		amount--;
-		unsigned handIndex = rand() % _cardHand.size();
+		unsigned handIndex = (std::uniform_int_distribution<int>(0, _cardHand.size()))(_engine);
 		cardHandToBin(handIndex);
 	}
 }
@@ -294,9 +296,9 @@ void Player::cardAddToHand(Card* givenCard)
 
 Card* Player::cardRemoveFromHand()
 {
-	if (_cardHand.empty()) return nullptr;
-
-	unsigned handIndex = rand() % _cardHand.size();
+	if (_cardHand.empty())
+		return nullptr;
+	unsigned handIndex = (std::uniform_int_distribution<int>(0, _cardHand.size()))(_engine);
 	Card* stolenCard = _cardHand[handIndex];
 	const auto& handIt = std::find(_cardHand.begin(), _cardHand.end(), _cardHand[handIndex]);
 	_cardHand.erase(handIt);
@@ -307,14 +309,14 @@ Card* Player::cardRemoveFromHand()
 
 Card* Player::cardExchangeFromHand(Card* givenCard)
 {
-	unsigned handIndex = rand() % _cardHand.size();
+	unsigned handIndex = (std::uniform_int_distribution<int>(0, _cardHand.size()))(_engine);
 	return cardExchangeFromHand(givenCard, handIndex);
 }
 
 Card* Player::cardExchangeFromHand(Card* givenCard, unsigned handIndex)
 {
-	if (_cardHand.empty()) return nullptr;
-
+	if (_cardHand.empty())
+		return nullptr;
 	Card* stolen = _cardHand[handIndex];
 	_cardHand.at(handIndex) = givenCard;
 	//NETWORK: HAND_CHANGED

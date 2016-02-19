@@ -3,15 +3,14 @@
 
 #include <vector>
 
-
 /// WHO IS AFFECTED BY THE EFFECT ?
 enum EFFECT_SUBJECTS : unsigned
 {
-    PLAYER_SELF,
-    PLAYER_OPPO,
-    CREATURE_SELF,
-    CREATURE_TEAM,
-    CREATURE_ONE_OPPO,
+	PLAYER_SELF,
+	PLAYER_OPPO,
+	CREATURE_SELF,
+	CREATURE_TEAM,
+	CREATURE_ONE_OPPO,
 	CREATURE_ALL_OPPO
 };
 
@@ -108,11 +107,11 @@ enum CREATURE_CONSTRAINTS : unsigned
 	CC_TEAM_BLOCK_ATTACKS,		// Block the next X attacks on team
 	CC_SELF_PARALYZED,			// Can not be used
 	//ending (when creature dies)
-    CC_END_TEAM_HEALTH_GAIN,
-    CC_END_TEAM_ATTACK_LOSS,
-    CC_END_TEAM_SHIELD_LOSS,
-    //count
-    C_CONSTRAINTS_COUNT
+	CC_END_TEAM_HEALTH_GAIN,
+	CC_END_TEAM_ATTACK_LOSS,
+	CC_END_TEAM_SHIELD_LOSS,
+	//count
+	C_CONSTRAINTS_COUNT
 	//TODO
 	//CE_SELF_HYPNOTIZED,			// Can only be used by opponent
 	//C_STICKY,			// Your opponent's spell cost X more next Turn

@@ -1,9 +1,10 @@
 #ifndef _PLAYER_HPP
 #define _PLAYER_HPP
 
-#include <SFML/System.hpp>
-#include <cstdlib>
+// std-C++ headers
 #include <stack>
+#include <random>
+// WizardPoker headers
 #include "server/Card.hpp"
 #include "server/Spell.hpp"
 #include "server/Constraints.hpp"
@@ -15,9 +16,10 @@ class Creature;
 class Player
 {
 public:
+	typedef void (Player::*PlayerEffectMethod)(const std::vector<unsigned>&);
 	/// Constructor
 	Player(unsigned id);
-	void setOpponent(Player* opponent); //Complementary
+	void setOpponent(Player* opponent);  // Complementary
 
 	/// Destructor.
 	~Player() = default;
@@ -25,8 +27,8 @@ public:
 	/// Interface for basic gameplay (board)
 	void enterTurn(unsigned turn);
 	void leaveTurn(unsigned turn);
-	void useCard(unsigned handIndex); 	/// Use a card
-	void attackWithCreature(unsigned boardIndex, unsigned victim);  /// Attack victim with a card
+	void useCard(unsigned handIndex); 	///< Use a card
+	void attackWithCreature(unsigned boardIndex, unsigned victim);  ///< Attack victim with a card
 
 	/// Effects
 	void setConstraint(const std::vector<unsigned>& args);
@@ -43,7 +45,7 @@ public:
 	void addLifePoints(const std::vector<unsigned>& args);
 	void subLifePoints(const std::vector<unsigned>& args);
 
-	void (Player::*effectMethods[P_EFFECTS_COUNT])(const std::vector<unsigned>&) =
+	PlayerEffectMethod effectMethods[P_EFFECTS_COUNT] =
 	{
 		&Player::setConstraint,
 		&Player::pickDeckCards,
@@ -61,9 +63,9 @@ public:
 	};
 
 	///Pass along effects to creatures
-    void applyEffectToCreatures(unsigned method, const std::vector<unsigned>& effectArgs);
-    void applyEffectToCreature(unsigned boardIndex, unsigned method, const std::vector<unsigned>& effectArgs);
-    std::pair<unsigned, unsigned> getTeamConstraint(unsigned constraintID);
+	void applyEffectToCreatures(unsigned method, const std::vector<unsigned>& effectArgs);
+	void applyEffectToCreature(unsigned boardIndex, unsigned method, const std::vector<unsigned>& effectArgs);
+	std::pair<unsigned, unsigned> getTeamConstraint(unsigned constraintID);
 
 private:
 	Board* _board;
@@ -82,8 +84,9 @@ private:
 		unsigned creaturesPlaced=0;
 		unsigned creatureAttacks=0;
 		unsigned spellCalls=0;
-	} _emptyTurnData;
+	};
 
+	TurnData _emptyTurnData;
 	TurnData _turnData;
 
 	//Card holders
@@ -92,13 +95,15 @@ private:
 	std::vector<Creature *> _cardBoard;  ///< Cards that are on the board (usable for attacks)
 	std::vector<Card *> _cardBin;  ///< Cards that are discarded (dead creatures, used spells)
 
+	std::default_random_engine _engine;
+
 	//Private methods
 	void exploitCardEffects(Card* usedCard);
 
 	void cardDeckToHand(unsigned amount);
 	void cardHandToBoard(unsigned handIndex);
-	void cardHandToBin(unsigned handIndex);  /// Move the card at handIndex from the player's hand to the bin
-	void cardBoardToBin(unsigned boardIndex);  /// Move the card at boardIndex from the board to the bin
+	void cardHandToBin(unsigned handIndex);  ///< Move the card at handIndex from the player's hand to the bin
+	void cardBoardToBin(unsigned boardIndex);  ///< Move the card at boardIndex from the board to the bin
 	void cardBinToHand(unsigned binIndex);
 	void cardAddToHand(Card* given);
 	Card* cardRemoveFromHand();
@@ -107,4 +112,4 @@ private:
 };
 
 
-#endif// _PLAYER_HPP
+#endif  // _PLAYER_HPP

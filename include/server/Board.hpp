@@ -1,12 +1,11 @@
 #ifndef _BOARD_HPP
 #define _BOARD_HPP
 
-#include <SFML/System.hpp>
-#include <cstdlib>
-#include "Player.hpp"
-#include "Card.hpp"
-#include "Creature.hpp"
-#include "Constraints.hpp"
+// WizardPoker headers
+#include "server/Player.hpp"
+#include "server/Card.hpp"
+#include "server/Creature.hpp"
+#include "server/Constraints.hpp"
 
 /// Manages one game with two players
 class Board
