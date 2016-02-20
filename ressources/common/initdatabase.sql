@@ -313,12 +313,30 @@ SELECT '-------';
 ----------------------
 -- Exports
 .output "ressources/client/cards.sql"
+SELECT 'SELECT "CLIENT";';
+SELECT 'SELECT "CLIENT/Cards";';
+SELECT 'SELECT "CLIENT/Cards/Tables";';
 .dump Card
 .dump Monster
+.output stdout
 
 -----------------------------------------------------------
 --------------------- CLIENT DATABASE ---------------------
 .shell rm -f ressources/client/database.db
 .open ressources/client/database.db
+
 .read "ressources/client/cards.sql"
+
+SELECT "CLIENT/Cards/Views";
+CREATE VIEW FullCard
+    AS SELECT * FROM Card LEFT OUTER JOIN Monster USING(id);
+
+CREATE VIEW MonsterCard
+    AS SELECT * FROM Card INNER JOIN Monster USING(id);
+
+CREATE VIEW SpellCard
+    AS SELECT Card.*
+        FROM Card LEFT OUTER JOIN Monster USING(id)
+        WHERE Monster.health IS NULL;
+
 .shell rm -f ressources/client/cards.sql
