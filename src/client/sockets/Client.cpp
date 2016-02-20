@@ -28,7 +28,7 @@ Client::Client():
 
 }
 
-bool Client::connectToServer(const std::string& name, const sf::IpAddress& address, sf::Uint16 port)
+bool Client::connectToServer(const std::string& name, const std::string& password, const sf::IpAddress& address, sf::Uint16 port)
 {
 	// if client is already connected to a server, do not try to re-connect it
 	if(_isConnected)
@@ -48,6 +48,7 @@ bool Client::connectToServer(const std::string& name, const sf::IpAddress& addre
 	sf::Packet packet;
 	packet << TransferType::GAME_CONNECTION  // precise
 	       << _name  // do not forget the '\0' character
+	       << static_cast<sf::Uint64>(_hasher(password))
 	       << static_cast<sf::Uint16>(_chatListenerPort);
 	if(_socket.send(packet) != sf::Socket::Done)
 		return false;

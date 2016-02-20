@@ -7,6 +7,7 @@
 #include "server/ErrorCode.hpp"
 #include "common/sockets/TransferType.hpp"
 #include "common/sockets/PacketOverload.hpp"
+#include "common/PasswordHasher.hpp"
 // std-C++ headers
 #include <iostream>
 #include <algorithm>
@@ -50,6 +51,8 @@ int Server::start(const sf::Uint16 listenerPort)
 void Server::takeConnection()
 {
 	std::string playerName;
+	sf::Uint64 transmittedPassword;
+	PasswordHasher::result_type password;
 	sf::Uint16 clientPort;
 	sf::TcpSocket *newClient = new sf::TcpSocket();
 	// if listener can't accept correctly, free the allocated socket
@@ -65,8 +68,9 @@ void Server::takeConnection()
 	packet >> type;
 	if(type == TransferType::GAME_CONNECTION)
 	{
-		packet >> playerName >> clientPort;
-		/// \TODO receive the password and check the connection right here
+		packet >> playerName >> transmittedPassword >> clientPort;
+		password = static_cast<PasswordHasher::result_type>(transmittedPassword);
+		/// \TODO check the connection right here
 		std::cout << "new player connected: " << playerName << std::endl;
 		// add the new socket to the clients
 		_clients[playerName] = {newClient, clientPort};
@@ -353,23 +357,3 @@ void Server::handleRemoveFriend(const _iterator& it, sf::Packet& transmission)
 	transmission >> removedFriend;
 	// TODO update database, remove removedFriend from the friend list of it
 }
-
-Server::~Server()
-{
-	quit();
-}
-
-void Server::waitQuit()
-{
-	std::cout << "Type '" << _quitPrompt << "' to end the server" << std::endl;
-	std::string input;
-	while(!_done.load())
-	{
-		std::cin >> input;
-		if(input == _quitPrompt)
-			_done.store(true);
-	}
-	_threadRunning.store(false);
-	std::cout << "ending server..." << std::endl;
-}
-

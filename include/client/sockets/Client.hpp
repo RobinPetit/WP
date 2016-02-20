@@ -12,6 +12,7 @@
 #include <atomic>
 // WizardPoker headers
 #include "common/Terminal.hpp"
+#include "common/PasswordHasher.hpp"
 
 /// Client is a class representing the state of the client program (not the user!)
 class Client final
@@ -23,9 +24,10 @@ public:
 	/// The function used to make first connection with the game server
 	/// \return True if the connection succeeded and false otherwise
 	/// \param name The name of the user
+	/// \param password its password
 	/// \param address The address where the server stands
 	/// \param port The port the server occupies
-	bool connectToServer(const std::string& name, const sf::IpAddress& address, sf::Uint16 port);
+	bool connectToServer(const std::string& name, const std::string& password, const sf::IpAddress& address, sf::Uint16 port);
 
 	// Friends management
 
@@ -121,6 +123,8 @@ private:
 	/// \TODO use this!
 	/// List containing the names of the friendship requests the client made
 	std::vector<std::string> _friendsRequests;
+	/// Hash object for transmitting passwords accross the network
+	PasswordHasher _hasher;
 
 	// private methods
 	/// The functions used to create the listening thread
