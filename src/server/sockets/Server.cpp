@@ -79,6 +79,14 @@ void Server::takeConnection()
 	}
 	else if(type == TransferType::CHAT_PLAYER_IP)
 		handleChatRequest(packet, *newClient);
+	else if(type == TransferType::GAME_REGISTERING)
+	{
+		packet >> playerName >> transmittedPassword;
+		password = static_cast<PasswordHasher::result_type>(transmittedPassword);
+		/// \TODO check the connection right here, and ensure that playerName
+		/// is not already used in the database
+		std::cout << "new player registered: " << playerName << std::endl;
+	}
 	else
 		std::cout << "Error: wrong code!" << std::endl;
 }

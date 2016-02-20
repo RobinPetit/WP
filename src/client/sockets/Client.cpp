@@ -32,19 +32,8 @@ bool Client::connectToServer(const std::string& name, const std::string& passwor
 {
 	if(!initServer(name, password, address, port))
 		return false;
-	if(!_userTerminal.hasKnownTerminal())
-		std::cout << "Warning: as no known terminal has been found, chat is disabled" << std::endl;
-	else
-		initListener();  // creates the new thread which listens for entring chat conenctions
-	sf::Packet packet;
-	packet << TransferType::GAME_CONNECTION  // precise
-	       << _name  // do not forget the '\0' character
-	       << static_cast<sf::Uint64>(_hasher(password))
-	       << static_cast<sf::Uint16>(_chatListenerPort);
-	if(_socket.send(packet) != sf::Socket::Done)
+	if(!sendConnectionToken(password))
 		return false;
-	_isConnected = true;
-	updateFriends();
 	return true;
 }
 
@@ -58,6 +47,22 @@ bool Client::registerToServer(const std::string& name, const std::string& passwo
 	       << static_cast<sf::Uint64>(_hasher(password));
 	if(_socket.send(packet) != sf::Socket::Done)
 		return false;
+	if(!sendConnectionToken(password))
+		return false;
+	return true;
+}
+
+bool Client::sendConnectionToken(const std::string& password)
+{
+	sf::Packet packet;
+	packet << TransferType::GAME_CONNECTION  // precise
+	       << _name  // do not forget the '\0' character
+	       << static_cast<sf::Uint64>(_hasher(password))
+	       << static_cast<sf::Uint16>(_chatListenerPort);
+	if(_socket.send(packet) != sf::Socket::Done)
+		return false;
+	_isConnected = true;
+	updateFriends();
 	return true;
 }
 
@@ -73,7 +78,12 @@ bool Client::initServer(const std::string& name, const std::string& password, co
 	// if connection does not work, don't go further
 	if(_socket.connect(address, port) != sf::Socket::Done)
 		return false;
+	if(!_userTerminal.hasKnownTerminal())
+		std::cout << "Warning: as no known terminal has been found, chat is disabled" << std::endl;
+	else
+		initListener();  // creates the new thread which listens for entring chat conenctions
 	sf::sleep(SOCKET_TIME_SLEEP);  // wait a quarter second to let the listening thread init the port
+	return true;
 }
 
 void Client::initListener()

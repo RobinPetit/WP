@@ -137,13 +137,19 @@ private:
 
 	// private methods
 	/// The function user to connect to the server, used by both connectToServer
-	/// and registerToServer.
+	/// and registerToServer. The connection is just a socket connection,
+	/// the user is not authentificated with this method.
 	/// \return True if the connection succeeded and false otherwise
 	/// \param name The name of the user
 	/// \param password its password
 	/// \param address The address where the server stands
 	/// \param port The port the server occupies
 	bool initServer(const std::string& name, const std::string& password, const sf::IpAddress& address, sf::Uint16 port);
+
+	/// The function used to establish a connection in the user point of view,
+	/// authentificating the user and allowing it to effectively play the game.
+	/// \param password The user's password
+	bool sendConnectionToken(const std::string& password);
 
 	/// The functions used to create the listening thread
 	void initListener();

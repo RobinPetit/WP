@@ -53,8 +53,6 @@ void HomeState::connect()
 		//return UNABLE_TO_CONNECT;
 		return;
 	}
-
-	std::cout << "Hello " << userName << "!\n";
 	stackPush<MainMenuState>();
 }
 
@@ -65,8 +63,23 @@ void HomeState::createAccount()
 	std::getline(std::cin, userName);
 	std::cout << "What is your password? ";
 	std::getline(std::cin, password);
-	// Do subscribing stuff here
-	std::cout << "Hello " << userName << "!\n";
+
+	IniFile config;
+	// \TODO: write exceptions for connection errors, then catch them in main
+	// and return a status according to the exception catched.
+	int status = config.readFromFile(SERVER_CONFIG_FILE_PATH);
+	if(status != SUCCESS)
+		//return status;
+		return;
+	if(config.find("SERVER_PORT") == config.end() || config.find("SERVER_ADDRESS") == config.end())
+		//return WRONG_FORMAT_CONFIG_FILE;
+		return;
+	if(!_client.registerToServer(userName, password, config["SERVER_ADDRESS"], std::stoi(config["SERVER_PORT"], nullptr, AUTO_BASE)))
+	{
+		std::cout << "Unable to register to server" << std::endl;
+		//return UNABLE_TO_CONNECT;
+		return;
+	}
 	stackPush<MainMenuState>();
 }
 

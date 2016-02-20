@@ -14,8 +14,10 @@ enum class TransferType : sf::Uint32
 	/// Used during the chat communications: tells that the other player wants to end the conversation
 	CHAT_QUIT,
 	// GAME
-	/// Not used yet, will be when the game core will be coded
+	/// Used when the user authentificates to the server
 	GAME_CONNECTION,
+	/// Used when a new user register to the server
+	GAME_REGISTERING,
 	/// Used when a player asks to find an opponent
 	GAME_REQUEST,
 	// Client/Server
