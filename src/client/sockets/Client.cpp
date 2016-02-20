@@ -30,21 +30,12 @@ Client::Client():
 
 bool Client::connectToServer(const std::string& name, const std::string& password, const sf::IpAddress& address, sf::Uint16 port)
 {
-	// if client is already connected to a server, do not try to re-connect it
-	if(_isConnected)
+	if(!initServer(name, password, address, port))
 		return false;
-	// forces the name to not be larger than MAX_NAME_LENGTH
-	_name = (name.size() < MAX_NAME_LENGTH) ? name : name.substr(0, MAX_NAME_LENGTH);
-	_serverAddress = address;
-	_serverPort = port;
 	if(!_userTerminal.hasKnownTerminal())
 		std::cout << "Warning: as no known terminal has been found, chat is disabled" << std::endl;
 	else
 		initListener();  // creates the new thread which listens for entring chat conenctions
-	// if connection does not work, don't go further
-	if(_socket.connect(address, port) != sf::Socket::Done)
-		return false;
-	sf::sleep(SOCKET_TIME_SLEEP);  // wait a quarter second to let the listening thread init the port
 	sf::Packet packet;
 	packet << TransferType::GAME_CONNECTION  // precise
 	       << _name  // do not forget the '\0' character
@@ -55,6 +46,34 @@ bool Client::connectToServer(const std::string& name, const std::string& passwor
 	_isConnected = true;
 	updateFriends();
 	return true;
+}
+
+bool Client::registerToServer(const std::string& name, const std::string& password, const sf::IpAddress& address, sf::Uint16 port)
+{
+	if(!initServer(name, password, address, port))
+		return false;
+	sf::Packet packet;
+	packet << TransferType::GAME_REGISTERING  // precise
+	       << _name  // do not forget the '\0' character
+	       << static_cast<sf::Uint64>(_hasher(password));
+	if(_socket.send(packet) != sf::Socket::Done)
+		return false;
+	return true;
+}
+
+bool Client::initServer(const std::string& name, const std::string& password, const sf::IpAddress& address, sf::Uint16 port)
+{
+	// if client is already connected to a server, do not try to re-connect it
+	if(_isConnected)
+		return false;
+	// forces the name to not be larger than MAX_NAME_LENGTH
+	_name = (name.size() < MAX_NAME_LENGTH) ? name : name.substr(0, MAX_NAME_LENGTH);
+	_serverAddress = address;
+	_serverPort = port;
+	// if connection does not work, don't go further
+	if(_socket.connect(address, port) != sf::Socket::Done)
+		return false;
+	sf::sleep(SOCKET_TIME_SLEEP);  // wait a quarter second to let the listening thread init the port
 }
 
 void Client::initListener()

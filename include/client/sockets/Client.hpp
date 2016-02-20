@@ -29,6 +29,15 @@ public:
 	/// \param port The port the server occupies
 	bool connectToServer(const std::string& name, const std::string& password, const sf::IpAddress& address, sf::Uint16 port);
 
+	/// The function used to register an user to the server
+	/// After that, the player is also connect as with \a connectToServer
+	/// \return True if the registering and the connection succeeded and false otherwise
+	/// \param name The name of the user
+	/// \param password its password
+	/// \param address The address where the server stands
+	/// \param port The port the server occupies
+	bool registerToServer(const std::string& name, const std::string& password, const sf::IpAddress& address, sf::Uint16 port);
+
 	// Friends management
 
 	/// The function used to start the process of making a new discussion with the chat program
@@ -127,6 +136,15 @@ private:
 	PasswordHasher _hasher;
 
 	// private methods
+	/// The function user to connect to the server, used by both connectToServer
+	/// and registerToServer.
+	/// \return True if the connection succeeded and false otherwise
+	/// \param name The name of the user
+	/// \param password its password
+	/// \param address The address where the server stands
+	/// \param port The port the server occupies
+	bool initServer(const std::string& name, const std::string& password, const sf::IpAddress& address, sf::Uint16 port);
+
 	/// The functions used to create the listening thread
 	void initListener();
 };
