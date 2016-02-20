@@ -7,4 +7,4 @@ set(SOURCES
 	"sockets/TransferType.cpp"
 	)
 
-add_library(${COMMON_NAME} "${SOURCES}")
+add_library(${COMMON_NAME} ${SOURCES})
