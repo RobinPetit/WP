@@ -151,6 +151,11 @@ private:
 	/// \param password The user's password
 	bool sendConnectionToken(const std::string& password);
 
+	/// The function used to register the user to the server.
+	/// It must then be authenticated.
+	/// \param password The user's password
+	bool sendRegisteringToken(const std::string& password);
+
 	/// The functions used to create the listening thread
 	void initListener();
 };

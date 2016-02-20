@@ -32,24 +32,16 @@ bool Client::connectToServer(const std::string& name, const std::string& passwor
 {
 	if(!initServer(name, password, address, port))
 		return false;
-	if(!sendConnectionToken(password))
-		return false;
-	return true;
+	return sendConnectionToken(password);
 }
 
 bool Client::registerToServer(const std::string& name, const std::string& password, const sf::IpAddress& address, sf::Uint16 port)
 {
 	if(!initServer(name, password, address, port))
 		return false;
-	sf::Packet packet;
-	packet << TransferType::GAME_REGISTERING  // precise
-	       << _name  // do not forget the '\0' character
-	       << static_cast<sf::Uint64>(_hasher(password));
-	if(_socket.send(packet) != sf::Socket::Done)
+	if(!sendRegisteringToken(password))
 		return false;
-	if(!sendConnectionToken(password))
-		return false;
-	return true;
+	return sendConnectionToken(password);
 }
 
 bool Client::sendConnectionToken(const std::string& password)
@@ -64,6 +56,14 @@ bool Client::sendConnectionToken(const std::string& password)
 	_isConnected = true;
 	updateFriends();
 	return true;
+}
+bool Client::sendRegisteringToken(const std::string& password)
+{
+	sf::Packet packet;
+	packet << TransferType::GAME_REGISTERING  // precise
+	       << _name  // do not forget the '\0' character
+	       << static_cast<sf::Uint64>(_hasher(password));
+	return _socket.send(packet) == sf::Socket::Done;
 }
 
 bool Client::initServer(const std::string& name, const std::string& password, const sf::IpAddress& address, sf::Uint16 port)
