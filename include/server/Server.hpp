@@ -59,6 +59,10 @@ private:
 	void takeConnection();
 	/// Used to handle data sent by a logged user
 	void receiveData();
+	/// Used to receive packet when the user want to connect
+	void connectUser(sf::Packet& connectionPacket, sf::TcpSocket& client);
+	/// Used to receive packet when the user want to register
+	void registerUser(sf::Packet& registeringPacket);
 
 	/// Handle the input in stdin and quit the server if asked
 	void waitQuit();

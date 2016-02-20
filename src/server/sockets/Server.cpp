@@ -50,10 +50,6 @@ int Server::start(const sf::Uint16 listenerPort)
 
 void Server::takeConnection()
 {
-	std::string playerName;
-	sf::Uint64 transmittedPassword;
-	PasswordHasher::result_type password;
-	sf::Uint16 clientPort;
 	sf::TcpSocket *newClient = new sf::TcpSocket();
 	// if listener can't accept correctly, free the allocated socket
 	if(_listener.accept(*newClient) != sf::Socket::Done)
@@ -67,28 +63,51 @@ void Server::takeConnection()
 	TransferType type;
 	packet >> type;
 	if(type == TransferType::GAME_CONNECTION)
-	{
-		packet >> playerName >> transmittedPassword >> clientPort;
-		password = static_cast<PasswordHasher::result_type>(transmittedPassword);
-		/// \TODO check the connection right here
-		std::cout << "new player connected: " << playerName << std::endl;
-		// add the new socket to the clients
-		_clients[playerName] = {newClient, clientPort};
-		// and add this client to the selector so that its receivals are handled properly
-		_socketSelector.add(*newClient);
-	}
+		connectUser(packet, *newClient);
 	else if(type == TransferType::CHAT_PLAYER_IP)
 		handleChatRequest(packet, *newClient);
 	else if(type == TransferType::GAME_REGISTERING)
 	{
-		packet >> playerName >> transmittedPassword;
-		password = static_cast<PasswordHasher::result_type>(transmittedPassword);
-		/// \TODO check the connection right here, and ensure that playerName
-		/// is not already used in the database
-		std::cout << "new player registered: " << playerName << std::endl;
+		registerUser(packet);
+		// Now the user authenticates
+		newClient->receive(packet);
+		packet >> type;
+		if(type != TransferType::GAME_CONNECTION)
+			std::cout << "Error: wrong packet transmitted after subscribing (expecting a connection packet).\n";
+		connectUser(packet, *newClient);
 	}
 	else
 		std::cout << "Error: wrong code!" << std::endl;
+}
+
+void Server::connectUser(sf::Packet& connectionPacket, sf::TcpSocket& client)
+{
+	std::string playerName;
+	sf::Uint64 transmittedPassword;
+	PasswordHasher::result_type password;
+	sf::Uint16 clientPort;
+
+	connectionPacket >> playerName >> transmittedPassword >> clientPort;
+	password = static_cast<PasswordHasher::result_type>(transmittedPassword);
+	/// \TODO check the connection right here
+	std::cout << "new player connected: " << playerName << std::endl;
+	// add the new socket to the clients
+	_clients[playerName] = {&client, clientPort};
+	// and add this client to the selector so that its receivals are handled properly
+	_socketSelector.add(client);
+}
+
+void Server::registerUser(sf::Packet& registeringPacket)
+{
+	std::string playerName;
+	sf::Uint64 transmittedPassword;
+	PasswordHasher::result_type password;
+
+	registeringPacket >> playerName >> transmittedPassword;
+	password = static_cast<PasswordHasher::result_type>(transmittedPassword);
+	/// \TODO check the connection right here, and ensure that playerName
+	/// is not already used in the database
+	std::cout << "new player registered: " << playerName << std::endl;
 }
 
 void Server::receiveData()
