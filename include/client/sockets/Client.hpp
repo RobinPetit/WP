@@ -51,9 +51,9 @@ public:
 	void updateFriends();
 
 	/// Functions used to send a friendship request to another player
-	/// \return True if the player was successfully asked to become friend and false if he was already friend
 	/// \param name The name of the player asked to become a new friend
-	bool askNewFriend(const std::string& name);
+	/// \throw std::runtime_error if request is not correct
+	void askNewFriend(const std::string& name);
 
 	/// Function used to tell the server that the request is accepted
 	/// \param name The name of the player who sent the request
@@ -79,9 +79,9 @@ public:
 	bool isFriend(const std::string& name) const;
 
 	/// Used to remove a friend from the friends list
-	/// \return True if the player was successfully removed and false if he is not a friend
 	/// \param name The name of the player to remove from the friends list
-	bool removeFriend(const std::string& name);
+	/// \throw std::runtime_error if request is not correct
+	void removeFriend(const std::string& name);
 
 	// Game management
 	/// \TODO Complete this method (and its signature)

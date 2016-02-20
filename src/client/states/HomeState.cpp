@@ -38,20 +38,14 @@ void HomeState::connect()
 
 	IniFile config;
 	// \TODO: write exceptions for connection errors, then catch them in main
-	// and return a status according to the exception catched.
+	// and return a status according to the caught exception.
 	int status = config.readFromFile(SERVER_CONFIG_FILE_PATH);
 	if(status != SUCCESS)
-		//return status;
-		return;
+		throw std::runtime_error("No config file");
 	if(config.find("SERVER_PORT") == config.end() || config.find("SERVER_ADDRESS") == config.end())
-		//return WRONG_FORMAT_CONFIG_FILE;
-		return;
+		throw std::runtime_error("Missing data in config file");
 	if(!_client.connectToServer(userName, config["SERVER_ADDRESS"], static_cast<sf::Uint16>(std::stoi(config["SERVER_PORT"], nullptr, AUTO_BASE))))
-	{
-		std::cout << "Unable to connect to server" << std::endl;
-		//return UNABLE_TO_CONNECT;
-		return;
-	}
+		throw std::runtime_error("Unable to connect to server");
 
 	std::cout << "Hello " << userName << "!\n";
 	stackPush<MainMenuState>();

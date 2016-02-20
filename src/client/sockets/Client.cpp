@@ -42,10 +42,10 @@ bool Client::connectToServer(const std::string& name, const sf::IpAddress& addre
 		std::cout << "Warning: as no known terminal has been found, chat is disabled" << std::endl;
 	else
 		initListener();  // creates the new thread which listens for entring chat conenctions
+	sf::sleep(SOCKET_TIME_SLEEP);  // wait a quarter second to let the listening thread init the port
 	// if connection does not work, don't go further
 	if(_socket.connect(address, port) != sf::Socket::Done)
 		return false;
-	sf::sleep(SOCKET_TIME_SLEEP);  // wait a quarter second to let the listening thread init the port
 	sf::Packet packet;
 	packet << TransferType::GAME_CONNECTION  // precise
 	       << _name  // do not forget the '\0' character
@@ -143,16 +143,16 @@ void Client::updateFriends()
 	packet >> _friends;
 }
 
-bool Client::askNewFriend(const std::string& name)
+void Client::askNewFriend(const std::string& name)
 {
 	if(!_isConnected)
 		throw NotConnectedException("Unable to ask a new friend");
 	// Cannot be friend with yourself
 	if(name == _name)
-		return false;
+		throw std::runtime_error("Can't be friend with yourself");
 	// Don't ask a friend to become your friend
 	if(isFriend(name))
-		return false;
+		throw std::runtime_error(name + "is already your friend");
 	sf::Packet packet;
 	packet << TransferType::PLAYER_NEW_FRIEND << name;
 	_socket.send(packet);
@@ -162,7 +162,6 @@ bool Client::askNewFriend(const std::string& name)
 	packet >> type;
 	if(type == TransferType::PLAYER_NEW_FRIEND)
 		_friendsRequests.push_back(name);
-	return true;
 }
 
 bool Client::getIncomingFriendshipRequests(std::vector<std::string>& incomingRequests)
@@ -201,18 +200,17 @@ bool Client::isFriend(const std::string& name) const
 	return std::find(_friends.cbegin(), _friends.cend(), name) != _friends.cend();
 }
 
-bool Client::removeFriend(const std::string& name)
+void Client::removeFriend(const std::string& name)
 {
 	if(!_isConnected)
 		throw NotConnectedException("Unable to remove friend");
 	if(!isFriend(name))
-		return false;
+		throw std::runtime_error(name + "is not a friend of yours");
 	sf::Packet packet;
 	// send that the user remove name from its friend list
 	packet << TransferType::PLAYER_REMOVE_FRIEND;
 	packet << name;
 	_socket.send(packet);
-	return true;
 }
 
 void Client::acceptFriendshipRequest(const std::string& name, bool accept)

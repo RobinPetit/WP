@@ -41,10 +41,15 @@ void FriendsManagementState::addFriend()
 	std::string input;
 	std::getline(std::cin, input);
 	// Get the user data from the user name (input)...
-	if(_client.askNewFriend(input))
+	try
+	{
+		_client.askNewFriend(input);
 		std::cout << "A friendship request has been sent to " << input << ".\n";
-	else
-		std::cout << "It seems that " << input << " is already in your friends list.\n";
+	}
+	catch(std::runtime_error& error)
+	{
+		std::cerr << error.what();
+	}
 	waitForEnter();
 }
 
@@ -53,10 +58,15 @@ void FriendsManagementState::removeFriend()
 	std::cout << "What is the user name of the friend that you want to remove? ";
 	std::string input;
 	std::getline(std::cin, input);
-	if(_client.removeFriend(input))
+	try
+	{
+		_client.removeFriend(input);
 		std::cout << input << "has been removed from you friend list.\n";
-	else
-		std::cout << "It seems that " << input << " is not in your friends list.\n";
+	}
+	catch(std::runtime_error& error)
+	{
+		std::cerr << error.what();
+	}
 	waitForEnter();
 }
 
