@@ -203,7 +203,8 @@ CreatureData ALL_CREATURES[] = {
 		COST_2, ATTACK_2, HEALTH_2, SHIELD_1, SHIELD_LEGENDARY,
 		{{}},
 		"No effect"
-	},
+	},		{{}},
+		"No effect"
 	{
         	"Allan",
 		COST_10, ATTACK_9, HEALTH_9, SHIELD_5, SHIELD_BLUE,
@@ -279,6 +280,78 @@ SpellData ALL_SPELLS[] = {
         COST_10,
         {{PLAYER_OPPO, PE_LOSE_HAND_CARDS, 2}},
 		"Your opponent loses 2 cards from his hand"
+	},
+	{
+		"Block",
+		COST_9,
+		{{CREATURE_TEAM, CC_TEAM_BLOCK_ATTACKS, 3}},
+		"Block the next 3 attacks"
+	},
+	{
+		"Care",
+		COST_5,
+		{{CREATURE_SELF, CE_ADD_HEALTH, 2}},
+		"Increase a monster's health of 2 points"
+	},
+	{
+		"Exchange",
+		COST_7,
+		{{PLAYER_OPPO, PE_EXCHG_HAND_CARD, 1}},
+		"Each player chose an opponent's card and trade them"
+	},
+	{
+		"Hypnosis",
+		COST_4,
+		{{CREATURE_ONE_OPPO, CE_SELF_HYPNOTIZED, 3}},
+		"Take control of an ennemy creature for 3 turn"
+	},
+	{
+		"Mirror",
+		COST_6,
+		{{CREATURE_ONE_OPPO, 0/*Effect missing*/, 0}},
+		"Send back the next opponent's attack"
+	},
+	{
+		"Paralyze",
+		COST_3,
+		{{CREATURE_ONE_OPPO, CC_SELF_BLOCK_ATTACKS, 2}},
+		"Forbid the opponent to use a card for 2 turns"
+	},
+	{
+		"Resurrection",
+		COST_9,
+		{{CREATURE_SELF, PE_REVIVE_BIN_CARD, 1}},
+		"Allow the player to get 1 discarded card"
+	},
+	{
+		"Shield",
+		COST_2,
+		{{CREATURE_TEAM, CC_SELF_BLOCK_ATTACKS, 1}},
+		"Absord the next opponent's attack"
+	},
+	{
+		"Stealing",
+		COST_8,
+		{{PLAYER_OPPO, PE_STEAL_HAND_CARD, 1}},
+		"Take 1 random card from the opponent's deck"
+	},
+	{
+		"Sticky",
+		COST_7,	//~I put a random cost, as it was not specified in CSV file (NBA)
+		{{CREATURE_ALL_OPPO, C_STICKY, 2}},
+		"Your opponent's spell cost 2 more next Turn"
+	},
+	{
+		"Trap",
+		COST_2,
+		{{CREATURE_ONE_OPPO, C_TRAP, 3}},
+		"Deal 3 damage or summon two 1/1 snacks"
+	},
+	{
+		"Metamorphosis",
+		COST_4,
+		{{CREATURE_SELF, 0/*Effect missing*/, 1}},
+		"Transforms 1 creature in another random creature"
 	}
 };
 
