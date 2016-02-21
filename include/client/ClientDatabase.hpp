@@ -1,7 +1,7 @@
 #ifndef _CLIENT_DATABASE_CLIENT_HPP
 #define _CLIENT_DATABASE_CLIENT_HPP
 
-#include "../common/database.hpp"
+#include "common/Database.hpp"
 
 /// Interface to the client database.
 class DatabaseClient : public Database
@@ -14,4 +14,4 @@ public:
     explicit DatabaseClient(std::string filename = FILENAME);
 };
 
-#endif //_DATABASE_CLIENT_HPP
+#endif // _CLIENT_DATABASE_CLIENT_HPP

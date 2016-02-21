@@ -1,4 +1,4 @@
-#include "../../include/common/database.hpp"
+#include "common/Database.hpp"
 
 #include <string>
 

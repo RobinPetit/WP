@@ -1,7 +1,7 @@
 #ifndef _SERVER_DATABASE_SERVER_HPP
 #define _SERVER_DATABASE_SERVER_HPP
 
-#include "../common/database.hpp"
+#include "common/Database.hpp"
 
 /// Interface to the server database.
 class DatabaseServer : public Database

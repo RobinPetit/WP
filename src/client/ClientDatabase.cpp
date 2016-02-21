@@ -1,4 +1,4 @@
-#include "../../include/client/database.hpp"
+#include "client/ClientDatabase.hpp"
 
 /*
  * Database schema
