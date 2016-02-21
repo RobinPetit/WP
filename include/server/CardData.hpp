@@ -205,8 +205,68 @@ CreatureData ALL_CREATURES[] = {
 		"No effect"
 	},
 	{
-        "Allan",
-		COST_9, ATTACK_0, HEALTH_0, SHIELD_5, SHIELD_BLUE,
+        	"Allan",
+		COST_10, ATTACK_9, HEALTH_9, SHIELD_5, SHIELD_BLUE,
+		{{}},
+		"No effect"
+	},
+	{
+        	"Theo",
+		COST_2, ATTACK_3, HEALTH_2, SHIELD_3, SHIELD_NONE,
+		{{}},
+		"No effect"
+	},
+	{
+        	"Robin",
+		COST_5, ATTACK_4, HEALTH_6, SHIELD_4, SHIELD_ORANGE,
+		{{}},
+		"No effect"
+	},
+	{
+        	"Nicolas",
+		COST_7, ATTACK_7, HEALTH_7, SHIELD_1, SHIELD_LEGENDARY,
+		{{}},
+		"No effect"
+	},
+	{
+ 		"Alexis",
+		COST_2, ATTACK_2, HEALTH_8, SHIELD_2, SHIELD_BLUE,
+		{{}},
+		"No effect"
+	},
+	{
+        	"Yves",
+		COST_10, ATTACK_10, HEALTH_10, SHIELD_5, SHIELD_LEGENDARY,
+		{{}},
+		"No effect"
+	},
+	{
+        	"Nikita",
+		COST_6, ATTACK_7, HEALTH_5, SHIELD_1, SHIELD_NONE,
+		{{}},
+		"No effect"
+	},
+	{
+        	"Keno",
+		COST_1, ATTACK_1, HEALTH_1, SHIELD_1, SHIELD_BLUE,
+		{{}},
+		"No effect"
+	},
+	{
+        	"Ragnaros",
+		COST_8, ATTACK_8, HEALTH_8, SHIELD_5, SHIELD_LEGENDARY,
+		{{}},
+		"No effect"
+	},
+	{
+        	"Thierry",
+		COST_1, ATTACK_0, HEALTH_1, SHIELD_1, SHIELD_BLUE,
+		{{}},
+		"No effect"
+	},
+	{
+        	"Tannenbaum",
+		COST_4, ATTACK_4, HEALTH_5, SHIELD_5, SHIELD_ORANGE,
 		{{}},
 		"No effect"
 	}
