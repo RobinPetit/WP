@@ -1,7 +1,8 @@
 Name,Cost,Effect,Description
 Abracadabra,10,0,Your opponent loses X cards from his hand
 Block,9,0,Block the next X attacks
-Care,5,0,Give to a monster X health points
+Care,5,0,Give to a creature X health points
+Complete Care,7,0,Restore the health point of a creature
 Discard,6,0,Force the opponent to discard a card of his choice
 Exchange,7,0,Each player chose an opponent's card and trade them ( from their hand )
 Hypnosis,4,0,Take control of an enemy creature for X turn

@@ -347,7 +347,13 @@ SpellData ALL_SPELLS[] = {
 		"Care",
 		COST_5,
 		{{CREATURE_SELF, CE_ADD_HEALTH, 2}},
-		"Increase a monster's health of 2 points"
+		"Increase a creature's health of 2 points"
+	},
+	{
+		"Complete Care",
+		COST_7,
+		{{CREATURE_SELF, CE_RESET_HEALTH, 0}},
+		"Restore the health point of a creature"
 	},
 	{
 		"Discard",
