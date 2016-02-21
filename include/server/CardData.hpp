@@ -305,6 +305,18 @@ CreatureData ALL_CREATURES[] = {
 		COST_1, ATTACK_2, HEALTH_2, SHIELD_0, SHIELD_NONE,
 		{{CREATURE_TEAM,CE_RESET_SHIELD,2}},
 		"Resets 2 friendly shields."
+	},
+	{
+        	"Twin-Headed dog",
+		COST_4, ATTACK_2, HEALTH_2, SHIELD_1, SHIELD_ORANGE,
+		{{CE_SET_CONSTRAINT,CREATURE_SELF,CE_ADD_ATTACK,1},{CE_SET_CONSTRAINT,CREATURE_SELF,CE_ADD_HEALTH,1}},
+		"Gains 1 HP and 1 ATTACK each turn."
+	},
+	{
+        	"Humanoide maid",
+		COST_2, ATTACK_0, HEALTH_5, SHIELD_0, SHIELD_NONE,
+		{{CE_SET_CONSTRAINT,CREATURE_TEAM,CE_ADD_HEALTH,2},{PE_SET_CONSTRAINT,PLAYER_SELF,CE_ADD_HEALTH,2}},
+		"Gives a friendly creature and this creature owner 2 HP each turn."
 	}
 };
 
