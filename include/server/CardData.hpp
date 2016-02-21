@@ -151,7 +151,7 @@ enum HealthValue : unsigned
 
 enum ShieldValue: unsigned
 {
-	SHIELD_1,SHIELD_2,SHIELD_3,SHIELD_4,SHIELD_5
+	SHIELD_0,SHIELD_1,SHIELD_2,SHIELD_3,SHIELD_4,SHIELD_5
 };
 
 enum ShieldType : unsigned
@@ -199,77 +199,133 @@ struct SpellData
 ///CREATURES
 CreatureData ALL_CREATURES[] = {
 	{
+<<<<<<< HEAD
 		"Stanislas",
 		COST_2, ATTACK_2, HEALTH_2, SHIELD_1, SHIELD_LEGENDARY,
 		{{}},
 		"No effect"
 	},		{{}},
 		"No effect"
+=======
+		"Tower guard",
+		COST_3, ATTACK_2, HEALTH_8, SHIELD_1, SHIELD_BLUE,
+		{{CREATURE_SELF,CE_SET_CONSTRAINT,CC_SELF_HEALTH_GAIN,1}},
+		"This creature gains 1 HP each turn."
+	},
+>>>>>>> 5944903fd98481ab031ca400853a238f53b4510c
 	{
-        	"Allan",
-		COST_10, ATTACK_9, HEALTH_9, SHIELD_5, SHIELD_BLUE,
+        	"Diabolic imp",
+		COST_2, ATTACK_3, HEALTH_2, SHIELD_0, SHIELD_NONE,
+		{{CREATURE_SELF,CE_SET_CONSTRAINT,CC_SELF_ATTACK_GAIN,1}},
+		"This creature gains 1 ATTACK each turn."
+	},
+	{
+        	"Groot",
+		COST_5, ATTACK_4, HEALTH_7, SHIELD_2, SHIELD_BLUE,
+		{{}},
+		"We are groot."
+	},
+	{
+        	"Little Ragnaros",
+		COST_4, ATTACK_4, HEALTH_4, SHIELD_1, SHIELD_LEGENDARY,
+		{{PLAYER_OPPO,PE_SET_CONSTRAINT,PC_HEALTH_POINTS_LOSS,2}},
+		"Each turn, the opposite player loses 2 HP."
+	},
+	{
+        	"White wizard",
+		COST_7, ATTACK_7, HEALTH_7, SHIELD_0, SHIELD_NONE,
+		{{CREATURE_SELF,CE_SET_CONSTRAINT,CC_TEAM_BLOCK_ATTACKS,2}},
+		"Blocks the next 2 attacks on his team."
+	},
+	{
+ 		"Greedy imp",
+		COST_2, ATTACK_2, HEALTH_2, SHIELD_2, SHIELD_ORANGE,
+		{{PLAYER_SELF,PC_CARD_PICK_AMOUNT,1}},
+		"The player draws another card at the beginning of his turn."
+	},
+	{
+        	"Old witch",
+		COST_5, ATTACK_6, HEALTH_5, SHIELD_1, SHIELD_LEGENDARY,
 		{{}},
 		"No effect"
 	},
 	{
-        	"Theo",
-		COST_2, ATTACK_3, HEALTH_2, SHIELD_3, SHIELD_NONE,
+        	"Warrior apprentice",
+		COST_1, ATTACK_2, HEALTH_2, SHIELD_0, SHIELD_NONE,
 		{{}},
 		"No effect"
 	},
 	{
-        	"Robin",
-		COST_5, ATTACK_4, HEALTH_6, SHIELD_4, SHIELD_ORANGE,
+        	"Unbridled bear",
+		COST_3, ATTACK_3, HEALTH_4, SHIELD_0, SHIELD_NONE,
+		{{CREATURE_ALL_OPPO,CE_SUB_SHIELD,1}},
+		"Takes away 1 shield of each opposite creatures."
+	},
+	{
+        	"Giant soldier",
+		COST_9, ATTACK_8, HEALTH_8, SHIELD_3, SHIELD_BLUE,
 		{{}},
 		"No effect"
 	},
 	{
-        	"Nicolas",
-		COST_7, ATTACK_7, HEALTH_7, SHIELD_1, SHIELD_LEGENDARY,
+        	"White dragon",
+		COST_10, ATTACK_9, HEALTH_10, SHIELD_0, SHIELD_NONE,
+		{{CE_SET_CONSTRAINT,CREATURE_TEAM,CC_TEAM_ATTACK_GAIN,1}},
+		"All your friendly creatures gain 1 ATTACK each turn."
+	},
+	{
+        	"Resurrected triceratops",
+		COST_0, ATTACK_0, HEALTH_1, SHIELD_0, SHIELD_None,
 		{{}},
 		"No effect"
 	},
 	{
- 		"Alexis",
-		COST_2, ATTACK_2, HEALTH_8, SHIELD_2, SHIELD_BLUE,
-		{{}},
-		"No effect"
+        	"Mecha spider",
+		COST_3, ATTACK_4, HEALTH_2, SHIELD_1, SHIELD_ORANGE,
+		{{CREATURE_ONE_OPPO,CE_RESET_ATTACK,1}},
+		"Reset the attack of one opposite creature."
 	},
 	{
-        	"Yves",
-		COST_10, ATTACK_10, HEALTH_10, SHIELD_5, SHIELD_LEGENDARY,
-		{{}},
-		"No effect"
+        	"Armored leprechaun",
+		COST_1, ATTACK_1, HEALTH_3, SHIELD_0, SHIELD_NONE,
+		{{PE_SET_CONSTRAINT,PLAYER_SELF,PC_CARD_PICK_AMOUNT,1}},
+		"The player draws another card at the beginning of his turn."
 	},
 	{
-        	"Nikita",
-		COST_6, ATTACK_7, HEALTH_5, SHIELD_1, SHIELD_NONE,
-		{{}},
-		"No effect"
+        	"Mirage of happiness",
+		COST_3, ATTACK_0, HEALTH_5, SHIELD_3, SHIELD_BLUE,
+		{{PE_SET_CONSTRAINT,PLAYER_OPPO,PC_CALL_SPELL_LIMIT,2}},
+		"The opposite player can't play more than 2 spells per turn."
 	},
 	{
-        	"Keno",
-		COST_1, ATTACK_1, HEALTH_1, SHIELD_1, SHIELD_BLUE,
-		{{}},
-		"No effect"
+        	"Deathwing",
+		COST_5, ATTACK_9, HEALTH_9, SHIELD_2, SHIELD_LEGENDARY,
+		{{PE_SET_CONSTRAINT,PLAYER_SELF,PC_USE_CARD_LIMIT,0}},
+		"You can't play any card while this creature is alive."
 	},
 	{
-        	"Ragnaros",
-		COST_8, ATTACK_8, HEALTH_8, SHIELD_5, SHIELD_LEGENDARY,
+        	"Silver wolf",
+		COST_4, ATTACK_6, HEALTH_5, SHIELD_0, SHIELD_NONE,
 		{{}},
-		"No effect"
+		"No effect."
 	},
 	{
-        	"Thierry",
-		COST_1, ATTACK_0, HEALTH_1, SHIELD_1, SHIELD_BLUE,
-		{{}},
-		"No effect"
+        	"Kuriboh",
+		COST_1, ATTACK_2, HEALTH_2, SHIELD_0, SHIELD_NONE,
+		{{CREATURE_TEAM,CE_RESET_SHIELD,2}},
+		"Resets 2 friendly shields."
 	},
 	{
-        	"Tannenbaum",
-		COST_4, ATTACK_4, HEALTH_5, SHIELD_5, SHIELD_ORANGE,
-		{{}},
-		"No effect"
+        	"Twin-Headed dog",
+		COST_4, ATTACK_2, HEALTH_2, SHIELD_1, SHIELD_ORANGE,
+		{{CE_SET_CONSTRAINT,CREATURE_SELF,CE_ADD_ATTACK,1},{CE_SET_CONSTRAINT,CREATURE_SELF,CE_ADD_HEALTH,1}},
+		"Gains 1 HP and 1 ATTACK each turn."
+	},
+	{
+        	"Humanoide maid",
+		COST_2, ATTACK_0, HEALTH_5, SHIELD_0, SHIELD_NONE,
+		{{CE_SET_CONSTRAINT,CREATURE_TEAM,CE_ADD_HEALTH,2},{PE_SET_CONSTRAINT,PLAYER_SELF,CE_ADD_HEALTH,2}},
+		"Gives a friendly creature and this creature owner 2 HP each turn."
 	}
 };
 
