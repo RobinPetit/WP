@@ -12,3 +12,5 @@ Stealing,8,0,Take a random card from the opponent's deck
 Sticky,X,0,Your opponent's spell cost X more next Turn
 Trap,2,0,Deal 3 damage or summon two 1/1 snacks
 Metamorphose,4,0,Transforms a creature in another random creature
+Picking,3,0,Picking X more cards from the deck
+Discard,6,0,Force the opponent to discard a card of his choice

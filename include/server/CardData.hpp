@@ -408,6 +408,18 @@ SpellData ALL_SPELLS[] = {
 		COST_4,
 		{{CREATURE_SELF, 0/*Effect missing*/, 1}},
 		"Transforms 1 creature in another random creature"
+	},
+	{
+		"Picking",
+		COST_3,
+		{{PLAYER_SELF, PE_PICK_DECK_CARDS, 1}},
+		"Picking 1 more cards from the deck"
+	},
+	{
+		"Discard",
+		COST_6,
+		{{PLAYER_OPPO, PE_LOSE_HAND_CARDS, 1}},
+		"Force the opponent to discard a card of his choice"
 	}
 };
 
