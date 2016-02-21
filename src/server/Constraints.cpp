@@ -1,17 +1,17 @@
 #include "server/Constraints.hpp"
 
-ConstraintList::ConstraintList(const unsigned* defaultValues, const unsigned arraySize):
+Constraints::Constraints(const unsigned* defaultValues, const unsigned arraySize):
 	_defaultValues(defaultValues), _size(arraySize)
 {
 	_timedValues = new std::vector<std::pair<unsigned, unsigned>>[_size];
 }
 
-void ConstraintList::setConstraint(unsigned constraintID, unsigned value, unsigned turns)
+void Constraints::setConstraint(unsigned constraintID, unsigned value, unsigned turns)
 {
 	_timedValues[constraintID].push_back(std::make_pair(value, turns));
 }
 
-unsigned ConstraintList::getConstraint(unsigned constraintID)
+unsigned Constraints::getConstraint(unsigned constraintID)
 {
     if (_timedValues[constraintID].empty())
 		return _defaultValues[constraintID];
@@ -19,7 +19,7 @@ unsigned ConstraintList::getConstraint(unsigned constraintID)
 		return _timedValues[constraintID].rbegin()->first; //TODO change this model ?
 }
 
-void ConstraintList::timeOutConstraints()
+void Constraints::timeOutConstraints()
 {
     for (unsigned i=0; i<_size; i++)
     {

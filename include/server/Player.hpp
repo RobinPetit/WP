@@ -9,6 +9,7 @@
 #include "server/Card.hpp"
 #include "server/Spell.hpp"
 #include "server/Constraints.hpp"
+#include "server/CardData.hpp"
 
 class Board;
 class Creature;
@@ -78,7 +79,7 @@ private:
 	unsigned _healthPoints;
 
 	//Constraints
-	ConstraintList _constraints = ConstraintList(P_CONSTRAINT_DEFAULTS, P_CONSTRAINTS_COUNT);
+	Constraints _constraints = Constraints(P_CONSTRAINT_DEFAULTS, P_CONSTRAINTS_COUNT);
 
 	struct TurnData
 	{

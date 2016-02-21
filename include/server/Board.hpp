@@ -6,6 +6,7 @@
 #include "server/Card.hpp"
 #include "server/Creature.hpp"
 #include "server/Constraints.hpp"
+#include "server/CardData.hpp"
 
 /// Manages one game with two players
 class Board

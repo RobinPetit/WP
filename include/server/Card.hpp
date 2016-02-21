@@ -6,6 +6,7 @@
 #include <vector>
 // WizardPoker headers
 #include "server/Constraints.hpp"
+#include "server/CardData.hpp"
 
 class Card
 {

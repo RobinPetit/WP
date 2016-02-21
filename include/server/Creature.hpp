@@ -5,6 +5,7 @@
 #include "server/Card.hpp"
 #include "server/Player.hpp"
 #include "server/Constraints.hpp"
+#include "server/CardData.hpp"
 
 ///Creature card : One of the 2 playables card
 class Creature : public Card
@@ -18,7 +19,7 @@ private:
 	Player* _owner;
 
 	//Constraints
-	ConstraintList _constraints = ConstraintList(C_CONSTRAINT_DEFAULTS, C_CONSTRAINTS_COUNT);
+	Constraints _constraints = Constraints(C_CONSTRAINT_DEFAULTS, C_CONSTRAINTS_COUNT);
 
 public:
 	typedef void (Creature::*CreatureEffectMethod)(const EffectParamsCollection&);
