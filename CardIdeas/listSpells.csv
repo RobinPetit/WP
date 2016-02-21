@@ -1,14 +1,14 @@
 Name,Cost,Effect,Description
-Block,9,0,"Block the next X attacks"
-Care,5,0,"Give to a monster X health points"
-Exchange,7,0,"Each player chose an opponent's card and trade them ( from their hand )"
-Hypnosis,4,0,"Take control of an ennemy creature for X turn"
-Mirror,6,0,"Send back the next opponent's attack ( trap )"
-Paralyze,3,0,"Forbid the opponent to use a card for X turns"
-Resurrection,9,0,"Allow the player using this effect to get a discarded card"
-Reverse,10,0,"Reverse the board for the rest of the game"
-Shield,2,0,"Absord the next opponent's attack"
-Stealing,8,0,"Take a random card from the opponent's deck"
-Sticky,X,0,"Your opponent's spell cost X more next Turn"
-Trap,2,0,"Deal 3 damage or summon two 1/1 snacks"
-Metamorphose,4,0,"Transforms a creture in another random creature"
+Block,9,0,Block the next X attacks
+Care,5,0,Give to a monster X health points
+Exchange,7,0,Each player chose an opponent's card and trade them ( from their hand )
+Hypnosis,4,0,Take control of an enemy creature for X turn
+Mirror,6,0,Send back the next opponent's attack ( trap )
+Paralyse,3,0,Forbid the opponent to use a card for X turns
+Resurrection,9,0,Allow the player using this effect to get a discarded card
+Reverse,10,0,Reverse the board for the rest of the game
+Shield,2,0,Adsorb the next opponent's attack
+Stealing,8,0,Take a random card from the opponent's deck
+Sticky,X,0,Your opponent's spell cost X more next Turn
+Trap,2,0,Deal 3 damage or summon two 1/1 snacks
+Metamorphose,4,0,Transforms a creature in another random creature

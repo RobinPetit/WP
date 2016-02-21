@@ -368,7 +368,7 @@ SpellData ALL_SPELLS[] = {
 		"Send back the next opponent's attack"
 	},
 	{
-		"Paralyze",
+		"Paralyse",
 		COST_3,
 		{{CREATURE_ONE_OPPO, CC_SELF_BLOCK_ATTACKS, 2}},
 		"Forbid the opponent to use a card for 2 turns"
