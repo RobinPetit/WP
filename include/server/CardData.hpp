@@ -269,6 +269,42 @@ CreatureData ALL_CREATURES[] = {
 		COST_0, ATTACK_0, HEALTH_1, SHIELD_0, SHIELD_None,
 		{{}},
 		"No effect"
+	},
+	{
+        	"Mecha spider",
+		COST_3, ATTACK_4, HEALTH_2, SHIELD_1, SHIELD_ORANGE,
+		{{CREATURE_ONE_OPPO,CE_RESET_ATTACK,1}},
+		"Reset the attack of one opposite creature."
+	},
+	{
+        	"Armored leprechaun",
+		COST_1, ATTACK_1, HEALTH_3, SHIELD_0, SHIELD_NONE,
+		{{PE_SET_CONSTRAINT,PLAYER_SELF,PC_CARD_PICK_AMOUNT,1}},
+		"The player draws another card at the beginning of his turn."
+	},
+	{
+        	"Mirage of happiness",
+		COST_3, ATTACK_0, HEALTH_5, SHIELD_3, SHIELD_BLUE,
+		{{PE_SET_CONSTRAINT,PLAYER_OPPO,PC_CALL_SPELL_LIMIT,2}},
+		"The opposite player can't play more than 2 spells per turn."
+	},
+	{
+        	"Deathwing",
+		COST_5, ATTACK_9, HEALTH_9, SHIELD_2, SHIELD_LEGENDARY,
+		{{PE_SET_CONSTRAINT,PLAYER_SELF,PC_USE_CARD_LIMIT,0}},
+		"You can't play any card while this creature is alive."
+	},
+	{
+        	"Silver wolf",
+		COST_4, ATTACK_6, HEALTH_5, SHIELD_0, SHIELD_NONE,
+		{{}},
+		"No effect."
+	},
+	{
+        	"Kuriboh",
+		COST_1, ATTACK_2, HEALTH_2, SHIELD_0, SHIELD_NONE,
+		{{CREATURE_TEAM,CE_RESET_SHIELD,2}},
+		"Resets 2 friendly shields."
 	}
 };
 
