@@ -350,6 +350,12 @@ SpellData ALL_SPELLS[] = {
 		"Increase a monster's health of 2 points"
 	},
 	{
+		"Discard",
+		COST_9,
+		{{PLAYER_OPPO, PE_LOSE_HAND_CARDS, 1}},
+		"Force the opponent to discard a card of his choice"
+	},
+	{
 		"Exchange",
 		COST_7,
 		{{PLAYER_OPPO, PE_EXCHG_HAND_CARD, 1}},
@@ -362,6 +368,12 @@ SpellData ALL_SPELLS[] = {
 		"Take control of an ennemy creature for 3 turn"
 	},
 	{
+		"Metamorphosis",
+		COST_4,
+		{{CREATURE_SELF, 0/*Effect missing*/, 1}},
+		"Transforms 1 creature in another random creature"
+	},
+	{
 		"Mirror",
 		COST_6,
 		{{CREATURE_ONE_OPPO, 0/*Effect missing*/, 0}},
@@ -372,6 +384,12 @@ SpellData ALL_SPELLS[] = {
 		COST_3,
 		{{CREATURE_ONE_OPPO, CC_SELF_BLOCK_ATTACKS, 2}},
 		"Forbid the opponent to use a card for 2 turns"
+	},
+	{
+		"Picking",
+		COST_3,
+		{{PLAYER_SELF, PE_PICK_DECK_CARDS, 1}},
+		"Picking 1 more cards from the deck"
 	},
 	{
 		"Resurrection",
@@ -402,24 +420,6 @@ SpellData ALL_SPELLS[] = {
 		COST_2,
 		{{CREATURE_ONE_OPPO, C_TRAP, 3}},
 		"Deal 3 damage or summon two 1/1 snacks"
-	},
-	{
-		"Metamorphosis",
-		COST_4,
-		{{CREATURE_SELF, 0/*Effect missing*/, 1}},
-		"Transforms 1 creature in another random creature"
-	},
-	{
-		"Picking",
-		COST_3,
-		{{PLAYER_SELF, PE_PICK_DECK_CARDS, 1}},
-		"Picking 1 more cards from the deck"
-	},
-	{
-		"Discard",
-		COST_6,
-		{{PLAYER_OPPO, PE_LOSE_HAND_CARDS, 1}},
-		"Force the opponent to discard a card of his choice"
 	}
 };
 
