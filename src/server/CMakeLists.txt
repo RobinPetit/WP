@@ -1,5 +1,6 @@
 set(SOURCES
 		"server.cpp"
+		"ServerDatabase.cpp"
 		# sockets
 		"sockets/Server.cpp"
 		# common

@@ -1,4 +1,5 @@
 set(SOURCES	"client.cpp"
+		"ClientDatabase.cpp"
 		# sockets
 		"sockets/Client.cpp"
 		"sockets/ChatListening.cpp"
