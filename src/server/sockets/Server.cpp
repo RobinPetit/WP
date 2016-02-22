@@ -50,36 +50,27 @@ int Server::start(const sf::Uint16 listenerPort)
 
 void Server::takeConnection()
 {
-	sf::TcpSocket *newClient = new sf::TcpSocket();
+	std::unique_ptr<sf::TcpSocket> newClient{new sf::TcpSocket()};
 	// if listener can't accept correctly, free the allocated socket
 	if(_listener.accept(*newClient) != sf::Socket::Done)
-	{
-		delete newClient;
 		return;
-	}
 	// receive username
 	sf::Packet packet;
 	newClient->receive(packet);
 	TransferType type;
 	packet >> type;
 	if(type == TransferType::GAME_CONNECTION)
-		connectUser(packet, *newClient);
+		connectUser(packet, std::move(newClient));
 	else if(type == TransferType::GAME_REGISTERING)
-	{
-		registerUser(packet, *newClient);
-		delete newClient;
-	}
+		registerUser(packet, std::move(newClient));
 	else if(type == TransferType::CHAT_PLAYER_IP)
-	{
-		handleChatRequest(packet, *newClient);
-		delete newClient;
-	}
+		handleChatRequest(packet, std::move(newClient));
 	else
 		std::cout << "Error: wrong code!" << std::endl;
 }
 
 // TODO these methods (connect/register) should be rewritten in many smaller methods
-void Server::connectUser(sf::Packet& connectionPacket, sf::TcpSocket& client)
+void Server::connectUser(sf::Packet& connectionPacket, std::unique_ptr<sf::TcpSocket> client)
 {
 	std::string playerName;
 	sf::Uint64 transmittedPassword;
@@ -105,10 +96,10 @@ void Server::connectUser(sf::Packet& connectionPacket, sf::TcpSocket& client)
 			std::cout << playerName << " gives wrong identifiers when trying to connect.\n";
 			connectionPacket << TransferType::GAME_WRONG_IDENTIFIERS;
 		}
-		client.send(connectionPacket);
+		client->send(connectionPacket);
 
 		// Receive the new try of the client
-		client.receive(connectionPacket);
+		client->receive(connectionPacket);
 		TransferType type;
 		connectionPacket >> type;
 		if(type != TransferType::GAME_CONNECTION)
@@ -123,14 +114,15 @@ void Server::connectUser(sf::Packet& connectionPacket, sf::TcpSocket& client)
 		wrongIdentifiers = false;
 	}
 	std::cout << "New player connected: " << playerName << std::endl;
-	sendAcknowledgement(client);
-	// add the new socket to the clients
-	_clients[playerName] = {&client, clientPort};
-	// and add this client to the selector so that its receivals are handled properly
-	_socketSelector.add(client);
+	sendAcknowledgement(*client);
+	// add this client to the selector so that its receivals are handled properly
+	// (be sure that this line is before the next, otherwise we get a segfault)
+	_socketSelector.add(*client);
+	// and add the new socket to the clients
+	_clients[playerName] = {std::move(client), clientPort};
 }
 
-void Server::registerUser(sf::Packet& registeringPacket, sf::TcpSocket& client)
+void Server::registerUser(sf::Packet& registeringPacket, std::unique_ptr<sf::TcpSocket> client)
 {
 	std::string playerName;
 	sf::Uint64 transmittedPassword;
@@ -155,10 +147,10 @@ void Server::registerUser(sf::Packet& registeringPacket, sf::TcpSocket& client)
 			std::cout << playerName << " tried to register to the server but an error occurred.\n";
 			registeringPacket << TransferType::GAME_FAILED_TO_REGISTER;
 		}
-		client.send(registeringPacket);
+		client->send(registeringPacket);
 
 		// Receive the new try of the client
-		client.receive(registeringPacket);
+		client->receive(registeringPacket);
 		TransferType type;
 		registeringPacket >> type;
 		if(type != TransferType::GAME_REGISTERING)
@@ -173,7 +165,7 @@ void Server::registerUser(sf::Packet& registeringPacket, sf::TcpSocket& client)
 		failedToRegister = false;
 	}
 	// TODO register the user into the database
-	sendAcknowledgement(client);
+	sendAcknowledgement(*client);
 	std::cout << "New player registered: " << playerName << std::endl;
 }
 void Server::sendAcknowledgement(sf::TcpSocket& client)
@@ -254,8 +246,6 @@ void Server::removeClient(const _iterator& it)
 {
 	// remove from the selector so it won't receive data anymore
 	_socketSelector.remove(*(it->second.socket));
-	// free the allocated socket
-	delete it->second.socket;
 	// remove from the map
 	_clients.erase(it);
 }
@@ -275,11 +265,7 @@ void Server::quit()
 	_done.store(true);
 	_quitThread.join();
 	_threadRunning.store(false);
-	for(auto it = _clients.begin(); it != _clients.end(); ++it)
-	{
-		_socketSelector.remove(*(it->second.socket));
-		delete it->second.socket;
-	}
+	_socketSelector.clear();
 	_clients.clear();
 }
 
@@ -333,7 +319,7 @@ void Server::findOpponent(const _iterator& it)
 
 // Friends management
 
-void Server::handleChatRequest(sf::Packet& packet, sf::TcpSocket& client)
+void Server::handleChatRequest(sf::Packet& packet, std::unique_ptr<sf::TcpSocket> client)
 {
 	sf::Packet responseToCaller;
 	responseToCaller << TransferType::CHAT_PLAYER_IP;
@@ -363,7 +349,7 @@ void Server::handleChatRequest(sf::Packet& packet, sf::TcpSocket& client)
 			std::cout << "connected\n";
 			// as the listening port has a delay, set communications as blokcing
 			toCallee.setBlocking(true);
-			packetToCalle << client.getRemoteAddress().toInteger() << callerPort << calleeName << callerName;
+			packetToCalle << client->getRemoteAddress().toInteger() << callerPort << calleeName << callerName;
 			std::cout << "sending to callee\n";
 			if(toCallee.send(packetToCalle) != sf::Socket::Done)
 				std::cerr << "unable to send to calle\n";
@@ -371,7 +357,7 @@ void Server::handleChatRequest(sf::Packet& packet, sf::TcpSocket& client)
 				std::cout << "sent to callee (" << calleeName << ")\n";
 		}
 	}
-	client.send(responseToCaller);
+	client->send(responseToCaller);
 }
 
 void Server::handleFriendshipRequest(const _iterator& it, sf::Packet& transmission)
