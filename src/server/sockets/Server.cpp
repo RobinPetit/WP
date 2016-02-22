@@ -64,10 +64,16 @@ void Server::takeConnection()
 	packet >> type;
 	if(type == TransferType::GAME_CONNECTION)
 		connectUser(packet, *newClient);
-	else if(type == TransferType::CHAT_PLAYER_IP)
-		handleChatRequest(packet, *newClient);
 	else if(type == TransferType::GAME_REGISTERING)
+	{
 		registerUser(packet, *newClient);
+		delete newClient;
+	}
+	else if(type == TransferType::CHAT_PLAYER_IP)
+	{
+		handleChatRequest(packet, *newClient);
+		delete newClient;
+	}
 	else
 		std::cout << "Error: wrong code!" << std::endl;
 }
