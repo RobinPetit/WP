@@ -13,16 +13,16 @@ void Constraints::setConstraint(unsigned constraintID, unsigned value, unsigned 
 
 unsigned Constraints::getConstraint(unsigned constraintID)
 {
-    if (_timedValues[constraintID].empty())
+	if (_timedValues[constraintID].empty())
 		return _defaultValues[constraintID].first;
-    else
-    {
+	else
+	{
 		unsigned value = _timedValues[constraintID].rbegin()->first;
 		switch(_defaultValues[constraintID].second) //rules
 		{
 			case VALUE_GET_INCREMENT:
-                _timedValues[constraintID].rbegin()->first++;
-                break;
+				_timedValues[constraintID].rbegin()->first++;
+				break;
 			case VALUE_GET_DECREMENT:
 				_timedValues[constraintID].rbegin()->first--;
 				break;
@@ -31,7 +31,7 @@ unsigned Constraints::getConstraint(unsigned constraintID)
 				break;
 		}
 		return value;
-    }
+	}
 }
 
 void Constraints::timeOutConstraints()

@@ -61,7 +61,7 @@ void Board::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 		case CREATURE_SELF:
 			{
 				Creature* usedCreature = dynamic_cast<Creature*>(usedCard);
-                Creature::effectMethods[method](*usedCreature, effectArgs);
+				Creature::effectMethods[method](*usedCreature, effectArgs);
 			}
 			break;
 

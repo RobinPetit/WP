@@ -126,18 +126,19 @@ void Creature::subHealth(const EffectParamsCollection& args)
 	unsigned points = args.at(0);
 	switch (_shieldType)
 	{
-		case 0:
+		case SHIELD_BLUE:
 			points-= _shield;	//Blue shield, can allow part of the attack to deal damage
 			break;
-		case 1:
+		case SHIELD_ORANGE:
 			if (points <= _shield) points=0;	//Orange shield, only stronger attacks go through
 			break;
-		case 2:
+		case SHIELD_LEGENDARY:
 			points=0;	//Legendary shield, regular attacks don't go through
 			break;
 	}
 
-	if(_health > points) _health -= points;
+	if(_health > points)
+		_health -= points;
 	else
 	{
 		_health = 0;
@@ -149,7 +150,8 @@ void Creature::forcedSubHealth(const EffectParamsCollection& args)
 {
 	//Shields are not able to stop this attack
 	unsigned points = args.at(0);
-	if(_health > points) _health -= points;
+	if(_health > points)
+		_health -= points;
 	else
 	{
 		_health = 0;
@@ -160,6 +162,8 @@ void Creature::forcedSubHealth(const EffectParamsCollection& args)
 void Creature::subShield(const EffectParamsCollection& args)
 {
 	unsigned points = args.at(0);
-	if(_shield > points) _shield -= points;
-	else _shield = 0;
+	if(_shield > points)
+		_shield -= points;
+	else
+		_shield = 0;
 }
