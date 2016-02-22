@@ -7,8 +7,7 @@ Board::Board(Player::ID player1, Player::ID player2, sf::TcpSocket& socketPlayer
 {
 	// A random player starts the game
 	std::default_random_engine engine;
-	std::uniform_int_distribution<unsigned> distribution(1, 2);
-	if (distribution(engine) == 1)
+	if(std::bernoulli_distribution(0.5)(engine) == 1)
 		std::swap(player1, player2);
 	_activePlayer = new Player(player1, socketPlayer1);
 	_passivePlayer = new Player(player2, socketPlayer2);
