@@ -12,6 +12,8 @@
 #include "server/Spell.hpp"
 #include "server/Constraints.hpp"
 #include "server/CardData.hpp"
+// SFML headers
+#include <SFML/Network/TcpSocket.hpp>
 
 class Board;
 class Creature;
@@ -22,7 +24,7 @@ class Player
 public:
 	typedef std::size_t ID;
 	/// Constructor
-	Player(Player::ID id);
+	Player(Player::ID id, sf::TcpSocket& socket);
 	void setOpponent(Player* opponent);  // Complementary
 
 	/// Destructor.
@@ -57,16 +59,7 @@ public:
 	std::pair<unsigned, unsigned> getTeamConstraint(unsigned constraintID);
 
 private:
-	Board* _board;
-	Player* _opponent = nullptr;
-	Player::ID _id;
-
-	unsigned _energyPoints;
-	unsigned _healthPoints;
-
-	//Constraints
-	Constraints _constraints = Constraints(P_CONSTRAINT_DEFAULTS, P_CONSTRAINTS_COUNT);
-
+	//////////// type definitions
 	struct TurnData
 	{
 		unsigned cardsUsed;
@@ -75,18 +68,33 @@ private:
 		unsigned spellCalls;
 	};
 
+	//////////// attributes
+	Board* _board;
+	Player* _opponent = nullptr;
+	Player::ID _id;
+
+	unsigned _energyPoints;
+	unsigned _healthPoints;
+
+	sf::TcpSocket& _socketToClient;
+
+	// Constraints
+	Constraints _constraints = Constraints(P_CONSTRAINT_DEFAULTS, P_CONSTRAINTS_COUNT);
+
 	constexpr static TurnData _emptyTurnData = {0, 0, 0, 0};
 	TurnData _turnData;
 
-	//Card holders
+	// Card holders
 	std::stack<Card *> _cardDeck;  ///< Cards that are in the deck (not usable yet)
 	std::vector<Card *> _cardHand;  ///< Cards that are in the player's hand (usable)
 	std::vector<Creature *> _cardBoard;  ///< Cards that are on the board (usable for attacks)
 	std::vector<Card *> _cardBin;  ///< Cards that are discarded (dead creatures, used spells)
 
+	// random management
 	std::default_random_engine _engine;
 
-	//Private methods
+
+	//////////// Private methods
 	void exploitCardEffects(Card* usedCard);
 
 	void cardDeckToHand(unsigned amount);

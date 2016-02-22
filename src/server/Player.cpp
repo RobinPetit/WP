@@ -22,8 +22,9 @@ std::function<void(Player&, const EffectParamsCollection&)> Player::effectMethod
 	&Player::subLifePoints
 };
 
-Player::Player(Player::ID id):
-	_id(id)
+Player::Player(Player::ID id, sf::TcpSocket& socket):
+	_id(id),
+	_socketToClient(socket)
 {
 	//NETWORK: GREETINGS_USER
 }

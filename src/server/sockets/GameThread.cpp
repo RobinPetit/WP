@@ -10,7 +10,7 @@ GameThread::GameThread(Player::ID player1ID, Player::ID player2ID):
 	_player1ID(player1ID),
 	_player2ID(player2ID),
 	_running(false),
-	_gameBoard(player1ID, player2ID)
+	_gameBoard(player1ID, player2ID, _socketPlayer1, _socketPlayer2)
 {
 
 }

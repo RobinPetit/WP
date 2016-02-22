@@ -7,13 +7,15 @@
 #include "server/Creature.hpp"
 #include "server/Constraints.hpp"
 #include "server/CardData.hpp"
+// SFML headers
+#include <SFML/Network/TcpSocket.hpp>
 
 /// Manages one game with two players
 class Board
 {
 public:
 	/// Constructor
-	Board(Player::ID player1, Player::ID player2);
+	Board(Player::ID player1, Player::ID player2, sf::TcpSocket& socketPlayer1, sf::TcpSocket& socketPlayer2);
 
 	/// Destructor
 	~Board() = default;
@@ -29,7 +31,8 @@ public:
 
 private:
 	unsigned _turn = 0;
-	Player *_activePlayer, *_passivePlayer;
+	Player *_activePlayer,
+	       *_passivePlayer;
 };
 
 
