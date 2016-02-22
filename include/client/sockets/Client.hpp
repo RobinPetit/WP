@@ -27,7 +27,7 @@ public:
 	/// \param port The port the server occupies
 	bool connectToServer(const std::string& name, const sf::IpAddress& address, sf::Uint16 port);
 
-	// Friends management
+	/////////// Friends management
 
 	/// The function used to start the process of making a new discussion with the chat program
 	/// \param playerName The name of the player the client wants to discuss with
@@ -83,9 +83,14 @@ public:
 	/// \throw std::runtime_error if request is not correct
 	void removeFriend(const std::string& name);
 
-	// Game management
+	////////// Game management
+
 	/// \TODO Complete this method (and its signature)
 	void startGame();
+
+	/// Used to ask (from the menus for instance) the socket used in game
+	/// \throw std::runtime_error if the method is called and no game has started
+	sf::TcpSocket& getGameSocket();
 
 	/// The function used to rest assured all conections are stopped and the client is
 	/// not waiting for entering chat connections anymore
@@ -121,8 +126,11 @@ private:
 	/// \TODO use this!
 	/// List containing the names of the friendship requests the client made
 	std::vector<std::string> _friendsRequests;
+	bool _inGame;
 	/// Socket used only when a game is started to communicate with the specialized thread in the server
 	sf::TcpSocket _inGameSocket;
+	/// Name of the opponent when in game
+	std::string _inGameOpponentName;
 
 	// private methods
 	/// The functions used to create the listening thread

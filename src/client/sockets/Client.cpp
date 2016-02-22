@@ -24,7 +24,8 @@ Client::Client():
 	_threadLoop(0),
 	_serverAddress(),
 	_serverPort(0),
-	_userTerminal()
+	_userTerminal(),
+	_inGame(false)
 {
 
 }
@@ -89,9 +90,16 @@ void Client::startGame()
 	packet << TransferType::GAME_REQUEST;
 	_socket.send(packet);
 	_socket.receive(packet);
-	std::string opponentName;
-	packet >> opponentName;
-	std::cout << "opponent found: " << opponentName << std::endl;
+	packet >> _inGameOpponentName;
+	std::cout << "opponent found: " << _inGameOpponentName << std::endl;
+	_inGame = true;
+}
+
+sf::TcpSocket& Client::getGameSocket()
+{
+	if(!_inGame)
+		throw std::runtime_error("No socket available: not in game");
+	return _inGameSocket;
 }
 
 // Friends management

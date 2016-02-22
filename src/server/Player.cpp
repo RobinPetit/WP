@@ -2,8 +2,11 @@
 #include "server/Player.hpp"
 #include "server/Board.hpp"
 #include "server/Creature.hpp"
+#include "common/sockets/TransferType.hpp"
 // std-C++ headers
 #include <algorithm>
+// SFML headers
+#include <SFML/Network/Packet.hpp>
 
 std::function<void(Player&, const EffectParamsCollection&)> Player::effectMethods[P_EFFECTS_COUNT] =
 {
@@ -52,8 +55,10 @@ void Player::enterTurn(unsigned)
 	//Will call creature's turn-based rules
 	for (unsigned i=0; i<_cardBoard.size(); i++)
 		_cardBoard.at(i)->enterTurn();
-
-	//NETWORK: TURN_STARTED
+	// Tell to player that its turn starts
+	sf::Packet packet;
+	packet << TransferType::GAME_PLAYER_ENTER_TURN;
+	_socketToClient.send(packet);
 }
 
 void Player::leaveTurn(unsigned)

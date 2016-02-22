@@ -39,7 +39,13 @@ void GameState::begin(unsigned lotsOfDataAboutStuff)
 
 void GameState::startTurn()
 {
-	_myTurn=true;
+	sf::Packet packet;
+	_client.getGameSocket().receive(packet);
+	TransferType type;
+	packet >> type;
+	if(type != TransferType::GAME_PLAYER_ENTER_TURN)
+		throw std::runtime_error("Wrong message received");
+	_myTurn = true;
 	std::cout << "It is now your turn";
 	display();
 	/**/
