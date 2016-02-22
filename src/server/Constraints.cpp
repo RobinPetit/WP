@@ -39,7 +39,7 @@ void Constraints::timeOutConstraints()
 	for (unsigned i=0; i<_size; i++)
 	{
 		std::vector<std::pair<unsigned, unsigned>>& vect = _timedValues[i];
-		for (auto& vectIt=vect.begin(); vectIt!=vect.end();)
+		for (auto vectIt=vect.begin(); vectIt!=vect.end();)
 		{
 			// TODO how do I delete value without breaking iterator ?
 			if (vectIt->second == 1)

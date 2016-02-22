@@ -59,7 +59,7 @@ void GameState::startTurn()
 	std::cout << "It is now your turn";
 	//TODO put the card taken in the _inHand vector;
 	--_remainCards;  // Player took a card from his deck
-	this.setEnergy(turnNbr);
+	// setEnergy(turnNbr);
 	display();
 	/**/
 }
@@ -112,7 +112,7 @@ void GameState::endTurn()
 	}
 	else
 	{
-		this.setEnergy(DFLT_ENERG);
+		// setEnergy(DFLT_ENERG);
 		_myTurn = false;
 	};
 }
