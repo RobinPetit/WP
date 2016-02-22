@@ -21,7 +21,8 @@ Client::Client():
 	_isConnected(false),
 	_serverPort(0),
 	_threadLoop(false),
-	_inGame(false)
+	_inGame(false),
+	_readyToPlay(false)
 {
 
 }
@@ -44,8 +45,8 @@ bool Client::connectToServer(const std::string& name, const sf::IpAddress& addre
 	if(_socket.connect(address, port) != sf::Socket::Done)
 		return false;
 	sf::Packet packet;
-	packet << TransferType::GAME_CONNECTION  // precise
-	       << _name  // do not forget the '\0' character
+	packet << TransferType::GAME_CONNECTION
+	       << _name
 	       << static_cast<sf::Uint16>(_chatListenerPort);
 	if(_socket.send(packet) != sf::Socket::Done)
 		return false;
@@ -78,10 +79,11 @@ Client::~Client()
 	quit();
 }
 
-// Game management
+///////// Game management
 
 void Client::startGame()
 {
+	std::cout << "starting game\n";
 	sf::Packet packet;
 	packet << TransferType::GAME_REQUEST;
 	_socket.send(packet);
@@ -98,7 +100,35 @@ sf::TcpSocket& Client::getGameSocket()
 	return _inGameSocket;
 }
 
-// Friends management
+void Client::initInGameListener()
+{
+	_inGameListeningThread = std::thread(&Client::inputGameListening, this);
+}
+
+// function called by a new thread only
+void Client::inputGameListening()
+{
+	waitTillReadyToPlay();
+	sf::Packet receivedPacket;
+	TransferType type;
+	while(true)
+	{
+		_inGameListeningSocket.receive(receivedPacket);
+		receivedPacket >> type;
+		if(type == TransferType::GAME_OVER)
+			break;
+	}
+	std::cout << "Game is over" << std::endl;
+}
+
+void Client::waitTillReadyToPlay()
+{
+	static const sf::Time awaitingDelay(sf::milliseconds(50));  // arbitrary
+	while(!_readyToPlay.load())
+		sf::sleep(awaitingDelay);
+}
+
+/////////// Friends management
 
 const std::vector<std::string>& Client::getFriends()
 {
@@ -317,7 +347,11 @@ void Client::startChat(sf::Packet& transmission)
 
 void Client::initInGameConnection(sf::Packet& transmission)
 {
-	sf::Uint16 serverInGamePort;
-	transmission >> serverInGamePort;
-	_inGameSocket.connect(_socket.getRemoteAddress(), serverInGamePort);
+	sf::Uint16 serverListeningPort;
+	transmission >> serverListeningPort;
+	_inGameSocket.connect(_socket.getRemoteAddress(), serverListeningPort);
+	_inGameListeningSocket.connect(_socket.getRemoteAddress(), serverListeningPort);
+	_readyToPlay.store(true);
+	initInGameListener();
 }
+

@@ -17,6 +17,16 @@ GameState::GameState(StateStack& stateStack, Client& client):
 {
 	addAction("Quit", &GameState::quit);
 	std::cout << "Your game is about to start!\n";
+	_client.waitTillReadyToPlay();
+	sf::Packet packet;
+	_client.getGameSocket().receive(packet);
+	TransferType type;
+	packet >> type;
+	if(type != TransferType::GAME_STARTING)
+	{
+		std::cerr << "Wrong signal received: " << static_cast<sf::Uint32>(type) << std::endl;
+		quit();
+	}
 }
 
 void GameState::display()

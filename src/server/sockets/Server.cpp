@@ -173,6 +173,7 @@ void Server::quit()
 	{
 		gameThread->interruptGame();
 		gameThread->join();
+		delete gameThread;
 	}
 	_runningGames.clear();
 	// in case the method is called even though server has not been manually ended
@@ -185,6 +186,8 @@ void Server::quit()
 		delete client.second.socket;
 	}
 	_clients.clear();
+	// leave listening port
+	_listener.close();
 }
 
 Server::~Server()
@@ -206,10 +209,11 @@ void Server::waitQuit()
 	std::cout << "ending server..." << std::endl;
 }
 
-// Game management
+////////// Game management
 
 void Server::findOpponent(const _iterator& it)
 {
+	_lobbyMutex.lock();
 	if(!_isAPlayerWaiting)
 	{
 		_isAPlayerWaiting = true;
@@ -232,11 +236,14 @@ void Server::findOpponent(const _iterator& it)
 			createGame(waitingPlayer->second.id, it->second.id);
 		}
 	}
+	_lobbyMutex.unlock();
 }
 
 void Server::startGame(std::size_t idx)
 {
+	std::cout << "StartGame(" << idx << ")\n";
         GameThread& selfThread(*_runningGames[idx]);
+        std::cout << "Got it\n";
         const auto& finderById = [&](unsigned playerId)
         {
 		return [=](const std::pair<std::string, ClientInformations>& it)
@@ -247,13 +254,12 @@ void Server::startGame(std::size_t idx)
         const auto& player1 = std::find_if(_clients.begin(), _clients.end(), finderById(selfThread._player1ID));
         const auto& player2 = std::find_if(_clients.begin(), _clients.end(), finderById(selfThread._player2ID));
 	std::cout << "Game " << idx << " is starting: " << player1->first << " vs. " << player2->first << "\n";
-        selfThread.establishSockets(player1->second, player2->second);
+        selfThread.startGame(player1->second, player2->second);
 }
 
 void Server::createGame(unsigned ID1, unsigned ID2)
 {
-	GameThread *g = new GameThread(ID1, ID2, &Server::startGame, this, _runningGames.size());
-	_runningGames.push_back(g);
+	_runningGames.emplace_back(new GameThread(ID1, ID2, &Server::startGame, this, _runningGames.size()));
 }
 
 // Friends management

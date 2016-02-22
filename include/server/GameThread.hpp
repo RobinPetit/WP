@@ -25,6 +25,9 @@ public:
 
 	void establishSockets(const ClientInformations& player1, const ClientInformations& player2);
 
+	/// \TODO change return value to give the result of the game
+	void startGame(const ClientInformations& player1, const ClientInformations& player2);
+
 	/// Destructor
 	~GameThread() = default;
 
@@ -36,10 +39,12 @@ private:
 	std::atomic_bool _running;
 	sf::TcpSocket _socketPlayer1;
 	sf::TcpSocket _socketPlayer2;
+	sf::TcpSocket _specialOutputSocketPlayer1;
+	sf::TcpSocket _specialOutputSocketPlayer2;
 	Board _gameBoard;
 
 	//////////// Private methods
-	void setSocket(sf::TcpSocket& socket, const ClientInformations& player);
+	void setSocket(sf::TcpSocket& socket, sf::TcpSocket& specialSocket, const ClientInformations& player);
 };
 
 ///////// template code

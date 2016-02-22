@@ -14,6 +14,7 @@
 #include <string>
 #include <atomic>
 #include <thread>
+#include <mutex>
 
 class Server final
 {
@@ -43,6 +44,7 @@ private:
 	std::thread _quitThread;
 	std::string _waitingPlayer;
 	bool _isAPlayerWaiting;
+	std::mutex _lobbyMutex;
 	const std::string _quitPrompt;
 	std::vector<GameThread *> _runningGames;
 	std::size_t _last_id;
@@ -77,7 +79,7 @@ private:
 	/// Used to send to a client the current state of the friendship requests state
 	void sendFriendshipRequestsState(const _iterator& it);
 
-	// Game management
+	//////////// Game management
 
 	/// Used when a player want to play with another player
 	void findOpponent(const _iterator& it);

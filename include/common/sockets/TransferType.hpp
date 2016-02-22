@@ -22,8 +22,12 @@ enum class TransferType : sf::Uint32
 	NEW_GAME_SERVER_CONNECTION,
 	/// Used when the server tells the player the game is setup correctly and can begin
 	GAME_STARTING,
-	/// Used when the server tells the user its turn begins
+	/// Used when the server tells the client its turn begins
 	GAME_PLAYER_ENTER_TURN,
+	/// Used when the server tells the client its turn ends
+	GAME_PLAYER_LEAVE_TURN,
+	/// Used to tell the client the game is over: one player won, the other failed
+	GAME_OVER,
 	// Client/Server
 	/// Used when the client quits to tell the server it disconnects
 	PLAYER_DISCONNECTION,

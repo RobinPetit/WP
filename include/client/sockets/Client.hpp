@@ -96,6 +96,9 @@ public:
 	/// not waiting for entering chat connections anymore
 	void quit();
 
+	/// Used to wait sleeping until the atomic boolean readyToPlay is set to true
+	void waitTillReadyToPlay();
+
 	/// Destructor
 	~Client();
 
@@ -140,12 +143,17 @@ private:
 	bool _inGame;
 	/// Socket used only when a game is started to communicate with the specialized thread in the server
 	sf::TcpSocket _inGameSocket;
+	/// Socket used to receive special data from the server game thread
+	sf::TcpSocket _inGameListeningSocket;
 	/// Name of the opponent when in game
 	std::string _inGameOpponentName;
 	/// Waits for special server data such as END_OF_TURN, BOARD_UPDATE, etc.
 	std::thread _inGameListeningThread;
+	/// Tells whether everything has been set up correctly and the user is ready to start
+	std::atomic_bool _readyToPlay;
 
 	/////////// private methods
+
 	/// The functions used to create the listening thread
 	void initListener();
 	/// chatListening is the function used by the client to make a new thread listening for entring connections
@@ -155,6 +163,10 @@ private:
 	void startChat(sf::Packet& transmission);
 	/// This function is used to make the proper exchanges with the srever when a game is started
 	void initInGameConnection(sf::Packet& transmission);
+	/// Start the new thread waiting for special data
+	void initInGameListener();
+	/// Called by the game listening thread: waits for server game thread special data
+	void inputGameListening();
 };
 
 #endif // _CONNECTION_HPP_
