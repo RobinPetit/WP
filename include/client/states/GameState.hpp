@@ -28,18 +28,18 @@ class GameState : public AbstractState
 		void begin(unsigned lotsOfDataAboutStuff);
 		void startTurn(unsigned);
         
-        void changeEnergy(unsigned);  ///Can be used for effects
+		void changeEnergy(unsigned);  ///Can be used for effects
 
 	private:
 		std::vector<Card> _inHand;
 		std::vector<Card> _onBoard;
-        unsigned _lotsOfDataAboutStuff;
+		unsigned _lotsOfDataAboutStuff;
 		unsigned _remainCards = DECK_SIZE;
 		unsigned _energy = DEFLT_ENERG;
 		unsigned _oppoCards;
 		bool _myTurn=false;
         
-        void setEnergy(unsigned);
+		void setEnergy(unsigned);
 		void useCard();
 		void attackWithCreature();
 		void endTurn();

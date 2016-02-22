@@ -48,11 +48,12 @@ void GameState::startTurn()
 	/**/
 }
 
-void GameState::changeEnergy(unsigned energy){
-    if(_energy+energy >= MAX_ENERG){
-        _energy = MAX_ENERG;}
-    else
-        _energy+=energy;
+void GameState::changeEnergy(unsigned energy)
+{
+	if(_energy+energy >= MAX_ENERG){
+		_energy = MAX_ENERG;}
+	else
+		_energy+=energy;
 }
 
 
