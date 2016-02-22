@@ -67,19 +67,12 @@ void Server::takeConnection()
 	else if(type == TransferType::CHAT_PLAYER_IP)
 		handleChatRequest(packet, *newClient);
 	else if(type == TransferType::GAME_REGISTERING)
-	{
-		registerUser(packet);
-		// Now the user authenticates
-		newClient->receive(packet);
-		packet >> type;
-		if(type != TransferType::GAME_CONNECTION)
-			std::cout << "Error: wrong packet transmitted after subscribing (expecting a connection packet).\n";
-		connectUser(packet, *newClient);
-	}
+		registerUser(packet, *newClient);
 	else
 		std::cout << "Error: wrong code!" << std::endl;
 }
 
+// TODO these methods (connect/register) should be rewritten in many smaller methods
 void Server::connectUser(sf::Packet& connectionPacket, sf::TcpSocket& client)
 {
 	std::string playerName;
@@ -89,15 +82,49 @@ void Server::connectUser(sf::Packet& connectionPacket, sf::TcpSocket& client)
 
 	connectionPacket >> playerName >> transmittedPassword >> clientPort;
 	password = static_cast<PasswordHasher::result_type>(transmittedPassword);
-	/// \TODO check the connection right here
-	std::cout << "new player connected: " << playerName << std::endl;
+	bool alreadyConnected{_clients.count(playerName) != 0};
+	// TODO check in database for the identifiers validity
+	bool wrongIdentifiers{false};
+	while(alreadyConnected or wrongIdentifiers)
+	{
+		// Send a response indicating the error
+		connectionPacket.clear();
+		if(alreadyConnected)
+		{
+			std::cout << playerName << " tried to connect to the server but is already connected.\n";
+			connectionPacket << TransferType::GAME_ALREADY_CONNECTED;
+		}
+		else
+		{
+			std::cout << playerName << " gives wrong identifiers when trying to connect.\n";
+			connectionPacket << TransferType::GAME_WRONG_IDENTIFIERS;
+		}
+		client.send(connectionPacket);
+
+		// Receive the new try of the client
+		client.receive(connectionPacket);
+		TransferType type;
+		connectionPacket >> type;
+		if(type != TransferType::GAME_CONNECTION)
+		{
+			std::cout << "Error: wrong packet transmitted after failed connection (expecting another connection packet).\n";
+			return;
+		}
+		connectionPacket >> playerName >> transmittedPassword >> clientPort;
+		password = static_cast<PasswordHasher::result_type>(transmittedPassword);
+		alreadyConnected = _clients.count(playerName) != 0;
+		// TODO check in database for the identifiers validity
+		wrongIdentifiers = false;
+	}
+	std::cout << "New player connected: " << playerName << std::endl;
+	sendAcknowledgement(client);
 	// add the new socket to the clients
 	_clients[playerName] = {&client, clientPort};
 	// and add this client to the selector so that its receivals are handled properly
 	_socketSelector.add(client);
 }
 
-void Server::registerUser(sf::Packet& registeringPacket)
+void Server::registerUser(sf::Packet& registeringPacket, sf::TcpSocket& client)
 {
 	std::string playerName;
 	sf::Uint64 transmittedPassword;
@@ -105,9 +132,49 @@ void Server::registerUser(sf::Packet& registeringPacket)
 
 	registeringPacket >> playerName >> transmittedPassword;
 	password = static_cast<PasswordHasher::result_type>(transmittedPassword);
-	/// \TODO check the connection right here, and ensure that playerName
-	/// is not already used in the database
-	std::cout << "new player registered: " << playerName << std::endl;
+	// TODO check in database for the identifiers validity
+	bool userNameNotAvailable{false};
+	bool failedToRegister{false};
+	while(userNameNotAvailable or failedToRegister)
+	{
+		// Send a response indicating the error
+		registeringPacket.clear();
+		if(userNameNotAvailable)
+		{
+			std::cout << playerName << " tried to register to the server but the name is not available.\n";
+			registeringPacket << TransferType::GAME_USERNAME_NOT_AVAILABLE;
+		}
+		else
+		{
+			std::cout << playerName << " tried to register to the server but an error occurred.\n";
+			registeringPacket << TransferType::GAME_FAILED_TO_REGISTER;
+		}
+		client.send(registeringPacket);
+
+		// Receive the new try of the client
+		client.receive(registeringPacket);
+		TransferType type;
+		registeringPacket >> type;
+		if(type != TransferType::GAME_REGISTERING)
+		{
+			std::cout << "Error: wrong packet transmitted after failed registering (expecting another registering packet).\n";
+			return;
+		}
+		registeringPacket >> playerName >> transmittedPassword;
+		password = static_cast<PasswordHasher::result_type>(transmittedPassword);
+		// TODO check in database for the identifiers validity
+		userNameNotAvailable = false;
+		failedToRegister = false;
+	}
+	// TODO register the user into the database
+	sendAcknowledgement(client);
+	std::cout << "New player registered: " << playerName << std::endl;
+}
+void Server::sendAcknowledgement(sf::TcpSocket& client)
+{
+	sf::Packet packet;
+	packet << TransferType::GAME_CONNECTION_OR_REGISTERING_OK;
+	client.send(packet);
 }
 
 void Server::receiveData()

@@ -37,33 +37,84 @@ bool Client::connectToServer(const std::string& name, const std::string& passwor
 
 bool Client::registerToServer(const std::string& name, const std::string& password, const sf::IpAddress& address, sf::Uint16 port)
 {
-	if(!initServer(name, password, address, port))
+	std::string shrinkedName = shrinkName(name);
+	// The local socket used only to register, it does not need to be keeped as attribute
+	sf::TcpSocket socket;
+	// if connection does not work, don't go further
+	if(socket.connect(address, port) != sf::Socket::Done)
 		return false;
-	if(!sendRegisteringToken(password))
-		return false;
-	return sendConnectionToken(password);
+	return sendRegisteringToken(shrinkedName, password, socket);
 }
 
 bool Client::sendConnectionToken(const std::string& password)
 {
 	sf::Packet packet;
-	packet << TransferType::GAME_CONNECTION  // precise
+	packet << TransferType::GAME_CONNECTION
 	       << _name  // do not forget the '\0' character
 	       << static_cast<sf::Uint64>(_hasher(password))
 	       << static_cast<sf::Uint16>(_chatListenerPort);
 	if(_socket.send(packet) != sf::Socket::Done)
 		return false;
-	_isConnected = true;
-	updateFriends();
-	return true;
+
+	// Receive the server response
+	_socket.receive(packet);
+	TransferType response;
+	packet >> response;
+	switch(response)
+	{
+	case TransferType::GAME_ALREADY_CONNECTED:
+		//TODO throw an exception rather than cout
+		std::cout << "Error: you are already connected!\n";
+		return false;
+
+	case TransferType::GAME_WRONG_IDENTIFIERS:
+		std::cout << "Error: invalid username or password.\n";
+		return false;
+
+	case TransferType::GAME_CONNECTION_OR_REGISTERING_OK:
+		_isConnected = true;
+		updateFriends();
+		return true;
+
+	default:
+		std::cout << "Error: unidentified server response.\n";
+		return false;
+	}
 }
-bool Client::sendRegisteringToken(const std::string& password)
+bool Client::sendRegisteringToken(const std::string& name, const std::string& password, sf::TcpSocket& socket)
 {
 	sf::Packet packet;
-	packet << TransferType::GAME_REGISTERING  // precise
-	       << _name  // do not forget the '\0' character
+	packet << TransferType::GAME_REGISTERING
+	       << name  // do not forget the '\0' character
 	       << static_cast<sf::Uint64>(_hasher(password));
-	return _socket.send(packet) == sf::Socket::Done;
+	if(socket.send(packet) != sf::Socket::Done)
+	{
+		std::cout << "sending packet failed";
+		return false;
+	}
+
+	// Receive the server response
+	socket.receive(packet);
+	TransferType response;
+	packet >> response;
+	switch(response)
+	{
+	case TransferType::GAME_USERNAME_NOT_AVAILABLE:
+		//TODO throw an exception rather than cout
+		std::cout << "Error: the username " << _name << " is not available\n";
+		return false;
+
+	case TransferType::GAME_FAILED_TO_REGISTER:
+		std::cout << "Error: the server failed to register your account.\n";
+		return false;
+
+	case TransferType::GAME_CONNECTION_OR_REGISTERING_OK:
+		return true;
+
+	default:
+		std::cout << "Error: unidentified server response.\n";
+		return false;
+	}
 }
 
 bool Client::initServer(const std::string& name, const std::string& password, const sf::IpAddress& address, sf::Uint16 port)
@@ -71,8 +122,7 @@ bool Client::initServer(const std::string& name, const std::string& password, co
 	// if client is already connected to a server, do not try to re-connect it
 	if(_isConnected)
 		return false;
-	// forces the name to not be larger than MAX_NAME_LENGTH
-	_name = (name.size() < MAX_NAME_LENGTH) ? name : name.substr(0, MAX_NAME_LENGTH);
+	_name = shrinkName(name);
 	_serverAddress = address;
 	_serverPort = port;
 	// if connection does not work, don't go further
@@ -84,6 +134,11 @@ bool Client::initServer(const std::string& name, const std::string& password, co
 		initListener();  // creates the new thread which listens for entring chat conenctions
 	sf::sleep(SOCKET_TIME_SLEEP);  // wait a quarter second to let the listening thread init the port
 	return true;
+}
+
+std::string Client::shrinkName(const std::string& name)
+{
+	return (name.size() < MAX_NAME_LENGTH) ? name : name.substr(0, MAX_NAME_LENGTH);
 }
 
 void Client::initListener()

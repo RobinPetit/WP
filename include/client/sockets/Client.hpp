@@ -29,9 +29,10 @@ public:
 	/// \param port The port the server occupies
 	bool connectToServer(const std::string& name, const std::string& password, const sf::IpAddress& address, sf::Uint16 port);
 
-	/// The function used to register an user to the server
-	/// After that, the player is also connect as with \a connectToServer
-	/// \return True if the registering and the connection succeeded and false otherwise
+	/// The function used to register an user to the server.
+	/// The connection is closed as soon the method exits, a call to
+	/// connectToServer need to be done in order to play the game.
+	/// \return True if the registering succeeded and false otherwise
 	/// \param name The name of the user
 	/// \param password its password
 	/// \param address The address where the server stands
@@ -152,12 +153,15 @@ private:
 	bool sendConnectionToken(const std::string& password);
 
 	/// The function used to register the user to the server.
-	/// It must then be authenticated.
+	/// \param name The name of the user
 	/// \param password The user's password
-	bool sendRegisteringToken(const std::string& password);
+	bool sendRegisteringToken(const std::string& name, const std::string& password, sf::TcpSocket& socket);
 
 	/// The functions used to create the listening thread
 	void initListener();
+
+	/// Forces the name to not be larger than MAX_NAME_LENGTH
+	std::string shrinkName(const std::string& name);
 };
 
 #endif // _CONNECTION_HPP_

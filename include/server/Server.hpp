@@ -62,7 +62,9 @@ private:
 	/// Used to receive packet when the user want to connect
 	void connectUser(sf::Packet& connectionPacket, sf::TcpSocket& client);
 	/// Used to receive packet when the user want to register
-	void registerUser(sf::Packet& registeringPacket);
+	void registerUser(sf::Packet& registeringPacket, sf::TcpSocket& client);
+	/// Send an acknowledgement packet
+	void sendAcknowledgement(sf::TcpSocket& client);
 
 	/// Handle the input in stdin and quit the server if asked
 	void waitQuit();

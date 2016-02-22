@@ -14,10 +14,20 @@ enum class TransferType : sf::Uint32
 	/// Used during the chat communications: tells that the other player wants to end the conversation
 	CHAT_QUIT,
 	// GAME
-	/// Used when the user authentificates to the server
+	/// Used when the user authenticates to the server
 	GAME_CONNECTION,
+	/// Used when the user tried to authenticates but gives wrong identifiers
+	GAME_WRONG_IDENTIFIERS,
+	/// Used when the user tried to authenticates but is already connected
+	GAME_ALREADY_CONNECTED,
 	/// Used when a new user register to the server
 	GAME_REGISTERING,
+	/// Used when a new user wants to register but the username is already taken
+	GAME_USERNAME_NOT_AVAILABLE,
+	/// Used when a new user wants to register but another error than GAME_USERNAME_NOT_AVAILABLE occurred
+	GAME_FAILED_TO_REGISTER,
+	/// Used when the server successfuly connected or registered the user
+	GAME_CONNECTION_OR_REGISTERING_OK,
 	/// Used when a player asks to find an opponent
 	GAME_REQUEST,
 	// Client/Server

@@ -1,6 +1,8 @@
 #ifndef _HOME_STATE_CLIENT_HPP
 #define _HOME_STATE_CLIENT_HPP
 
+#include <string>
+#include <utility>
 #include "client/AbstractState.hpp"
 
 // Forward declarations
@@ -21,6 +23,7 @@ class HomeState : public AbstractState
 		void connect();
 		void createAccount();
 		void quit();
+		static std::pair<std::string, std::string> askIdentifiers();
 
 };
 
