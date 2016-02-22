@@ -3,6 +3,7 @@
 
 #define DECK_SIZE = 20;
 #define DFLT_ENERG = 0;
+#define MAX_ENERG = 10;
 
 #include <vector>
 #include "client/AbstractState.hpp"
@@ -32,6 +33,7 @@ class GameState : public AbstractState
 	private:
 		std::vector<Card> _inHand;
 		std::vector<Card> _onBoard;
+        unsigned _lotsOfDataAboutStuff;
 		unsigned _remainCards = DECK_SIZE;
 		unsigned _energy = DEFLT_ENERG;
 		unsigned _oppoCards;
@@ -45,39 +47,5 @@ class GameState : public AbstractState
 
 };
 
-GameState::GameState(StateStack& stateStack, Client& client)
-{
-}
-
-void GameState::startTurn(unsigned turnNbr)
-{
-	_myTurn = true
-	//TODO put the card taken in the _inHand vector;
-	--_remainCards; ///Player took a card from his deck
-	this.setEnergy(turnNbr);		
-}
-
-void GameState::changeEnergy(unsigned energy){
-    if(_energy+energy >= 10){
-        _energy = 10;}
-    else
-        _energy+=energy;
-}
-
-void GameState::setEnergy(unsigned energy)
-{
-	if(energy >= 10){
-		///Energy can't be higher than 10
-		_energy = 10;}
-	else
-		_energy = energy;
-}
-
-void GameState::endTurn()
-{
-    this.setEnergy(DFLT_ENERG);
-    _myTurn = false;
-}
-	
 #endif// _GAME_STATE_CLIENT_HPP
 

@@ -41,12 +41,31 @@ void GameState::startTurn()
 {
 	_myTurn=true;
 	std::cout << "It is now your turn";
+	//TODO put the card taken in the _inHand vector;
+	--_remainCards; ///Player took a card from his deck
+	this.setEnergy(turnNbr);	
 	display();
 	/**/
 }
 
+void GameState::changeEnergy(unsigned energy){
+    if(_energy+energy >= MAX_ENERG){
+        _energy = MAX_ENERG;}
+    else
+        _energy+=energy;
+}
+
 
 //PRIVATE METHODS
+
+void GameState::setEnergy(unsigned energy)
+{
+	if(energy >= MAX_ENERG){
+		_energy = MAX_ENERG;}
+	else
+		_energy = energy;
+}
+	
 void GameState::useCard()
 {
 	if (not _myTurn)
@@ -74,7 +93,11 @@ void GameState::endTurn()
 		std::cout << "You must wait your turn!\n";
 		return;
 	}
-	/**/
+	else
+	{
+		this.setEnergy(DFLT_ENERG);
+		_myTurn = false;
+	};
 }
 
 void GameState::quit()
