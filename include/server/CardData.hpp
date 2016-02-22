@@ -199,20 +199,17 @@ struct SpellData
 ///CREATURES
 CreatureData ALL_CREATURES[] = {
 	{
-<<<<<<< HEAD
 		"Stanislas",
 		COST_2, ATTACK_2, HEALTH_2, SHIELD_1, SHIELD_LEGENDARY,
 		{{}},
 		"No effect"
-	},		{{}},
-		"No effect"
-=======
+	},
+	{
 		"Tower guard",
 		COST_3, ATTACK_2, HEALTH_8, SHIELD_1, SHIELD_BLUE,
 		{{CREATURE_SELF,CE_SET_CONSTRAINT,CC_SELF_HEALTH_GAIN,1}},
 		"This creature gains 1 HP each turn."
 	},
->>>>>>> 5944903fd98481ab031ca400853a238f53b4510c
 	{
         	"Diabolic imp",
 		COST_2, ATTACK_3, HEALTH_2, SHIELD_0, SHIELD_NONE,
@@ -275,7 +272,7 @@ CreatureData ALL_CREATURES[] = {
 	},
 	{
         	"Resurrected triceratops",
-		COST_0, ATTACK_0, HEALTH_1, SHIELD_0, SHIELD_None,
+		COST_0, ATTACK_0, HEALTH_1, SHIELD_0, SHIELD_NONE,
 		{{}},
 		"No effect"
 	},
@@ -373,12 +370,12 @@ SpellData ALL_SPELLS[] = {
 		{{PLAYER_OPPO, PE_EXCHG_HAND_CARD, 1}},
 		"Each player chose an opponent's card and trade them"
 	},
-	{
+	/* TODO: CE_SELF_HYPNOTIZED NOT CREATED YET {
 		"Hypnosis",
 		COST_4,
 		{{CREATURE_ONE_OPPO, CE_SELF_HYPNOTIZED, 3}},
 		"Take control of an ennemy creature for 3 turn"
-	},
+	},*/
 	{
 		"Metamorphosis",
 		COST_4,
@@ -433,24 +430,24 @@ SpellData ALL_SPELLS[] = {
 		{{PLAYER_OPPO, PE_STEAL_HAND_CARD, 1}},
 		"Take 1 random card from the opponent's deck"
 	},
-	{
+	/* TODO: STICKY NOT DONE YET {
 		"Sticky",
 		COST_7,	//~I put a random cost, as it was not specified in CSV file (NBA)
 		{{CREATURE_ALL_OPPO, C_STICKY, 2}},
 		"Your opponent's spell cost 2 more next Turn"
-	},
+	},*/
 	{
 		"Team Care",
 		COST_6,
 		{{CREATURE_TEAM, CE_ADD_HEALTH, 2}},
 		"Increase team's creatures' health of 2 points"
 	},
-	{
+	/* TODO: TRAP NOT DONE YET {
 		"Trap",
 		COST_2,
 		{{CREATURE_ONE_OPPO, C_TRAP, 3}},
 		"Deal 3 damage or summon two 1/1 snacks"
-	}
+	}*/
 };
 
 #endif // _CARD_DATA_HPP
