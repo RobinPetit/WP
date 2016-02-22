@@ -17,14 +17,10 @@
 #include <string>
 
 Client::Client():
-	_socket(),
 	_chatListenerPort(0),
-	_currentConversations(),
 	_isConnected(false),
-	_threadLoop(0),
-	_serverAddress(),
 	_serverPort(0),
-	_userTerminal(),
+	_threadLoop(false),
 	_inGame(false)
 {
 

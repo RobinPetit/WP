@@ -17,7 +17,6 @@ GameState::GameState(StateStack& stateStack, Client& client):
 {
 	addAction("Quit", &GameState::quit);
 	std::cout << "Your game is about to start!\n";
-	display();
 }
 
 void GameState::display()
@@ -33,12 +32,13 @@ void GameState::begin(unsigned lotsOfDataAboutStuff)
 	addAction("Use card from hand", &GameState::useCard);
 	addAction("Attack with a creature", &GameState::attackWithCreature);
 	addAction("End your turn", &GameState::endTurn);
-	display();
 	/**/
 }
 
 void GameState::startTurn()
 {
+	// if client dos NOT receive a message telling to start the turn,
+	// there is an error -> throw std::runtime_error
 	sf::Packet packet;
 	_client.getGameSocket().receive(packet);
 	TransferType type;
@@ -47,7 +47,6 @@ void GameState::startTurn()
 		throw std::runtime_error("Wrong message received");
 	_myTurn = true;
 	std::cout << "It is now your turn";
-	display();
 	/**/
 }
 
