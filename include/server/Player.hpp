@@ -4,6 +4,8 @@
 // std-C++ headers
 #include <stack>
 #include <random>
+#include <array>
+#include <functional>
 #include <cstddef>
 // WizardPoker headers
 #include "server/Card.hpp"
@@ -18,7 +20,6 @@ class Creature;
 class Player
 {
 public:
-	typedef void (Player::*PlayerEffectMethod)(const EffectParamsCollection&);
 	typedef std::size_t ID;
 	/// Constructor
 	Player(Player::ID id);
@@ -48,22 +49,7 @@ public:
 	void addLifePoints(const EffectParamsCollection& args);
 	void subLifePoints(const EffectParamsCollection& args);
 
-	PlayerEffectMethod effectMethods[P_EFFECTS_COUNT] =
-	{
-		&Player::setConstraint,
-		&Player::pickDeckCards,
-		&Player::loseHandCards,
-		&Player::reviveBinCard,
-
-		&Player::stealHandCard,
-		&Player::exchgHandCard,
-
-		&Player::setEnergyPoints,
-		&Player::addEnergyPoints,
-		&Player::subEnergyPoints,
-		&Player::addLifePoints,
-		&Player::subLifePoints,
-	};
+	static std::function<void(Player&, const EffectParamsCollection&)> effectMethods[P_EFFECTS_COUNT];
 
 	///Pass along effects to creatures
 	void applyEffectToCreatures(unsigned method, const EffectParamsCollection& effectArgs);

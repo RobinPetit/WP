@@ -1,5 +1,20 @@
 #include "server/Creature.hpp"
 
+std::function<void(Creature&, const EffectParamsCollection&)> Creature::effectMethods[P_EFFECTS_COUNT] =
+{
+	&Creature::setConstraint,
+	&Creature::resetAttack,
+	&Creature::resetHealth,
+	&Creature::resetShield,
+	&Creature::addAttack,
+	&Creature::addHealth,
+	&Creature::addShield,
+	&Creature::subAttack,
+	&Creature::subHealth,
+	&Creature::subShield,
+	&Creature::forcedSubHealth
+};
+
 Creature::Creature(unsigned cost, unsigned attack, unsigned health, unsigned shield, unsigned shieldType,
 					std::vector<EffectParamsCollection> effects):
 	Card(cost, effects),

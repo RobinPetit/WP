@@ -51,20 +51,7 @@ public:
 	void subShield(const EffectParamsCollection& args);
 	void forcedSubHealth(const EffectParamsCollection& args);
 
-	CreatureEffectMethod effectMethods[C_EFFECTS_COUNT] =
-	{
-		&Creature::setConstraint,
-		&Creature::resetAttack,
-		&Creature::resetHealth,
-		&Creature::resetShield,
-		&Creature::addAttack,
-		&Creature::addHealth,
-		&Creature::addShield,
-		&Creature::subAttack,
-		&Creature::subHealth,
-		&Creature::subShield,
-		&Creature::forcedSubHealth
-	};
+	static std::function<void(Creature&, const EffectParamsCollection&)> effectMethods[P_EFFECTS_COUNT];
 };
 
 #endif // CREATURE_SERVER_HPP

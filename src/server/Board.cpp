@@ -51,17 +51,17 @@ void Board::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 	switch (subject)
 	{
 		case PLAYER_SELF:
-			(_activePlayer->*(_activePlayer->effectMethods[method]))(effectArgs);
+			Player::effectMethods[method](*_activePlayer, effectArgs);
 			break;
 
 		case PLAYER_OPPO:
-			(_passivePlayer->*(_passivePlayer->effectMethods[method]))(effectArgs);
+			Player::effectMethods[method](*_passivePlayer, effectArgs);
 			break;
 
 		case CREATURE_SELF:
 			{
 				Creature* usedCreature = dynamic_cast<Creature*>(usedCard);
-				(usedCreature->*(usedCreature->effectMethods[method]))(effectArgs);
+                Creature::effectMethods[method](*usedCreature, effectArgs);
 			}
 			break;
 

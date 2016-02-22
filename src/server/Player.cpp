@@ -5,6 +5,23 @@
 // std-C++ headers
 #include <algorithm>
 
+std::function<void(Player&, const EffectParamsCollection&)> Player::effectMethods[P_EFFECTS_COUNT] =
+{
+	&Player::setConstraint,
+	&Player::pickDeckCards,
+	&Player::loseHandCards,
+	&Player::reviveBinCard,
+
+	&Player::stealHandCard,
+	&Player::exchgHandCard,
+
+	&Player::setEnergyPoints,
+	&Player::addEnergyPoints,
+	&Player::subEnergyPoints,
+	&Player::addLifePoints,
+	&Player::subLifePoints
+};
+
 Player::Player(Player::ID id):
 	_id(id)
 {
@@ -108,7 +125,7 @@ void Player::attackWithCreature(unsigned boardIndex, unsigned victim)
 void Player::applyEffectToCreature(unsigned boardIndex, unsigned method, const EffectParamsCollection& effectArgs)
 {
 	Creature* usedCreature = _cardBoard.at(boardIndex);
-	(usedCreature->*(usedCreature->effectMethods[method]))(effectArgs);
+    Creature::effectMethods[method](*usedCreature, effectArgs);
 }
 
 void Player::applyEffectToCreatures(unsigned method, const EffectParamsCollection& effectArgs)

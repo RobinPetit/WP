@@ -3,7 +3,6 @@
 
 // std-C++ headers
 #include <string>
-#include <vector>
 // WizardPoker headers
 #include "server/Constraints.hpp"
 #include "server/CardData.hpp"
