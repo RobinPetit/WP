@@ -361,12 +361,12 @@ SpellData ALL_SPELLS[] = {
 		{{PLAYER_OPPO, PE_LOSE_HAND_CARDS, 1}},
 		"Force the opponent to discard a card of his choice"
 	},
-    {
-        "Epidemic",
-        COST_8,
-        {{CREATURE_ALL_OPPO, CE_SUB_ATTACK, 1}},
-        "Decrease all opponent's creatures' attack of 1 point"
-    },
+	{
+		"Epidemic",
+		COST_8,
+		{{CREATURE_ALL_OPPO, CE_SUB_ATTACK, 1}},
+		"Decrease all opponent's creatures' attack of 1 point"
+	},
 	{
 		"Exchange",
 		COST_7,
@@ -397,12 +397,12 @@ SpellData ALL_SPELLS[] = {
 		{{CREATURE_ONE_OPPO, CC_SELF_BLOCK_ATTACKS, 2}},
 		"Forbid the opponent to use a card for 2 turns"
 	},
-    {
-        "Poison",
-        COST_4,
-        {{CREATURE_ONE_OPPO, CE_SUB_HEALTH, 2}},
-        "Decrease an opponent's creature's health of 2 points"
-    },
+	{
+		"Poison",
+		COST_4,
+		{{CREATURE_ONE_OPPO, CE_SUB_HEALTH, 2}},
+		"Decrease an opponent's creature's health of 2 points"
+	},
 	{
 		"Picking",
 		COST_3,
@@ -421,12 +421,12 @@ SpellData ALL_SPELLS[] = {
 		{{CREATURE_TEAM, CC_SELF_BLOCK_ATTACKS, 1}},
 		"Absord the next opponent's attack"
 	},
-    {
-        "Sickness",
-        COST_7,
-        {{CREATURE_ONE_OPPO, CE_SUB_ATTACK, 2}},
-        "Decrease an opponent's creature's attack of 2 points"
-    },
+	{
+		"Sickness",
+		COST_7,
+		{{CREATURE_ONE_OPPO, CE_SUB_ATTACK, 2}},
+		"Decrease an opponent's creature's attack of 2 points"
+	},
 	{
 		"Stealing",
 		COST_8,
@@ -439,12 +439,12 @@ SpellData ALL_SPELLS[] = {
 		{{CREATURE_ALL_OPPO, C_STICKY, 2}},
 		"Your opponent's spell cost 2 more next Turn"
 	},
-    {
-        "Team Care",
-        COST_6,
-        {{CREATURE_TEAM, CE_ADD_HEALTH, 2}},
-        "Increase team's creatures' health of 2 points"
-    },
+	{
+		"Team Care",
+		COST_6,
+		{{CREATURE_TEAM, CE_ADD_HEALTH, 2}},
+		"Increase team's creatures' health of 2 points"
+	},
 	{
 		"Trap",
 		COST_2,
