@@ -2,8 +2,17 @@
 #define _CARD_DATA_HPP_
 
 #include <string>
-#include "server/Constraints.hpp"
+#include <vector>
 
+/// Constraint Rules
+enum CONSTRAINT_VALUE_RULE : unsigned
+{
+    VALUE_FIXED,
+    VALUE_GET_DECREMENT,
+    VALUE_GET_INCREMENT,
+    VALUE_TURN_DECREMENT,
+    VALUE_TURN_INCREMENT
+};
 
 /// PLAYER EFFECTS
 enum PLAYER_EFFECTS : unsigned
@@ -44,20 +53,20 @@ enum PLAYER_CONSTRAINTS : unsigned
 	P_CONSTRAINTS_COUNT
 };
 
-constexpr unsigned P_CONSTRAINT_DEFAULTS[P_CONSTRAINTS_COUNT] =
+constexpr std::pair<unsigned, CONSTRAINT_VALUE_RULE> P_CONSTRAINT_DEFAULTS[P_CONSTRAINTS_COUNT] =
 {
 	//TURN-BASED CONSTRAINTS
-	1,		//pick one card
-	10,		//energy points start at 10
-	0, 		//sub 0 health points
-	0,		//add 0 health points
-	5, 		//if deck empty, sub 5 health points
+	{1,VALUE_FIXED},		//PC_CARD_PICK_AMOUNT
+	{10,VALUE_FIXED},		//PC_ENERGY_POINTS_INIT
+	{0,VALUE_FIXED}, 		//PC_HEALTH_POINTS_GAIN
+	{0,VALUE_FIXED},		//PC_HEALTH_POINTS_LOSS
+	{5,VALUE_FIXED}, 		//PC_HEALTH_POINTS_LOSS_DECK_EMPTY
 	//PASSIVE CONSTRAINTS
-	100,	//no limit for using cards
-	100,	//no limit for calling spells
-	100, 	//no limit for attacking with creatures
-	6,		//arbitrary limit for placing creatures (TODO: discuss)
-	6		//arbitrary limit for amount of creatures on board
+	{100,VALUE_FIXED},		//PC_USE_CARD_LIMIT,
+	{100,VALUE_FIXED},		//PC_CALL_SPELL_LIMIT
+	{100,VALUE_FIXED}, 		//PC_ATTACK_WITH_CREATURE_LIMIT
+	{6,VALUE_FIXED},		//PC_PLACE_CREATURE_LIMIT
+	{6,VALUE_FIXED}			//PC_CREATURES_ON_BOARD_LIMIT
 };
 
 /// CREATURE EFFECTS
@@ -103,32 +112,28 @@ enum CREATURE_CONSTRAINTS : unsigned
 	CC_END_TEAM_SHIELD_LOSS,
 	//count
 	C_CONSTRAINTS_COUNT
-	//TODO
-	//CE_SELF_HYPNOTIZED,			// Can only be used by opponent
-	//C_STICKY,			// Your opponent's spell cost X more next Turn
-	//C_TRAP				// Deal 3 damage or summon two 1/1 snacks
 };
 
-constexpr unsigned C_CONSTRAINT_DEFAULTS[C_CONSTRAINTS_COUNT] =
+constexpr std::pair<unsigned, CONSTRAINT_VALUE_RULE> C_CONSTRAINT_DEFAULTS[C_CONSTRAINTS_COUNT] =
 {
 	//turn-by-turn: all default to 0
-	0,		//
-	0,		//
-	0, 		//
-	0,		//
-	0, 		//
-	0,		//
-	0,		//
-	0,		//
-	0,		//
+	{0,VALUE_FIXED},		//CC_SELF_HEALTH_GAIN
+	{0,VALUE_FIXED},		//CC_TEAM_HEALTH_GAIN
+	{0,VALUE_FIXED}, 		//CC_SELF_HEALTH_LOSS
+	{0,VALUE_FIXED},		//CC_TEAM_HEALTH_LOSS
+	{0,VALUE_FIXED}, 		//CC_SELF_ATTACK_GAIN
+	{0,VALUE_FIXED},		//CC_TEAM_ATTACK_GAIN
+	{0,VALUE_FIXED},		//CC_SELF_ATTACK_LOSS
+	{0,VALUE_FIXED},		//CC_TEAM_ATTACK_LOSS
+	{0,VALUE_FIXED},		//CC_SELF_SHIELD_LOSS
 	//passive
-	0,
-	0,
-	0,
+	{0,VALUE_GET_DECREMENT},	//CC_SELF_BLOCK_ATTACKS
+	{0,VALUE_GET_DECREMENT},	//CC_TEAM_BLOCK_ATTACKS
+	{0,VALUE_FIXED},			//CC_SELF_PARALYZED
 	//ending
-	0,
-	0,
-	0
+	{0,VALUE_FIXED},		//CC_END_TEAM_HEALTH_GAIN
+	{0,VALUE_FIXED},		//CC_END_TEAM_ATTACK_LOSS
+	{0,VALUE_FIXED}			//CC_END_TEAM_SHIELD_LOSS
 };
 
 
