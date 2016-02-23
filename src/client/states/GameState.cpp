@@ -2,7 +2,7 @@
 #include <iostream>
 #include <cstdlib>
 // SFML headers
-#include <SFML/Network/IpAddress.hpp>
+//#include <SFML/Network/IpAddress.hpp>
 // WizardPoker headers
 #include "common/constants.hpp"
 #include "client/ErrorCode.hpp"
@@ -55,15 +55,16 @@ void GameState::startTurn()
 	std::cout << "It is now your turn";
 	//TODO put the card taken in the _inHand vector;
 	--_remainCards;  // Player took a card from his deck
-	// setEnergy(turnNbr);
+	++_nbrTurn;
+	setEnergy(_nbrTurn);
 	display();
 	/**/
 }
 
 void GameState::changeEnergy(unsigned energy)
 {
-	if(_energy+energy >= MAX_ENERG){
-		_energy = MAX_ENERG;}
+	if(_energy+energy >= MAX_ENERGY)
+		_energy = MAX_ENERGY;
 	else
 		_energy+=energy;
 }
@@ -73,8 +74,8 @@ void GameState::changeEnergy(unsigned energy)
 
 void GameState::setEnergy(unsigned energy)
 {
-	if(energy >= MAX_ENERG){
-		_energy = MAX_ENERG;}
+	if(energy >= MAX_ENERGY)
+		_energy = MAX_ENERGY;
 	else
 		_energy = energy;
 }
@@ -108,7 +109,7 @@ void GameState::endTurn()
 	}
 	else
 	{
-		// setEnergy(DFLT_ENERG);
+		setEnergy(DFLT_ENERGY);
 		_myTurn = false;
 	};
 }
