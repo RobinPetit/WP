@@ -7,6 +7,7 @@
 #include "server/ErrorCode.hpp"
 #include "common/sockets/TransferType.hpp"
 #include "common/sockets/PacketOverload.hpp"
+#include "common/PasswordHasher.hpp"
 // std-C++ headers
 #include <iostream>
 #include <algorithm>
@@ -49,13 +50,11 @@ int Server::start(const sf::Uint16 listenerPort)
 
 void Server::takeConnection()
 {
-	std::string playerName;
-	sf::Uint16 clientPort;
-	sf::TcpSocket *newClient = new sf::TcpSocket();
+	std::unique_ptr<sf::TcpSocket> newClient{new sf::TcpSocket()};
 	// if listener can't accept correctly, free the allocated socket
 	if(_listener.accept(*newClient) != sf::Socket::Done)
 	{
-		delete newClient;
+		std::cout << "Error when trying to accept a new client.\n";
 		return;
 	}
 	// receive username
@@ -64,24 +63,118 @@ void Server::takeConnection()
 	TransferType type;
 	packet >> type;
 	if(type == TransferType::GAME_CONNECTION)
-	{
-		packet >> playerName >> clientPort;
-		/// \TODO receive the password and check the connection right here
-		std::cout << "new player connected: " << playerName << std::endl;
-		// add the new socket to the clients
-		_clients[playerName] = {newClient, clientPort};
-		// and add this client to the selector so that its receivals are handled properly
-		_socketSelector.add(*newClient);
-	}
+		connectUser(packet, std::move(newClient));
+	else if(type == TransferType::GAME_REGISTERING)
+		registerUser(packet, std::move(newClient));
 	else if(type == TransferType::CHAT_PLAYER_IP)
-		handleChatRequest(packet, *newClient);
+		handleChatRequest(packet, std::move(newClient));
 	else
 		std::cout << "Error: wrong code!" << std::endl;
 }
 
+// TODO these methods (connect/register) should be rewritten in many smaller methods
+void Server::connectUser(sf::Packet& connectionPacket, std::unique_ptr<sf::TcpSocket> client)
+{
+	std::string playerName, password;
+	sf::Uint16 clientPort;
+	connectionPacket >> playerName >> password >> clientPort;
+
+	bool alreadyConnected{_clients.find(playerName) != _clients.end()};
+	// TODO check in database for the identifiers validity
+	bool wrongIdentifiers{false};
+	while(alreadyConnected or wrongIdentifiers)
+	{
+		// Send a response indicating the error
+		connectionPacket.clear();
+		if(alreadyConnected)
+		{
+			std::cout << playerName << " tried to connect to the server but is already connected.\n";
+			connectionPacket << TransferType::GAME_ALREADY_CONNECTED;
+		}
+		else
+		{
+			std::cout << playerName << " gives wrong identifiers when trying to connect.\n";
+			connectionPacket << TransferType::GAME_WRONG_IDENTIFIERS;
+		}
+		client->send(connectionPacket);
+
+		// Receive the new try of the client
+		client->receive(connectionPacket);
+		TransferType type;
+		connectionPacket >> type;
+		if(type != TransferType::GAME_CONNECTION)
+		{
+			std::cout << "Error: wrong packet transmitted after failed connection (expecting another connection packet).\n";
+			return;
+		}
+		connectionPacket >> playerName >> password >> clientPort;
+
+		alreadyConnected = _clients.find(playerName) != _clients.end();
+		// TODO check in database for the identifiers validity
+		wrongIdentifiers = false;
+	}
+	std::cout << "New player connected: " << playerName << std::endl;
+	sendAcknowledgement(*client);
+	// add this client to the selector so that its receivals are handled properly
+	// (be sure that this line is before the next, otherwise we get a segfault)
+	_socketSelector.add(*client);
+	// and add the new socket to the clients
+	_clients[playerName] = {std::move(client), clientPort};
+}
+
+void Server::registerUser(sf::Packet& registeringPacket, std::unique_ptr<sf::TcpSocket> client)
+{
+	std::string playerName, password;
+	registeringPacket >> playerName >> password;
+
+	// TODO check in database for the identifiers validity
+	bool userNameNotAvailable{false};
+	bool failedToRegister{false};
+	while(userNameNotAvailable or failedToRegister)
+	{
+		// Send a response indicating the error
+		registeringPacket.clear();
+		if(userNameNotAvailable)
+		{
+			std::cout << playerName << " tried to register to the server but the name is not available.\n";
+			registeringPacket << TransferType::GAME_USERNAME_NOT_AVAILABLE;
+		}
+		else
+		{
+			std::cout << playerName << " tried to register to the server but an error occurred.\n";
+			registeringPacket << TransferType::GAME_FAILED_TO_REGISTER;
+		}
+		client->send(registeringPacket);
+
+		// Receive the new try of the client
+		client->receive(registeringPacket);
+		TransferType type;
+		registeringPacket >> type;
+		if(type != TransferType::GAME_REGISTERING)
+		{
+			std::cout << "Error: wrong packet transmitted after failed registering (expecting another registering packet).\n";
+			return;
+		}
+		registeringPacket >> playerName >> password;
+
+		// TODO check in database for the identifiers validity
+		userNameNotAvailable = false;
+		failedToRegister = false;
+	}
+	// TODO register the user into the database
+	sendAcknowledgement(*client);
+	std::cout << "New player registered: " << playerName << std::endl;
+}
+void Server::sendAcknowledgement(sf::TcpSocket& client)
+{
+	sf::Packet packet;
+	packet << TransferType::GAME_CONNECTION_OR_REGISTERING_OK;
+	client.send(packet);
+}
+
 void Server::receiveData()
 {
-	std::cout << "Data received\n";
+	std::cout << "Data received.\n";
 	// first find which socket it is
 	auto it = std::find_if(_clients.begin(), _clients.end(), [this](const auto& pair)
 	{
@@ -139,19 +232,17 @@ void Server::receiveData()
 	}
 	else if(receivalStatus == sf::Socket::Disconnected)
 	{
-		std::cerr << "Connection with player " << it->first << " is lost: forced disconnection from server" << std::endl;
+		std::cerr << "Connection with player " << it->first << " is lost: forced disconnection from server." << std::endl;
 		removeClient(it);
 	}
 	else
-		std::cerr << "data not well received" << std::endl;
+		std::cerr << "data not well received." << std::endl;
 }
 
 void Server::removeClient(const _iterator& it)
 {
 	// remove from the selector so it won't receive data anymore
 	_socketSelector.remove(*(it->second.socket));
-	// free the allocated socket
-	delete it->second.socket;
 	// remove from the map
 	_clients.erase(it);
 }
@@ -171,11 +262,7 @@ void Server::quit()
 	_done.store(true);
 	_quitThread.join();
 	_threadRunning.store(false);
-	for(auto it = _clients.begin(); it != _clients.end(); ++it)
-	{
-		_socketSelector.remove(*(it->second.socket));
-		delete it->second.socket;
-	}
+	_socketSelector.clear();
 	_clients.clear();
 }
 
@@ -229,7 +316,7 @@ void Server::findOpponent(const _iterator& it)
 
 // Friends management
 
-void Server::handleChatRequest(sf::Packet& packet, sf::TcpSocket& client)
+void Server::handleChatRequest(sf::Packet& packet, std::unique_ptr<sf::TcpSocket> client)
 {
 	sf::Packet responseToCaller;
 	responseToCaller << TransferType::CHAT_PLAYER_IP;
@@ -259,7 +346,7 @@ void Server::handleChatRequest(sf::Packet& packet, sf::TcpSocket& client)
 			std::cout << "connected\n";
 			// as the listening port has a delay, set communications as blokcing
 			toCallee.setBlocking(true);
-			packetToCalle << client.getRemoteAddress().toInteger() << callerPort << calleeName << callerName;
+			packetToCalle << client->getRemoteAddress().toInteger() << callerPort << calleeName << callerName;
 			std::cout << "sending to callee\n";
 			if(toCallee.send(packetToCalle) != sf::Socket::Done)
 				std::cerr << "unable to send to calle\n";
@@ -267,7 +354,7 @@ void Server::handleChatRequest(sf::Packet& packet, sf::TcpSocket& client)
 				std::cout << "sent to callee (" << calleeName << ")\n";
 		}
 	}
-	client.send(responseToCaller);
+	client->send(responseToCaller);
 }
 
 void Server::handleFriendshipRequest(const _iterator& it, sf::Packet& transmission)
@@ -353,23 +440,3 @@ void Server::handleRemoveFriend(const _iterator& it, sf::Packet& transmission)
 	transmission >> removedFriend;
 	// TODO update database, remove removedFriend from the friend list of it
 }
-
-Server::~Server()
-{
-	quit();
-}
-
-void Server::waitQuit()
-{
-	std::cout << "Type '" << _quitPrompt << "' to end the server" << std::endl;
-	std::string input;
-	while(!_done.load())
-	{
-		std::cin >> input;
-		if(input == _quitPrompt)
-			_done.store(true);
-	}
-	_threadRunning.store(false);
-	std::cout << "ending server..." << std::endl;
-}
-

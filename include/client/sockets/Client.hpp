@@ -23,9 +23,22 @@ public:
 	/// The function used to make first connection with the game server
 	/// \return True if the connection succeeded and false otherwise
 	/// \param name The name of the user
+	/// \param password its password
 	/// \param address The address where the server stands
 	/// \param port The port the server occupies
-	bool connectToServer(const std::string& name, const sf::IpAddress& address, sf::Uint16 port);
+	bool connectToServer(const std::string& name, const std::string& password, const sf::IpAddress& address, sf::Uint16 port);
+
+	/// The function used to register an user to the server.
+	/// The connection is closed as soon the method exits, a call to
+	/// connectToServer need to be done in order to play the game.
+	/// The method is static to enforce the fact that no data is stored in the
+	/// Client instance when the user register to the server.
+	/// \return True if the registering succeeded and false otherwise
+	/// \param name The name of the user
+	/// \param password its password
+	/// \param address The address where the server stands
+	/// \param port The port the server occupies
+	static bool registerToServer(const std::string& name, const std::string& password, const sf::IpAddress& address, sf::Uint16 port);
 
 	// Friends management
 
@@ -123,8 +136,30 @@ private:
 	std::vector<std::string> _friendsRequests;
 
 	// private methods
+	/// The function user to connect to the server, used by both connectToServer
+	/// and registerToServer. The connection is just a socket connection,
+	/// the user is not authentificated with this method.
+	/// \return True if the connection succeeded and false otherwise
+	/// \param name The name of the user
+	/// \param address The address where the server stands
+	/// \param port The port the server occupies
+	bool initServer(const std::string& name, const sf::IpAddress& address, sf::Uint16 port);
+
+	/// The function used to establish a connection in the user point of view,
+	/// authentificating the user and allowing it to effectively play the game.
+	/// \param password The user's password
+	bool sendConnectionToken(const std::string& password);
+
+	/// The function used to register the user to the server.
+	/// \param name The name of the user
+	/// \param password The user's password
+	static bool sendRegisteringToken(const std::string& name, const std::string& password, sf::TcpSocket& socket);
+
 	/// The functions used to create the listening thread
 	void initListener();
+
+	/// Forces the name to not be larger than MAX_NAME_LENGTH
+	static std::string shrinkName(const std::string& name);
 };
 
 #endif // _CONNECTION_HPP_
