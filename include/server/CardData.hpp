@@ -126,7 +126,17 @@ enum ShieldType : int
 	SHIELD_LEGENDARY	//creature attacks don't go through
 };
 
+///How to define an effect:
 typedef std::vector<int> EffectParamsCollection;
+//In the following order:
+//EFFECT SUBJECT
+//if subject is identified by index (INDX at the end), SUBJECT INDEX
+//EFFECT ID
+//if effect is SET_CONSTRAINT:
+//	CONSTRAINT ID
+//	followed by VALUE and TURNS arguments (no more than 2)
+//if effect is something else:
+//	ALL ARGUMENTS (no more than 4)
 
 ///Creature struct
 struct CreatureData
