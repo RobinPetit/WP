@@ -4,7 +4,24 @@
 #include <string>
 #include <vector>
 
-/// PLAYER EFFECTS
+
+/// Subject of the effect
+enum EFFECT_SUBJECTS : int
+{
+	PLAYER_SELF,
+	PLAYER_OPPO,
+
+	CREATURE_SELF_THIS,
+	CREATURE_SELF_INDX,
+	CREATURE_SELF_RAND,
+	CREATURE_SELF_TEAM,
+
+	CREATURE_OPPO_INDX,
+	CREATURE_OPPO_RAND,
+	CREATURE_OPPO_TEAM
+};
+
+/// Player effects
 enum PLAYER_EFFECTS : int
 {
 	//constraints
@@ -22,7 +39,7 @@ enum PLAYER_EFFECTS : int
 	P_EFFECTS_COUNT
 };
 
-/// PLAYER CONSTRAINTS
+/// Player constraints
 enum PLAYER_CONSTRAINTS : int
 {
 	//turn-by-turn
@@ -41,7 +58,7 @@ enum PLAYER_CONSTRAINTS : int
 	P_CONSTRAINTS_COUNT
 };
 
-/// CREATURE EFFECTS
+/// Creature effects
 enum CREATURE_EFFECTS : int
 {
 	//constraints
@@ -57,7 +74,7 @@ enum CREATURE_EFFECTS : int
 	C_EFFECTS_COUNT
 };
 
-/// CREATURE CONSTRAINTS
+/// Creature constraints
 enum CREATURE_CONSTRAINTS : int
 {
 	//turn-by-turn
@@ -79,8 +96,7 @@ enum CREATURE_CONSTRAINTS : int
 	C_CONSTRAINTS_COUNT
 };
 
-
-/// Used types
+/// Types used for card creation:
 enum CostValue : int
 {
 	COST_0,COST_1,COST_2,COST_3,COST_4,COST_5,COST_6,COST_7,COST_8,COST_9,COST_10
@@ -112,22 +128,7 @@ enum ShieldType : int
 
 typedef std::vector<int> EffectParamsCollection;
 
-enum EFFECT_SUBJECTS : int
-{
-	PLAYER_SELF,
-	PLAYER_OPPO,
-
-	CREATURE_SELF_THIS,
-	CREATURE_SELF_INDX,
-	CREATURE_SELF_RAND,
-	CREATURE_SELF_TEAM,
-
-	CREATURE_OPPO_INDX,
-	CREATURE_OPPO_RAND,
-	CREATURE_OPPO_TEAM
-};
-
-///Creature type
+///Creature struct
 struct CreatureData
 {
 	std::string name;
@@ -140,7 +141,7 @@ struct CreatureData
 	std::string description;
 };
 
-///Spell type
+///Spell struct
 struct SpellData
 {
 	std::string name;
