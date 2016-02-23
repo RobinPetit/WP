@@ -91,20 +91,24 @@ void GameState::useCard()
 	{
 		if(!_inHand.empty())
 		{
+			std::size_t cardIndex;
 			std::cout << "Which card would you like to use?\n";
-			for(std::vector<int>::iterator it = _inHand.begin(); it != _inHand.end(); ++it)
-				addAction(*it, &GameState::put(it));
+			for(std::size_t i = 0; i < _inHand.size(); ++i)
+				std::cout << i << ". " << _inHand[i] << "\n";
+			std::cout << "Enter the index of the card : ";
+			std::cin >> cardIndex;
+			putOnBoard(cardIndex);
 		}
 		else
 			std::cout << "You have no card on the board";
 	}
 }
 
-void GameState::putOnBoard(std::vector<int>::iterator it)
+void GameState::putOnBoard(std::size_t cardIndex)
 {
-	int card = *it;			///Save the card ID
-	_inHand.erase(it);		///Remove it from the hand
-	_onBoard.push_back(card);	///Put it on the board
+	int card = _inHand[cardIndex];			 ///Save the card ID
+	_inHand.erase(_inHand.begin()+cardIndex);///Remove it from the hand
+	_onBoard.push_back(card);				 ///Put it on the board
 }
 
 void GameState::attackWithCreature()
@@ -116,15 +120,20 @@ void GameState::attackWithCreature()
 	}
 	else
 	{
+		std::size_t selfCardIndex, oppoCardIndex;
 		std::cout << "With which creature would like to attack?\n";
-		for(std::vector<int>::iterator it = _onBoard.begin(); it != _onBoard.end(); ++it)
-			//TODO Show creatures on Board and save the player's choice
-			;
+		for(std::size_t i = 0; i < _onBoard.size(); ++i)
+			std::cout << i << ". " << _onBoard[i] << "\n";
+		std::cout << "Enter the index of the card : ";
+		std::cin >> selfCardIndex;
 		
 		std::cout << "Which opponent's creature would like to attack?\n";
-		for(std::vector<int>::iterator it = _oppoBoard.begin(); it != _oppoBoard.end(); ++it)
-			//TODO Show opponent's creatures on Board and save the player's choice
-			;
+		for(std::size_t i = 0; i < _oppoBoard.size(); ++i)
+			std::cout << i << ". " << _oppoBoard[i] << "\n";
+		std::cout << "Enter the index of the card : ";
+		std::cin >> oppoCardIndex;
+		
+		//TODO send the attack
 	};
 }
 
