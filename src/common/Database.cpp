@@ -5,6 +5,7 @@
 Database::Database(std::string filename)
 {
 	sqliteThrowExcept(sqlite3_open(filename.c_str(), &_database));
+	sqliteThrowExcept(sqlite3_exec(_database, "PRAGMA foreign_keys = ON;", nullptr, nullptr, nullptr));
 }
 
 Database::~Database()
