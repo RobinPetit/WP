@@ -53,7 +53,10 @@ void Server::takeConnection()
 	std::unique_ptr<sf::TcpSocket> newClient{new sf::TcpSocket()};
 	// if listener can't accept correctly, free the allocated socket
 	if(_listener.accept(*newClient) != sf::Socket::Done)
+	{
+		std::cout << "Error when trying to accept a new client.\n";
 		return;
+	}
 	// receive username
 	sf::Packet packet;
 	newClient->receive(packet);
@@ -72,13 +75,10 @@ void Server::takeConnection()
 // TODO these methods (connect/register) should be rewritten in many smaller methods
 void Server::connectUser(sf::Packet& connectionPacket, std::unique_ptr<sf::TcpSocket> client)
 {
-	std::string playerName;
-	sf::Uint64 transmittedPassword;
-	PasswordHasher::result_type password;
+	std::string playerName, password;
 	sf::Uint16 clientPort;
+	connectionPacket >> playerName >> password >> clientPort;
 
-	connectionPacket >> playerName >> transmittedPassword >> clientPort;
-	password = static_cast<PasswordHasher::result_type>(transmittedPassword);
 	bool alreadyConnected{_clients.count(playerName) != 0};
 	// TODO check in database for the identifiers validity
 	bool wrongIdentifiers{false};
@@ -107,8 +107,8 @@ void Server::connectUser(sf::Packet& connectionPacket, std::unique_ptr<sf::TcpSo
 			std::cout << "Error: wrong packet transmitted after failed connection (expecting another connection packet).\n";
 			return;
 		}
-		connectionPacket >> playerName >> transmittedPassword >> clientPort;
-		password = static_cast<PasswordHasher::result_type>(transmittedPassword);
+		connectionPacket >> playerName >> password >> clientPort;
+
 		alreadyConnected = _clients.count(playerName) != 0;
 		// TODO check in database for the identifiers validity
 		wrongIdentifiers = false;
@@ -124,12 +124,9 @@ void Server::connectUser(sf::Packet& connectionPacket, std::unique_ptr<sf::TcpSo
 
 void Server::registerUser(sf::Packet& registeringPacket, std::unique_ptr<sf::TcpSocket> client)
 {
-	std::string playerName;
-	sf::Uint64 transmittedPassword;
-	PasswordHasher::result_type password;
+	std::string playerName, password;
+	registeringPacket >> playerName >> password;
 
-	registeringPacket >> playerName >> transmittedPassword;
-	password = static_cast<PasswordHasher::result_type>(transmittedPassword);
 	// TODO check in database for the identifiers validity
 	bool userNameNotAvailable{false};
 	bool failedToRegister{false};
@@ -158,8 +155,8 @@ void Server::registerUser(sf::Packet& registeringPacket, std::unique_ptr<sf::Tcp
 			std::cout << "Error: wrong packet transmitted after failed registering (expecting another registering packet).\n";
 			return;
 		}
-		registeringPacket >> playerName >> transmittedPassword;
-		password = static_cast<PasswordHasher::result_type>(transmittedPassword);
+		registeringPacket >> playerName >> password;
+
 		// TODO check in database for the identifiers validity
 		userNameNotAvailable = false;
 		failedToRegister = false;
