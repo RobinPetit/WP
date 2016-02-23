@@ -360,19 +360,20 @@ void Server::handleChatRequest(sf::Packet& packet, std::unique_ptr<sf::TcpSocket
 void Server::handleFriendshipRequest(const _iterator& it, sf::Packet& transmission)
 {
 	sf::Packet response;
-	std::string name;
-	transmission >> name;
-	/// \TODO check if name is in the database so that is the requested player exists but is not connected,
-	/// the request in stored somewhere
-	//~ Right now, the code only works if both players are conencted simultaneously
-	const _iterator& aimedPlayer = _clients.find(name);
-	if(aimedPlayer == _clients.end())
+	std::string friendName;
+	transmission >> friendName;
+	/// \TODO check database for existence of the user friend
+	bool friendExists{true};
+	if(not friendExists)
+		// Send an error to the user
 		response << TransferType::NOT_EXISTING_FRIEND;
 	else
 	{
-		it->second.friendshipRequests.push_back(name);
-		aimedPlayer->second.externalRequests.push_back(it->first);
+		/// \TODO Add the user friendName to the friendship requests list of the user it
+		it->second.friendshipRequests.push_back(friendName);
+		// Send an acknowledgement to the user
 		response << TransferType::PLAYER_NEW_FRIEND;
+		/// \TODO Add the user it to the external requests list of the user friendName
 	}
 	it->second.socket->send(response);
 }
@@ -383,20 +384,22 @@ void Server::handleFriendshipRequestResponse(const _iterator& it, sf::Packet& tr
 	std::string name;
 	transmission >> name >> accepted;
 	const auto& asker = _clients.find(name);
-	// if request corresponds to a non-connected player, don't go further
-	if(asker == _clients.end())
+	/// \TODO check if the other user is in the external requests list
+	bool otherUserInExternalRequestList{true};
+	if(not otherUserInExternalRequestList)
 	{
 		sf::Packet response;
 		response << TransferType::NOT_EXISTING_FRIEND;
 		it->second.socket->send(response);
 		return;
 	}
-	// remove requests for both players
+	/// \TODO remove the other user from the external requests list of the user it
 	auto& extRequests = it->second.externalRequests;
 	extRequests.erase(std::find(extRequests.begin(), extRequests.end(), name));
+	/// \TODO remove the user it from the friendship requests list of the other user
 	auto& friendRequests = asker->second.friendshipRequests;
 	friendRequests.erase(std::find(friendRequests.begin(), friendRequests.end(), it->first));
-	// add the accepter's name in the correct list
+	/// \TODO add the user it to the right list of the other user
 	(accepted ? asker->second.acceptedRequests : asker->second.refusedRequests).push_back(it->first);
 	// acknowledge to client
 	sf::Packet response;
@@ -407,6 +410,7 @@ void Server::handleFriendshipRequestResponse(const _iterator& it, sf::Packet& tr
 void Server::sendFriendshipRequests(const _iterator& it)
 {
 	sf::Packet response;
+	/// \TODO get the external requests list of the user it
 	response << TransferType::PLAYER_GETTING_FRIEND_REQUESTS << it->second.externalRequests;
 	it->second.socket->send(response);
 }
@@ -414,21 +418,20 @@ void Server::sendFriendshipRequests(const _iterator& it)
 void Server::sendFriendshipRequestsState(const _iterator& it)
 {
 	sf::Packet response;
+	/// \TODO get the accepted and refused requests of the user it
 	response << TransferType::PLAYER_GETTING_FRIEND_REQUESTS_STATE
 	         << it->second.acceptedRequests
 	         << it->second.refusedRequests;
 	it->second.socket->send(response);
-	// Remove the temporary data that are the accepted and refused friendship lists
-	auto& accepted = it->second.acceptedRequests;
-	auto& refused = it->second.refusedRequests;
-	accepted.erase(accepted.cbegin(), accepted.cend());
-	refused.erase(refused.cbegin(), refused.cend());
+	/// \TODO clear the accepted and refused requests of the user it
+	it->second.acceptedRequests.clear();
+	it->second.refusedRequests.clear();
 }
 
 void Server::sendFriends(const _iterator& it)
 {
 	std::vector<std::string> friends;
-	/// \TODO use database to find the friends
+	/// \TODO get the friends list of the user it
 	sf::Packet packet;
 	packet << friends;
 	it->second.socket->send(packet);
@@ -438,5 +441,5 @@ void Server::handleRemoveFriend(const _iterator& it, sf::Packet& transmission)
 {
 	std::string removedFriend;
 	transmission >> removedFriend;
-	// TODO update database, remove removedFriend from the friend list of it
+	/// \TODO remove removedFriend user from the friend list of the user it
 }
