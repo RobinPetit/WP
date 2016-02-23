@@ -54,7 +54,10 @@ bool Client::sendConnectionToken(const std::string& password)
 	       << password
 	       << static_cast<sf::Uint16>(_chatListenerPort);
 	if(_socket.send(packet) != sf::Socket::Done)
+	{
+		std::cout << "Failed to send connection packet\n";
 		return false;
+	}
 
 	// Receive the server response
 	_socket.receive(packet);
@@ -119,13 +122,19 @@ bool Client::initServer(const std::string& name, const std::string& password, co
 {
 	// if client is already connected to a server, do not try to re-connect it
 	if(_isConnected)
+	{
+		std::cout << "Already connected\n";
 		return false;
+	}
 	_name = shrinkName(name);
 	_serverAddress = address;
 	_serverPort = port;
 	// if connection does not work, don't go further
 	if(_socket.connect(address, port) != sf::Socket::Done)
+	{
+		std::cout << "Failed to establish socket connection\n";
 		return false;
+	}
 	if(!_userTerminal.hasKnownTerminal())
 		std::cout << "Warning: as no known terminal has been found, chat is disabled" << std::endl;
 	else

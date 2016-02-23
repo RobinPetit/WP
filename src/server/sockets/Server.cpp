@@ -174,7 +174,7 @@ void Server::sendAcknowledgement(sf::TcpSocket& client)
 
 void Server::receiveData()
 {
-	std::cout << "Data received\n";
+	std::cout << "Data received.\n";
 	// first find which socket it is
 	auto it = std::find_if(_clients.begin(), _clients.end(), [this](const auto& pair)
 	{
@@ -232,11 +232,11 @@ void Server::receiveData()
 	}
 	else if(receivalStatus == sf::Socket::Disconnected)
 	{
-		std::cerr << "Connection with player " << it->first << " is lost: forced disconnection from server" << std::endl;
+		std::cerr << "Connection with player " << it->first << " is lost: forced disconnection from server." << std::endl;
 		removeClient(it);
 	}
 	else
-		std::cerr << "data not well received" << std::endl;
+		std::cerr << "data not well received." << std::endl;
 }
 
 void Server::removeClient(const _iterator& it)
