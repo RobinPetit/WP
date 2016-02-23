@@ -1,59 +1,80 @@
 #include "server/Constraints.hpp"
 
-Constraints::Constraints(const std::pair<int, CONSTRAINT_VALUE_RULE>* defaultValues, const int arraySize):
-	_defaultValues(defaultValues), _size(arraySize)
+Constraints::Constraints(const ConstraintDefaultValue* defaultValues, const int arraySize):
+	_size(arraySize), _defaultValues(defaultValues)
 {
-	_timedValues = new std::vector<std::pair<int, int>>[_size];
+	_timedValues = new std::vector<ConstraintTimedValue>[_size];
 }
 
 void Constraints::setConstraint(int constraintID, int value, int turns)
 {
-	_timedValues[constraintID].push_back(std::make_pair(value, turns));
+	_timedValues[constraintID].push_back({value, turns});
 }
 
 int Constraints::getConstraint(int constraintID)
 {
+	int value;
+
 	if (_timedValues[constraintID].empty())
-		return _defaultValues[constraintID].first;
+		value = _defaultValues[constraintID].value;
     else
     {
-		int value = _timedValues[constraintID].rbegin()->first;
-		switch(_defaultValues[constraintID].second) //rules
+		switch (_defaultValues[constraintID].getOption)
 		{
-			case VALUE_GET_INCREMENT:
-				_timedValues[constraintID].rbegin()->first++;
+			case GET_FIRST:
+				value = getTimedValue(constraintID, _timedValues[constraintID].size()-1);
+            case GET_LAST:
+				value = getTimedValue(constraintID, 0);
 				break;
-			case VALUE_GET_DECREMENT:
-				_timedValues[constraintID].rbegin()->first--;
-				break;
-			default:
-				// no nothing to value
-				break;
+            case GET_SUM:
+				for (unsigned i=0; i<_timedValues[constraintID].size(); i++)
+				{
+                    value += getTimedValue(constraintID, i);
+				}
+
 		}
-		return value;
 	}
+	return value;
+}
+
+int Constraints::getTimedValue(int constraintID, unsigned valueIndex)
+{
+    int value = _timedValues[constraintID].at(valueIndex).value;
+    switch(_defaultValues[constraintID].valueOption) //rules
+	{
+		case VALUE_GET_INCREMENT:
+			_timedValues[constraintID].at(valueIndex).value++;
+			break;
+		case VALUE_GET_DECREMENT:
+			_timedValues[constraintID].at(valueIndex).value--;
+			break;
+		default:
+			// no nothing to value
+			break;
+	}
+	return value;
 }
 
 void Constraints::timeOutConstraints()
 {
 	for (unsigned i=0; i<_size; i++)
 	{
-		std::vector<std::pair<int, int>>& vect = _timedValues[i]; //value, time left
+		std::vector<ConstraintTimedValue>& vect = _timedValues[i]; //value, time left
 		for (auto vectIt=vect.begin(); vectIt!=vect.end();)
 		{
 			// TODO how do I delete value without breaking iterator ?
-			if (vectIt->second == 1)
+			if (vectIt->turns == 1)
 				vectIt = vect.erase(vectIt);
 			else
 			{
-				vectIt->second--;
-				switch (_defaultValues[i].second)  // rules
+				vectIt->turns--;
+				switch (_defaultValues[i].valueOption)  // rules
 				{
 					case VALUE_TURN_INCREMENT:
-						vectIt->first++;
+						vectIt->value++;
 						break;
 					case VALUE_TURN_DECREMENT:
-						vectIt->first--;
+						vectIt->value--;
 						break;
 					default:
 						//do nothing to value
