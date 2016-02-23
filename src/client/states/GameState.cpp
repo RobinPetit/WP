@@ -52,15 +52,6 @@ void GameState::begin(unsigned lotsOfDataAboutStuff)
 
 void GameState::startTurn()
 {
-	// if client dos NOT receive a message telling to start the turn,
-	// there is an error -> throw std::runtime_error
-	/*sf::Packet packet;
-	_client.getGameSocket().receive(packet);
-	TransferType type;
-	packet >> type;
-	if(type != TransferType::GAME_PLAYER_ENTER_TURN)
-		throw std::runtime_error("Wrong message received");
-	_myTurn = true;*/
 	std::cout << "It is now your turn";
 	//TODO put the card taken in the _inHand vector;
 	--_remainCards;  // Player took a card from his deck

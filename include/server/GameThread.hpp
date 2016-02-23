@@ -29,12 +29,15 @@ public:
 	void startGame(const ClientInformations& player1, const ClientInformations& player2);
 
 	/// Destructor
-	~GameThread() = default;
+	~GameThread();
 
 	const Player::ID _player1ID;
 	const Player::ID _player2ID;
 
 	enum class PlayerNumber { PLAYER1, PLAYER2 };
+
+	//~Currently low for tests
+	static constexpr std::chrono::seconds _turnTime{4};  // arbitrary
 
 private:
 	//////////// Attributes
@@ -48,12 +51,16 @@ private:
 	// This boolean is set to true if GameThread::player1 is Board::player1 and to false if GameThread::player1 is Board::player2.
 	bool _isSynchroWithBoard;
 
+	std::thread _timerThread;
+
 	//////////// Private methods
 	void setSocket(sf::TcpSocket& socket, sf::TcpSocket& specialSocket, const ClientInformations& player);
 
 	PlayerNumber PlayerFromID(const Player::ID ID);
 	sf::TcpSocket& getSocketFromID(const Player::ID ID);
 	sf::TcpSocket& getSpecialSocketFromID(const Player::ID ID);
+
+	void makeTimer();
 };
 
 ///////// template code

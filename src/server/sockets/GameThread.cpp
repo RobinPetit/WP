@@ -6,6 +6,9 @@
 #include <SFML/Network/IpAddress.hpp>
 // std-C++ headers
 #include <iostream>
+#include <chrono>
+
+constexpr std::chrono::seconds GameThread::_turnTime;
 
 GameThread::GameThread(Player::ID player1ID, Player::ID player2ID):
 	std::thread(),
@@ -76,10 +79,37 @@ void GameThread::startGame(const ClientInformations& player1, const ClientInform
 	packet.clear();
 	packet << TransferType::GAME_STARTING << TransferType::GAME_PLAYER_LEAVE_TURN;
 	getSocketFromID(_gameBoard.getWaitingPlayerID()).send(packet);
-	/// \TODO main loop of the game
+	_timerThread = std::thread(&GameThread::makeTimer, this);
+	while(_running.load())
+	{
+		// get actions from playing client
+	}
 	packet.clear();
 	packet << TransferType::GAME_OVER;
 	// same message is sent to both players: no need to find by ID
 	_specialOutputSocketPlayer1.send(packet);
 	_specialOutputSocketPlayer2.send(packet);
 }
+
+// Function only called by a new thread
+void GameThread::makeTimer()
+{
+	while(_running.load())
+	{
+		std::this_thread::sleep_for(_turnTime);
+		sf::Packet endOfTurn;
+		endOfTurn << TransferType::GAME_PLAYER_LEAVE_TURN;
+		getSocketFromID(_gameBoard.getCurrentPlayerID()).send(endOfTurn);
+		sf::Packet startOfTurn;
+		startOfTurn << TransferType::GAME_PLAYER_ENTER_TURN;
+		getSocketFromID(_gameBoard.getWaitingPlayerID()).send(startOfTurn);
+		_gameBoard.endTurn();
+	}
+}
+
+GameThread::~GameThread()
+{
+	interruptGame();
+	_timerThread.join();
+}
+

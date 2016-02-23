@@ -49,5 +49,5 @@ class GameState : public AbstractState
 
 };
 
-#endif// _GAME_STATE_CLIENT_HPP
+#endif  // _GAME_STATE_CLIENT_HPP
 

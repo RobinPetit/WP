@@ -117,6 +117,12 @@ void Client::inputGameListening()
 		receivedPacket >> type;
 		if(type == TransferType::GAME_OVER)
 			break;
+		else if(type == TransferType::GAME_PLAYER_ENTER_TURN)
+			;  // perform turn changing here
+		else if(type == TransferType::GAME_PLAYER_LEAVE_TURN)
+			;  // perform turn changing here
+		else
+			std::cerr << "Unknown message received: " << static_cast<sf::Uint32>(type) << "; ignore." << std::endl;
 	}
 	std::cout << "Game is over" << std::endl;
 }
