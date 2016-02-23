@@ -48,11 +48,14 @@ bool Client::sendConnectionToken(const std::string& password)
 {
 	sf::Packet packet;
 	packet << TransferType::GAME_CONNECTION
-	       << _name  // do not forget the '\0' character
-	       << static_cast<sf::Uint64>(_hasher(password))
+	       << _name
+	       << password
 	       << static_cast<sf::Uint16>(_chatListenerPort);
 	if(_socket.send(packet) != sf::Socket::Done)
+	{
+		std::cout << "Failed to send connection packet\n";
 		return false;
+	}
 
 	// Receive the server response
 	_socket.receive(packet);
@@ -82,9 +85,7 @@ bool Client::sendConnectionToken(const std::string& password)
 bool Client::sendRegisteringToken(const std::string& name, const std::string& password, sf::TcpSocket& socket)
 {
 	sf::Packet packet;
-	packet << TransferType::GAME_REGISTERING
-	       << name  // do not forget the '\0' character
-	       << static_cast<sf::Uint64>(_hasher(password));
+	packet << TransferType::GAME_REGISTERING << name << password;
 	if(socket.send(packet) != sf::Socket::Done)
 	{
 		std::cout << "sending packet failed";
@@ -99,7 +100,7 @@ bool Client::sendRegisteringToken(const std::string& name, const std::string& pa
 	{
 	case TransferType::GAME_USERNAME_NOT_AVAILABLE:
 		//TODO throw an exception rather than cout
-		std::cout << "Error: the username " << _name << " is not available\n";
+		std::cout << "Error: the username " << name << " is not available\n";
 		return false;
 
 	case TransferType::GAME_FAILED_TO_REGISTER:
@@ -119,13 +120,19 @@ bool Client::initServer(const std::string& name, const std::string& password, co
 {
 	// if client is already connected to a server, do not try to re-connect it
 	if(_isConnected)
+	{
+		std::cout << "Already connected\n";
 		return false;
+	}
 	_name = shrinkName(name);
 	_serverAddress = address;
 	_serverPort = port;
 	// if connection does not work, don't go further
 	if(_socket.connect(address, port) != sf::Socket::Done)
+	{
+		std::cout << "Failed to establish socket connection\n";
 		return false;
+	}
 	if(!_userTerminal.hasKnownTerminal())
 		std::cout << "Warning: as no known terminal has been found, chat is disabled" << std::endl;
 	else

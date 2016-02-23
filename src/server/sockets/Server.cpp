@@ -53,7 +53,10 @@ void Server::takeConnection()
 	std::unique_ptr<sf::TcpSocket> newClient{new sf::TcpSocket()};
 	// if listener can't accept correctly, free the allocated socket
 	if(_listener.accept(*newClient) != sf::Socket::Done)
+	{
+		std::cout << "Error when trying to accept a new client.\n";
 		return;
+	}
 	// receive username
 	sf::Packet packet;
 	newClient->receive(packet);
@@ -72,14 +75,11 @@ void Server::takeConnection()
 // TODO these methods (connect/register) should be rewritten in many smaller methods
 void Server::connectUser(sf::Packet& connectionPacket, std::unique_ptr<sf::TcpSocket> client)
 {
-	std::string playerName;
-	sf::Uint64 transmittedPassword;
-	PasswordHasher::result_type password;
+	std::string playerName, password;
 	sf::Uint16 clientPort;
+	connectionPacket >> playerName >> password >> clientPort;
 
-	connectionPacket >> playerName >> transmittedPassword >> clientPort;
-	password = static_cast<PasswordHasher::result_type>(transmittedPassword);
-	bool alreadyConnected{_clients.count(playerName) != 0};
+	bool alreadyConnected{_clients.find(playerName) != _client.end()};
 	// TODO check in database for the identifiers validity
 	bool wrongIdentifiers{false};
 	while(alreadyConnected or wrongIdentifiers)
@@ -107,9 +107,9 @@ void Server::connectUser(sf::Packet& connectionPacket, std::unique_ptr<sf::TcpSo
 			std::cout << "Error: wrong packet transmitted after failed connection (expecting another connection packet).\n";
 			return;
 		}
-		connectionPacket >> playerName >> transmittedPassword >> clientPort;
-		password = static_cast<PasswordHasher::result_type>(transmittedPassword);
-		alreadyConnected = _clients.count(playerName) != 0;
+		connectionPacket >> playerName >> password >> clientPort;
+
+		alreadyConnected = _clients.find(playerName) != _clients.end();
 		// TODO check in database for the identifiers validity
 		wrongIdentifiers = false;
 	}
@@ -124,12 +124,9 @@ void Server::connectUser(sf::Packet& connectionPacket, std::unique_ptr<sf::TcpSo
 
 void Server::registerUser(sf::Packet& registeringPacket, std::unique_ptr<sf::TcpSocket> client)
 {
-	std::string playerName;
-	sf::Uint64 transmittedPassword;
-	PasswordHasher::result_type password;
+	std::string playerName, password;
+	registeringPacket >> playerName >> password;
 
-	registeringPacket >> playerName >> transmittedPassword;
-	password = static_cast<PasswordHasher::result_type>(transmittedPassword);
 	// TODO check in database for the identifiers validity
 	bool userNameNotAvailable{false};
 	bool failedToRegister{false};
@@ -158,8 +155,8 @@ void Server::registerUser(sf::Packet& registeringPacket, std::unique_ptr<sf::Tcp
 			std::cout << "Error: wrong packet transmitted after failed registering (expecting another registering packet).\n";
 			return;
 		}
-		registeringPacket >> playerName >> transmittedPassword;
-		password = static_cast<PasswordHasher::result_type>(transmittedPassword);
+		registeringPacket >> playerName >> password;
+
 		// TODO check in database for the identifiers validity
 		userNameNotAvailable = false;
 		failedToRegister = false;
@@ -177,7 +174,7 @@ void Server::sendAcknowledgement(sf::TcpSocket& client)
 
 void Server::receiveData()
 {
-	std::cout << "Data received\n";
+	std::cout << "Data received.\n";
 	// first find which socket it is
 	auto it = std::find_if(_clients.begin(), _clients.end(), [this](const auto& pair)
 	{
@@ -235,11 +232,11 @@ void Server::receiveData()
 	}
 	else if(receivalStatus == sf::Socket::Disconnected)
 	{
-		std::cerr << "Connection with player " << it->first << " is lost: forced disconnection from server" << std::endl;
+		std::cerr << "Connection with player " << it->first << " is lost: forced disconnection from server." << std::endl;
 		removeClient(it);
 	}
 	else
-		std::cerr << "data not well received" << std::endl;
+		std::cerr << "data not well received." << std::endl;
 }
 
 void Server::removeClient(const _iterator& it)
