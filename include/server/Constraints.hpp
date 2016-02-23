@@ -8,14 +8,14 @@
 class Constraints
 {
 private:
-	const std::pair<unsigned, CONSTRAINT_VALUE_RULE>* _defaultValues;
-	const unsigned _size;
-	std::vector<std::pair<unsigned, unsigned>>* _timedValues;
+	const std::pair<int, CONSTRAINT_VALUE_RULE>* _defaultValues;
+	const int _size;
+	std::vector<std::pair<int, int>>* _timedValues;
 
 public:
-	Constraints(const std::pair<unsigned, CONSTRAINT_VALUE_RULE>* defaultValues, const unsigned arraySize);
-	void setConstraint(unsigned constraintID, unsigned value, unsigned turns);
-	unsigned getConstraint(unsigned constraintID);
+	Constraints(const std::pair<int, CONSTRAINT_VALUE_RULE>* defaultValues, const int arraySize);
+	void setConstraint(int constraintID, int value, int turns);
+	int getConstraint(int constraintID);
 	void timeOutConstraints();
 };
 

@@ -10,16 +10,16 @@
 class Card
 {
 private:
-	unsigned _cost;
-	unsigned _cardID;  //Will be needed for communicating modification to player's hand/deck/...
+	int _cost;
+	int _cardID;  //Will be needed for communicating modification to player's hand/deck/...
 	std::vector<EffectParamsCollection> _effects;	//Effects
 
 public:
 	/// Constructor
-	Card(unsigned cost=0, std::vector<EffectParamsCollection> effects = {{}});
+	Card(int cost=0, std::vector<EffectParamsCollection> effects = {{}});
 
 	/// Getters
-	unsigned getCost();
+	int getCost();
 	std::vector<EffectParamsCollection> getEffects();
 
 

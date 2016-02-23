@@ -15,11 +15,9 @@ std::function<void(Player&, const EffectParamsCollection&)> Player::effectMethod
 	&Player::stealHandCard,
 	&Player::exchgHandCard,
 
-	&Player::setEnergyPoints,
-	&Player::addEnergyPoints,
-	&Player::subEnergyPoints,
-	&Player::addLifePoints,
-	&Player::subLifePoints
+	&Player::setEnergy,
+	&Player::changeEnergy,
+	&Player::changeHealth,
 };
 
 Player::Player(Player::ID id):
@@ -36,17 +34,17 @@ void Player::setOpponent(Player* opponent)
 
 /*--------------------------- BOARD INTERFACE */
 
-void Player::enterTurn(unsigned)
+void Player::enterTurn(int)
 {
 	_turnData = _emptyTurnData;  // Clear the turn data
 
 	//Player's turn-based rules
-	cardDeckToHand(_constraints.getConstraint(PC_CARD_PICK_AMOUNT));
-	setEnergyPoints({_constraints.getConstraint(PC_ENERGY_POINTS_INIT)});
-	addLifePoints({_constraints.getConstraint(PC_HEALTH_POINTS_GAIN)});
-	subLifePoints({_constraints.getConstraint(PC_HEALTH_POINTS_LOSS)});
+	cardDeckToHand(_constraints.getConstraint(PC_TURN_CARDS_PICKED));
+	setEnergy({_constraints.getConstraint(PC_TURN_ENERGY_INIT)});
+	changeEnergy({_constraints.getConstraint(PC_TURN_ENERGY_CHANGE)});
+	changeHealth({_constraints.getConstraint(PC_TURN_HEALTH_CHANGE)});
 	if (_cardDeck.empty())
-		subLifePoints({_constraints.getConstraint(PC_HEALTH_POINTS_LOSS_DECK_EMPTY)});
+		changeHealth({_constraints.getConstraint(PC_TURN_HEALTH_CHANGE_DECK_EMPTY)});
 
 	//Will call creature's turn-based rules
 	for (unsigned i=0; i<_cardBoard.size(); i++)
@@ -55,7 +53,7 @@ void Player::enterTurn(unsigned)
 	//NETWORK: TURN_STARTED
 }
 
-void Player::leaveTurn(unsigned)
+void Player::leaveTurn(int)
 {
 	//Time out player constraints
 	_constraints.timeOutConstraints();
@@ -67,11 +65,11 @@ void Player::leaveTurn(unsigned)
 	//NETWORK: TURN_ENDED
 }
 
-void Player::useCard(unsigned handIndex)
+void Player::useCard(int handIndex)
 {
 	//TODO: verify that handIndex is not out_of_range
 
-	if (_constraints.getConstraint(PC_USE_CARD_LIMIT) == _turnData.cardsUsed)
+	if (_constraints.getConstraint(PC_LIMIT_CARD_USE) == _turnData.cardsUsed)
 	{
 		//NETWORK: USE_CARDS_LIMIT
 		return;
@@ -82,7 +80,7 @@ void Player::useCard(unsigned handIndex)
 	//TODO: use typeinfo ?
 	if (usedCard->isCreature())
 	{
-		if (_constraints.getConstraint(PC_PLACE_CREATURE_LIMIT) == _turnData.creaturesPlaced)
+		if (_constraints.getConstraint(PC_LIMIT_CREATURE_PLACING) == _turnData.creaturesPlaced)
 		{
 			//NETWORK: PLACE_CREATURES_LIMIT
 			return;
@@ -97,7 +95,7 @@ void Player::useCard(unsigned handIndex)
 	// If card is a spell
 	else
 	{
-		if (_constraints.getConstraint(PC_CALL_SPELL_LIMIT) == _turnData.spellCalls)
+		if (_constraints.getConstraint(PC_LIMIT_SPELL_CALL) == _turnData.spellCalls)
 		{
 			//NETWORK: CALL_SPELLS_LIMIT
 			return;
@@ -110,25 +108,26 @@ void Player::useCard(unsigned handIndex)
 	}
 }
 
-void Player::attackWithCreature(unsigned boardIndex, unsigned victim)
+void Player::attackWithCreature(int boardIndex, int victim)
 {
-	if (_constraints.getConstraint(PC_ATTACK_WITH_CREATURE_LIMIT) == _turnData.creatureAttacks)
+	if (_constraints.getConstraint(PC_LIMIT_CREATURE_ATTACK) == _turnData.creatureAttacks)
 	{
 		//NETWORK: CREATURE_ATTACKS_LIMIT
 		return;
 	}
-	unsigned attackPoints = _cardBoard.at(boardIndex)->getAttack();
-	_opponent->applyEffectToCreature(victim, CE_SUB_HEALTH, {attackPoints});
+	int attackPoints = _cardBoard.at(boardIndex)->getAttack();
+	_opponent->applyEffectToCreature(victim, CE_CHANGE_HEALTH, {attackPoints});
 }
 
 /*--------------------------- BOARD AND CREATURE INTERFACE */
-void Player::applyEffectToCreature(unsigned boardIndex, unsigned method, const EffectParamsCollection& effectArgs)
+void Player::applyEffectToCreature(int boardIndex, int method, const EffectParamsCollection& effectArgs)
 {
+	if (boardIndex<0) boardIndex = rand() % _cardBoard.size();
 	Creature* usedCreature = _cardBoard.at(boardIndex);
     Creature::effectMethods[method](*usedCreature, effectArgs);
 }
 
-void Player::applyEffectToCreatures(unsigned method, const EffectParamsCollection& effectArgs)
+void Player::applyEffectToCreatures(int method, const EffectParamsCollection& effectArgs)
 {
 	for (unsigned i=0; i<_cardBoard.size(); i++)
 	{
@@ -136,23 +135,24 @@ void Player::applyEffectToCreatures(unsigned method, const EffectParamsCollectio
 	}
 }
 
-std::pair<unsigned, unsigned> Player::getTeamConstraint(unsigned constraintID)
+int Player::getTeamConstraint(int constraintID)
 {
+	int value=0;
     for (unsigned i=0; i<_cardBoard.size(); i++)
     {
-        unsigned value = _cardBoard.at(i)->getConstraint(constraintID);
+        value = _cardBoard.at(i)->getConstraint(constraintID);
         if (value != 0)
-		return std::make_pair(value, i);
+			return value;
     }
-    return std::make_pair(0U,0U);
+    return value;
 }
 
 /*--------------------------- EFFECTS */
 void Player::setConstraint(const EffectParamsCollection& args)
 {
-	unsigned constraintID = args.at(0);
-	unsigned value = args.at(1);
-	unsigned turns = args.at(2);
+	int constraintID = args.at(0);
+	int value = args.at(1);
+	int turns = args.at(2);
 	_constraints.setConstraint(constraintID, value, turns);
 }
 
@@ -163,18 +163,18 @@ void Player::pickDeckCards(const EffectParamsCollection& args)
 
 void Player::loseHandCards(const EffectParamsCollection& args)
 {
-	unsigned amount = args.at(1);
+	int amount = args.at(1);
 	while (not _cardHand.empty() and amount>0)
 	{
 		amount--;
-		unsigned handIndex = (std::uniform_int_distribution<int>(0, _cardHand.size()))(_engine);
+		int handIndex = (std::uniform_int_distribution<int>(0, _cardHand.size()))(_engine);
 		cardHandToBin(handIndex);
 	}
 }
 
 void Player::reviveBinCard(const EffectParamsCollection& args)
 {
-    unsigned binIndex = args.at(0);
+    int binIndex = args.at(0);
 	cardBinToHand(binIndex);
 }
 
@@ -186,7 +186,7 @@ void Player::stealHandCard(const EffectParamsCollection&)
 void Player::exchgHandCard(const EffectParamsCollection& args)
 {
 	//TODO: check index
-	unsigned myCardIndex = args.at(0);
+	int myCardIndex = args.at(0);
 	Card* myCard = _cardHand.at(myCardIndex);
 	Card* hisCard =  _opponent->cardExchangeFromHand(myCard);
 
@@ -200,45 +200,29 @@ void Player::exchgHandCard(const EffectParamsCollection& args)
 	}
 }
 
-void Player::setEnergyPoints(const EffectParamsCollection& args)
+void Player::setEnergy(const EffectParamsCollection& args)
 {
-	unsigned points = args.at(0);
-	_energyPoints = points;
+	int points = args.at(0);
+	_energy = points;
+	if (_energy<0) _energy=0;
 }
 
-void Player::addEnergyPoints(const EffectParamsCollection& args)
+void Player::changeEnergy(const EffectParamsCollection& args)
 {
-	unsigned points = args.at(0);
-	_energyPoints += points;
+	int points = args.at(0);
+	_energy+=points;
+	if (_energy<0) _energy=0;
+	//NETWORK: ENERGY_CHANGED
 }
 
-void Player::subEnergyPoints(const EffectParamsCollection& args)
+void Player::changeHealth(const EffectParamsCollection& args)
 {
-	unsigned points = args.at(0);
-	if (_energyPoints > points)
-		_energyPoints -= points;
-	else
+	int points = args.at(0);
+	_health+=points;
+	if (_health<=0)
 	{
-		_energyPoints = 0;
-		//NETWORK NO_MORE_ENERGY
-		//call endTurn()
-	}
-}
-
-void Player::addLifePoints(const EffectParamsCollection& args)
-{
-	unsigned points = args.at(0);
-	_healthPoints += points;
-}
-
-void Player::subLifePoints(const EffectParamsCollection& args)
-{
-	unsigned points = args.at(0);
-	if (_healthPoints > points)
-		_healthPoints -= points;
-	else
-	{
-		_healthPoints = 0;
+		_health=0;
+		//NETWORK: NO_HEALTH_CHANGED
 		//call die()
 	}
 }
@@ -254,7 +238,7 @@ void Player::exploitCardEffects(Card* usedCard)
 	}
 }
 
-void Player::cardDeckToHand(unsigned amount)
+void Player::cardDeckToHand(int amount)
 {
 	if(not _cardDeck.empty() and amount>0)
 	{
@@ -267,7 +251,7 @@ void Player::cardDeckToHand(unsigned amount)
 	//NETWORK: HAND_CHANGED
 }
 
-void Player::cardHandToBoard(unsigned handIndex)
+void Player::cardHandToBoard(int handIndex)
 {
 	// TODO: treat properly case of handIndex being out of range
 	const auto& handIt = std::find(_cardHand.begin(), _cardHand.end(), _cardHand[handIndex]);
@@ -277,7 +261,7 @@ void Player::cardHandToBoard(unsigned handIndex)
 	//NETWORK: BOARD_CHANGED
 }
 
-void Player::cardHandToBin(unsigned handIndex)
+void Player::cardHandToBin(int handIndex)
 {
 	// TODO: treat properly case of handIndex being out of range
 	const auto& handIt = std::find(_cardHand.begin(), _cardHand.end(), _cardHand[handIndex]);
@@ -287,7 +271,7 @@ void Player::cardHandToBin(unsigned handIndex)
 	//NETWORK: BIN_CHANGED
 }
 
-void Player::cardBoardToBin(unsigned boardIndex)
+void Player::cardBoardToBin(int boardIndex)
 {
 	const auto& boardIt = std::find(_cardBoard.begin(), _cardBoard.end(), _cardBoard[boardIndex]);
 	_cardBin.push_back(_cardBoard.at(boardIndex));
@@ -296,7 +280,7 @@ void Player::cardBoardToBin(unsigned boardIndex)
 	//NETWORK: BIN_CHANGED
 }
 
-void Player::cardBinToHand(unsigned binIndex)
+void Player::cardBinToHand(int binIndex)
 {
 	const auto& binIt = std::find(_cardBin.begin(), _cardBin.end(), _cardBin[binIndex]);
 	_cardHand.push_back(_cardBin.at(binIndex));
@@ -316,7 +300,7 @@ Card* Player::cardRemoveFromHand()
 {
 	if (_cardHand.empty())
 		return nullptr;
-	unsigned handIndex = (std::uniform_int_distribution<int>(0, _cardHand.size()))(_engine);
+	int handIndex = (std::uniform_int_distribution<int>(0, _cardHand.size()))(_engine);
 	Card* stolenCard = _cardHand[handIndex];
 	const auto& handIt = std::find(_cardHand.begin(), _cardHand.end(), _cardHand[handIndex]);
 	_cardHand.erase(handIt);
@@ -327,11 +311,11 @@ Card* Player::cardRemoveFromHand()
 
 Card* Player::cardExchangeFromHand(Card* givenCard)
 {
-	unsigned handIndex = (std::uniform_int_distribution<int>(0, _cardHand.size()))(_engine);
+	int handIndex = (std::uniform_int_distribution<int>(0, _cardHand.size()))(_engine);
 	return cardExchangeFromHand(givenCard, handIndex);
 }
 
-Card* Player::cardExchangeFromHand(Card* givenCard, unsigned handIndex)
+Card* Player::cardExchangeFromHand(Card* givenCard, int handIndex)
 {
 	if (_cardHand.empty())
 		return nullptr;

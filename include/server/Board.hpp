@@ -20,15 +20,15 @@ public:
 
 	/// Interface for user
 	void endTurn();
-	void useCard(unsigned handIndex);
-	void attackWithCreature(unsigned boardIndex, unsigned victim);
+	void useCard(int handIndex);
+	void attackWithCreature(int boardIndex, int victim);
 	void quitGame(); //TODO: need identifier
 
 	/// Interface for Player and Card classes
 	void applyEffect(Card* usedCard, EffectParamsCollection effect);
 
 private:
-	unsigned _turn = 0;
+	int _turn = 0;
 	Player *_activePlayer, *_passivePlayer;
 };
 

@@ -11,10 +11,10 @@
 class Creature : public Card
 {
 private:
-	unsigned _attack, _attackInit;
-	unsigned _health, _healthInit;
-	unsigned _shield, _shieldInit;
-	unsigned _shieldType;
+	int _attack, _attackInit;
+	int _health, _healthInit;
+	int _shield, _shieldInit;
+	int _shieldType;
 
 	Player* _owner;
 
@@ -24,15 +24,15 @@ private:
 public:
 	typedef void (Creature::*CreatureEffectMethod)(const EffectParamsCollection&);
 	/// Constructors
-	Creature(unsigned cost=0, unsigned attack=0, unsigned health=1, unsigned shield=0, unsigned shieldType=0,
+	Creature(int cost=0, int attack=0, int health=1, int shield=0, int shieldType=0,
 			std::vector<EffectParamsCollection> effects = {{}});
 
 	/// Getters
-	unsigned getAttack();
-	unsigned getHealth();
+	int getAttack();
+	int getHealth();
 	virtual bool isCreature() override;
 	virtual bool isSpell() override;
-	unsigned getConstraint(unsigned constraintID);
+	int getConstraint(int constraintID);
 
 	/// Player interface
 	void enterTurn();
@@ -43,13 +43,10 @@ public:
 	void resetAttack(const EffectParamsCollection& args);
 	void resetHealth(const EffectParamsCollection& args);
 	void resetShield(const EffectParamsCollection& args);
-	void addAttack(const EffectParamsCollection& args);
-	void addHealth(const EffectParamsCollection& args);
-	void addShield(const EffectParamsCollection& args);
-	void subAttack(const EffectParamsCollection& args);
-	void subHealth(const EffectParamsCollection& args);
-	void subShield(const EffectParamsCollection& args);
-	void forcedSubHealth(const EffectParamsCollection& args);
+	void changeAttack(const EffectParamsCollection& args);
+	void changeHealth(const EffectParamsCollection& args);
+	void changeShield(const EffectParamsCollection& args);
+	void forcedChangeHealth(const EffectParamsCollection& args);
 
 	static std::function<void(Creature&, const EffectParamsCollection&)> effectMethods[P_EFFECTS_COUNT];
 };

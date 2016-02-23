@@ -29,10 +29,10 @@ public:
 	~Player() = default;
 
 	/// Interface for basic gameplay (board)
-	void enterTurn(unsigned turn);
-	void leaveTurn(unsigned turn);
-	void useCard(unsigned handIndex); 	///< Use a card
-	void attackWithCreature(unsigned boardIndex, unsigned victim);  ///< Attack victim with a card
+	void enterTurn(int turn);
+	void leaveTurn(int turn);
+	void useCard(int handIndex); 	///< Use a card
+	void attackWithCreature(int boardIndex, int victim);  ///< Attack victim with a card
 
 	/// Effects
 	void setConstraint(const EffectParamsCollection& args);
@@ -43,36 +43,34 @@ public:
 	void stealHandCard(const EffectParamsCollection& args);
 	void exchgHandCard(const EffectParamsCollection& args);
 
-	void setEnergyPoints(const EffectParamsCollection& args);
-	void addEnergyPoints(const EffectParamsCollection& args);
-	void subEnergyPoints(const EffectParamsCollection& args);
-	void addLifePoints(const EffectParamsCollection& args);
-	void subLifePoints(const EffectParamsCollection& args);
+	void setEnergy(const EffectParamsCollection& args);
+	void changeEnergy(const EffectParamsCollection& args);
+	void changeHealth(const EffectParamsCollection& args);
 
 	static std::function<void(Player&, const EffectParamsCollection&)> effectMethods[P_EFFECTS_COUNT];
 
 	///Pass along effects to creatures
-	void applyEffectToCreatures(unsigned method, const EffectParamsCollection& effectArgs);
-	void applyEffectToCreature(unsigned boardIndex, unsigned method, const EffectParamsCollection& effectArgs);
-	std::pair<unsigned, unsigned> getTeamConstraint(unsigned constraintID);
+	void applyEffectToCreatures(int method, const EffectParamsCollection& effectArgs);
+	void applyEffectToCreature(int boardIndex, int method, const EffectParamsCollection& effectArgs);
+	int getTeamConstraint(int constraintID);
 
 private:
 	Board* _board;
 	Player* _opponent = nullptr;
 	Player::ID _id;
 
-	unsigned _energyPoints;
-	unsigned _healthPoints;
+	int _energy;
+	int _health;
 
 	//Constraints
 	Constraints _constraints = Constraints(P_CONSTRAINT_DEFAULTS, P_CONSTRAINTS_COUNT);
 
 	struct TurnData
 	{
-		unsigned cardsUsed;
-		unsigned creaturesPlaced;
-		unsigned creatureAttacks;
-		unsigned spellCalls;
+		int cardsUsed;
+		int creaturesPlaced;
+		int creatureAttacks;
+		int spellCalls;
 	};
 
 	constexpr static TurnData _emptyTurnData = {0, 0, 0, 0};
@@ -89,15 +87,15 @@ private:
 	//Private methods
 	void exploitCardEffects(Card* usedCard);
 
-	void cardDeckToHand(unsigned amount);
-	void cardHandToBoard(unsigned handIndex);
-	void cardHandToBin(unsigned handIndex);  ///< Move the card at handIndex from the player's hand to the bin
-	void cardBoardToBin(unsigned boardIndex);  ///< Move the card at boardIndex from the board to the bin
-	void cardBinToHand(unsigned binIndex);
+	void cardDeckToHand(int amount);
+	void cardHandToBoard(int handIndex);
+	void cardHandToBin(int handIndex);  ///< Move the card at handIndex from the player's hand to the bin
+	void cardBoardToBin(int boardIndex);  ///< Move the card at boardIndex from the board to the bin
+	void cardBinToHand(int binIndex);
 	void cardAddToHand(Card* given);
 	Card* cardRemoveFromHand();
 	Card* cardExchangeFromHand(Card* given);
-	Card* cardExchangeFromHand(Card* given, unsigned handIndex);
+	Card* cardExchangeFromHand(Card* given, int handIndex);
 };
 
 

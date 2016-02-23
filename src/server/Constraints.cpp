@@ -1,23 +1,23 @@
 #include "server/Constraints.hpp"
 
-Constraints::Constraints(const std::pair<unsigned, CONSTRAINT_VALUE_RULE>* defaultValues, const unsigned arraySize):
+Constraints::Constraints(const std::pair<int, CONSTRAINT_VALUE_RULE>* defaultValues, const int arraySize):
 	_defaultValues(defaultValues), _size(arraySize)
 {
-	_timedValues = new std::vector<std::pair<unsigned, unsigned>>[_size];
+	_timedValues = new std::vector<std::pair<int, int>>[_size];
 }
 
-void Constraints::setConstraint(unsigned constraintID, unsigned value, unsigned turns)
+void Constraints::setConstraint(int constraintID, int value, int turns)
 {
 	_timedValues[constraintID].push_back(std::make_pair(value, turns));
 }
 
-unsigned Constraints::getConstraint(unsigned constraintID)
+int Constraints::getConstraint(int constraintID)
 {
     if (_timedValues[constraintID].empty())
 		return _defaultValues[constraintID].first;
     else
     {
-		unsigned value = _timedValues[constraintID].rbegin()->first;
+		int value = _timedValues[constraintID].rbegin()->first;
 		switch(_defaultValues[constraintID].second) //rules
 		{
 			case VALUE_GET_INCREMENT:
@@ -36,10 +36,10 @@ unsigned Constraints::getConstraint(unsigned constraintID)
 
 void Constraints::timeOutConstraints()
 {
-    for (unsigned i=0; i<_size; i++)
+    for (int i=0; i<_size; i++)
     {
-        std::vector<std::pair<unsigned, unsigned>> vect = _timedValues[i];
-        for (std::vector<std::pair<unsigned, unsigned>>::iterator vectIt=vect.begin(); vectIt!=vect.end();)
+        std::vector<std::pair<int, int>> vect = _timedValues[i];
+        for (std::vector<std::pair<int, int>>::iterator vectIt=vect.begin(); vectIt!=vect.end();)
         {
 			//TODO how do I delete value without breaking iterator ?
             if (vectIt->second == 1) vectIt = vect.erase(vectIt);

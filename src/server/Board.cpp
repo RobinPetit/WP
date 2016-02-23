@@ -7,7 +7,7 @@ Board::Board(Player::ID player1, Player::ID player2)
 {
 	// A random player starts the game
 	std::default_random_engine engine;
-	std::uniform_int_distribution<unsigned> distribution(1, 2);
+	std::uniform_int_distribution<int> distribution(1, 2);
 	if (distribution(engine) == 1)
 		std::swap(player1, player2);
 	_activePlayer = new Player(player1);
@@ -25,12 +25,12 @@ void Board::endTurn()
 	_activePlayer->enterTurn(_turn/2 +1);
 }
 
-void Board::useCard(unsigned handIndex)
+void Board::useCard(int handIndex)
 {
 	_activePlayer->useCard(handIndex);
 }
 
-void Board::attackWithCreature(unsigned boardIndex, unsigned victim)
+void Board::attackWithCreature(int boardIndex, int victim)
 {
 	_activePlayer->attackWithCreature(boardIndex, victim);
 }
@@ -43,9 +43,9 @@ void Board::quitGame()
 /*--------------------------- CARD INTERFACE */
 void Board::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 {
-	unsigned subject = effectArgs.front();
+	int subject = effectArgs.front();
 	effectArgs.erase(effectArgs.begin());
-	unsigned method = effectArgs.front();
+	int method = effectArgs.front();
 	effectArgs.erase(effectArgs.begin());
 
 	switch (subject)
@@ -58,26 +58,28 @@ void Board::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 			Player::effectMethods[method](*_passivePlayer, effectArgs);
 			break;
 
-		case CREATURE_SELF:
+		case CREATURE_SELF_THIS:
 			{
 				Creature* usedCreature = dynamic_cast<Creature*>(usedCard);
                 Creature::effectMethods[method](*usedCreature, effectArgs);
 			}
 			break;
 
-		case CREATURE_TEAM:
+		case CREATURE_SELF_TEAM:
 			_activePlayer->applyEffectToCreatures(method, effectArgs);
 			break;
 
-		case CREATURE_ONE_OPPO:
+		case CREATURE_OPPO_INDX:
 			{
-				unsigned boardIndex = effectArgs.front();
+				int boardIndex = effectArgs.front();
 				effectArgs.erase(effectArgs.begin());
 				_passivePlayer->applyEffectToCreature(boardIndex, method, effectArgs);
 			}
 			break;
-
-		case CREATURE_ALL_OPPO:
+		case CREATURE_OPPO_RAND:
+				_passivePlayer->applyEffectToCreature(-1, method, effectArgs);
+			break;
+		case CREATURE_OPPO_TEAM:
 			_passivePlayer->applyEffectToCreatures(method, effectArgs);
 			break;
 	}
