@@ -89,7 +89,7 @@ void GameState::useCard()
 	}
 	else
 	{
-		if(!_onBoard.empty())
+		if(!_inHand.empty())
 		{
 			std::cout << "Which card would you like to use?\n";
 			for(std::vector<int>::iterator it = _inHand.begin(); it != _inHand.end(); ++it)
