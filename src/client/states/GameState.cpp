@@ -26,7 +26,7 @@ GameState::GameState(StateStack& stateStack, Client& client):
 		throw std::runtime_error("Wrong signal received: " + std::to_string(static_cast<sf::Uint32>(type)));
 	packet >> type;
 	if(type == TransferType::GAME_PLAYER_ENTER_TURN)
-		startTurn();
+		begin(0);
 	else if(type == TransferType::GAME_PLAYER_LEAVE_TURN)
 		_myTurn = false;
 	else
@@ -43,6 +43,7 @@ void GameState::display()
 
 void GameState::begin(unsigned lotsOfDataAboutStuff)
 {
+	std::cout << "turn start\n";
 	_lotsOfDataAboutStuff = lotsOfDataAboutStuff;
 	addAction("Use card from hand", &GameState::useCard);
 	addAction("Attack with a creature", &GameState::attackWithCreature);
@@ -92,8 +93,8 @@ void GameState::useCard()
 		if(!_inHand.empty())
 		{
 			std::cout << "Which card would you like to use?\n";
-			for(std::vector<int>::iterator it = _inHand.begin(); it != _inHand.end(); ++it)
-				addAction(*it, &GameState::put(it));
+			/*for(std::vector<int>::iterator it = _inHand.begin(); it != _inHand.end(); ++it)
+				addAction(*it, &GameState::put(it));*/
 		}
 		else
 			std::cout << "You have no card on the board";
@@ -120,7 +121,7 @@ void GameState::attackWithCreature()
 		for(std::vector<int>::iterator it = _onBoard.begin(); it != _onBoard.end(); ++it)
 			//TODO Show creatures on Board and save the player's choice
 			;
-		
+
 		std::cout << "Which opponent's creature would like to attack?\n";
 		for(std::vector<int>::iterator it = _oppoBoard.begin(); it != _oppoBoard.end(); ++it)
 			//TODO Show opponent's creatures on Board and save the player's choice

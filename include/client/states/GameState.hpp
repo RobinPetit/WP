@@ -30,7 +30,7 @@ class GameState : public AbstractState
 	private:
 		std::vector<int> _inHand;
 		std::vector<int> _onBoard;
-        std::vector<int> _oppoBoard;
+		std::vector<int> _oppoBoard;
 		unsigned _lotsOfDataAboutStuff;
 		unsigned _remainCards = DECK_SIZE;
 		unsigned _energy = DFLT_ENERGY;
