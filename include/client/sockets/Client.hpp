@@ -140,7 +140,7 @@ private:
 	//////// Game related attributes
 
 	/// Tell whether the client is currently playing or not
-	bool _inGame;
+	std::atomic_bool _inGame;
 	/// Socket used only when a game is started to communicate with the specialized thread in the server
 	sf::TcpSocket _inGameSocket;
 	/// Socket used to receive special data from the server game thread

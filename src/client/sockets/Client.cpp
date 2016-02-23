@@ -69,6 +69,8 @@ void Client::quit()
 	sf::Packet packet;
 	packet << TransferType::PLAYER_DISCONNECTION;
 	_socket.send(packet);
+	_inGame.store(false);
+	_inGameListeningThread.join();
 	_threadLoop.store(false);
 	_listenerThread.join();
 	_isConnected = false;
@@ -111,12 +113,12 @@ void Client::inputGameListening()
 	waitTillReadyToPlay();
 	sf::Packet receivedPacket;
 	TransferType type;
-	while(true)
+	while(_inGame.load())
 	{
 		_inGameListeningSocket.receive(receivedPacket);
 		receivedPacket >> type;
 		if(type == TransferType::GAME_OVER)
-			break;
+			_inGame.store(false);
 		else if(type == TransferType::GAME_PLAYER_ENTER_TURN)
 			;  // perform turn changing here
 		else if(type == TransferType::GAME_PLAYER_LEAVE_TURN)
