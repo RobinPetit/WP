@@ -20,6 +20,8 @@ public:
 	virtual ~ServerDatabase();
 
 private:
+	inline void prepareStmt(const char * query, sqlite3_stmt **stmt);
+
 	/// Default relative path to sqlite3 file
 	static const char FILENAME[];
 	

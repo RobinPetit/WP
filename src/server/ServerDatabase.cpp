@@ -16,12 +16,9 @@ const char ServerDatabase::LOGIN_QUERY[] =
     "SELECT login FROM Account WHERE id == ?1;";
 ServerDatabase::ServerDatabase(std::string filename) : Database(filename)
 {
-	sqliteThrowExcept(sqlite3_prepare_v2(_database, FRIEND_LIST_QUERY, sizeof(FRIEND_LIST_QUERY),
-	                                     &friendListStmt, nullptr));
-	sqliteThrowExcept(sqlite3_prepare_v2(_database, USER_ID_QUERY, sizeof(USER_ID_QUERY),
-	                                     &userIdStmt, nullptr));
-	sqliteThrowExcept(sqlite3_prepare_v2(_database, LOGIN_QUERY, sizeof(LOGIN_QUERY),
-	                                     &loginStmt, nullptr));
+	prepareStmt(FRIEND_LIST_QUERY, &friendListStmt);
+	prepareStmt(USER_ID_QUERY, &userIdStmt);
+	prepareStmt(LOGIN_QUERY, &loginStmt);
 
 	/* TEST */
 	std::cout << getFriendsList(1)->front().name << std::endl;
@@ -75,6 +72,11 @@ ServerDatabase::~ServerDatabase()
 	        || sqlite3_finalize(userIdStmt) != SQLITE_OK
 	        || sqlite3_finalize(loginStmt) != SQLITE_OK)
 		std::cerr << "ERROR while finalizing statements" << std::endl;
+}
+
+void ServerDatabase::prepareStmt(const char* const query, sqlite3_stmt ** stmt)
+{
+	sqliteThrowExcept(sqlite3_prepare_v2(_database, query, std::strlen(query), stmt, nullptr));
 }
 
 // TODO Monster to Creature
