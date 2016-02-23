@@ -74,7 +74,7 @@ void GameThread::startGame(const ClientInformations& player1, const ClientInform
 	packet << TransferType::GAME_STARTING << TransferType::GAME_PLAYER_ENTER_TURN;
 	getSocketFromID(_gameBoard.getCurrentPlayerID()).send(packet);
 	packet.clear();
-	packet << TransferType::GAME_STARTING << TransferType::GAME_PLAYER_LEAVING_TURN;
+	packet << TransferType::GAME_STARTING << TransferType::GAME_PLAYER_LEAVE_TURN;
 	getSocketFromID(_gameBoard.getWaitingPlayerID()).send(packet);
 	/// \TODO main loop of the game
 	packet.clear();

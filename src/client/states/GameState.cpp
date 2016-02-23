@@ -26,11 +26,12 @@ GameState::GameState(StateStack& stateStack, Client& client):
 		throw std::runtime_error("Wrong signal received: " + std::to_string(static_cast<sf::Uint32>(type)));
 	packet >> type;
 	if(type == TransferType::GAME_PLAYER_ENTER_TURN)
-		_myTurn = true;
-	else(type == TransferType::GAME_PLAYER_LEAVE_TURN)
-		_muTurn = false;
+		startTurn();
+	else if(type == TransferType::GAME_PLAYER_LEAVE_TURN)
+		_myTurn = false;
 	else
 		throw std::runtime_error("Wrong turn information: " + std::to_string(static_cast<sf::Uint32>(type)));
+
 }
 
 void GameState::display()
@@ -53,13 +54,13 @@ void GameState::startTurn()
 {
 	// if client dos NOT receive a message telling to start the turn,
 	// there is an error -> throw std::runtime_error
-	sf::Packet packet;
+	/*sf::Packet packet;
 	_client.getGameSocket().receive(packet);
 	TransferType type;
 	packet >> type;
 	if(type != TransferType::GAME_PLAYER_ENTER_TURN)
 		throw std::runtime_error("Wrong message received");
-	_myTurn = true;
+	_myTurn = true;*/
 	std::cout << "It is now your turn";
 	//TODO put the card taken in the _inHand vector;
 	--_remainCards;  // Player took a card from his deck

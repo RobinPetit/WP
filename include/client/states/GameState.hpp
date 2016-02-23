@@ -39,7 +39,7 @@ class GameState : public AbstractState
 		unsigned _remainCards = DECK_SIZE;
 		unsigned _energy = DFLT_ENERG;
 		unsigned _oppoCards;
-		bool _myTurn=false;
+		bool _myTurn;
 
 		void setEnergy(unsigned);
 		void useCard();
