@@ -11,9 +11,16 @@ public:
 	/// \param filename: relative path to sqlite3 file.
 	explicit ServerDatabase(std::string filename = FILENAME);
 
+	FriendsList * getFriendsList(int user);
+
+	virtual ~ServerDatabase();
+
 private:
 	/// Default relative path to sqlite3 file
 	static const char FILENAME[];
+	
+	static const char FRIEND_LIST_QUERY[];
+	sqlite3_stmt * friendListStmt;
 };
 
 #endif //_DATABASE_SERVER_HPP
