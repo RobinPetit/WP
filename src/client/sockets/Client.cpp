@@ -30,9 +30,7 @@ Client::Client():
 
 bool Client::connectToServer(const std::string& name, const std::string& password, const sf::IpAddress& address, sf::Uint16 port)
 {
-	if(!initServer(name, password, address, port))
-		return false;
-	return sendConnectionToken(password);
+	return initServer(name, password, address, port) && sendConnectionToken(password);
 }
 
 bool Client::registerToServer(const std::string& name, const std::string& password, const sf::IpAddress& address, sf::Uint16 port)
@@ -155,6 +153,7 @@ void Client::quit()
 	sf::Packet packet;
 	packet << TransferType::PLAYER_DISCONNECTION;
 	_socket.send(packet);
+	_socket.disconnect();
 	_threadLoop.store(false);
 	_listenerThread.join();
 	_isConnected = false;
