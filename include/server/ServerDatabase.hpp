@@ -4,14 +4,16 @@
 #include "common/Database.hpp"
 
 /// Interface to the server database.
-class DatabaseServer : public Database
+class ServerDatabase : public Database
 {
-    /// Default relative path to sqlite3 file
-    static constexpr char FILENAME[] = "../ressources/server/database.db";
 public:
-    /// Constructor
-    /// \param filename: relative path to sqlite3 file.
-    explicit DatabaseServer(std::string filename = FILENAME);
+	/// Constructor
+	/// \param filename: relative path to sqlite3 file.
+	explicit ServerDatabase(std::string filename = FILENAME);
+
+private:
+	/// Default relative path to sqlite3 file
+	static const char FILENAME[];
 };
 
 #endif //_DATABASE_SERVER_HPP
