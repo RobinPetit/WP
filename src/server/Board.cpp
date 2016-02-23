@@ -73,7 +73,7 @@ void Board::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 				Creature::effectMethods[method](*usedCreature, effectArgs);
 			}
 			break;
-		case CREATURE_SELF_INDEX:
+		case CREATURE_SELF_INDX:
             {
 				int boardIndex = effectArgs.front();
 				effectArgs.erase(effectArgs.begin());
