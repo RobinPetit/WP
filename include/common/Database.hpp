@@ -4,8 +4,16 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 #include <sqlite3.h>
+
+struct Friend
+{
+	int64_t id;
+	std::string name;
+};
+typedef std::vector<Friend> FriendsList;
 
 /// Interface to the database
 class Database
