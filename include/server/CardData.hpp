@@ -96,6 +96,11 @@ enum CREATURE_CONSTRAINTS : int
 	C_CONSTRAINTS_COUNT
 };
 
+enum CONSTRAINT_CONDITIONS : int
+{
+	IF_CASTER_ALIVE
+};
+
 /// Types used for card creation:
 enum CostValue : int
 {
@@ -134,7 +139,7 @@ typedef std::vector<int> EffectParamsCollection;
 //EFFECT ID
 //if effect is SET_CONSTRAINT:
 //	CONSTRAINT ID
-//	followed by VALUE and TURNS arguments (no more than 2)
+//	followed by VALUE, TURNS (use 100 for unlimited), and eventually IF_CASTER_ALIVE option
 //if effect is something else:
 //	ALL ARGUMENTS (no more than 4)
 

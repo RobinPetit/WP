@@ -57,6 +57,7 @@ void Player::enterTurn(int)
 	//Will call creature's turn-based rules
 	for (unsigned i=0; i<_cardBoard.size(); i++)
 		_cardBoard.at(i)->enterTurn();
+
 	// Tell to player that its turn starts
 	sf::Packet packet;
 	packet << TransferType::GAME_PLAYER_ENTER_TURN;
@@ -126,22 +127,24 @@ void Player::attackWithCreature(int boardIndex, int victim)
 		return;
 	}
 	int attackPoints = _cardBoard.at(boardIndex)->getAttack();
-	_opponent->applyEffectToCreature(victim, CE_CHANGE_HEALTH, {attackPoints});
+	//_opponent->applyEffectToCreature(victim, CE_CHANGE_HEALTH, {attackPoints});
 }
 
 /*--------------------------- BOARD AND CREATURE INTERFACE */
-void Player::applyEffectToCreature(int boardIndex, int method, const EffectParamsCollection& effectArgs)
+void Player::applyEffectToCreature(const Card* usedCard, int boardIndex, int method, const EffectParamsCollection& effectArgs)
 {
+	_lastCasterCard = usedCard;
 	if (boardIndex<0) boardIndex = rand() % _cardBoard.size();
 	Creature* usedCreature = _cardBoard.at(boardIndex);
     Creature::effectMethods[method](*usedCreature, effectArgs);
 }
 
-void Player::applyEffectToCreatures(int method, const EffectParamsCollection& effectArgs)
+void Player::applyEffectToCreatures(const Card* usedCard, int method, const EffectParamsCollection& effectArgs)
 {
+	_lastCasterCard = usedCard;
 	for (unsigned i=0; i<_cardBoard.size(); i++)
 	{
-		applyEffectToCreature(i, method, effectArgs);
+		applyEffectToCreature(usedCard, i, method, effectArgs);
 	}
 }
 
@@ -155,6 +158,11 @@ int Player::getTeamConstraint(int constraintID)
 			return value;
     }
     return value;
+}
+
+const Card* Player::getLastCaster()
+{
+    return _lastCasterCard;
 }
 
 /*--------------------------- EFFECTS */

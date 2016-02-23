@@ -54,9 +54,10 @@ public:
 	static std::function<void(Player&, const EffectParamsCollection&)> effectMethods[P_EFFECTS_COUNT];
 
 	///Pass along effects to creatures
-	void applyEffectToCreatures(int method, const EffectParamsCollection& effectArgs);
-	void applyEffectToCreature(int boardIndex, int method, const EffectParamsCollection& effectArgs);
+	void applyEffectToCreatures(const Card* usedCard, int method, const EffectParamsCollection& effectArgs);
+	void applyEffectToCreature(const Card* usedCard, int boardIndex, int method, const EffectParamsCollection& effectArgs);
 	int getTeamConstraint(int constraintID);
+	const Card* getLastCaster();
 
 private:
 	//////////// type definitions
@@ -89,6 +90,7 @@ private:
 	std::vector<Card *> _cardHand;  ///< Cards that are in the player's hand (usable)
 	std::vector<Creature *> _cardBoard;  ///< Cards that are on the board (usable for attacks)
 	std::vector<Card *> _cardBin;  ///< Cards that are discarded (dead creatures, used spells)
+	const Card* _lastCasterCard=nullptr;
 
 	// random management
 	std::default_random_engine _engine;

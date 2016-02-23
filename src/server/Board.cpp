@@ -85,32 +85,32 @@ void Board::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
             {
 				int boardIndex = effectArgs.front();
 				effectArgs.erase(effectArgs.begin());
-				_activePlayer->applyEffectToCreature(boardIndex, method, effectArgs);
+				_activePlayer->applyEffectToCreature(usedCard, boardIndex, method, effectArgs);
             }
             break;
 
 		case CREATURE_SELF_RAND:
-            _activePlayer->applyEffectToCreature(-1, method, effectArgs);
+            _activePlayer->applyEffectToCreature(usedCard, -1, method, effectArgs);
 			break;
 
 		case CREATURE_SELF_TEAM:
-			_activePlayer->applyEffectToCreatures(method, effectArgs);
+			_activePlayer->applyEffectToCreatures(usedCard, method, effectArgs);
 			break;
 
 		case CREATURE_OPPO_INDX:
 			{
 				int boardIndex = effectArgs.front();
 				effectArgs.erase(effectArgs.begin());
-				_passivePlayer->applyEffectToCreature(boardIndex, method, effectArgs);
+				_passivePlayer->applyEffectToCreature(usedCard, boardIndex, method, effectArgs);
 			}
 			break;
 
 		case CREATURE_OPPO_RAND:
-			_passivePlayer->applyEffectToCreature(-1, method, effectArgs);
+			_passivePlayer->applyEffectToCreature(usedCard, -1, method, effectArgs);
 			break;
 
 		case CREATURE_OPPO_TEAM:
-			_passivePlayer->applyEffectToCreatures(method, effectArgs);
+			_passivePlayer->applyEffectToCreatures(usedCard, method, effectArgs);
 			break;
 	}
 }
