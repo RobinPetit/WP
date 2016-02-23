@@ -244,9 +244,9 @@ void Server::startGame(std::size_t idx)
 	std::cout << "StartGame(" << idx << ")\n";
 	GameThread& selfThread(*_runningGames[idx]);
 	std::cout << "Got it\n";
-	const auto& finderById = [&](unsigned playerId)
+	const auto& finderById = [](unsigned playerId)
 	{
-		return [=](const std::pair<std::string, ClientInformations>& it)
+		return [playerId](const std::pair<std::string, ClientInformations>& it)
 		{
 			return it.second.id == playerId;
 		};

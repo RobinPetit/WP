@@ -84,9 +84,9 @@ private:
 	/// Used when a player want to play with another player
 	void findOpponent(const _iterator& it);
 	///
-	void startGame(std::size_t);
+	void startGame(std::size_t idx);
 	///
-	void createGame(unsigned, unsigned);
+	void createGame(unsigned ID1, unsigned ID2);
 };
 
 #endif // _SERVER_HPP_

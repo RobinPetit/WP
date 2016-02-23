@@ -2,8 +2,8 @@
 #define _GAME_STATE_CLIENT_HPP
 
 constexpr unsigned DECK_SIZE = 20;
-constexpr unsigned DFLT_ENERG = 0;
-constexpr unsigned MAX_ENERG = 10;
+constexpr unsigned DFLT_ENERGY = 0;
+constexpr unsigned MAX_ENERGY = 10;
 
 #include <vector>
 #include "client/AbstractState.hpp"
@@ -37,8 +37,9 @@ class GameState : public AbstractState
 		// std::vector<Card> _onBoard;
 		unsigned _lotsOfDataAboutStuff;
 		unsigned _remainCards = DECK_SIZE;
-		unsigned _energy = DFLT_ENERG;
+		unsigned _energy = DFLT_ENERGY;
 		unsigned _oppoCards;
+		unsigned _nbrTurn = 0;
 		bool _myTurn;
 
 		void setEnergy(unsigned);
