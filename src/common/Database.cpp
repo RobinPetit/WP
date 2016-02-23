@@ -55,13 +55,17 @@ int Database::sqliteThrowExcept(int errcode) const
 		throw std::runtime_error("Database MS unable to open file");
 		break;
 
+	case SQLITE_SCHEMA:
+		throw std::runtime_error("Database schema has changed, need reinstall or update");
+		break;
+
 	case SQLITE_ROW:
 	case SQLITE_DONE:
 		break;
 
 	case SQLITE_ERROR:
 	default:
-		throw std::runtime_error((*sqlite3_errmsg(_database)) + " (" + std::to_string(errcode) + ")");
+		throw std::runtime_error(std::string(sqlite3_errstr(errcode)) + " (" + std::to_string(errcode) + ")");
 	}
 
 	return errcode;
