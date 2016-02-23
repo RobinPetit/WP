@@ -40,8 +40,12 @@ class GameState : public AbstractState
 		unsigned _energy = DFLT_ENERGY;
 		unsigned _oppoCards;
 		unsigned _nbrTurn = 0;
+		// \TODO: sync with Client::_inGame
+		std::atomic_bool _playing;
 		std::atomic_bool _myTurn;
 		NonBlockingInput _nonBlockingInput;
+		/// Waits for special server data such as END_OF_TURN, BOARD_UPDATE, etc.
+		std::thread _listeningThread;
 
 		void setEnergy(unsigned);
 		void useCard();
@@ -50,6 +54,10 @@ class GameState : public AbstractState
 		void endTurn();
 		void quit();
 
+		/// Start the new thread waiting for special data
+		void initListening();
+		/// Called by the game listening thread: waits for server game thread special data
+		void inputListening();
 };
 
 #endif  // _GAME_STATE_CLIENT_HPP

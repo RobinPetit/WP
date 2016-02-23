@@ -1,8 +1,10 @@
 // std-C++ headers
 #include <iostream>
 #include <cstdlib>
+#include <cassert>
 // SFML headers
 #include <SFML/Network/IpAddress.hpp>
+#include <SFML/Network/SocketSelector.hpp>
 // WizardPoker headers
 #include "common/constants.hpp"
 #include "client/ErrorCode.hpp"
@@ -14,11 +16,13 @@
 #include "client/NonBlockingInput.hpp"
 
 GameState::GameState(StateStack& stateStack, Client& client):
-	AbstractState(stateStack, client)
+	AbstractState(stateStack, client),
+	_playing(true)
 {
 	addAction("Quit", &GameState::quit);
 	std::cout << "Your game is about to start!\n";
 	_client.waitTillReadyToPlay();
+	initListening();
 	sf::Packet packet;
 	_client.getGameSocket().receive(packet);
 	TransferType type;
@@ -154,5 +158,45 @@ void GameState::endTurn()
 
 void GameState::quit()
 {
+	_playing.store(true);
+	_listeningThread.join();
 	stackPop();
+}
+
+
+//////////////// special data receival
+
+void GameState::initListening()
+{
+	_listeningThread = std::thread(&GameState::inputListening, this);
+}
+
+void GameState::inputListening()
+{
+	sf::TcpSocket& listeningSocket{_client.getGameListeningSocket()};
+	_client.waitTillReadyToPlay();
+	sf::Packet receivedPacket;
+	TransferType type;
+	sf::SocketSelector selector;
+	selector.add(listeningSocket);
+	while(_playing.load())
+	{
+		if(!selector.wait(SOCKET_TIME_SLEEP))
+			continue;
+		assert(selector.isReady(listeningSocket));
+		auto receiveStatus{listeningSocket.receive(receivedPacket)};
+		if(receiveStatus == sf::Socket::Disconnected)
+			;  // \TODO: handle disconnection
+		else if(receiveStatus == sf::Socket::Error)
+			;  // \TODO: handle error
+		receivedPacket >> type;
+		if(type == TransferType::GAME_OVER)
+			_playing.store(false);
+		else if(type == TransferType::GAME_PLAYER_ENTER_TURN)
+			std::cout << "starting turn\n";  // perform turn changing here
+		else if(type == TransferType::GAME_PLAYER_LEAVE_TURN)
+			std::cout << "ending turn\n";  // perform turn changing here
+		else
+			std::cerr << "Unknown message received: " << static_cast<sf::Uint32>(type) << "; ignore." << std::endl;
+	}
 }
