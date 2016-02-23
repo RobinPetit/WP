@@ -87,7 +87,24 @@ void GameState::useCard()
 		std::cout << "You must wait your turn!\n";
 		return;
 	}
-	/**/
+	else
+	{
+		if(!_onBoard.empty())
+		{
+			std::cout << "Which card would you like to use?\n";
+			for(std::vector<int>::iterator it = _inHand.begin(); it != _inHand.end(); ++it)
+				addAction(*it, &GameState::put(it));
+		}
+		else
+			std::cout << "You have no card on the board";
+	}
+}
+
+void GameState::putOnBoard(std::vector<int>::iterator it)
+{
+	int card = *it;			///Save the card ID
+	_inHand.erase(it);		///Remove it from the hand
+	_onBoard.push_back(card);	///Put it on the board
 }
 
 void GameState::attackWithCreature()
@@ -97,7 +114,18 @@ void GameState::attackWithCreature()
 		std::cout << "You must wait your turn!\n";
 		return;
 	}
-	/**/
+	else
+	{
+		std::cout << "With which creature would like to attack?\n";
+		for(std::vector<int>::iterator it = _onBoard.begin(); it != _onBoard.end(); ++it)
+			//TODO Show creatures on Board and save the player's choice
+			;
+		
+		std::cout << "Which opponent's creature would like to attack?\n";
+		for(std::vector<int>::iterator it = _oppoBoard.begin(); it != _oppoBoard.end(); ++it)
+			//TODO Show opponent's creatures on Board and save the player's choice
+			;
+	};
 }
 
 void GameState::endTurn()
@@ -109,7 +137,6 @@ void GameState::endTurn()
 	}
 	else
 	{
-		setEnergy(DFLT_ENERGY);
 		_myTurn = false;
 	};
 }
