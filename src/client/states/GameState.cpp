@@ -2,7 +2,7 @@
 #include <iostream>
 #include <cstdlib>
 // SFML headers
-//#include <SFML/Network/IpAddress.hpp>
+#include <SFML/Network/IpAddress.hpp>
 // WizardPoker headers
 #include "common/constants.hpp"
 #include "client/ErrorCode.hpp"
