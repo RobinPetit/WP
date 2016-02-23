@@ -5,9 +5,15 @@
 #define AUTO_QUERY_LENGTH -1
 
 const char ServerDatabase::FILENAME[] = "../resources/server/database.db";
-const char ServerDatabase::FRIEND_LIST_QUERY[] = "SELECT id,login FROM Friendship INNER JOIN Account ON second == id WHERE first == ?;";
-const char ServerDatabase::USER_ID_QUERY[] = "SELECT id FROM Account WHERE login == ?1;";
-const char ServerDatabase::LOGIN_QUERY[] = "SELECT login FROM Account WHERE id == ?1;";
+const char ServerDatabase::FRIEND_LIST_QUERY[] =
+    "SELECT id,login "
+    "FROM Friendship "
+    "INNER JOIN Account ON second == id "
+    "WHERE first == ?1;";
+const char ServerDatabase::USER_ID_QUERY[] =
+    "SELECT id FROM Account WHERE login == ?1;";
+const char ServerDatabase::LOGIN_QUERY[] =
+    "SELECT login FROM Account WHERE id == ?1;";
 ServerDatabase::ServerDatabase(std::string filename) : Database(filename)
 {
 	sqliteThrowExcept(sqlite3_prepare_v2(_database, FRIEND_LIST_QUERY, sizeof(FRIEND_LIST_QUERY),
