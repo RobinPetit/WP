@@ -127,14 +127,24 @@ void Player::attackWithCreature(int boardIndex, int victim)
 		return;
 	}
 	int attackPoints = _cardBoard.at(boardIndex)->getAttack();
-	//_opponent->applyEffectToCreature(victim, CE_CHANGE_HEALTH, {attackPoints});
+	//attackPoints += _cardBoard.at(boardIndex)->getConstraint(CC_TEMP_SELF_ATTACK_CHANGE);
+	//see if forced attacks
+	if (victim<0)
+		_opponent->changeHealth({-attackPoints});
+    else
+    {
+		_opponent->applyEffectToCreature(_cardBoard.at(boardIndex), victim, CE_CHANGE_HEALTH, {attackPoints});
+    }
 }
 
 /*--------------------------- BOARD AND CREATURE INTERFACE */
 void Player::applyEffectToCreature(const Card* usedCard, int boardIndex, int method, const EffectParamsCollection& effectArgs)
 {
 	_lastCasterCard = usedCard;
-	if (boardIndex<0) boardIndex = rand() % _cardBoard.size();
+	//If no subject was selected
+	if (boardIndex<0)
+		boardIndex = rand() % _cardBoard.size();
+
 	Creature* usedCreature = _cardBoard.at(boardIndex);
     Creature::effectMethods[method](*usedCreature, effectArgs);
 }
@@ -142,22 +152,22 @@ void Player::applyEffectToCreature(const Card* usedCard, int boardIndex, int met
 void Player::applyEffectToCreatures(const Card* usedCard, int method, const EffectParamsCollection& effectArgs)
 {
 	_lastCasterCard = usedCard;
-	for (unsigned i=0; i<_cardBoard.size(); i++)
+	//If the effect consists in setting a constraint
+	if (method==CE_SET_CONSTRAINT)
+		setTeamConstraint(usedCard, effectArgs); //We set a team constraint instead of individual ones
+	else
 	{
-		applyEffectToCreature(usedCard, i, method, effectArgs);
+		for (unsigned i=0; i<_cardBoard.size(); i++)
+		{
+			applyEffectToCreature(usedCard, i, method, effectArgs);
+		}
 	}
 }
 
-int Player::getTeamConstraint(int constraintID)
+int Player::getCreatureConstraint(Creature& subject, int constraintID)
 {
-	int value=0;
-    for (unsigned i=0; i<_cardBoard.size(); i++)
-    {
-        value = _cardBoard.at(i)->getConstraint(constraintID);
-        if (value != 0)
-			return value;
-    }
-    return value;
+	int creatureValue = subject.getConstraint(constraintID);
+	return _teamConstraints.getOverallConstraint(constraintID, creatureValue);
 }
 
 const Card* Player::getLastCaster()
@@ -344,4 +354,12 @@ Card* Player::cardExchangeFromHand(Card* givenCard, int handIndex)
 	//NETWORK: HAND_CHANGED
 	//NETWORK: CARD_EXCHANGED
 	return stolen;
+}
+
+void Player::setTeamConstraint(const Card* usedCard, const EffectParamsCollection& effectArgs)
+{
+    int constraintID = effectArgs.front();
+    int value = effectArgs.at(1);
+    int turns = effectArgs.at(2);
+	_teamConstraints.setConstraint(constraintID, value, turns, dynamic_cast<const Creature*>(usedCard));
 }

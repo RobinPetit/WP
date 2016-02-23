@@ -56,7 +56,7 @@ public:
 	///Pass along effects to creatures
 	void applyEffectToCreatures(const Card* usedCard, int method, const EffectParamsCollection& effectArgs);
 	void applyEffectToCreature(const Card* usedCard, int boardIndex, int method, const EffectParamsCollection& effectArgs);
-	int getTeamConstraint(int constraintID);
+	int getCreatureConstraint(Creature& subject, int constraintIDD);
 	const Card* getLastCaster();
 
 private:
@@ -81,6 +81,7 @@ private:
 
 	// Constraints
 	Constraints _constraints = Constraints(P_CONSTRAINT_DEFAULTS, P_CONSTRAINTS_COUNT);
+	Constraints _teamConstraints = Constraints(C_CONSTRAINT_DEFAULTS, C_CONSTRAINTS_COUNT);
 
 	constexpr static TurnData _emptyTurnData = {0, 0, 0, 0};
 	TurnData _turnData;
@@ -98,6 +99,7 @@ private:
 
 	//////////// Private methods
 	void exploitCardEffects(Card* usedCard);
+	void setTeamConstraint(const Card* usedCard, const EffectParamsCollection& effectArgs);
 
 	void cardDeckToHand(int amount);
 	void cardHandToBoard(int handIndex);

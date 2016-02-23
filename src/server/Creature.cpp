@@ -52,14 +52,9 @@ bool Creature::isOnBoard() const
 void Creature::enterTurn()
 {
 	//Creature's turn-based rules
-	changeHealth({_constraints.getConstraint(CC_TURN_SELF_HEALTH_CHANGE)});
-	_owner->applyEffectToCreatures(this, CE_CHANGE_HEALTH, {_constraints.getConstraint(CC_TURN_TEAM_HEALTH_CHANGE),1});
-
-	changeAttack({_constraints.getConstraint(CC_TURN_SELF_ATTACK_CHANGE)});
-	_owner->applyEffectToCreatures(this, CE_CHANGE_ATTACK, {_constraints.getConstraint(CC_TURN_TEAM_ATTACK_CHANGE)});
-
-	changeShield({_constraints.getConstraint(CC_TURN_SELF_SHIELD_CHANGE)});
-	_owner->applyEffectToCreatures(this, CE_CHANGE_SHIELD, {_constraints.getConstraint(CC_TURN_TEAM_SHIELD_CHANGE)});
+	changeAttack({_owner->getCreatureConstraint(*this, CC_TURN_ATTACK_CHANGE)});
+	changeHealth({_owner->getCreatureConstraint(*this, CC_TURN_HEALTH_CHANGE)});
+	changeShield({_owner->getCreatureConstraint(*this, CC_TURN_ATTACK_CHANGE)});
 }
 
 void Creature::leaveTurn()

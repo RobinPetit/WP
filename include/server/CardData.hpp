@@ -78,16 +78,12 @@ enum CREATURE_EFFECTS : int
 enum CREATURE_CONSTRAINTS : int
 {
 	//turn-by-turn
-	CC_TURN_SELF_ATTACK_CHANGE,			//Attack points added each turn
-	CC_TURN_SELF_HEALTH_CHANGE,			//Health points added each turn
-	CC_TURN_SELF_SHIELD_CHANGE,			//Shield points added each turn
-    CC_TURN_TEAM_ATTACK_CHANGE,
-    CC_TURN_TEAM_HEALTH_CHANGE,
-    CC_TURN_TEAM_SHIELD_CHANGE,
+	CC_TURN_ATTACK_CHANGE,			//Attack points added each turn
+	CC_TURN_HEALTH_CHANGE,			//Health points added each turn
+	CC_TURN_SHIELD_CHANGE,			//Shield points added each turn
 	//passive
-	CC_SELF_BLOCK_ATTACKS,			// Block the next X attacks on himself
-	CC_TEAM_BLOCK_ATTACKS,			// Block the next X attacks on team
-	CC_SELF_IS_PARALYZED,			// Can not be used
+	CC_TEMP_BLOCK_ATTACKS,			// Block the next X attacks
+	CC_TEMP_IS_PARALYZED,			// Can not be used
 	//on creature death
 	CC_DEATH_TEAM_ATTACK_CHANGE,
 	CC_DEATH_TEAM_HEALTH_CHANGE,
