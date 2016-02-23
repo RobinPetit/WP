@@ -1,4 +1,5 @@
 #include "server/Constraints.hpp"
+#include "server/Creature.hpp"
 
 Constraints::Constraints(const ConstraintDefaultValue* defaultValues, const int arraySize):
 	_size(arraySize), _defaultValues(defaultValues)
@@ -18,33 +19,21 @@ void Constraints::setConstraint(int constraintID, int value, int turns, const Cr
 
 int Constraints::getConstraint(int constraintID)
 {
-	int value;
-
-	if (_timedValues[constraintID].empty())
-		value = _defaultValues[constraintID].value;
-    else
-    {
-		switch (_defaultValues[constraintID].getOption)
-		{
-			case GET_FIRST:
-				value = getTimedValue(constraintID, _timedValues[constraintID].size()-1);
-            case GET_LAST:
-				value = getTimedValue(constraintID, 0);
-				break;
-            case GET_SUM:
-				for (unsigned i=0; i<_timedValues[constraintID].size(); i++)
-				{
-                    value += getTimedValue(constraintID, i);
-				}
-
-		}
+	switch (_defaultValues[constraintID].getOption)
+	{
+		case GET_FIRST:
+			return getFirstTimedValue(constraintID);
+		case GET_LAST:
+			return getLastTimedValue(constraintID);
+		case GET_SUM:
+			return getSumTimedValues(constraintID);
 	}
-	return value;
+    return 0; //error ?
 }
 
-int Constraints::getTimedValue(int constraintID, unsigned valueIndex)
+int Constraints::getValue(int constraintID, unsigned valueIndex)
 {
-    int value = _timedValues[constraintID].at(valueIndex).value;
+	int value = _timedValues[constraintID].at(valueIndex).value;
     switch(_defaultValues[constraintID].valueOption) //rules
 	{
 		case VALUE_GET_INCREMENT:
@@ -60,16 +49,68 @@ int Constraints::getTimedValue(int constraintID, unsigned valueIndex)
 	return value;
 }
 
+int Constraints::getFirstTimedValue(int constraintID)
+{
+	Creature* caster;
+	std::vector<ConstraintTimedValue>& vect = _timedValues[constraintID]; //value, turns left, caster
+	for (auto vectIt=vect.begin(); vectIt!=vect.end();)
+	{
+		//if the caster is not remembered, or is on the board and active
+		if (vectIt->caster==nullptr or caster->isOnBoard() or caster->getConstraint(CC_SELF_IS_PARALYZED)==0)
+            return getValue(constraintID, vectIt - vect.begin());
+
+		//if caster is dead or paralyzed
+		else
+			vectIt++;
+	}
+    return _defaultValues[constraintID].value;
+}
+
+int Constraints::getLastTimedValue(int constraintID)
+{
+	Creature* caster;
+	std::vector<ConstraintTimedValue>& vect = _timedValues[constraintID]; //value, turns left, caster
+	for (auto vectIt=vect.rbegin(); vectIt!=vect.rend();)
+	{
+		//if the caster is not remembered, or is on the board and active
+		if (vectIt->caster==nullptr or caster->isOnBoard() or caster->getConstraint(CC_SELF_IS_PARALYZED)==0)
+            return getValue(constraintID, vectIt - vect.rbegin());
+
+		//if caster is dead or paralyzed
+		else
+			vectIt++;
+	}
+    return _defaultValues[constraintID].value;
+}
+
+int Constraints::getSumTimedValues(int constraintID)
+{
+	Creature* caster;
+    int value = _defaultValues[constraintID].value;
+	std::vector<ConstraintTimedValue>& vect = _timedValues[constraintID]; //value, turns left, caster
+	for (auto vectIt=vect.begin(); vectIt!=vect.end();)
+	{
+		//if the caster is not remembered, or is on the board and active
+		if (vectIt->caster==nullptr or caster->isOnBoard() or caster->getConstraint(CC_SELF_IS_PARALYZED)==0)
+            value += getValue(constraintID, vectIt - vect.begin());
+
+		//if caster is dead or paralyzed
+		else
+			vectIt++;
+	}
+    return value;
+}
+
 void Constraints::timeOutConstraints()
 {
 	for (unsigned i=0; i<_size; i++)
 	{
-		std::vector<ConstraintTimedValue>& vect = _timedValues[i]; //value, time left
+		std::vector<ConstraintTimedValue>& vect = _timedValues[i]; //value, turns left, caster
 		for (auto vectIt=vect.begin(); vectIt!=vect.end();)
 		{
-			// TODO how do I delete value without breaking iterator ?
-			if (vectIt->turns == 1)
-				vectIt = vect.erase(vectIt);
+			//if the constraint has run our of turns or if its caster has died
+			if (vectIt->turns == 1 or (vectIt->caster!=nullptr and not vectIt->caster->isOnBoard()))
+				vectIt = vect.erase(vectIt); //returns iterator to following object
 			else
 			{
 				vectIt->turns--;

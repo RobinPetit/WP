@@ -22,16 +22,6 @@ Creature::Creature(int cost, int attack, int health, int shield, int shieldType,
 
 }
 
-int Creature::getAttack()
-{
-	return _attack;
-}
-
-int Creature::getHealth()
-{
-	return _health;
-}
-
 bool Creature::isCreature()
 {
 	return true;
@@ -42,9 +32,19 @@ bool Creature::isSpell()
 	return false;
 }
 
-int Creature::getConstraint(int constraintID)
+void Creature::movedToBoard()
 {
-    return _constraints.getConstraint(constraintID);
+    _isOnBoard = true;
+}
+
+void Creature::removedFromBoard()
+{
+	_isOnBoard = false;
+}
+
+bool Creature::isOnBoard() const
+{
+	return _isOnBoard;
 }
 
 
@@ -65,6 +65,17 @@ void Creature::enterTurn()
 void Creature::leaveTurn()
 {
     _constraints.timeOutConstraints();
+}
+
+/*--------------------------- GETTERS FOR EFFECTS */
+int Creature::getAttack()
+{
+	return _attack;
+}
+
+int Creature::getConstraint(int constraintID)
+{
+    return _constraints.getConstraint(constraintID);
 }
 
 /*--------------------------- EFFECTS */

@@ -87,7 +87,7 @@ enum CREATURE_CONSTRAINTS : int
 	//passive
 	CC_SELF_BLOCK_ATTACKS,			// Block the next X attacks on himself
 	CC_TEAM_BLOCK_ATTACKS,			// Block the next X attacks on team
-	CC_SELF_PARALYZED,				// Can not be used
+	CC_SELF_IS_PARALYZED,			// Can not be used
 	//on creature death
 	CC_DEATH_TEAM_ATTACK_CHANGE,
 	CC_DEATH_TEAM_HEALTH_CHANGE,

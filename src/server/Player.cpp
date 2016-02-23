@@ -274,6 +274,7 @@ void Player::cardHandToBoard(int handIndex)
 	// TODO: treat properly case of handIndex being out of range
 	const auto& handIt = std::find(_cardHand.begin(), _cardHand.end(), _cardHand[handIndex]);
 	_cardBoard.push_back(dynamic_cast<Creature*>(_cardHand.at(handIndex)));
+	_cardBoard.back()->movedToBoard();
 	_cardHand.erase(handIt);
 	//NETWORK: HAND_CHANGED
 	//NETWORK: BOARD_CHANGED
@@ -292,6 +293,7 @@ void Player::cardHandToBin(int handIndex)
 void Player::cardBoardToBin(int boardIndex)
 {
 	const auto& boardIt = std::find(_cardBoard.begin(), _cardBoard.end(), _cardBoard[boardIndex]);
+	_cardBoard.at(boardIndex)->removedFromBoard();
 	_cardBin.push_back(_cardBoard.at(boardIndex));
 	_cardBoard.erase(boardIt);
 	//NETWORK: BOARD_CHANGED

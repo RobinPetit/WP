@@ -65,7 +65,7 @@ constexpr ConstraintDefaultValue C_CONSTRAINT_DEFAULTS[C_CONSTRAINTS_COUNT] =
 	//passive
 	{0,VALUE_GET_DECREMENT,GET_FIRST},	//CC_SELF_BLOCK_ATTACKS
 	{0,VALUE_GET_DECREMENT,GET_FIRST},	//CC_TEAM_BLOCK_ATTACKS
-	{0,VALUE_FIXED,GET_LAST},			//CC_SELF_PARALYZED
+	{0,VALUE_FIXED,GET_LAST},			//CC_SELF_IS_PARALYZED
 	//on creature death
 	{0,VALUE_FIXED,GET_SUM},		//CC_END_TEAM_HEALTH_GAIN
 	{0,VALUE_FIXED,GET_SUM},		//CC_END_TEAM_ATTACK_LOSS
@@ -78,7 +78,10 @@ private:
 	const unsigned _size;
 	const ConstraintDefaultValue* _defaultValues;
 	std::vector<ConstraintTimedValue>* _timedValues;
-	int getTimedValue(int constraintID, unsigned valueIndex);
+	int getValue(int constraintID, unsigned valueIndex);
+	int getFirstTimedValue(int constraintID);
+	int getLastTimedValue(int constraintID);
+	int getSumTimedValues(int constraintID);
 
 public:
 	Constraints(const ConstraintDefaultValue* defaultValues, const int arraySize);

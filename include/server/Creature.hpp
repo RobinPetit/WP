@@ -17,6 +17,7 @@ private:
 	int _shieldType;
 
 	Player* _owner;
+	bool _isOnBoard;
 
 	//Constraints
 	Constraints _constraints = Constraints(C_CONSTRAINT_DEFAULTS, C_CONSTRAINTS_COUNT);
@@ -27,16 +28,20 @@ public:
 	Creature(int cost=0, int attack=0, int health=1, int shield=0, int shieldType=0,
 			std::vector<EffectParamsCollection> effects = {{}});
 
-	/// Getters
-	int getAttack();
-	int getHealth();
+	/// Getters for Player management
 	virtual bool isCreature() override;
 	virtual bool isSpell() override;
-	int getConstraint(int constraintID);
+	void movedToBoard();
+	void removedFromBoard();
+	bool isOnBoard() const;
 
 	/// Player interface
 	void enterTurn();
 	void leaveTurn();
+
+	/// Getters for effects
+	int getAttack();
+	int getConstraint(int constraintID);
 
 	/// Effects
 	void setConstraint(const EffectParamsCollection& args);
