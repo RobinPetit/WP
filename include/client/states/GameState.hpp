@@ -5,8 +5,12 @@ constexpr unsigned DECK_SIZE = 20;
 constexpr unsigned DFLT_ENERGY = 0;
 constexpr unsigned MAX_ENERGY = 10;
 
+// std-C++ headers
 #include <vector>
+#include <atomic>
+// WizardPoker headers
 #include "client/AbstractState.hpp"
+#include "client/NonBlockingInput.hpp"
 
 // Forward declarations
 class StateStack;
@@ -36,7 +40,8 @@ class GameState : public AbstractState
 		unsigned _energy = DFLT_ENERGY;
 		unsigned _oppoCards;
 		unsigned _nbrTurn = 0;
-		bool _myTurn;
+		std::atomic_bool _myTurn;
+		NonBlockingInput _nonBlockingInput;
 
 		void setEnergy(unsigned);
 		void useCard();

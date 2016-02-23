@@ -2,6 +2,7 @@ set(SOURCES	"client.cpp"
 		# sockets
 		"sockets/Client.cpp"
 		"client.cpp"
+		"NonBlockingInput.cpp"
 		# states
 		"AbstractState.cpp"
 		"StateStack.cpp"

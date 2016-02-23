@@ -11,6 +11,7 @@
 #include "common/Terminal.hpp"
 #include "common/ini/IniFile.hpp"
 #include "client/states/GameState.hpp"
+#include "client/NonBlockingInput.hpp"
 
 GameState::GameState(StateStack& stateStack, Client& client):
 	AbstractState(stateStack, client)
@@ -27,9 +28,12 @@ GameState::GameState(StateStack& stateStack, Client& client):
 	packet >> type;
 	begin(0);
 	if(type == TransferType::GAME_PLAYER_ENTER_TURN)
+	{
+		_myTurn.store(true);
 		startTurn();
+	}
 	else if(type == TransferType::GAME_PLAYER_LEAVE_TURN)
-		_myTurn = false;
+		_myTurn.store(false);
 	else
 		throw std::runtime_error("Wrong turn information: " + std::to_string(static_cast<sf::Uint32>(type)));
 }
@@ -53,13 +57,19 @@ void GameState::begin(unsigned lotsOfDataAboutStuff)
 
 void GameState::startTurn()
 {
-	_myTurn = true;
-	std::cout << "It is now your turn";
 	//TODO put the card taken in the _inHand vector;
 	--_remainCards;  // Player took a card from his deck
 	++_nbrTurn;
 	setEnergy(_nbrTurn);
 	display();
+	std::cout << "It is now your turn, type something\n";
+	while(_myTurn.load())
+	{
+		if(_nonBlockingInput.waitForData(0.1))
+		{
+			std::string command{_nonBlockingInput.receiveStdinData()};
+		}
+	}
 	/**/
 }
 
