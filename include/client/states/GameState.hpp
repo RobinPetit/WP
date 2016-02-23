@@ -40,7 +40,7 @@ class GameState : public AbstractState
 
 		void setEnergy(unsigned);
 		void useCard();
-        void putOnBoard(std::vector<int>::iterator);
+		void putOnBoard(std::vector<int>::iterator);
 		void attackWithCreature();
 		void endTurn();
 		void quit();
