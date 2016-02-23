@@ -20,7 +20,7 @@ struct BoardState
 	std::vector<int> _thisPlayerCardsInHand;
 
 	bool _opponentCardsInHandChanged;
-	size_t _opponentCardsInHand;
+	std::size_t _opponentCardsInHand;
 
 	bool _thisPlayerCardsOnBoardChanged;
 	std::vector<int> _thisPlayerCardsOnBoard;
@@ -29,7 +29,7 @@ struct BoardState
 	std::vector<int> _opponentCardsOnBoard;
 
 	bool _thisPlayerRemainingCardsChanged;
-	size_t _thisPlayerRemainingCards;
+	std::size_t _thisPlayerRemainingCards;
 
 	bool _thisPlayerEnergyChanged;
 	int _thisPlayerEnergy;
