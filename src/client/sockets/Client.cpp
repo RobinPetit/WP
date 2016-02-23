@@ -30,7 +30,7 @@ Client::Client():
 
 bool Client::connectToServer(const std::string& name, const std::string& password, const sf::IpAddress& address, sf::Uint16 port)
 {
-	return initServer(name, password, address, port) && sendConnectionToken(password);
+	return initServer(name, address, port) && sendConnectionToken(password);
 }
 
 bool Client::registerToServer(const std::string& name, const std::string& password, const sf::IpAddress& address, sf::Uint16 port)
@@ -116,7 +116,7 @@ bool Client::sendRegisteringToken(const std::string& name, const std::string& pa
 	}
 }
 
-bool Client::initServer(const std::string& name, const std::string& password, const sf::IpAddress& address, sf::Uint16 port)
+bool Client::initServer(const std::string& name, const sf::IpAddress& address, sf::Uint16 port)
 {
 	// if client is already connected to a server, do not try to re-connect it
 	if(_isConnected)

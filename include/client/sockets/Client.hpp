@@ -141,10 +141,9 @@ private:
 	/// the user is not authentificated with this method.
 	/// \return True if the connection succeeded and false otherwise
 	/// \param name The name of the user
-	/// \param password its password
 	/// \param address The address where the server stands
 	/// \param port The port the server occupies
-	bool initServer(const std::string& name, const std::string& password, const sf::IpAddress& address, sf::Uint16 port);
+	bool initServer(const std::string& name, const sf::IpAddress& address, sf::Uint16 port);
 
 	/// The function used to establish a connection in the user point of view,
 	/// authentificating the user and allowing it to effectively play the game.

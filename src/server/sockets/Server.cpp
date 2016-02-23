@@ -79,7 +79,7 @@ void Server::connectUser(sf::Packet& connectionPacket, std::unique_ptr<sf::TcpSo
 	sf::Uint16 clientPort;
 	connectionPacket >> playerName >> password >> clientPort;
 
-	bool alreadyConnected{_clients.find(playerName) != _client.end()};
+	bool alreadyConnected{_clients.find(playerName) != _clients.end()};
 	// TODO check in database for the identifiers validity
 	bool wrongIdentifiers{false};
 	while(alreadyConnected or wrongIdentifiers)
