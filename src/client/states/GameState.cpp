@@ -26,7 +26,7 @@ GameState::GameState(StateStack& stateStack, Client& client):
 	if(type != TransferType::GAME_STARTING)
 		throw std::runtime_error("Wrong signal received: " + std::to_string(static_cast<sf::Uint32>(type)));
 	packet >> type;
-	begin(0);
+	begin();
 	if(type == TransferType::GAME_PLAYER_ENTER_TURN)
 	{
 		_myTurn.store(true);
@@ -45,10 +45,8 @@ void GameState::display()
 	AbstractState::display();
 }
 
-void GameState::begin(unsigned lotsOfDataAboutStuff)
+void GameState::begin()
 {
-	std::cout << "turn start\n";
-	_lotsOfDataAboutStuff = lotsOfDataAboutStuff;
 	addAction("Use card from hand", &GameState::useCard);
 	addAction("Attack with a creature", &GameState::attackWithCreature);
 	addAction("End your turn", &GameState::endTurn);
@@ -68,6 +66,7 @@ void GameState::startTurn()
 		if(_nonBlockingInput.waitForData(0.1))
 		{
 			std::string command{_nonBlockingInput.receiveStdinData()};
+			std::cout << "input is: '" + command + "'" << std::endl;
 		}
 	}
 	/**/

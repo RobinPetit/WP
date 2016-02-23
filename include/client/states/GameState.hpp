@@ -26,7 +26,7 @@ class GameState : public AbstractState
 		/// It must do all things related to drawing or printing stuff on the screen.
 		virtual void display() override;
 
-		void begin(unsigned lotsOfDataAboutStuff);
+		void begin();
 		void startTurn();
 
 		void changeEnergy(unsigned);  ///Can be used for effects
