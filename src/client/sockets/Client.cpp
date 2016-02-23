@@ -17,14 +17,12 @@
 #include <string>
 
 Client::Client():
-	_socket(),
 	_chatListenerPort(0),
-	_currentConversations(),
 	_isConnected(false),
-	_threadLoop(0),
-	_serverAddress(),
 	_serverPort(0),
-	_userTerminal()
+	_threadLoop(false),
+	_inGame(false),
+	_readyToPlay(false)
 {
 
 }
@@ -47,8 +45,8 @@ bool Client::connectToServer(const std::string& name, const sf::IpAddress& addre
 	if(_socket.connect(address, port) != sf::Socket::Done)
 		return false;
 	sf::Packet packet;
-	packet << TransferType::GAME_CONNECTION  // precise
-	       << _name  // do not forget the '\0' character
+	packet << TransferType::GAME_CONNECTION
+	       << _name
 	       << static_cast<sf::Uint16>(_chatListenerPort);
 	if(_socket.send(packet) != sf::Socket::Done)
 		return false;
@@ -81,20 +79,62 @@ Client::~Client()
 	quit();
 }
 
-// Game management
+///////// Game management
 
 void Client::startGame()
 {
+	std::cout << "starting game\n";
 	sf::Packet packet;
 	packet << TransferType::GAME_REQUEST;
 	_socket.send(packet);
 	_socket.receive(packet);
-	std::string opponentName;
-	packet >> opponentName;
-	std::cout << "opponent found: " << opponentName << std::endl;
+	packet >> _inGameOpponentName;
+	std::cout << "opponent found: " << _inGameOpponentName << std::endl;
+	_inGame = true;
 }
 
-// Friends management
+sf::TcpSocket& Client::getGameSocket()
+{
+	if(!_inGame)
+		throw std::runtime_error("No socket available: not in game");
+	return _inGameSocket;
+}
+
+void Client::initInGameListener()
+{
+	_inGameListeningThread = std::thread(&Client::inputGameListening, this);
+}
+
+// function called by a new thread only
+void Client::inputGameListening()
+{
+	waitTillReadyToPlay();
+	sf::Packet receivedPacket;
+	TransferType type;
+	while(true)
+	{
+		_inGameListeningSocket.receive(receivedPacket);
+		receivedPacket >> type;
+		if(type == TransferType::GAME_OVER)
+			break;
+		else if(type == TransferType::GAME_PLAYER_ENTER_TURN)
+			;  // perform turn changing here
+		else if(type == TransferType::GAME_PLAYER_LEAVE_TURN)
+			;  // perform turn changing here
+		else
+			std::cerr << "Unknown message received: " << static_cast<sf::Uint32>(type) << "; ignore." << std::endl;
+	}
+	std::cout << "Game is over" << std::endl;
+}
+
+void Client::waitTillReadyToPlay()
+{
+	static const sf::Time awaitingDelay(sf::milliseconds(50));  // arbitrary
+	while(!_readyToPlay.load())
+		sf::sleep(awaitingDelay);
+}
+
+/////////// Friends management
 
 const std::vector<std::string>& Client::getFriends()
 {
@@ -313,7 +353,11 @@ void Client::startChat(sf::Packet& transmission)
 
 void Client::initInGameConnection(sf::Packet& transmission)
 {
-	sf::Uint16 serverInGamePort;
-	transmission >> serverInGamePort;
-	_inGameSocket.connect(_socket.getRemoteAddress(), serverInGamePort);
+	sf::Uint16 serverListeningPort;
+	transmission >> serverListeningPort;
+	_inGameSocket.connect(_socket.getRemoteAddress(), serverListeningPort);
+	_inGameListeningSocket.connect(_socket.getRemoteAddress(), serverListeningPort);
+	_readyToPlay.store(true);
+	initInGameListener();
 }
+

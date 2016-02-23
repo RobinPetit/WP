@@ -9,7 +9,7 @@ class Constraints
 {
 private:
 	const std::pair<int, CONSTRAINT_VALUE_RULE>* _defaultValues;
-	const int _size;
+	const unsigned _size;
 	std::vector<std::pair<int, int>>* _timedValues;
 
 public:

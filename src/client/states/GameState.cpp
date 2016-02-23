@@ -17,7 +17,21 @@ GameState::GameState(StateStack& stateStack, Client& client):
 {
 	addAction("Quit", &GameState::quit);
 	std::cout << "Your game is about to start!\n";
-	display();
+	_client.waitTillReadyToPlay();
+	sf::Packet packet;
+	_client.getGameSocket().receive(packet);
+	TransferType type;
+	packet >> type;
+	if(type != TransferType::GAME_STARTING)
+		throw std::runtime_error("Wrong signal received: " + std::to_string(static_cast<sf::Uint32>(type)));
+	packet >> type;
+	if(type == TransferType::GAME_PLAYER_ENTER_TURN)
+		startTurn();
+	else if(type == TransferType::GAME_PLAYER_LEAVE_TURN)
+		_myTurn = false;
+	else
+		throw std::runtime_error("Wrong turn information: " + std::to_string(static_cast<sf::Uint32>(type)));
+
 }
 
 void GameState::display()
@@ -33,20 +47,38 @@ void GameState::begin(unsigned lotsOfDataAboutStuff)
 	addAction("Use card from hand", &GameState::useCard);
 	addAction("Attack with a creature", &GameState::attackWithCreature);
 	addAction("End your turn", &GameState::endTurn);
-	display();
 	/**/
 }
 
 void GameState::startTurn()
 {
-	_myTurn=true;
 	std::cout << "It is now your turn";
+	//TODO put the card taken in the _inHand vector;
+	--_remainCards;  // Player took a card from his deck
+	// setEnergy(turnNbr);
 	display();
 	/**/
 }
 
+void GameState::changeEnergy(unsigned energy)
+{
+	if(_energy+energy >= MAX_ENERG){
+		_energy = MAX_ENERG;}
+	else
+		_energy+=energy;
+}
+
 
 //PRIVATE METHODS
+
+void GameState::setEnergy(unsigned energy)
+{
+	if(energy >= MAX_ENERG){
+		_energy = MAX_ENERG;}
+	else
+		_energy = energy;
+}
+
 void GameState::useCard()
 {
 	if (not _myTurn)
@@ -74,7 +106,11 @@ void GameState::endTurn()
 		std::cout << "You must wait your turn!\n";
 		return;
 	}
-	/**/
+	else
+	{
+		// setEnergy(DFLT_ENERG);
+		_myTurn = false;
+	};
 }
 
 void GameState::quit()
