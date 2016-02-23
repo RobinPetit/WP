@@ -184,7 +184,7 @@ void Client::startGame()
 	std::cout << "opponent found: " << opponentName << std::endl;
 }
 
-// Friends management
+/////////////////// Friends management
 
 const std::vector<std::string>& Client::getFriends()
 {
@@ -198,6 +198,7 @@ std::vector<std::string> Client::getConnectedFriends()
 {
 	if(!_isConnected)
 		throw NotConnectedException("Unable to send connected friends");
+	updateFriends();
 	std::vector<std::string> connectedFriends;
 	for(const auto& friendName: _friends)
 	{
@@ -219,6 +220,14 @@ std::vector<std::string> Client::getConnectedFriends()
 	return connectedFriends;
 }
 
+const std::vector<std::string>& Client::getFriendshipRequests()
+{
+	if(!_isConnected)
+		throw NotConnectedException("Unable to send friendship requests");
+	updateFriendshipRequests();
+	return _friendshipRequests;
+}
+
 void Client::updateFriends()
 {
 	if(!_isConnected)
@@ -233,7 +242,17 @@ void Client::updateFriends()
 	packet >> _friends;
 }
 
-bool Client::askNewFriend(const std::string& name)
+void Client::updateFriendshipRequests()
+{
+	sf::Packet packet;
+	packet << TransferType::PLAYER_GETTING_FRIEND_REQUESTS;
+	_socket.send(packet);
+	_socket.receive(packet);
+	_friendshipRequests.clear();
+	packet >> _friendshipRequests;
+}
+
+bool Client::sendFriendshipRequest(const std::string& name)
 {
 	if(!_isConnected)
 		throw NotConnectedException("Unable to ask a new friend");
@@ -246,44 +265,11 @@ bool Client::askNewFriend(const std::string& name)
 	sf::Packet packet;
 	packet << TransferType::PLAYER_NEW_FRIEND << name;
 	_socket.send(packet);
-	// server acknowledges with PLAYER_NEW_FRIEND if request was correctly made and by NOT_EXISTING_FRIEND otherwise
+	// server acknowledges with PLAYER_ACKNOWLEDGE if request was correctly made and by NOT_EXISTING_FRIEND otherwise
 	_socket.receive(packet);
 	TransferType type;
 	packet >> type;
-	if(type == TransferType::PLAYER_NEW_FRIEND)
-		_friendsRequests.push_back(name);
-	return true;
-}
-
-bool Client::getIncomingFriendshipRequests(std::vector<std::string>& incomingRequests)
-{
-	sf::Packet packet;
-	packet << TransferType::PLAYER_GETTING_FRIEND_REQUESTS;
-	_socket.send(packet);
-	_socket.receive(packet);
-	TransferType type;
-	packet >> type;
-	if(type != TransferType::PLAYER_GETTING_FRIEND_REQUESTS)
-		return false;
-	packet >> incomingRequests;
-	return true;
-}
-
-bool Client::updateFriendshipRequests(std::vector<std::string>& acceptedSentRequests,
-	std::vector<std::string>& refusedSentRequests)
-{
-	sf::Packet packet;
-	packet << TransferType::PLAYER_GETTING_FRIEND_REQUESTS_STATE;
-	_socket.send(packet);
-	_socket.receive(packet);
-	TransferType type;
-	packet >> type;
-	if(type != TransferType::PLAYER_GETTING_FRIEND_REQUESTS_STATE)
-		return false;
-	packet >> acceptedSentRequests >> refusedSentRequests;
-	for(const auto& accpeted: acceptedSentRequests)
-		_friends.push_back(accpeted);
-	return true;
+	return type == TransferType::PLAYER_ACKNOWLEDGE;
 }
 
 bool Client::isFriend(const std::string& name) const
@@ -302,10 +288,13 @@ bool Client::removeFriend(const std::string& name)
 	packet << TransferType::PLAYER_REMOVE_FRIEND;
 	packet << name;
 	_socket.send(packet);
-	return true;
+	_socket.receive(packet);
+	TransferType type;
+	packet >> type;
+	return type == TransferType::PLAYER_ACKNOWLEDGE;
 }
 
-void Client::acceptFriendshipRequest(const std::string& name, bool accept)
+bool Client::acceptFriendshipRequest(const std::string& name, bool accept)
 {
 	sf::Packet packet;
 	packet << TransferType::PLAYER_RESPONSE_FRIEND_REQUEST << name << accept;
@@ -313,8 +302,7 @@ void Client::acceptFriendshipRequest(const std::string& name, bool accept)
 	_socket.receive(packet);
 	TransferType status;
 	packet >> status;
-	if(status == TransferType::PLAYER_RESPONSE_FRIEND_REQUEST && accept)
-		_friends.push_back(name);
+	return status == TransferType::PLAYER_ACKNOWLEDGE;
 }
 
 bool Client::startConversation(const std::string& playerName) const

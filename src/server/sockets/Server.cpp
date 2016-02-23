@@ -215,9 +215,6 @@ void Server::receiveData()
 		case TransferType::PLAYER_RESPONSE_FRIEND_REQUEST:
 			handleFriendshipRequestResponse(it, packet);
 			break;
-		case TransferType::PLAYER_GETTING_FRIEND_REQUESTS_STATE:
-			sendFriendshipRequestsState(it);
-			break;
 		case TransferType::PLAYER_GETTING_FRIEND_REQUESTS:
 			sendFriendshipRequests(it);
 			break;
@@ -314,7 +311,7 @@ void Server::findOpponent(const _iterator& it)
 	}
 }
 
-// Friends management
+///////////////////////// Friends management
 
 void Server::handleChatRequest(sf::Packet& packet, std::unique_ptr<sf::TcpSocket> client)
 {
@@ -369,11 +366,9 @@ void Server::handleFriendshipRequest(const _iterator& it, sf::Packet& transmissi
 		response << TransferType::NOT_EXISTING_FRIEND;
 	else
 	{
-		/// \TODO Add the user friendName to the friendship requests list of the user it
-		it->second.friendshipRequests.push_back(friendName);
+		/// \TODO Add the user it to the requests list of the user friendName
 		// Send an acknowledgement to the user
-		response << TransferType::PLAYER_NEW_FRIEND;
-		/// \TODO Add the user it to the external requests list of the user friendName
+		response << TransferType::PLAYER_ACKNOWLEDGE;
 	}
 	it->second.socket->send(response);
 }
@@ -384,48 +379,34 @@ void Server::handleFriendshipRequestResponse(const _iterator& it, sf::Packet& tr
 	std::string name;
 	transmission >> name >> accepted;
 	const auto& asker = _clients.find(name);
-	/// \TODO check if the other user is in the external requests list
-	bool otherUserInExternalRequestList{true};
-	if(not otherUserInExternalRequestList)
+	/// \TODO check if the other user is in the requests list
+	bool otherUserInRequestList{true};
+	if(not otherUserInRequestList)
 	{
 		sf::Packet response;
 		response << TransferType::NOT_EXISTING_FRIEND;
 		it->second.socket->send(response);
 		return;
 	}
-	/// \TODO remove the other user from the external requests list of the user it
-	auto& extRequests = it->second.externalRequests;
-	extRequests.erase(std::find(extRequests.begin(), extRequests.end(), name));
-	/// \TODO remove the user it from the friendship requests list of the other user
-	auto& friendRequests = asker->second.friendshipRequests;
-	friendRequests.erase(std::find(friendRequests.begin(), friendRequests.end(), it->first));
-	/// \TODO add the user it to the right list of the other user
-	(accepted ? asker->second.acceptedRequests : asker->second.refusedRequests).push_back(it->first);
+	/// \TODO remove the other user from the requests list of the user it
+	if(accepted)
+	{
+		/// \TODO add the other user to the friend list of the user it
+		/// \TODO add the user it to the friend list of the other user
+	}
 	// acknowledge to client
 	sf::Packet response;
-	response << TransferType::PLAYER_RESPONSE_FRIEND_REQUEST;
+	response << TransferType::PLAYER_ACKNOWLEDGE;
 	it->second.socket->send(response);
 }
 
 void Server::sendFriendshipRequests(const _iterator& it)
 {
 	sf::Packet response;
-	/// \TODO get the external requests list of the user it
-	response << TransferType::PLAYER_GETTING_FRIEND_REQUESTS << it->second.externalRequests;
+	/// \TODO get the requests list of the user it
+	std::vector<std::string> requests;
+	response << requests;
 	it->second.socket->send(response);
-}
-
-void Server::sendFriendshipRequestsState(const _iterator& it)
-{
-	sf::Packet response;
-	/// \TODO get the accepted and refused requests of the user it
-	response << TransferType::PLAYER_GETTING_FRIEND_REQUESTS_STATE
-	         << it->second.acceptedRequests
-	         << it->second.refusedRequests;
-	it->second.socket->send(response);
-	/// \TODO clear the accepted and refused requests of the user it
-	it->second.acceptedRequests.clear();
-	it->second.refusedRequests.clear();
 }
 
 void Server::sendFriends(const _iterator& it)
@@ -442,4 +423,9 @@ void Server::handleRemoveFriend(const _iterator& it, sf::Packet& transmission)
 	std::string removedFriend;
 	transmission >> removedFriend;
 	/// \TODO remove removedFriend user from the friend list of the user it
+	/// \TODO remove the user it from the friend list of the user removedFriend
+	// acknowledge to client
+	sf::Packet response;
+	response << TransferType::PLAYER_ACKNOWLEDGE;
+	it->second.socket->send(response);
 }
