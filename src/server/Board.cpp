@@ -39,6 +39,16 @@ void Board::quitGame()
 	//TODO: need identifier for player who quit
 }
 
+Player::ID Board::getCurrentPlayerID()
+{
+	return _activePlayer->getID();
+}
+
+Player::ID Board::getWaitingPlayerID()
+{
+	return _passivePlayer->getID();
+}
+
 /*--------------------------- CARD INTERFACE */
 void Board::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 {

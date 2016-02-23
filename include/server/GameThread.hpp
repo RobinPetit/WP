@@ -34,6 +34,8 @@ public:
 	const Player::ID _player1ID;
 	const Player::ID _player2ID;
 
+	enum class PlayerNumber { PLAYER1, PLAYER2 };
+
 private:
 	//////////// Attributes
 	std::atomic_bool _running;
@@ -42,9 +44,16 @@ private:
 	sf::TcpSocket _specialOutputSocketPlayer1;
 	sf::TcpSocket _specialOutputSocketPlayer2;
 	Board _gameBoard;
+	// The Board class has one chance over two to swap the player (to randomize the first player).
+	// This boolean is set to true if GameThread::player1 is Board::player1 and to false if GameThread::player1 is Board::player2.
+	bool _isSynchroWithBoard;
 
 	//////////// Private methods
 	void setSocket(sf::TcpSocket& socket, sf::TcpSocket& specialSocket, const ClientInformations& player);
+
+	PlayerNumber PlayerFromID(const Player::ID ID);
+	sf::TcpSocket& getSocketFromID(const Player::ID ID);
+	sf::TcpSocket& getSpecialSocketFromID(const Player::ID ID);
 };
 
 ///////// template code
@@ -55,7 +64,8 @@ GameThread::GameThread(Player::ID player1ID, Player::ID player2ID, Function&& fu
 	_player1ID(player1ID),
 	_player2ID(player2ID),
 	_running(true),
-	_gameBoard(player1ID, player2ID, _socketPlayer1, _socketPlayer2)
+	_gameBoard(player1ID, player2ID, _socketPlayer1, _socketPlayer2),
+	_isSynchroWithBoard(_player1ID == _gameBoard.getCurrentPlayerID())
 {
 
 }

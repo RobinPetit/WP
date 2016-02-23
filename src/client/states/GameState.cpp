@@ -23,10 +23,14 @@ GameState::GameState(StateStack& stateStack, Client& client):
 	TransferType type;
 	packet >> type;
 	if(type != TransferType::GAME_STARTING)
-	{
-		std::cerr << "Wrong signal received: " << static_cast<sf::Uint32>(type) << std::endl;
-		quit();
-	}
+		throw std::runtime_error("Wrong signal received: " + std::to_string(static_cast<sf::Uint32>(type)));
+	packet >> type;
+	if(type == TransferType::GAME_PLAYER_ENTER_TURN)
+		_myTurn = true;
+	else(type == TransferType::GAME_PLAYER_LEAVE_TURN)
+		_muTurn = false;
+	else
+		throw std::runtime_error("Wrong turn information: " + std::to_string(static_cast<sf::Uint32>(type)));
 }
 
 void GameState::display()

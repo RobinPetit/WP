@@ -26,6 +26,9 @@ public:
 	void attackWithCreature(unsigned boardIndex, unsigned victim);
 	void quitGame(); //TODO: need identifier
 
+	Player::ID getCurrentPlayerID();
+	Player::ID getWaitingPlayerID();
+
 	/// Interface for Player and Card classes
 	void applyEffect(Card* usedCard, EffectParamsCollection effect);
 

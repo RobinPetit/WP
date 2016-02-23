@@ -6,14 +6,14 @@
 /// TransferType is an enum that is used to determine the purpose of a TransferedPacket
 enum class TransferType : sf::Uint32
 {
-	// CHAT
+	/////////////// CHAT
 	/// Used in pre-chat communications (getting the addresses and ports)
 	CHAT_PLAYER_IP,
 	/// Used during the chat communications (precises the content of the packet is a string message)
 	CHAT_MESSAGE,
 	/// Used during the chat communications: tells that the other player wants to end the conversation
 	CHAT_QUIT,
-	// GAME
+	/////////////// GAME
 	/// Not used yet, will be when the game core will be coded
 	GAME_CONNECTION,
 	/// Used when a player asks to find an opponent
@@ -28,7 +28,7 @@ enum class TransferType : sf::Uint32
 	GAME_PLAYER_LEAVE_TURN,
 	/// Used to tell the client the game is over: one player won, the other failed
 	GAME_OVER,
-	// Client/Server
+	/////////////// Client/Server
 	/// Used when the client quits to tell the server it disconnects
 	PLAYER_DISCONNECTION,
 	/// Used when a client checks if another client is connected

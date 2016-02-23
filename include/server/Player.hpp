@@ -36,6 +36,8 @@ public:
 	void useCard(unsigned handIndex); 	///< Use a card
 	void attackWithCreature(unsigned boardIndex, unsigned victim);  ///< Attack victim with a card
 
+	Player::ID getID();
+
 	/// Effects
 	void setConstraint(const EffectParamsCollection& args);
 	void pickDeckCards(const EffectParamsCollection& args);

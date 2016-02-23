@@ -37,6 +37,10 @@ void Player::setOpponent(Player* opponent)
 	_opponent = opponent;
 }
 
+Player::ID Player::getID()
+{
+	return _id;
+}
 
 /*--------------------------- BOARD INTERFACE */
 
