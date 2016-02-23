@@ -11,17 +11,17 @@
 class Database
 {
 public:
-    /// Constructor
-    /// \param filename: relative path to sqlite3 file
-    explicit Database(std::string filename);
+	/// Constructor
+	/// \param filename: relative path to sqlite3 file
+	explicit Database(std::string filename);
 
-    /// Destructor
-    virtual ~Database();
+	/// Destructor
+	virtual ~Database();
 
 protected:
-    void _sqliteErrorToExcept(int errcode) const;
+	int sqliteThrowExcept(int errcode) const;
 
-    sqlite3 *_ppDb;
+	sqlite3 *_database;
 };
 
 #endif // _DATABASE_COMMON_HPP
