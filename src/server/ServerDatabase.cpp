@@ -15,7 +15,7 @@ ServerDatabase::ServerDatabase(std::string filename) : Database(filename)
 	std::cout << getFriendsList(1)->front().name << std::endl;
 }
 
-FriendsList * ServerDatabase::getFriendsList(int user)
+const FriendsList * ServerDatabase::getFriendsList(const int user)
 {
 	// TODO: cache - size of result
 	sqlite3_reset(friendListStmt);

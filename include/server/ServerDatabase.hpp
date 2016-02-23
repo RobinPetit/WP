@@ -3,15 +3,17 @@
 
 #include "common/Database.hpp"
 
+// for the moment login and name are used for the same string
+
 /// Interface to the server database.
 class ServerDatabase : public Database
 {
 public:
 	/// Constructor
 	/// \param filename: relative path to sqlite3 file.
-	explicit ServerDatabase(std::string filename = FILENAME);
+	explicit ServerDatabase(const std::string filename = FILENAME);
 
-	FriendsList * getFriendsList(int user);
+	const FriendsList * getFriendsList(const int userId); // If the const of return value bothers you I can remove it, it is for a potential future enhancement
 
 	virtual ~ServerDatabase();
 
