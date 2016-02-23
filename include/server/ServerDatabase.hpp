@@ -13,6 +13,8 @@ public:
 	/// \param filename: relative path to sqlite3 file.
 	explicit ServerDatabase(const std::string filename = FILENAME);
 
+	int getUserId(const std::string login);
+	std::string getLogin(const int userId);
 	const FriendsList * getFriendsList(const int userId); // If the const of return value bothers you I can remove it, it is for a potential future enhancement
 
 	virtual ~ServerDatabase();
@@ -23,6 +25,12 @@ private:
 	
 	static const char FRIEND_LIST_QUERY[];
 	sqlite3_stmt * friendListStmt;
+	
+	static const char USER_ID_QUERY[];
+	sqlite3_stmt * userIdStmt;
+	
+	static const char LOGIN_QUERY[];
+	sqlite3_stmt * loginStmt;
 };
 
 #endif //_DATABASE_SERVER_HPP
