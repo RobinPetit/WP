@@ -4,6 +4,8 @@
 #include <vector>
 #include "server/CardData.hpp"
 
+class Creature;
+
 /// Constraint Rules
 enum CONSTRAINT_VALUE_OPTIONS : int
 {
@@ -32,6 +34,7 @@ struct ConstraintTimedValue
 {
     int value;
     int turns;
+    const Creature* caster;
 };
 
 constexpr ConstraintDefaultValue P_CONSTRAINT_DEFAULTS[P_CONSTRAINTS_COUNT] =
@@ -53,9 +56,9 @@ constexpr ConstraintDefaultValue P_CONSTRAINT_DEFAULTS[P_CONSTRAINTS_COUNT] =
 constexpr ConstraintDefaultValue C_CONSTRAINT_DEFAULTS[C_CONSTRAINTS_COUNT] =
 {
 	//turn-by-turn: all default to 0
-	{0,VALUE_FIXED,GET_SUM},		//CC_TURN_ATTACK_CHANGE
-	{0,VALUE_FIXED,GET_SUM},		//CC_TURN_HEALTH_CHANGE
-	{0,VALUE_FIXED,GET_SUM}, 		//CC_TURN_SHIELD_CHANGE
+	{0,VALUE_FIXED,GET_SUM},		//CC_TURN_SELF_ATTACK_CHANGE
+	{0,VALUE_FIXED,GET_SUM},		//CC_TURN_SELF_HEALTH_CHANGE
+	{0,VALUE_FIXED,GET_SUM}, 		//CC_TURN_SELF_SHIELD_CHANGE
 	{0,VALUE_FIXED,GET_SUM},		//CC_TURN_TEAM_ATTACK_CHANGE
 	{0,VALUE_FIXED,GET_SUM}, 		//CC_TURN_TEAM_HEALTH_CHANGE
 	{0,VALUE_FIXED,GET_SUM},		//CC_TURN_TEAM_SHIELD_CHANGE
@@ -80,6 +83,7 @@ private:
 public:
 	Constraints(const ConstraintDefaultValue* defaultValues, const int arraySize);
 	void setConstraint(int constraintID, int value, int turns);
+	void setConstraint(int constraintID, int value, int turns, const Creature* caster);
 	int getConstraint(int constraintID);
 	void timeOutConstraints();
 };

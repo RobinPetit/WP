@@ -8,7 +8,12 @@ Constraints::Constraints(const ConstraintDefaultValue* defaultValues, const int 
 
 void Constraints::setConstraint(int constraintID, int value, int turns)
 {
-	_timedValues[constraintID].push_back({value, turns});
+	_timedValues[constraintID].push_back({value, turns, nullptr});
+}
+
+void Constraints::setConstraint(int constraintID, int value, int turns, const Creature* caster)
+{
+    _timedValues[constraintID].push_back({value, turns, caster});
 }
 
 int Constraints::getConstraint(int constraintID)

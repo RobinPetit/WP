@@ -53,12 +53,13 @@ void Creature::enterTurn()
 {
 	//Creature's turn-based rules
 	changeHealth({_constraints.getConstraint(CC_TURN_SELF_HEALTH_CHANGE)});
-	_owner->applyEffectToCreatures(CE_CHANGE_HEALTH, {_constraints.getConstraint(CC_TURN_TEAM_HEALTH_CHANGE),1});
+	_owner->applyEffectToCreatures(this, CE_CHANGE_HEALTH, {_constraints.getConstraint(CC_TURN_TEAM_HEALTH_CHANGE),1});
 
 	changeAttack({_constraints.getConstraint(CC_TURN_SELF_ATTACK_CHANGE)});
-	_owner->applyEffectToCreatures(CE_CHANGE_ATTACK, {_constraints.getConstraint(CC_TURN_TEAM_ATTACK_CHANGE)});
+	_owner->applyEffectToCreatures(this, CE_CHANGE_ATTACK, {_constraints.getConstraint(CC_TURN_TEAM_ATTACK_CHANGE)});
 
 	changeShield({_constraints.getConstraint(CC_TURN_SELF_SHIELD_CHANGE)});
+	_owner->applyEffectToCreatures(this, CE_CHANGE_SHIELD, {_constraints.getConstraint(CC_TURN_TEAM_SHIELD_CHANGE)});
 }
 
 void Creature::leaveTurn()
@@ -72,7 +73,10 @@ void Creature::setConstraint(const EffectParamsCollection& args)
 	int constraintID = args.at(0);
 	int value = args.at(1);
 	int turns = args.at(2);
-	_constraints.setConstraint(constraintID, value, turns);
+	if (args.size()>3)
+		_constraints.setConstraint(constraintID, value, turns);
+	else
+		_constraints.setConstraint(constraintID, value, turns, dynamic_cast<const Creature*>(_owner->getLastCaster()));
 }
 
 void Creature::resetAttack(const EffectParamsCollection&)
