@@ -1,5 +1,5 @@
 -- WARNING: run this script reset database
--- run with: sqlite3 :memory: ".read ressources/common/initdatabase.sql"
+-- run with: sqlite3 :memory: ".read resources/common/initdatabase.sql"
 
 .log stderr
 .trace /tmp/WP_initdatabase.log
@@ -9,8 +9,8 @@ PRAGMA foreign_keys = ON;
 
 -----------------------------------------------------------
 --------------------- SERVER DATABASE ---------------------
-.shell rm -f ressources/server/database.db
-.open ressources/server/database.db
+.shell rm -f resources/server/database.db
+.open resources/server/database.db
 
 -- /!\ The database is not (yet) designed to support
 -- all UPDATE and DELETE operations.
@@ -26,7 +26,7 @@ PRAGMA foreign_keys = ON;
 
 -- SQLite does not support foreign key to table defined in an other schema.
 -- So we can't use common database
--- ATTACH DATABASE "file:ressources/common/database.db" AS common;
+-- ATTACH DATABASE "file:resources/common/database.db" AS common;
 
 -- TODO: ondeleteaccount, ondeletecard
 
@@ -68,7 +68,7 @@ CREATE VIEW SpellCard
 ---- To add Cards
 
 --View can not references objects in other schema/database.
---ATTACH DATABASE "file:ressources/client/database.db" AS client;
+--ATTACH DATABASE "file:resources/client/database.db" AS client;
 
 SELECT "Cards/Triggers";
 CREATE TRIGGER addMonsterCard
@@ -312,7 +312,7 @@ SELECT '-------';
 
 ----------------------
 -- Exports
-.output "ressources/client/cards.sql"
+.output "resources/client/cards.sql"
 SELECT 'SELECT "CLIENT";';
 SELECT 'SELECT "CLIENT/Cards";';
 SELECT 'SELECT "CLIENT/Cards/Tables";';
@@ -322,10 +322,10 @@ SELECT 'SELECT "CLIENT/Cards/Tables";';
 
 -----------------------------------------------------------
 --------------------- CLIENT DATABASE ---------------------
-.shell rm -f ressources/client/database.db
-.open ressources/client/database.db
+.shell rm -f resources/client/database.db
+.open resources/client/database.db
 
-.read "ressources/client/cards.sql"
+.read "resources/client/cards.sql"
 
 SELECT "CLIENT/Cards/Views";
 CREATE VIEW FullCard
@@ -339,4 +339,4 @@ CREATE VIEW SpellCard
         FROM Card LEFT OUTER JOIN Monster USING(id)
         WHERE Monster.health IS NULL;
 
-.shell rm -f ressources/client/cards.sql
+.shell rm -f resources/client/cards.sql
