@@ -228,6 +228,10 @@ CREATE INDEX friendFirst ON Friend(first);
 
 CREATE INDEX friendSecond ON Friend(second);
 
+SELECT "Friends/View";
+CREATE VIEW Friendship AS
+    SELECT * FROM Friend UNION SELECT second AS first, first AS second FROM Friend;
+
 SELECT "Friends/Trigger";
 CREATE TRIGGER orderFriend
     AFTER INSERT ON Friend
