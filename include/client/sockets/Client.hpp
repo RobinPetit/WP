@@ -13,6 +13,8 @@
 // WizardPoker headers
 #include "common/Terminal.hpp"
 #include "common/Database.hpp"// FriendsList typedef
+#include "common/CardsCollection.hpp"
+#include "common/Deck.hpp"
 
 /// Client is a class representing the state of the client program (not the user!)
 class Client final
@@ -20,6 +22,9 @@ class Client final
 public:
 	/// Constructor
 	Client();
+
+	/// Destructor
+	~Client();
 
 	/// The function used to make first connection with the game server
 	/// \return True if the connection succeeded and false otherwise
@@ -88,8 +93,22 @@ public:
 	/// not waiting for entering chat connections anymore
 	void quit();
 
-	/// Destructor
-	~Client();
+	// Cards management
+
+	/// Used when the user wants its decks list
+	std::vector<Deck> getDecks();
+
+	/// Used when the user wants to change the content of a deck
+	bool handleDeckEditing(const Deck& editedDeck);
+
+	/// Used when the user wants to create a deck
+	bool handleDeckCreation(const Deck& createdDeck);
+
+	/// Used when the user wants to delete a deck
+	bool handleDeckDeletion(const std::string& deletedDeckName);
+
+	/// Used when the user wants its cards collection
+	CardsCollection getCardsCollection();
 
 private:
 	/// The socket that's connected to the server

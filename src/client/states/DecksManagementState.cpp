@@ -10,9 +10,6 @@ DecksManagementState::DecksManagementState(StateStack& stateStack, Client& clien
 	addAction("Create a deck", &DecksManagementState::createDeck);
 	addAction("Delete a deck", &DecksManagementState::deleteDeck);
 	// Get the decks from the server...
-	_decks.emplace_back("Default deck");
-	_decks.emplace_back("Aggro deck");
-	_decks.emplace_back("Defense deck");
 	// And the card collection too (for now this is the default card collection)
 }
 

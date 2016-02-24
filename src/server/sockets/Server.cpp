@@ -528,7 +528,7 @@ void Server::sendDecks(const _iterator& it)
 
 void Server::handleDeckEditing(const _iterator& it, sf::Packet& transmission)
 {
-	Deck editedDeck("dummyName");
+	Deck editedDeck;
 	transmission >> editedDeck;
 	transmission.clear();
 	try
@@ -547,7 +547,7 @@ void Server::handleDeckEditing(const _iterator& it, sf::Packet& transmission)
 
 void Server::handleDeckCreation(const _iterator& it, sf::Packet& transmission)
 {
-	Deck newDeck("dummyName");
+	Deck newDeck;
 	transmission >> newDeck;
 	transmission.clear();
 	try

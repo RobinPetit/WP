@@ -326,3 +326,75 @@ bool Client::startConversation(const std::string& playerName) const
 	system(cmd.c_str());
 	return true;
 }
+
+///////////// Cards managment
+
+std::vector<Deck> Client::getDecks()
+{
+	if(!_isConnected)
+		throw NotConnectedException("Unable to get the decks list.");
+	sf::Packet packet;
+	// send that friends list is asked
+	packet << TransferType::PLAYER_ASKS_DECKS_LIST;
+	_socket.send(packet);
+	_socket.receive(packet);
+	std::vector<Deck> deckList;
+	packet >> deckList;
+	return deckList;
+}
+
+bool Client::handleDeckEditing(const Deck& editedDeck)
+{
+	if(!_isConnected)
+		throw NotConnectedException("Unable to get the decks list.");
+	sf::Packet packet;
+	// send that friends list is asked
+	packet << TransferType::PLAYER_EDIT_DECK << editedDeck;
+	_socket.send(packet);
+	_socket.receive(packet);
+	TransferType type;
+	packet >> type;
+	return type == TransferType::ACKNOWLEDGE;
+}
+
+bool Client::handleDeckCreation(const Deck& createdDeck)
+{
+	if(!_isConnected)
+		throw NotConnectedException("Unable to get the decks list.");
+	sf::Packet packet;
+	// send that friends list is asked
+	packet << TransferType::PLAYER_CREATE_DECK << createdDeck;
+	_socket.send(packet);
+	_socket.receive(packet);
+	TransferType type;
+	packet >> type;
+	return type == TransferType::ACKNOWLEDGE;
+}
+
+bool Client::handleDeckDeletion(const std::string& deletedDeckName)
+{
+	if(!_isConnected)
+		throw NotConnectedException("Unable to get the decks list.");
+	sf::Packet packet;
+	// send that friends list is asked
+	packet << TransferType::PLAYER_DELETE_DECK << deletedDeckName;
+	_socket.send(packet);
+	_socket.receive(packet);
+	TransferType type;
+	packet >> type;
+	return type == TransferType::ACKNOWLEDGE;
+}
+
+CardsCollection Client::getCardsCollection()
+{
+	if(!_isConnected)
+		throw NotConnectedException("Unable to get the decks list.");
+	sf::Packet packet;
+	// send that friends list is asked
+	packet << TransferType::PLAYER_ASKS_CARDS_COLLECTION;
+	_socket.send(packet);
+	_socket.receive(packet);
+	CardsCollection cardCollection;
+	packet >> cardCollection;
+	return cardCollection;
+}
