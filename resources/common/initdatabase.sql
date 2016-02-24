@@ -144,6 +144,7 @@ SELECT "Decks/Table";
 CREATE TABLE Deck (
 -- Do not check "less than 2 times in same deck"
     owner INTEGER NOT NULL REFERENCES Account, -- allows indexing
+    name TEXT NOT NULL,
     card0  INTEGER NOT NULL REFERENCES GivenCard,
     card1  INTEGER NOT NULL REFERENCES GivenCard,
     card2  INTEGER NOT NULL REFERENCES GivenCard,
@@ -163,8 +164,9 @@ CREATE TABLE Deck (
     card16 INTEGER NOT NULL REFERENCES GivenCard,
     card17 INTEGER NOT NULL REFERENCES GivenCard,
     card18 INTEGER NOT NULL REFERENCES GivenCard,
-    card19 INTEGER NOT NULL REFERENCES GivenCard
+    card19 INTEGER NOT NULL REFERENCES GivenCard,
 
+    UNIQUE (owner, name)
     -- subqueries prohibited in CHECK constraints
     --CHECK(owner == (SELECT owner FROM GivenCard WHERE id == card0)),
     -- -> TRIGGER ownCardAddedToDeck
@@ -199,6 +201,32 @@ CREATE TRIGGER ownCardAddedToDeck
     BEGIN
         SELECT RAISE (ROLLBACK, "Error: owner of card and owner of deck mismatch");
     END;
+
+--
+-- SELECT Deck.name, C0.name, C1.name, C2.name, C3.name, C4.name, C5.name, C6.name, C7.name, C8.name, C9.name,
+--     C10.name, C11.name, C12.name, C13.name, C14.name, C15.name, C16.name, C17.name, C18.name, C19.name
+--     FROM Deck
+--     INNER JOIN Card AS C0 ON Card0 == C0.id
+--     INNER JOIN Card AS C1 ON Card1 == C1.id
+--     INNER JOIN Card AS C2 ON Card2 == C2.id
+--     INNER JOIN Card AS C3 ON Card3 == C3.id
+--     INNER JOIN Card AS C4 ON Card4 == C4.id
+--     INNER JOIN Card AS C5 ON Card5 == C5.id
+--     INNER JOIN Card AS C6 ON Card6 == C6.id
+--     INNER JOIN Card AS C7 ON Card7 == C7.id
+--     INNER JOIN Card AS C8 ON Card8 == C8.id
+--     INNER JOIN Card AS C9 ON Card9 == C9.id
+--     INNER JOIN Card AS C10 ON Card10 == C10.id
+--     INNER JOIN Card AS C11 ON Card11 == C11.id
+--     INNER JOIN Card AS C12 ON Card12 == C12.id
+--     INNER JOIN Card AS C13 ON Card13 == C13.id
+--     INNER JOIN Card AS C14 ON Card14 == C14.id
+--     INNER JOIN Card AS C15 ON Card15 == C15.id
+--     INNER JOIN Card AS C16 ON Card16 == C16.id
+--     INNER JOIN Card AS C17 ON Card17 == C17.id
+--     INNER JOIN Card AS C18 ON Card18 == C18.id
+--     INNER JOIN Card AS C19 ON Card19 == C19.id;
+--
 
 ----------------------
 -- Friends
@@ -289,9 +317,45 @@ INSERT INTO Account(login, password) VALUES('Eve','E');
 
 SELECT "Create testing cards";
 INSERT INTO SpellCard(name,description,effect,parameters,cost)
-    VALUES('Dernier paradis spell test','This is just a test of spell card',-1,'<insertbinarydatahere>',3);
+    VALUES('Voler spell test','This is just a test of spell card',-1,'<insertbinarydatahere>',5);
 INSERT INTO MonsterCard(name,description,effect,parameters,cost,health,attack)
-    VALUES('Scorpion gardien creature test','This is just a test of creature card',-1,'<insertbinarydatahere>',2,800,10);
+    VALUES('Scorpion gardien creature test','This is just a test of creature card',-1,'<insertbinarydatahere>',1,800,10);
+INSERT INTO MonsterCard(name,description,effect,parameters,cost,health,attack)
+    VALUES('Briseur de l''air creature test','This is just a test of creature card',-1,'<insertbinarydatahere>',2,1200,16);
+INSERT INTO MonsterCard(name,description,effect,parameters,cost,health,attack)
+    VALUES('Aps creature test','This is just a test of creature card',-1,'<insertbinarydatahere>',2,1800,22);
+INSERT INTO MonsterCard(name,description,effect,parameters,cost,health,attack)
+    VALUES('Reno creature test','This is just a test of creature card',-1,'<insertbinarydatahere>',2,1000,22);
+INSERT INTO MonsterCard(name,description,effect,parameters,cost,health,attack)
+    VALUES('H0512 creature test','This is just a test of creature card',-1,'<insertbinarydatahere>',2,1000,30);
+INSERT INTO MonsterCard(name,description,effect,parameters,cost,health,attack)
+    VALUES('Cent artilleurs creature test','This is just a test of creature card',-1,'<insertbinarydatahere>',2,1600,35);
+INSERT INTO MonsterCard(name,description,effect,parameters,cost,health,attack)
+    VALUES('Hélimitrailleuse creature test','This is just a test of creature card',-1,'<insertbinarydatahere>',2,1000,25);
+INSERT INTO MonsterCard(name,description,effect,parameters,cost,health,attack)
+    VALUES('Rufus creature test','This is just a test of creature card',-1,'<insertbinarydatahere>',1,500,35);
+INSERT INTO MonsterCard(name,description,effect,parameters,cost,health,attack)
+    VALUES('Boule motorisée creature test','This is just a test of creature card',-1,'<insertbinarydatahere>',3,2600,45);
+INSERT INTO MonsterCard(name,description,effect,parameters,cost,health,attack)
+    VALUES('Grand Œdème creature test','This is just a test of creature card',-1,'<insertbinarydatahere>',3,2500,52);
+INSERT INTO MonsterCard(name,description,effect,parameters,cost,health,attack)
+    VALUES('Jénova°naissance creature test','This is just a test of creature card',-1,'<insertbinarydatahere>',4,4000,64);
+INSERT INTO MonsterCard(name,description,effect,parameters,cost,health,attack)
+    VALUES('Dayne creature test','This is just a test of creature card',-1,'<insertbinarydatahere>',2,1200,55);
+INSERT INTO MonsterCard(name,description,effect,parameters,cost,health,attack)
+    VALUES('Rude creature test','This is just a test of creature card',-1,'<insertbinarydatahere>',3,2000,70);
+INSERT INTO MonsterCard(name,description,effect,parameters,cost,health,attack)
+    VALUES('Gi Nattack creature test','This is just a test of creature card',-1,'<insertbinarydatahere>',6,5500,150);
+INSERT INTO SpellCard(name,description,effect,parameters,cost)
+    VALUES('Sentir spell test','This is just a test of spell card',-1,'<insertbinarydatahere>',4);
+INSERT INTO SpellCard(name,description,effect,parameters,cost)
+    VALUES('Coup mortel spell test','This is just a test of spell card',-1,'<insertbinarydatahere>',4);
+INSERT INTO SpellCard(name,description,effect,parameters,cost)
+    VALUES('Transformation spell test','This is just a test of spell card',-1,'<insertbinarydatahere>',10);
+INSERT INTO SpellCard(name,description,effect,parameters,cost)
+    VALUES('Attaque double spell test','This is just a test of spell card',-1,'<insertbinarydatahere>',15);
+INSERT INTO SpellCard(name,description,effect,parameters,cost)
+    VALUES('FurieMax spell test','This is just a test of spell card',-1,'<insertbinarydatahere>',15);
 
 SELECT "Create testing friendships";
 INSERT INTO FriendRequest
@@ -311,7 +375,12 @@ INSERT INTO FriendRequest(from_, to_)
 
 SELECT "Give cards";
 INSERT INTO GivenCard(card,owner)
-    VALUES(1,1), (2,1);
+    VALUES(1,1), (2,1), (3,1), (4,1), (5,1), (6,1), (7,1), (8,1), (9,1), (10,1),
+        (11,1), (12,1), (13,1), (14,1), (15,1), (16,1), (17,1), (18,1), (19,1), (20,1);
+
+SELECT "Create deck";
+INSERT INTO Deck VALUES
+    (1, 'Test', 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20); 
 
 END;
 SELECT '-------';
