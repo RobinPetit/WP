@@ -73,18 +73,19 @@ class Constraints
 private:
 	const unsigned _size;
 	const ConstraintDefaultValue* _defaultValues;
-	std::vector<ConstraintTimedValue>* _timedValues;
-	int getValue(int constraintID, unsigned valueIndex);
-	int getFirstTimedValue(int constraintID);
-	int getLastTimedValue(int constraintID);
-	int getSumTimedValues(int constraintID);
+	mutable std::vector<ConstraintTimedValue>* _timedValues;
+
+	int getValue(int constraintID, unsigned valueIndex) const;
+	int getFirstTimedValue(int constraintID) const;
+	int getLastTimedValue(int constraintID) const;
+	int getSumTimedValues(int constraintID) const;
 
 public:
 	Constraints(const ConstraintDefaultValue* defaultValues, const int arraySize);
 	void setConstraint(int constraintID, int value, int turns);
 	void setConstraint(int constraintID, int value, int turns, const Creature* caster);
-	int getConstraint(int constraintID);
-	int getOverallConstraint(int constraintID, int otherValue);
+	int getConstraint(int constraintID) const;
+	int getOverallConstraint(int constraintID, int otherValue) const;
 	void timeOutConstraints();
 };
 
