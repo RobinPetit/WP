@@ -28,6 +28,8 @@ enum class TransferType : sf::Uint32
 	GAME_PLAYER_LEAVE_TURN,
 	/// Used to tell the client the game is over: one player won, the other failed
 	GAME_OVER,
+	/// Used to tell the client that he cannot play cards during this turn anymore
+	GAME_CARD_LIMIT_TURN_REACHED,
 	/////////////// Client/Server
 	/// Used when the client quits to tell the server it disconnects
 	PLAYER_DISCONNECTION,
@@ -47,6 +49,11 @@ enum class TransferType : sf::Uint32
 	PLAYER_GETTING_FRIEND_REQUESTS_STATE,
 	/// Used when a client asks what friendship requests he got
 	PLAYER_GETTING_FRIEND_REQUESTS,
+	//////////////////
+	/// Used to acknowledge to client something happened correctly
+	SERVER_ACKNOWLEDGEMENT,
+	/// Used as a "false-valued boolean" for actions requested by the client
+	SERVER_UNABLE_TO_PERFORM
 };
 
 /// Overloading of the sf::Packet operators so that a TransferType variable can be stored

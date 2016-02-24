@@ -5,23 +5,15 @@
 
 Board::Board(Player::ID player1, Player::ID player2, sf::TcpSocket& socketPlayer1, sf::TcpSocket& socketPlayer2)
 {
-	// A random player starts the game
-	std::default_random_engine engine;
-	if(std::bernoulli_distribution(0.5)(engine) == 1)
-	{
-		std::swap(player1, player2);
-		//Make sure the players and socket still match, just in case
-		_activePlayer = new Player(player1, socketPlayer2);
-		_passivePlayer = new Player(player2, socketPlayer1);
-	}
-	else
-	{
-		_activePlayer = new Player(player1, socketPlayer1);
-		_passivePlayer = new Player(player2, socketPlayer2);
-	}
-	//We make sure players know their opponents
+	_activePlayer = new Player(player1, socketPlayer1);
+	_passivePlayer = new Player(player2, socketPlayer2);
+	// We make sure players know their opponents
 	_activePlayer->setOpponent(_passivePlayer);
 	_passivePlayer->setOpponent(_activePlayer);
+	// A random player starts the game
+	std::default_random_engine engine;
+	if(std::bernoulli_distribution(0.5)(engine))
+		std::swap(_activePlayer, _passivePlayer);
 
 	_activePlayer->beginGame(true); //TODO: these have to request deck selection from player
 	_passivePlayer->beginGame(false);
@@ -31,9 +23,9 @@ Board::Board(Player::ID player1, Player::ID player2, sf::TcpSocket& socketPlayer
 void Board::endTurn()
 {
 	_turn++; //turn counter (for both players)
-    _activePlayer->leaveTurn();
-    std::swap(_activePlayer, _passivePlayer); //swap active and inactive
-    _activePlayer->enterTurn(_turn/2 +1); //ALWAYS call active player
+	_activePlayer->leaveTurn();
+	std::swap(_activePlayer, _passivePlayer); //swap active and inactive
+	_activePlayer->enterTurn(_turn/2 +1); //ALWAYS call active player
 }
 
 void Board::useCard(int handIndex)
@@ -87,15 +79,15 @@ void Board::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 			}
 			break;
 		case CREATURE_SELF_INDX:	//active player's creature at given index
-            {
+			{
 				int boardIndex = effectArgs.front();
 				effectArgs.erase(effectArgs.begin());
-				_activePlayer->applyEffectToCreature(usedCard, boardIndex, effectArgs);
-            }
-            break;
+				_activePlayer->applyEffectToCreature(usedCard, boardIndex, method, effectArgs);
+			}
+			break;
 
 		case CREATURE_SELF_RAND:	//active player's creature at random index
-            _activePlayer->applyEffectToCreature(usedCard, -1, effectArgs);
+			_activePlayer->applyEffectToCreature(usedCard, -1, method, effectArgs);
 			break;
 
 		case CREATURE_SELF_TEAM:	//active player's team of creatures

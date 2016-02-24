@@ -83,65 +83,78 @@ void Player::leaveTurn()
 	//Time out player's creature's constraints
 	for (unsigned i=0; i<_cardBoard.size(); i++)
 		_cardBoard.at(i)->leaveTurn();
-
-	//NETWORK: TURN_ENDED
 }
 
+/// \network sends to client one of the following:
+///     + SERVER_ACKNOWLEDGEMENT if the card was successfully used
+///     + GAME_CARD_LIMIT_TURN_REACHED if the user cannot play cards for this turn
+///     + SERVER_UNABLE_TO_PERFORM  if the specialized type of the card (spell/creature) cannot be played anymore for this turn
 void Player::useCard(int handIndex)
 {
 	//TODO: verify that handIndex is not out_of_range
 
 	if (_constraints.getConstraint(PC_TEMP_CARD_USE_LIMIT) == _turnData.cardsUsed)
 	{
-		//NETWORK: USE_CARDS_LIMIT
+		sf::Packet packet;
+		packet << TransferType::GAME_CARD_LIMIT_TURN_REACHED;
+		_socketToClient.send(packet);
 		return;
 	}
 	Card* usedCard = _cardHand.at(handIndex);
 
-	// If card is a creature
 	//TODO: use typeinfo ?
-	if (usedCard->isCreature())
+	(this->*(usedCard->isCreature() ? &Player::useCreature : &Player::useSpell))(handIndex, usedCard);
+}
+
+////////////////////// specialized card cases
+
+void Player::useCreature(int handIndex, Card *& usedCard)
+{
+	sf::Packet response;
+	if (_constraints.getConstraint(PC_TEMP_CREATURE_PLACING_LIMIT) == _turnData.creaturesPlaced)
+		response << TransferType::SERVER_UNABLE_TO_PERFORM;
+	else
 	{
-		if (_constraints.getConstraint(PC_TEMP_CREATURE_PLACING_LIMIT) == _turnData.creaturesPlaced)
-		{
-			//NETWORK: PLACE_CREATURES_LIMIT
-			return;
-		}
 		_turnData.cardsUsed++;
 		_turnData.creaturesPlaced++;
 		cardHandToBoard(handIndex);
 		exploitCardEffects(usedCard);
-		//NETWORK: CREATURE_PLACED
+		response << TransferType::SERVER_ACKNOWLEDGEMENT;
 	}
+	_socketToClient.send(response);
+}
 
-	// If card is a spell
+void Player::useSpell(int handIndex, Card *& usedCard)
+{
+	sf::Packet response;
+	if (_constraints.getConstraint(PC_TEMP_SPELL_CALL_LIMIT) == _turnData.spellCalls)
+		response << TransferType::SERVER_UNABLE_TO_PERFORM;
 	else
 	{
-		if (_constraints.getConstraint(PC_TEMP_SPELL_CALL_LIMIT) == _turnData.spellCalls)
-		{
-			//NETWORK: CALL_SPELLS_LIMIT
-			return;
-		}
 		_turnData.cardsUsed++;
 		_turnData.spellCalls++;
 		cardHandToBin(handIndex);
 		exploitCardEffects(usedCard);
-		//NETWORK: SPELL_CALLED
+		response << TransferType::SERVER_ACKNOWLEDGEMENT;
 	}
+	_socketToClient.send(response);
 }
 
 void Player::attackWithCreature(int attackerIndex, int victimIndex)
 {
+	sf::Packet response;
 	if (_constraints.getConstraint(PC_TEMP_CREATURE_ATTACK_LIMIT) == _turnData.creatureAttacks)
-	{
-		//NETWORK: CREATURE_ATTACKS_LIMIT
-		return;
-	}
-	Creature* attacker = _cardBoard.at(attackerIndex);
-    if (victimIndex<0)
-		_opponent->applyEffect(attacker, {PE_CHANGE_HEALTH, attacker->getAttack()}); //no forced attacks on opponent
+		response << TransferType::SERVER_UNABLE_TO_PERFORM;
 	else
-		attacker->makeAttack(*_opponent->_cardBoard.at(victimIndex));
+	{
+		Creature* attacker = _cardBoard.at(attackerIndex);
+		if (victimIndex<0)
+			_opponent->applyEffect(attacker, PE_CHANGE_HEALTH, {attacker->getAttack()}); //no forced attacks on opponent
+		else
+			attacker->makeAttack(*_opponent->_cardBoard.at(victimIndex));
+		response << TransferType::SERVER_ACKNOWLEDGEMENT;
+	}
+	_socketToClient.send(response);
 }
 
 /*------------------------------ EFFECTS INTERFACE */
@@ -332,7 +345,8 @@ void Player::setEnergy(const EffectParamsCollection& args)
 		return;
 	}
 	_energy = points;
-	if (_energy<0) _energy=0;
+	if (_energy<0)
+		_energy=0;
 }
 
 void Player::changeEnergy(const EffectParamsCollection& args)
@@ -348,7 +362,8 @@ void Player::changeEnergy(const EffectParamsCollection& args)
 		return;
 	}
 	_energy+=points;
-	if (_energy<0) _energy=0;
+	if (_energy<0)
+		_energy=0;
 	//NETWORK: ENERGY_CHANGED
 }
 
