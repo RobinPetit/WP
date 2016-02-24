@@ -380,16 +380,22 @@ void Server::handleFriendshipRequest(const _iterator& it, sf::Packet& transmissi
 	sf::Packet response;
 	std::string friendName;
 	transmission >> friendName;
-	/// \TODO check database for existence of the user friend
-	bool friendExists{true};
-	if(not friendExists)
-		// Send an error to the user
-		response << TransferType::NOT_EXISTING_FRIEND;
-	else
+	const Database::userId thisId, friendId;
+	try
 	{
-		/// \TODO Add the user it to the requests list of the user friendName
+		friendId = _database.getUserId(friendName);
+		thisId = _database.getUserId(it->first);
+
+		// Add the request into the database
+		// _database.addFriendRequest(thisId, friendId);
+
 		// Send an acknowledgement to the user
 		response << TransferType::PLAYER_ACKNOWLEDGE;
+	}
+	catch(const std::runtime_error& e)
+	{
+		// Send an error to the user
+		response << TransferType::NOT_EXISTING_FRIEND;
 	}
 	it->second.socket->send(response);
 }
