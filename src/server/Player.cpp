@@ -194,13 +194,26 @@ void Player::applyEffectToCreature(Creature* casterAndSubject, EffectParamsColle
 	casterAndSubject->applyEffect(effectArgs); //call method on effect subject (same as caster)
 }
 
-void Player::applyEffectToCreature(const Card* usedCard, int boardIndex, EffectParamsCollection effectArgs)
+void Player::applyEffectToCreature(const Card* usedCard, EffectParamsCollection effectArgs, bool randIndex)
 {
 	_lastCasterCard = usedCard; //remember last used card
-
-	//If no subject was selected, choose a random one
-	if (boardIndex<0)
+	int boardIndex;
+	if (randIndex)
 		boardIndex = rand() % _cardBoard.size();
+	else
+	{
+		try
+		{
+			boardIndex = effectArgs.at(0);
+			effectArgs.erase(effectArgs.begin());
+			_cardBoard.at(boardIndex);
+		}
+		catch (std::out_of_range)
+		{
+			//NETWORK: INPUT ERROR
+			return;
+		}
+	}
 
 	Creature* subject = _cardBoard.at(boardIndex);
 	subject->applyEffect(effectArgs);
@@ -218,7 +231,11 @@ void Player::applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollect
 	}
 	else //other effects just get applied to each creature individually
 		for (unsigned i=0; i<_cardBoard.size(); i++)
-			applyEffectToCreature(usedCard, i, effectArgs);
+		{
+			effectArgs.insert(effectArgs.begin(), i);
+			applyEffectToCreature(usedCard, effectArgs);
+			effectArgs.erase(effectArgs.begin());
+		}
 }
 
 /*------------------------------ GETTERS */

@@ -59,8 +59,17 @@ Player::ID Board::getWaitingPlayerID()
 /*------------------------------ PLAYER AND CARD INTERFACE */
 void Board::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 {
-	int subject = effectArgs.front(); //who the effect applies to
-	effectArgs.erase(effectArgs.begin());
+	int subject; //who the effect applies to
+	try //check the input
+	{
+		subject=effectArgs.at(0);
+		effectArgs.erase(effectArgs.begin());
+	}
+	catch (std::out_of_range)
+	{
+		//NETWORK: INPUT_ERROR
+		return;
+	}
 
 	switch (subject)
 	{
@@ -79,15 +88,11 @@ void Board::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 			}
 			break;
 		case CREATURE_SELF_INDX:	//active player's creature at given index
-			{
-				int boardIndex = effectArgs.front();
-				effectArgs.erase(effectArgs.begin());
-				_activePlayer->applyEffectToCreature(usedCard, boardIndex, effectArgs);
-			}
+			_activePlayer->applyEffectToCreature(usedCard, effectArgs);
 			break;
 
 		case CREATURE_SELF_RAND:	//active player's creature at random index
-			_activePlayer->applyEffectToCreature(usedCard, -1, effectArgs);
+			_activePlayer->applyEffectToCreature(usedCard, effectArgs, true);
 			break;
 
 		case CREATURE_SELF_TEAM:	//active player's team of creatures
@@ -95,15 +100,11 @@ void Board::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 			break;
 
 		case CREATURE_OPPO_INDX:	//passive player's creature at given index
-			{
-				int boardIndex = effectArgs.front();
-				effectArgs.erase(effectArgs.begin());
-				_passivePlayer->applyEffectToCreature(usedCard, boardIndex, effectArgs);
-			}
+			_passivePlayer->applyEffectToCreature(usedCard, effectArgs);
 			break;
 
 		case CREATURE_OPPO_RAND:	//passive player's creature at random index
-			_passivePlayer->applyEffectToCreature(usedCard, -1, effectArgs);
+			_passivePlayer->applyEffectToCreature(usedCard, effectArgs, true);
 			break;
 
 		case CREATURE_OPPO_TEAM:	//passive player's team of creatures
