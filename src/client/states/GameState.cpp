@@ -58,7 +58,7 @@ void GameState::play()
 void GameState::display()
 {
 	std::cout << "Here are your options:\n";
-	///Display the actions
+	// Display the actions
 	AbstractState::display();
 }
 
