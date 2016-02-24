@@ -21,7 +21,8 @@ Server::Server():
 	_quitThread(),
 	_waitingPlayer(),
 	_isAPlayerWaiting(false),
-	_quitPrompt(":QUIT")
+	_quitPrompt(":QUIT"),
+	_database()
 {
 
 }
@@ -80,9 +81,21 @@ void Server::connectUser(sf::Packet& connectionPacket, std::unique_ptr<sf::TcpSo
 	connectionPacket >> playerName >> password >> clientPort;
 
 	bool alreadyConnected{_clients.find(playerName) != _clients.end()};
-	// TODO check in database for the identifiers validity
-	bool wrongIdentifiers{false};
-	while(alreadyConnected or wrongIdentifiers)
+	Database::userId id;
+	auto tryToGetId = [&id, this](const std::string& name)
+	{
+		try
+		{
+			id = _database.getUserId(name);
+			return true;
+		}
+		catch(const std::runtime_error& e)
+		{
+			false;
+		}
+	};
+	bool rightIdentifiers{tryToGetId(playerName) /* && _database.areIdentifiersValid(id, password) */};
+	while(alreadyConnected or not rightIdentifiers)
 	{
 		// Send a response indicating the error
 		connectionPacket.clear();
@@ -108,10 +121,8 @@ void Server::connectUser(sf::Packet& connectionPacket, std::unique_ptr<sf::TcpSo
 			return;
 		}
 		connectionPacket >> playerName >> password >> clientPort;
-
 		alreadyConnected = _clients.find(playerName) != _clients.end();
-		// TODO check in database for the identifiers validity
-		wrongIdentifiers = false;
+		rightIdentifiers = tryToGetId(playerName) /* && _database.areIdentifiersValid(id, password) */;
 	}
 	std::cout << "New player connected: " << playerName << std::endl;
 	sendAcknowledgement(*client);

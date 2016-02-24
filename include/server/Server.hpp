@@ -1,6 +1,7 @@
 #ifndef _SERVER_HPP_
 #define _SERVER_HPP_
 
+#include "server/ServerDatabase.hpp"
 // SFML headers
 #include <SFML/Network/TcpListener.hpp>
 #include <SFML/Network/TcpSocket.hpp>
@@ -54,6 +55,7 @@ private:
 	std::string _waitingPlayer;
 	bool _isAPlayerWaiting;
 	const std::string _quitPrompt;
+	ServerDatabase _database;
 
 	// private methods
 	/// Used to handle a newconnection request (when the listener gets a packet)
