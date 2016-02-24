@@ -9,7 +9,7 @@
 const char ServerDatabase::FILENAME[] = "../resources/server/database.db";
 ServerDatabase::ServerDatabase(std::string filename) : Database(filename)
 {
-	for(int i = 0; i < _statements.size(); ++i)
+	for(size_t i = 0; i < _statements.size(); ++i)
 		prepareStmt(_statements[i]);
 }
 
@@ -44,32 +44,9 @@ std::vector<Deck> ServerDatabase::getDecks(const int userId)
 
 	while(sqliteThrowExcept(sqlite3_step(_decksStmt)) == SQLITE_ROW)
 	{
-		decks.emplace_back(Deck
-		{
-			reinterpret_cast<const char *>(sqlite3_column_text(_decksStmt, 0)),
-			{
-				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 1)),
-				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 2)),
-				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 3)),
-				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 4)),
-				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 5)),
-				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 6)),
-				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 7)),
-				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 8)),
-				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 9)),
-				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 10)),
-				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 11)),
-				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 12)),
-				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 13)),
-				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 14)),
-				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 15)),
-				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 16)),
-				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 17)),
-				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 18)),
-				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 19)),
-				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 20))
-			}
-		});
+		decks.emplace_back(Deck(reinterpret_cast<const char *>(sqlite3_column_text(_decksStmt, 0))));
+		for(size_t i{0}; i < Deck::size; ++i)
+			decks.back().changeCard(i, static_cast<Card::ID>(sqlite3_column_int(_decksStmt, i + 1)));
 	}
 
 	return decks;
@@ -97,7 +74,7 @@ Ladder ServerDatabase::getLadder()
 
 	Ladder ladder;
 
-	for(int i = 0; i < ladder.size() && sqliteThrowExcept(sqlite3_step(_ladderStmt)) == SQLITE_ROW; ++i)
+	for(size_t i = 0; i < ladder.size() && sqliteThrowExcept(sqlite3_step(_ladderStmt)) == SQLITE_ROW; ++i)
 	{
 		ladder[i].name = reinterpret_cast<const char *>(sqlite3_column_text(_ladderStmt, 0));
 		ladder[i].victories = sqlite3_column_int(_ladderStmt, 1);
@@ -130,7 +107,7 @@ ServerDatabase::~ServerDatabase()
 	// TODO: move it to Database::~Database
 	int errcode;
 
-	for(int i = 0; i < _statements.size(); ++i)
+	for(size_t i = 0; i < _statements.size(); ++i)
 		if((errcode = sqlite3_finalize(*_statements[i].statement())) != SQLITE_OK)
 			std::cerr << "ERROR while finalizing statement "
 			          << i + 1 << " of " << _statements.size()
