@@ -84,13 +84,19 @@ void Player::leaveTurn()
 		_cardBoard.at(i)->leaveTurn();
 }
 
+/// \network sends to client one of the following:
+///     + SERVER_ACKNOWLEDGEMENT if the card was successfully used
+///     + GAME_CARD_LIMIT_TURN_REACHED if the user cannot play cards for this turn
+///     + SERVER_UNABLE_TO_PERFORM  if the specialized type of the card (spell/creature) cannot be played anymore for this turn
 void Player::useCard(int handIndex)
 {
 	//TODO: verify that handIndex is not out_of_range
 
 	if (_constraints.getConstraint(PC_TEMP_CARD_USE_LIMIT) == _turnData.cardsUsed)
 	{
-		//NETWORK: USE_CARDS_LIMIT
+		sf::Packet packet;
+		packet << TransferType::GAME_CARD_LIMIT_TURN_REACHED;
+		_socketToClient.send(packet);
 		return;
 	}
 	Card* usedCard = _cardHand.at(handIndex);

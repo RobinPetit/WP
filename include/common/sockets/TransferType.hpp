@@ -28,6 +28,8 @@ enum class TransferType : sf::Uint32
 	GAME_PLAYER_LEAVE_TURN,
 	/// Used to tell the client the game is over: one player won, the other failed
 	GAME_OVER,
+	/// Used to tell the client that he cannot play cards during this turn anymore
+	GAME_CARD_LIMIT_TURN_REACHED,
 	/////////////// Client/Server
 	/// Used when the client quits to tell the server it disconnects
 	PLAYER_DISCONNECTION,
