@@ -94,19 +94,10 @@ void Server::connectUser(sf::Packet& connectionPacket, std::unique_ptr<sf::TcpSo
 				throw std::runtime_error(playerName + " tried to connect to the server but is already connected.");
 			}
 
-			// Check if the user exists
-			if(false /* UNCOMMENT _database.isRegistered(playerName) */)
+			if(false /* UNCOMMENT _database.areIdentifiersValid(playerName, password) */)
 			{
 				connectionPacket << TransferType::GAME_WRONG_IDENTIFIERS;
-				throw std::runtime_error(playerName + " gives wrong username when trying to connect.");
-			}
-
-			// Check if the ID matches the password
-			const Database::userId id{_database.getUserId(playerName)};
-			if(false /* UNCOMMENT _database.areIdentifiersValid(id, password) */)
-			{
-				connectionPacket << TransferType::GAME_WRONG_IDENTIFIERS;
-				throw std::runtime_error(playerName + " gives wrong password when trying to connect.");
+				throw std::runtime_error(playerName + " gives wrong identifiers when trying to connect.");
 			}
 			failedToConnect = false;
 		}
