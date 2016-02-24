@@ -118,6 +118,9 @@ private:
 
 	void useCreature(int handIndex, Card *& usedCard);
 	void useSpell(int handIndex, Card *& useSpell);
+
+	void sendCurrentEnergy();
+	void sendCurrentHealth();
 };
 
 
