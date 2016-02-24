@@ -7,6 +7,8 @@
 #include <SFML/Network/Packet.hpp>
 // WizardPoker header
 #include "common/Database.hpp"
+#include "common/Deck.hpp"
+#include "common/CardsCollection.hpp"
 
 template <typename T>
 sf::Packet& operator <<(sf::Packet& packet, const std::vector<T>& vec);
@@ -14,9 +16,27 @@ sf::Packet& operator <<(sf::Packet& packet, const std::vector<T>& vec);
 template <typename T>
 sf::Packet& operator >>(sf::Packet& packet, std::vector<T>& vec);
 
+template <typename T, std::size_t N>
+sf::Packet& operator <<(sf::Packet& packet, const std::array<T, N>& array);
+
+template <typename T, std::size_t N>
+sf::Packet& operator >>(sf::Packet& packet, std::array<T, N>& array);
+
 sf::Packet& operator <<(sf::Packet& packet, const Friend& userFriend);
 
 sf::Packet& operator >>(sf::Packet& packet, Friend& userFriend);
+
+sf::Packet& operator <<(sf::Packet& packet, const LadderEntry& ladderEntry);
+
+sf::Packet& operator >>(sf::Packet& packet, LadderEntry& ladderEntry);
+
+sf::Packet& operator <<(sf::Packet& packet, const Deck& deck);
+
+sf::Packet& operator >>(sf::Packet& packet, Deck& deck);
+
+sf::Packet& operator <<(sf::Packet& packet, const CardsCollection& deck);
+
+sf::Packet& operator >>(sf::Packet& packet, CardsCollection& deck);
 
 
 // implementation
@@ -44,6 +64,23 @@ sf::Packet& operator >>(sf::Packet& packet, std::vector<T>& vec)
 		packet >> value;
 		vec.push_back(value);
 	}
+	return packet;
+}
+
+template <typename T, std::size_t N>
+sf::Packet& operator <<(sf::Packet& packet, const std::array<T, N>& array)
+{
+	// Damn, this code is so hard!
+	for(const auto& value : array)
+		packet << value;
+	return packet;
+}
+
+template <typename T, std::size_t N>
+sf::Packet& operator >>(sf::Packet& packet, std::array<T, N>& array)
+{
+	for(std::size_t i{0}; i < N; ++i)
+		packet >> array[i];
 	return packet;
 }
 

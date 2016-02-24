@@ -112,6 +112,19 @@ private:
 
 	/// Used when a player want to play with another player
 	void findOpponent(const _iterator& it);
+
+	// Cards management
+
+	/// Used when the user wants its decks list
+	void sendDecks(const _iterator& it);
+
+	/// Used when the user wants its cards collection
+	void sendCardsCollection(const _iterator& it);
+
+	// Others
+
+	/// Sent when the user wants the ladder
+	void sendLadder(const _iterator& it);
 };
 
 #endif // _SERVER_HPP_

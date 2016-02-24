@@ -8,6 +8,7 @@ class CardsCollection
 {
 	public:
 		typedef std::multiset<Card::ID>::iterator Iterator;
+		typedef std::multiset<Card::ID>::const_iterator ConstIterator;
 
 		/// Default constructor.
 		/// Initially, the card collection contains the first 20 cards.
@@ -36,6 +37,10 @@ class CardsCollection
 		Iterator begin();
 
 		Iterator end();
+
+		ConstIterator cbegin() const;
+
+		ConstIterator cend() const;
 
 	private:
 		std::multiset<Card::ID> _cards;  ///< The set of cards. A player can have multiple times a given card.

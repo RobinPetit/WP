@@ -41,3 +41,13 @@ CardsCollection::Iterator CardsCollection::end()
 {
 	return _cards.end();
 }
+
+CardsCollection::ConstIterator CardsCollection::cbegin() const
+{
+	return _cards.cbegin();
+}
+
+CardsCollection::ConstIterator CardsCollection::cend() const
+{
+	return _cards.cend();
+}

@@ -235,6 +235,17 @@ void Server::receiveData()
 		case TransferType::GAME_REQUEST:
 			findOpponent(it);
 			break;
+		// Cards management
+		case TransferType::PLAYER_ASKS_DECKS_LIST:
+			sendDecks(it);
+			break;
+		case TransferType::PLAYER_ASKS_CARDS_COLLECTION:
+			sendCardsCollection(it);
+			break;
+		// Others
+		case TransferType::PLAYER_ASKS_LADDER:
+			sendLadder(it);
+			break;
 		default:
 			std::cerr << "Error: unknown code " << static_cast<sf::Uint32>(type) << std::endl;
 			break;
@@ -297,7 +308,7 @@ void Server::waitQuit()
 
 
 
-// Game management
+//////////////// Game management
 
 void Server::findOpponent(const _iterator& it)
 {
@@ -484,4 +495,60 @@ void Server::handleRemoveFriend(const _iterator& it, sf::Packet& transmission)
 		std::cout << "handleRemoveFriend error: " << e.what() << "\n";
 	}
 	it->second.socket->send(transmission);
+}
+
+// Cards management
+
+void Server::sendDecks(const _iterator& it)
+{
+	sf::Packet response;
+	try
+	{
+		const Database::userId id{_database.getUserId(it->first)};
+		// Same as sendFriendshipRequests for the two folling lines
+		std::vector<Deck> decks{_database.getDecks(id)};
+		response << decks;
+	}
+	catch(const std::runtime_error& e)
+	{
+		std::cout << "sendDecks error: " << e.what() << "\n";
+		response << std::vector<Deck>();
+	}
+	it->second.socket->send(response);
+}
+
+void Server::sendCardsCollection(const _iterator& it)
+{
+	sf::Packet response;
+	try
+	{
+		const Database::userId id{_database.getUserId(it->first)};
+		// Same as sendFriendshipRequests for the two folling lines
+		CardsCollection cards{_database.getCardsCollection(id)};
+		response << cards;
+	}
+	catch(const std::runtime_error& e)
+	{
+		std::cout << "sendCardsCollection error: " << e.what() << "\n";
+		response << CardsCollection();
+	}
+	it->second.socket->send(response);
+}
+
+// Others
+
+void Server::sendLadder(const _iterator& it)
+{
+	sf::Packet response;
+	try
+	{
+		Ladder ladder{_database.getLadder()};
+		response << ladder;
+	}
+	catch(const std::runtime_error& e)
+	{
+		std::cout << "sendLadder error: " << e.what() << "\n";
+		response << Ladder();
+	}
+	it->second.socket->send(response);
 }
