@@ -16,30 +16,12 @@ ServerDatabase::ServerDatabase(std::string filename) : Database(filename)
 // Unit tests still to do
 	std::cout << "DEBUG" << std::endl;
 
-	assert(getFriendsList(1)->front().name == "testing2");
+	assert(getFriendsList(1).front().name == "testing2");
 	assert(getUserId("testing") == 1);
 	assert(getUserId("testing2") == 2);
 	assert(getLogin(1) == "testing");
 	assert(getLogin(2) == "testing2");
 #endif
-}
-
-const FriendsList * ServerDatabase::getFriendsList(const int user)
-{
-	// TODO: cache - size of result
-	sqlite3_reset(_friendListStmt);
-	sqlite3_bind_int(_friendListStmt, 1, user);
-
-	FriendsList * friends = new FriendsList;
-
-	while(sqliteThrowExcept(sqlite3_step(_friendListStmt)) == SQLITE_ROW)
-	{
-		friends->emplace_back(Friend {sqlite3_column_int(_friendListStmt, 0), // id
-		                              reinterpret_cast<const char *>(sqlite3_column_text(_friendListStmt, 1)) // name
-		                             });
-	}
-
-	return friends;
 }
 
 int ServerDatabase::getUserId(const std::string login)
@@ -62,6 +44,24 @@ std::string ServerDatabase::getLogin(const int userId)
 		throw std::runtime_error("ERROR userId not found");
 
 	return reinterpret_cast<const char *>(sqlite3_column_text(_loginStmt, 0));
+}
+
+FriendsList ServerDatabase::getFriendsList(const int user)
+{
+	// TODO: cache - size of result
+	sqlite3_reset(_friendListStmt);
+	sqlite3_bind_int(_friendListStmt, 1, user);
+
+	FriendsList friends;
+
+	while(sqliteThrowExcept(sqlite3_step(_friendListStmt)) == SQLITE_ROW)
+	{
+		friends.emplace_back(Friend {sqlite3_column_int(_friendListStmt, 0), // id
+		                              reinterpret_cast<const char *>(sqlite3_column_text(_friendListStmt, 1)) // name
+		                             });
+	}
+
+	return friends;
 }
 
 ServerDatabase::~ServerDatabase()

@@ -15,7 +15,7 @@ public:
 
 	int getUserId(const std::string login);
 	std::string getLogin(const int userId);
-	const FriendsList * getFriendsList(const int userId); // If the const of return value bothers you I can remove it, it is for a potential future enhancement
+	FriendsList getFriendsList(const int userId);
 
 	virtual ~ServerDatabase();
 
