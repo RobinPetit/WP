@@ -105,18 +105,13 @@ void Player::useCard(int handIndex)
 
 	if (_constraints.getConstraint(PC_TEMP_CARD_USE_LIMIT) == _turnData.cardsUsed)
 	{
-		sf::Packet packet;
-		packet << TransferType::GAME_CARD_LIMIT_TURN_REACHED;
-		_socketToClient.send(packet);
+		sendValueToClient(_socketToClient, TransferType::GAME_CARD_LIMIT_TURN_REACHED);
 		return;
 	}
 	Card* usedCard = _cardHand.at(handIndex);
 	if (usedCard->getEnergyCost() > _energy)
 	{
-		sf::Packet packet;
-		packet << TransferType::GAME_NOT_ENOUGH_ENERGY;
-		_socketToClient.send(packet);
-		//NETWORK: NOT_ENOUGH_ENERGY
+		sendValueToClient(_socketToClient, TransferType::GAME_NOT_ENOUGH_ENERGY);
 		return;
 	}
 
@@ -610,4 +605,13 @@ void Player::sendIDsFromVector(TransferType type, const std::vector<CardType *>&
 		cardIds[i] = vect[i]->getID();
 	packet << cardIds;
 	_specialSocketToClient.send(packet);
+}
+
+//////////
+
+void Player::sendValueToClient(sf::TcpSocket& socket, TransferType value)
+{
+	sf::Packet packet;
+	packet << value;
+	socket.send(packet);
 }

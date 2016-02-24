@@ -138,6 +138,8 @@ private:
 
 	template <typename CardType>
 	void sendIDsFromVector(TransferType type, const std::vector<CardType *>& vect);
+
+	void sendValueToClient(sf::TcpSocket& socket, TransferType value);
 };
 
 
