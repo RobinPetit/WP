@@ -157,19 +157,19 @@ void Creature::setConstraint(const EffectParamsCollection& args)
 	}
 }
 
-void Creature::resetAttack(const EffectParamsCollection& args)
+void Creature::resetAttack(const EffectParamsCollection&)
 {
 	//no arguments
 	 _attack = _attackInit;
 }
 
-void Creature::resetHealth(const EffectParamsCollection& args)
+void Creature::resetHealth(const EffectParamsCollection&)
 {
 	//arguments
 	 _health = _healthInit;
 }
 
-void Creature::resetShield(const EffectParamsCollection& args)
+void Creature::resetShield(const EffectParamsCollection&)
 {
 	//no arguments
 	 _shield = _shieldInit;
