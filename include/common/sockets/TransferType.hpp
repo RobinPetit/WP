@@ -34,6 +34,12 @@ enum class TransferType : sf::Uint32
 	GAME_PLAYER_ENERGY_UPDATED,
 	/// Used to tell the client that its health points gave been udpated
 	GAME_PLAYER_HEALTH_UPDATED,
+	/// Used when sending to the client the current state of the board
+	GAME_BOARD_UPDATED,
+	/// Used when sending to the client the current state of its graveyard
+	GAME_GRAVEYARD_UPDATED,
+	/// Used when sending to the client the current state of its hand
+	GAME_HAND_UPDATED,
 	/////////////// Client/Server
 	/// Used when the client quits to tell the server it disconnects
 	PLAYER_DISCONNECTION,
