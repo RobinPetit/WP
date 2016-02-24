@@ -10,6 +10,7 @@
 #include "client/ErrorCode.hpp"
 #include "client/sockets/Client.hpp"
 #include "common/sockets/TransferType.hpp"
+#include "common/sockets/PacketOverload.hpp"
 #include "common/Terminal.hpp"
 #include "common/ini/IniFile.hpp"
 #include "client/states/GameState.hpp"
@@ -367,6 +368,37 @@ void GameState::inputListening()
 		{
 			std::cout << "ending turn\n";  // perform turn changing here
 			_myTurn.store(false);
+		}
+		else if(type == TransferType::GAME_PLAYER_ENERGY_UPDATED)
+		{
+			std::cout << "Energy points updated" << std::endl;
+			// \TODO code energy points change
+		}
+		else if(type == TransferType::GAME_PLAYER_HEALTH_UPDATED)
+		{
+			std::cout << "Health points updated" << std::endl;
+			// \TODO code HP change
+		}
+		else if(type == TransferType::GAME_BOARD_UPDATED)
+		{
+			std::cout << "Board updated" << std::endl;
+			std::vector<sf::Uint32> newBoard;
+			receivedPacket >> newBoard;
+			// \TODO display changes
+		}
+		else if(type == TransferType::GAME_GRAVEYARD_UPDATED)
+		{
+			std::cout << "Graveyard updated" << std::endl;
+			std::vector<sf::Uint32> newGraveyard;
+			receivedPacket >> newGraveyard;
+			// \TODO display changes
+		}
+		else if(type == TransferType::GAME_HAND_UPDATED)
+		{
+			std::cout << "Hand updated" << std::endl;
+			std::vector<sf::Uint32> newHand;
+			receivedPacket >> newHand;
+			// \TODO display changes
 		}
 		else
 			std::cerr << "Unknown message received: " << static_cast<sf::Uint32>(type) << "; ignore." << std::endl;

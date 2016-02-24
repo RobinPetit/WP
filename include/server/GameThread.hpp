@@ -37,7 +37,7 @@ public:
 	enum class PlayerNumber { PLAYER1, PLAYER2 };
 
 	//~Currently low for tests
-	static constexpr std::chrono::seconds _turnTime{4};  // arbitrary
+	static constexpr std::chrono::seconds _turnTime{8};  // arbitrary
 
 private:
 	//////////// Attributes
