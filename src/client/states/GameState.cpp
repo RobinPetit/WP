@@ -45,7 +45,7 @@ GameState::GameState(StateStack& stateStack, Client& client):
 void GameState::display()
 {
 	std::cout << "Here are your options:\n";
-	// Display the actions
+	///Display the actions
 	AbstractState::display();
 }
 
@@ -72,7 +72,7 @@ void GameState::startTurn()
 	/**/
 }
 
-void GameState::updateData(std::vector<unsigned> data)
+void GameState::updateData(std::array<unsigned, 5> data)
 {
 	_energy = data[0];
 	_selfHealth = data[1]; _oppoHealth = data[2];
@@ -86,7 +86,7 @@ void GameState::pickCard(int pickedCard)
 	if(_remainCards > 0)
 	{
 		_inHand.push_back(pickedCard);
-		--_remainCards; // Player took a card from his deck
+		--_remainCards; ///Player took a card from his deck
 	};
 }
 
