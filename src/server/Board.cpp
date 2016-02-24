@@ -5,6 +5,8 @@
 
 Board::Board(Player::ID player1, Player::ID player2, sf::TcpSocket& socketPlayer1, sf::TcpSocket& socketPlayer2)
 {
+	//TODO: request player decks from Database
+
 	// A random player starts the game
 	std::default_random_engine engine;
 	if(std::bernoulli_distribution(0.5)(engine) == 1)
@@ -19,32 +21,39 @@ Board::Board(Player::ID player1, Player::ID player2, sf::TcpSocket& socketPlayer
 		_activePlayer = new Player(player1, socketPlayer1);
 		_passivePlayer = new Player(player2, socketPlayer2);
 	}
+	//We make sure players know their opponents
 	_activePlayer->setOpponent(_passivePlayer);
 	_passivePlayer->setOpponent(_activePlayer);
+
+	_activePlayer->beginGame(true);
+	_passivePlayer->beginGame(false);
 }
 
-/*--------------------------- USER INTERFACE */
+/*------------------------------ USER INTERFACE */
 void Board::endTurn()
 {
-	std::swap(_activePlayer, _passivePlayer);
-	_turn++;
-	_passivePlayer->leaveTurn(_turn/2 +1);
-	_activePlayer->enterTurn(_turn/2 +1);
+	_turn++; //turn counter (for both players)
+    _activePlayer->leaveTurn();
+    std::swap(_activePlayer, _passivePlayer); //swap active and inactive
+    _activePlayer->enterTurn(_turn/2 +1); //ALWAYS call active player
 }
 
 void Board::useCard(int handIndex)
 {
+	//pass along to active player
 	_activePlayer->useCard(handIndex);
 }
 
 void Board::attackWithCreature(int boardIndex, int victim)
 {
+	//pass along to active player
 	_activePlayer->attackWithCreature(boardIndex, victim);
 }
 
 void Board::quitGame()
 {
 	//TODO: need identifier for player who quit
+	//NETWORK: PLAYER_QUIT_GAME
 }
 
 Player::ID Board::getCurrentPlayerID()
@@ -57,31 +66,32 @@ Player::ID Board::getWaitingPlayerID()
 	return _passivePlayer->getID();
 }
 
-/*--------------------------- CARD INTERFACE */
+/*------------------------------ PLAYER AND CARD INTERFACE */
 void Board::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 {
-	int subject = effectArgs.front();
+	int subject = effectArgs.front(); //who the effect applies to
 	effectArgs.erase(effectArgs.begin());
-	int method = effectArgs.front();
+
+	int method = effectArgs.front(); //what method is used
 	effectArgs.erase(effectArgs.begin());
 
 	switch (subject)
 	{
-		case PLAYER_SELF:
+		case PLAYER_SELF:	//passive player
 			Player::effectMethods[method](*_activePlayer, effectArgs);
 			break;
 
-		case PLAYER_OPPO:
+		case PLAYER_OPPO:	//active player
 			Player::effectMethods[method](*_passivePlayer, effectArgs);
 			break;
 
-		case CREATURE_SELF_THIS:
+		case CREATURE_SELF_THIS:	//active player's creature that was used
 			{
 				Creature* usedCreature = dynamic_cast<Creature*>(usedCard);
-				Creature::effectMethods[method](*usedCreature, effectArgs);
+				_activePlayer->applyEffectToCreature(usedCreature, method, effectArgs);
 			}
 			break;
-		case CREATURE_SELF_INDX:
+		case CREATURE_SELF_INDX:	//active player's creature at given index
             {
 				int boardIndex = effectArgs.front();
 				effectArgs.erase(effectArgs.begin());
@@ -89,15 +99,15 @@ void Board::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
             }
             break;
 
-		case CREATURE_SELF_RAND:
+		case CREATURE_SELF_RAND:	//active player's creature at random index
             _activePlayer->applyEffectToCreature(usedCard, -1, method, effectArgs);
 			break;
 
-		case CREATURE_SELF_TEAM:
+		case CREATURE_SELF_TEAM:	//active player's team of creatures
 			_activePlayer->applyEffectToCreatures(usedCard, method, effectArgs);
 			break;
 
-		case CREATURE_OPPO_INDX:
+		case CREATURE_OPPO_INDX:	//passive player's creature at given index
 			{
 				int boardIndex = effectArgs.front();
 				effectArgs.erase(effectArgs.begin());
@@ -105,15 +115,13 @@ void Board::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 			}
 			break;
 
-		case CREATURE_OPPO_RAND:
+		case CREATURE_OPPO_RAND:    //passive player's creature at random index
 			_passivePlayer->applyEffectToCreature(usedCard, -1, method, effectArgs);
 			break;
 
-		case CREATURE_OPPO_TEAM:
+		case CREATURE_OPPO_TEAM:	//passive player's team of creatures
 			_passivePlayer->applyEffectToCreatures(usedCard, method, effectArgs);
 			break;
 	}
 }
-
-/*--------------------------- PLAYER INTERFACE */
 

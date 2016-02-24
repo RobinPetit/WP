@@ -24,7 +24,7 @@ public:
 	void endTurn();
 	void useCard(int handIndex);
 	void attackWithCreature(int boardIndex, int victim);
-	void quitGame(); //TODO: need identifier
+	void quitGame(); //TODO: need identifier for player who quit
 
 	Player::ID getCurrentPlayerID();
 	Player::ID getWaitingPlayerID();
