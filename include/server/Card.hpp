@@ -19,7 +19,7 @@ public:
 	Card(int cost=0, std::vector<EffectParamsCollection> effects = {{}});
 
 	/// Getters
-	int getCost();
+	int getEnergyCost();
 	std::vector<EffectParamsCollection> getEffects();
 	int getID();
 

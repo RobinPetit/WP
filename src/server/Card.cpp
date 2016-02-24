@@ -12,7 +12,7 @@ std::vector<EffectParamsCollection> Card::getEffects()
 	return _effects;
 }
 
-int Card::getCost()
+int Card::getEnergyCost()
 {
 	return _cost;
 }

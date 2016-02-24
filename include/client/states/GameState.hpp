@@ -24,6 +24,7 @@ class GameState : public AbstractState
 		virtual void display() override;
 
 		void begin();
+		void play();
 		void startTurn();
 		void updateData(std::array<unsigned, 5>);
 		void pickCard(int);
@@ -48,7 +49,7 @@ class GameState : public AbstractState
 		NonBlockingInput _nonBlockingInput;
 		/// Waits for special server data such as END_OF_TURN, BOARD_UPDATE, etc.
 		std::thread _listeningThread;
-        
+
 		std::size_t selectHand();
 		std::size_t selectBoard();
 		std::size_t selectOppo();

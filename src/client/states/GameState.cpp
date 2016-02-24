@@ -32,14 +32,27 @@ GameState::GameState(StateStack& stateStack, Client& client):
 	packet >> type;
 	begin();
 	if(type == TransferType::GAME_PLAYER_ENTER_TURN)
-	{
 		_myTurn.store(true);
-		startTurn();
-	}
 	else if(type == TransferType::GAME_PLAYER_LEAVE_TURN)
 		_myTurn.store(false);
 	else
 		throw std::runtime_error("Wrong turn information: " + std::to_string(static_cast<sf::Uint32>(type)));
+	play();
+}
+
+void GameState::play()
+{
+        while(_playing.load())
+        {
+		if(_myTurn.load())
+			startTurn();
+		else
+		{
+			std::cout << "Waiting for your turn\n";
+			while(not _myTurn.load())
+				sf::sleep(sf::milliseconds(100));
+		}
+        }
 }
 
 void GameState::display()
@@ -59,6 +72,7 @@ void GameState::begin()
 
 void GameState::startTurn()
 {
+	_myTurn.store(true);
 	display();
 	std::cout << "It is now your turn, type something\n";
 	while(_myTurn.load())
@@ -67,6 +81,7 @@ void GameState::startTurn()
 		{
 			std::string command{_nonBlockingInput.receiveStdinData()};
 			std::cout << "input is: '" + command + "'" << std::endl;
+			// handleInput(command);
 		}
 	}
 	/**/
@@ -78,31 +93,32 @@ void GameState::updateData(std::array<unsigned, 5> data)
 	_selfHealth = data[1]; _oppoHealth = data[2];
 	_remainCards = data[3];
 	_oppoCards = data[4];
-	
+
 }
 
+
 void GameState::pickCard(int pickedCard)
-{	
+{
 	if(_remainCards > 0)
 	{
 		_inHand.push_back(pickedCard);
-		--_remainCards; ///Player took a card from his deck
-	};
+		--_remainCards; // Player took a card from his deck
+	}
 }
 
 void GameState::changeHealth(int health)
 {
-		_selfHealth += health;
+	_selfHealth += health;
 }
 
 void GameState::changeOppoHealth(int health)
 {
-		_oppoHealth += health;
+	_oppoHealth += health;
 }
 
 void GameState::changeEnergy(int energy)
 {
-		_energy += energy;
+	_energy += energy;
 }
 
 
@@ -128,15 +144,15 @@ std::size_t GameState::selectHand()
 			}
 			else
 				goodAnswer = true;
-				
+
 		}
 		else
 			std::cout << "You have no card in your hand";
 	}while(not goodAnswer);
-		
+
 	return res;
 }
-	
+
 std::size_t GameState::selectBoard()
 {
 	std::size_t res = 0;
@@ -161,10 +177,10 @@ std::size_t GameState::selectBoard()
 		else
 			std::cout << "You have not card on the board";
 	}while(not goodAnswer);
-		
+
 	return res;
 }
-		
+
 std::size_t GameState::selectOppo()
 {
 	std::size_t res = 0;
@@ -189,7 +205,7 @@ std::size_t GameState::selectOppo()
 		else
 			std::cout << "Your opponent has no card on the board";
 	}while(not goodAnswer);
-		
+
 	return res;
 }
 
@@ -212,9 +228,9 @@ void GameState::useCard()
 
 void GameState::putOnBoard(std::size_t cardIndex)
 {
-	int card = _inHand[cardIndex];			 ///Save the card ID
-	_inHand.erase(_inHand.begin()+cardIndex);///Remove it from the hand
-	_onBoard.push_back(card);				 ///Put it on the board
+	int card = _inHand[cardIndex];  // Save the card ID
+	_inHand.erase(_inHand.begin()+cardIndex);  // Remove it from the hand
+	_onBoard.push_back(card);  // Put it on the board
 }
 
 void GameState::attackWithCreature()
@@ -232,15 +248,15 @@ void GameState::attackWithCreature()
 
 		std::cout << "Which opponent's creature would you like to attack?\n";
 		oppoCardIndex = selectOppo();
-		
+
 		///If there's cards on board
 		if(selfCardIndex > 0 && oppoCardIndex > 0)
 		{
 			//TODO send the attack
 			//Note that the indexes are vector's indexes +1
 			//0 indicate there's no card in the vector.
-		};
-	};
+		}
+	}
 }
 
 void GameState::applyOppoEffect()
@@ -254,17 +270,16 @@ void GameState::applyOppoEffect()
 	else
 	{
 		std::size_t oppoCardIndex;
-		std::cout << 
-		"On which opponent's creature would you like to apply the effect?\n";
+		std::cout << "On which opponent's creature would you like to apply the effect?\n";
 		oppoCardIndex = selectOppo();
-		
+
 		if(oppoCardIndex > 0)
 		{
 			//TODO send the effect
 			//Note that the indexes are vector's indexes +1
 			//0 indicate there's no card in the vector.
-		};
-	};
+		}
+	}
 }
 
 void GameState::applySelfEffect()
@@ -277,17 +292,16 @@ void GameState::applySelfEffect()
 	else
 	{
 		size_t selfCardIndex;
-		std::cout << 
-		"On which of your creature would you like to apply the effect?\n";
+		std::cout << "On which of your creature would you like to apply the effect?\n";
 		selfCardIndex = selectBoard();
-		
+
 		if (selfCardIndex > 0)
 		{
 			//TODO send the effect
 			//Note that the indexes are vector's indexes +1
 			//0 indicate there's no card in the vector.
-		};
-	};
+		}
+	}
 }
 
 void GameState::endTurn()
@@ -300,7 +314,7 @@ void GameState::endTurn()
 	else
 	{
 		_myTurn = false;
-	};
+	}
 }
 
 void GameState::quit()
@@ -333,16 +347,28 @@ void GameState::inputListening()
 		assert(selector.isReady(listeningSocket));
 		auto receiveStatus{listeningSocket.receive(receivedPacket)};
 		if(receiveStatus == sf::Socket::Disconnected)
-			;  // \TODO: handle disconnection
+		{
+			std::cerr << "Connection lost with the server\n";
+			_playing.store(false);
+		}
 		else if(receiveStatus == sf::Socket::Error)
-			;  // \TODO: handle error
+		{
+			std::cerr << "Error while transmitting data\n";
+			_playing.store(false);
+		}
 		receivedPacket >> type;
 		if(type == TransferType::GAME_OVER)
 			_playing.store(false);
 		else if(type == TransferType::GAME_PLAYER_ENTER_TURN)
+		{
 			std::cout << "starting turn\n";  // perform turn changing here
+			_myTurn.store(true);
+		}
 		else if(type == TransferType::GAME_PLAYER_LEAVE_TURN)
+		{
 			std::cout << "ending turn\n";  // perform turn changing here
+			_myTurn.store(false);
+		}
 		else
 			std::cerr << "Unknown message received: " << static_cast<sf::Uint32>(type) << "; ignore." << std::endl;
 	}

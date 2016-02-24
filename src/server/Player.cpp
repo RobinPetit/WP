@@ -105,12 +105,17 @@ void Player::useCard(int handIndex)
 
 	if (_constraints.getConstraint(PC_TEMP_CARD_USE_LIMIT) == _turnData.cardsUsed)
 	{
-		sf::Packet packet;
-		packet << TransferType::GAME_CARD_LIMIT_TURN_REACHED;
-		_socketToClient.send(packet);
+		sendValueToClient(_socketToClient, TransferType::GAME_CARD_LIMIT_TURN_REACHED);
 		return;
 	}
 	Card* usedCard = _cardHand.at(handIndex);
+	if (usedCard->getEnergyCost() > _energy)
+	{
+		sendValueToClient(_socketToClient, TransferType::GAME_NOT_ENOUGH_ENERGY);
+		return;
+	}
+
+	_energy -= usedCard->getEnergyCost();
 
 	//TODO: use typeinfo ?
 	(*this.*(usedCard->isCreature() ? &Player::useCreature : &Player::useSpell))(handIndex, usedCard);
@@ -195,25 +200,18 @@ void Player::applyEffectToCreature(Creature* casterAndSubject, EffectParamsColle
 	casterAndSubject->applyEffect(effectArgs); //call method on effect subject (same as caster)
 }
 
-void Player::applyEffectToCreature(const Card* usedCard, EffectParamsCollection effectArgs, bool randIndex)
+void Player::applyEffectToCreature(const Card* usedCard, EffectParamsCollection effectArgs, IndexOption indexOpt)
 {
 	_lastCasterCard = usedCard; //remember last used card
 	int boardIndex;
-	if (randIndex)
-		boardIndex = std::uniform_int_distribution<int>(0, _cardBoard.size()-1)(_engine);
-	else
+
+	switch (indexOpt)
 	{
-		try
-		{
-			boardIndex = effectArgs.at(0);
-			effectArgs.erase(effectArgs.begin());
-			_cardBoard.at(boardIndex);
-		}
-		catch (std::out_of_range)
-		{
-			//NETWORK: INPUT ERROR
-			return;
-		}
+		case INDEX_RANDOM:
+			boardIndex = std::uniform_int_distribution<int>(0, _cardBoard.size()-1)(_engine);
+		case INDEX_REQUEST:
+			boardIndex = 0;
+			//NETWORK: ASK_FOR_INDEX
 	}
 
 	Creature* subject = _cardBoard.at(boardIndex);
@@ -232,11 +230,7 @@ void Player::applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollect
 	}
 	else //other effects just get applied to each creature individually
 		for (unsigned i=0; i<_cardBoard.size(); i++)
-		{
-			effectArgs.insert(effectArgs.begin(), i);
-			applyEffectToCreature(usedCard, effectArgs);
-			effectArgs.erase(effectArgs.begin());
-		}
+			_cardBoard.at(i)->applyEffect(effectArgs);
 }
 
 /*------------------------------ GETTERS */
@@ -389,6 +383,8 @@ void Player::setEnergy(const EffectParamsCollection& args)
 	_energy = points;
 	if (_energy<0)
 		_energy=0;
+	else if (_energy>_maxEnergy)
+		_energy=_maxEnergy;
 	sendCurrentEnergy();
 }
 
@@ -430,6 +426,8 @@ void Player::changeHealth(const EffectParamsCollection& args)
 		//NETWORK: NO_HEALTH_CHANGED
 		//call die()
 	}
+	else if (_health>_maxHealth) _health=_maxHealth;
+
 	sendCurrentHealth();
 }
 
@@ -607,4 +605,13 @@ void Player::sendIDsFromVector(TransferType type, const std::vector<CardType *>&
 		cardIds[i] = vect[i]->getID();
 	packet << cardIds;
 	_specialSocketToClient.send(packet);
+}
+
+//////////
+
+void Player::sendValueToClient(sf::TcpSocket& socket, TransferType value)
+{
+	sf::Packet packet;
+	packet << value;
+	socket.send(packet);
 }
