@@ -505,7 +505,7 @@ void Player::cardHandToBin(int handIndex)
 	_cardBin.push_back(_cardHand.at(handIndex));
 	_cardHand.erase(handIt);
 	sendHandState();
-	//NETWORK: BIN_CHANGED
+	sendGraveyardState();
 }
 
 void Player::cardBoardToBin(int boardIndex)
@@ -515,7 +515,7 @@ void Player::cardBoardToBin(int boardIndex)
 	_cardBin.push_back(_cardBoard.at(boardIndex));
 	_cardBoard.erase(boardIt);
 	sendBoardState();
-	//NETWORK: BIN_CHANGED
+	sendGraveyardState();
 }
 
 void Player::cardBinToHand(int binIndex)
@@ -523,7 +523,7 @@ void Player::cardBinToHand(int binIndex)
 	const auto& binIt = std::find(_cardBin.begin(), _cardBin.end(), _cardBin[binIndex]);
 	_cardHand.push_back(_cardBin.at(binIndex));
 	_cardBin.erase(binIt);
-	//NETWORK: BIN_CHANGED
+	sendGraveyardState();
 	sendHandState();
 }
 
@@ -572,6 +572,11 @@ void Player::sendHandState()
 void Player::sendBoardState()
 {
 	sendIDsFromVector(TransferType::GAME_BOARD_UPDATED, _cardBoard);
+}
+
+void Player::sendGraveyardState()
+{
+	sendIDsFromVector(TransferType::GAME_GRAVEYARD_UPDATED, _cardBin);
 }
 
 // use a template to handle both Card and Creature pointers

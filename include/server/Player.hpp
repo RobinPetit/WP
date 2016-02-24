@@ -127,6 +127,7 @@ private:
 
 	void sendHandState();
 	void sendBoardState();
+	void sendGraveyardState();
 
 	template <typename CardType>
 	void sendIDsFromVector(TransferType type, const std::vector<CardType *>& vect);
