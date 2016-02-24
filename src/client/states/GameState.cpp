@@ -212,9 +212,9 @@ void GameState::useCard()
 
 void GameState::putOnBoard(std::size_t cardIndex)
 {
-	int card = _inHand[cardIndex];			 ///Save the card ID
-	_inHand.erase(_inHand.begin()+cardIndex);///Remove it from the hand
-	_onBoard.push_back(card);				 ///Put it on the board
+	int card = _inHand[cardIndex];  // Save the card ID
+	_inHand.erase(_inHand.begin()+cardIndex);  // Remove it from the hand
+	_onBoard.push_back(card);  // Put it on the board
 }
 
 void GameState::attackWithCreature()
@@ -239,8 +239,8 @@ void GameState::attackWithCreature()
 			//TODO send the attack
 			//Note that the indexes are vector's indexes +1
 			//0 indicate there's no card in the vector.
-		};
-	};
+		}
+	}
 }
 
 void GameState::applyOppoEffect()
@@ -263,8 +263,8 @@ void GameState::applyOppoEffect()
 			//TODO send the effect
 			//Note that the indexes are vector's indexes +1
 			//0 indicate there's no card in the vector.
-		};
-	};
+		}
+	}
 }
 
 void GameState::applySelfEffect()
@@ -286,8 +286,8 @@ void GameState::applySelfEffect()
 			//TODO send the effect
 			//Note that the indexes are vector's indexes +1
 			//0 indicate there's no card in the vector.
-		};
-	};
+		}
+	}
 }
 
 void GameState::endTurn()
@@ -300,7 +300,7 @@ void GameState::endTurn()
 	else
 	{
 		_myTurn = false;
-	};
+	}
 }
 
 void GameState::quit()
