@@ -269,7 +269,7 @@ void Player::setConstraint(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range)
 	{
-		//NETWORK: INPUT_ERROR
+		//SERVER: CARD_ERROR
 		return;
 	}
 
@@ -292,7 +292,7 @@ void Player::pickDeckCards(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range)
 	{
-		//NETWORK: INPUT_ERROR
+		//SERVER: CARD_ERROR
 		return;
 	}
 	cardDeckToHand(amount);
@@ -307,7 +307,7 @@ void Player::loseHandCards(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range)
 	{
-		//NETWORK: INPUT_ERROR
+		//SERVER: CARD_ERROR
 		return;
 	}
 
@@ -329,7 +329,7 @@ void Player::reviveBinCard(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range)
 	{
-		//NETWORK: INPUT_ERROR
+		//SERVER: CARD_ERROR
 		return;
 	}
 	cardBinToHand(binIndex);
@@ -356,7 +356,7 @@ void Player::exchgHandCard(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range)
 	{
-		//NETWORK: INPUT_ERROR
+		//SERVER: CARD_ERROR
 		return;
 	}
 
@@ -382,7 +382,7 @@ void Player::setEnergy(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range)
 	{
-		//NETWORK: INPUT_ERROR
+		//SERVER: CARD_ERROR
 		return;
 	}
 	_energy = points;
@@ -400,7 +400,7 @@ void Player::changeEnergy(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range)
 	{
-		//NETWORK: INPUT_ERROR
+		//SERVER: CARD_ERROR
 		return;
 	}
 	_energy+=points;
@@ -418,7 +418,7 @@ void Player::changeHealth(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range)
 	{
-		//NETWORK: INPUT_ERROR
+		//SERVER: CARD_ERROR
 		return;
 	}
 
