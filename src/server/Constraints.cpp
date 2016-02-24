@@ -37,7 +37,7 @@ int Constraints::getOverallConstraint(int constraintID, int otherValue)
     {
         case GET_FIRST:
             {
-                if (otherValue = _defaultValues[constraintID].value)
+                if (otherValue == _defaultValues[constraintID].value)
                     return getFirstTimedValue(constraintID);
 				else
 					return otherValue;
@@ -45,7 +45,7 @@ int Constraints::getOverallConstraint(int constraintID, int otherValue)
             break;
 		case GET_LAST:
 			{
-                if (otherValue = _defaultValues[constraintID].value)
+                if (otherValue == _defaultValues[constraintID].value)
 					return getLastTimedValue(constraintID);
 				else
 					return otherValue;
