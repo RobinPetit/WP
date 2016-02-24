@@ -125,6 +125,7 @@ private:
 	void sendCurrentHealth();
 
 	void sendHandState();
+	void sendBoardState();
 };
 
 

@@ -496,7 +496,7 @@ void Player::cardHandToBoard(int handIndex)
 	_cardBoard.back()->movedToBoard();
 	_cardHand.erase(handIt);
 	sendHandState();
-	//NETWORK: BOARD_CHANGED
+	sendBoardState();
 }
 
 void Player::cardHandToBin(int handIndex)
@@ -514,7 +514,7 @@ void Player::cardBoardToBin(int boardIndex)
 	_cardBoard.at(boardIndex)->removedFromBoard();
 	_cardBin.push_back(_cardBoard.at(boardIndex));
 	_cardBoard.erase(boardIt);
-	//NETWORK: BOARD_CHANGED
+	sendBoardState();
 	//NETWORK: BIN_CHANGED
 }
 
@@ -571,6 +571,17 @@ void Player::sendHandState()
 	std::vector<sf::Uint32> cardIds(_cardHand.size());
 	for(std::vector<int>::size_type i{0}; i < _cardHand.size(); ++i)
 		cardIds[i] = _cardHand[i]->getID();
+	packet << cardIds;
+	_specialSocketToClient.send(packet);
+}
+
+void Player::sendBoardState()
+{
+	sf::Packet packet;
+	packet << TransferType::GAME_BOARD_UPDATED;
+	std::vector<sf::Uint32> cardIds{_cardBoard.size()};
+	for(std::vector<int>::size_type i{0}; i < _cardBoard.size(); ++i)
+		cardIds[i] = _cardBoard[i]->getID();
 	packet << cardIds;
 	_specialSocketToClient.send(packet);
 }
