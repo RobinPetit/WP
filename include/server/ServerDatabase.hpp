@@ -26,13 +26,13 @@ private:
 	static const char FILENAME[];
 	
 	static const char FRIEND_LIST_QUERY[];
-	sqlite3_stmt * friendListStmt;
+	sqlite3_stmt * _friendListStmt;
 	
 	static const char USER_ID_QUERY[];
-	sqlite3_stmt * userIdStmt;
+	sqlite3_stmt * _userIdStmt;
 	
 	static const char LOGIN_QUERY[];
-	sqlite3_stmt * loginStmt;
+	sqlite3_stmt * _loginStmt;
 };
 
 #endif //_DATABASE_SERVER_HPP

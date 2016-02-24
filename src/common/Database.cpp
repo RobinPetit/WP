@@ -11,6 +11,7 @@ Database::Database(std::string filename)
 Database::~Database()
 {
 	// TODO finalize all prepared statements, close all BLOB handles, and finish all sqlite3_backup objects associated with the sqlite3 object
+	// It is done but think about it when modify the class
 	if(sqlite3_close(_database) != SQLITE_OK)
 		std::cerr << "ERROR while closing database connection" << std::endl; // TODO error handling
 }

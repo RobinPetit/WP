@@ -16,9 +16,9 @@ const char ServerDatabase::LOGIN_QUERY[] =
     "SELECT login FROM Account WHERE id == ?1;";
 ServerDatabase::ServerDatabase(std::string filename) : Database(filename)
 {
-	prepareStmt(FRIEND_LIST_QUERY, &friendListStmt);
-	prepareStmt(USER_ID_QUERY, &userIdStmt);
-	prepareStmt(LOGIN_QUERY, &loginStmt);
+	prepareStmt(FRIEND_LIST_QUERY, &_friendListStmt);
+	prepareStmt(USER_ID_QUERY, &_userIdStmt);
+	prepareStmt(LOGIN_QUERY, &_loginStmt);
 
 	/* TEST */
 	std::cout << getFriendsList(1)->front().name << std::endl;
@@ -29,15 +29,15 @@ ServerDatabase::ServerDatabase(std::string filename) : Database(filename)
 const FriendsList * ServerDatabase::getFriendsList(const int user)
 {
 	// TODO: cache - size of result
-	sqlite3_reset(friendListStmt);
-	sqlite3_bind_int(friendListStmt, 1, user);
+	sqlite3_reset(_friendListStmt);
+	sqlite3_bind_int(_friendListStmt, 1, user);
 
 	FriendsList * friends = new FriendsList;
 
-	while(sqliteThrowExcept(sqlite3_step(friendListStmt)) == SQLITE_ROW)
+	while(sqliteThrowExcept(sqlite3_step(_friendListStmt)) == SQLITE_ROW)
 	{
-		friends->emplace_back(Friend {sqlite3_column_int(friendListStmt, 0), // id
-		                              reinterpret_cast<const char *>(sqlite3_column_text(friendListStmt, 1)) // name
+		friends->emplace_back(Friend {sqlite3_column_int(_friendListStmt, 0), // id
+		                              reinterpret_cast<const char *>(sqlite3_column_text(_friendListStmt, 1)) // name
 		                             });
 	}
 
@@ -46,24 +46,24 @@ const FriendsList * ServerDatabase::getFriendsList(const int user)
 
 int ServerDatabase::getUserId(const std::string login)
 {
-	sqlite3_reset(userIdStmt);
-	sqlite3_bind_text(userIdStmt, 1, login.c_str(), AUTO_QUERY_LENGTH, SQLITE_TRANSIENT);
+	sqlite3_reset(_userIdStmt);
+	sqlite3_bind_text(_userIdStmt, 1, login.c_str(), AUTO_QUERY_LENGTH, SQLITE_TRANSIENT);
 
-	if(sqliteThrowExcept(sqlite3_step(userIdStmt)) == SQLITE_DONE)
+	if(sqliteThrowExcept(sqlite3_step(_userIdStmt)) == SQLITE_DONE)
 		throw std::runtime_error("ERROR login not found");
 
-	return sqlite3_column_int(userIdStmt, 0);
+	return sqlite3_column_int(_userIdStmt, 0);
 }
 
 std::string ServerDatabase::getLogin(const int userId)
 {
-	sqlite3_reset(loginStmt);
-	sqlite3_bind_int(loginStmt, 1, userId);
+	sqlite3_reset(_loginStmt);
+	sqlite3_bind_int(_loginStmt, 1, userId);
 
-	if(sqliteThrowExcept(sqlite3_step(loginStmt)) == SQLITE_DONE)
+	if(sqliteThrowExcept(sqlite3_step(_loginStmt)) == SQLITE_DONE)
 		throw std::runtime_error("ERROR userId not found");
 
-	return reinterpret_cast<const char *>(sqlite3_column_text(loginStmt, 0));
+	return reinterpret_cast<const char *>(sqlite3_column_text(_loginStmt, 0));
 }
 
 ServerDatabase::~ServerDatabase()
