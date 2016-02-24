@@ -59,10 +59,6 @@ void GameState::begin()
 
 void GameState::startTurn()
 {
-	//TODO put the card taken in the _inHand vector;
-	--_remainCards;  // Player took a card from his deck
-	++_nbrTurn;
-	setEnergy(_nbrTurn);
 	display();
 	std::cout << "It is now your turn, type something\n";
 	while(_myTurn.load())
@@ -74,6 +70,18 @@ void GameState::startTurn()
 		}
 	}
 	/**/
+}
+
+void GameState::updateData(int pickedCard)
+{
+	++_nbrTurn;
+	setEnergy(_nbrTurn);
+	
+	if(_remainCards > 0)
+	{
+		_inHand.push_back(pickedCard);
+		--_remainCards; // Player took a card from his deck
+	};
 }
 
 void GameState::changeEnergy(unsigned energy)
@@ -202,7 +210,7 @@ void GameState::applyOppoEffect()
 	}
 	else
 	{
-		size_t oppoCardIndex;
+		std::size_t oppoCardIndex;
 		std::cout << 
 		"On which opponent's creature would you like to apply the effect?\n";
 		oppoCardIndex = selectOppo();
