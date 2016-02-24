@@ -22,28 +22,10 @@ private:
 	//Constraints
 	Constraints _constraints = Constraints(C_CONSTRAINT_DEFAULTS, C_CONSTRAINTS_COUNT);
 
+	//Effects
 public:
-	typedef void (Creature::*CreatureEffectMethod)(const EffectParamsCollection&);
-	/// Constructors
-	Creature(int cost=0, int attack=0, int health=1, int shield=0, int shieldType=0,
-			std::vector<EffectParamsCollection> effects = {{}});
+	static std::function<void(Creature&, const EffectParamsCollection&)> _effectMethods[P_EFFECTS_COUNT];
 
-	/// Getters for Player management
-	virtual bool isCreature() override;
-	virtual bool isSpell() override;
-	void movedToBoard();
-	void removedFromBoard();
-	bool isOnBoard() const;
-
-	/// Player interface
-	void enterTurn();
-	void leaveTurn();
-
-	/// Getters for effects
-	int getAttack();
-	int getConstraint(int constraintID);
-
-	/// Effects
 	void setConstraint(const EffectParamsCollection& args);
 	void resetAttack(const EffectParamsCollection& args);
 	void resetHealth(const EffectParamsCollection& args);
@@ -53,7 +35,26 @@ public:
 	void changeShield(const EffectParamsCollection& args);
 	void forcedChangeHealth(const EffectParamsCollection& args);
 
-	static std::function<void(Creature&, const EffectParamsCollection&)> effectMethods[P_EFFECTS_COUNT];
+public:
+	/// Constructors
+	Creature(int cost=0, int attack=0, int health=1, int shield=0, int shieldType=0,
+			std::vector<EffectParamsCollection> effects = {{}});
+
+	/// Player interface
+	virtual bool isCreature() override;
+	virtual bool isSpell() override;
+	void movedToBoard();
+	void removedFromBoard();
+	bool isOnBoard() const;
+
+	void enterTurn();
+	void leaveTurn();
+
+	/// Effects interface
+	void applyEffect(int method, const EffectParamsCollection& effectArgs);
+
+	int getAttack();
+	int getConstraint(int constraintID) const;
 };
 
 #endif // CREATURE_SERVER_HPP
