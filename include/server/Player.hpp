@@ -76,7 +76,7 @@ private:
 	Player* _opponent = nullptr;
 	Player::ID _id;
 	int _energy, _health;
-	static int _maxEnergy, _maxHealth;
+	static const int _maxEnergy = 10, _maxHealth = 20;
 
 
 	sf::TcpSocket& _socketToClient;
