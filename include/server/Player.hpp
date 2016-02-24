@@ -114,6 +114,9 @@ private:
 	Card* cardRemoveFromHand();
 	Card* cardExchangeFromHand(Card* given);
 	Card* cardExchangeFromHand(Card* given, int handIndex);
+
+	void useCreature(int handIndex, Card *& usedCard);
+	void useSpell(int handIndex, Card *& useSpell);
 };
 
 

@@ -47,6 +47,11 @@ enum class TransferType : sf::Uint32
 	PLAYER_GETTING_FRIEND_REQUESTS_STATE,
 	/// Used when a client asks what friendship requests he got
 	PLAYER_GETTING_FRIEND_REQUESTS,
+	//////////////////
+	/// Used to acknowledge to client something happened correctly
+	SERVER_ACKNOWLEDGEMENT,
+	/// Used as a "false-valued boolean" for actions requested by the client
+	SERVER_UNABLE_TO_PERFORM
 };
 
 /// Overloading of the sf::Packet operators so that a TransferType variable can be stored
