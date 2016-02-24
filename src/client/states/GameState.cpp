@@ -94,6 +94,16 @@ void GameState::changeHealth(int health)
 		_selfHealth += health;
 }
 
+void GameState::changeOppoHealth(int health)
+{
+	if(_oppoHealth+health >= MAX_HEALTH)
+		_oppoHealth = MAX_HEALTH;
+	else if (_oppoHealth+health <= 0)
+		_oppoHealth = 0;
+	else
+		_oppoHealth += health;
+}
+
 void GameState::changeEnergy(int energy)
 {
 	if(_energy+energy >= MAX_ENERGY)
