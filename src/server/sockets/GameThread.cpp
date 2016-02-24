@@ -96,16 +96,28 @@ void GameThread::startGame(const ClientInformations& player1, const ClientInform
 // Function only called by a new thread
 void GameThread::makeTimer()
 {
+	static const std::chrono::miliseconds sleepingTime{50};
+	auto startOfTurn{std::chrono::system_clock::now()};
 	while(_running.load())
 	{
-		std::this_thread::sleep_for(_turnTime);
-		sf::Packet endOfTurn;
-		endOfTurn << TransferType::GAME_PLAYER_LEAVE_TURN;
-		getSpecialSocketFromID(_gameBoard.getCurrentPlayerID()).send(endOfTurn);
-		sf::Packet startOfTurn;
-		startOfTurn << TransferType::GAME_PLAYER_ENTER_TURN;
-		getSpecialSocketFromID(_gameBoard.getWaitingPlayerID()).send(startOfTurn);
-		_gameBoard.endTurn();
+		std::this_thread::sleep_for(sleepingTime);
+		// if the current player finished his turn
+		if(_turnSwap.load())
+		{
+			startOfTurn = std::chrono::system_clock::now();
+			_turnSwap.store(false);
+		}
+		else if(std::chrono::seconds(std::chrono::system_clock::now()-startOfTurn) < _turnTime)
+		{
+			// send to both players their turn swapped
+			sf::Packet endOfTurn;
+			endOfTurn << TransferType::GAME_PLAYER_LEAVE_TURN;
+			getSpecialSocketFromID(_gameBoard.getCurrentPlayerID()).send(endOfTurn);
+			sf::Packet startOfTurn;
+			startOfTurn << TransferType::GAME_PLAYER_ENTER_TURN;
+			getSpecialSocketFromID(_gameBoard.getWaitingPlayerID()).send(startOfTurn);
+			_gameBoard.endTurn();
+		}
 	}
 }
 
