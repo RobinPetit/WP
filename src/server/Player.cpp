@@ -156,14 +156,14 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 /*------------------------------ APPLYING EFFECTS */
 void Player::applyEffect(const Card* usedCard, int method, const EffectParamsCollection& effectArgs)
 {
-    _lastCasterCard = usedCard;
-    _effectMethods[method](*this, effectArgs);
+	_lastCasterCard = usedCard;
+	_effectMethods[method](*this, effectArgs);
 }
 
 void Player::applyEffectToCreature(Creature* casterAndSubject, int method, const EffectParamsCollection& effectArgs)
 {
-    _lastCasterCard = casterAndSubject;
-    casterAndSubject->applyEffect(method, effectArgs);
+	_lastCasterCard = casterAndSubject;
+	casterAndSubject->applyEffect(method, effectArgs);
 }
 
 void Player::applyEffectToCreature(const Card* usedCard, int boardIndex, int method, const EffectParamsCollection& effectArgs)
@@ -230,13 +230,13 @@ void Player::loseHandCards(const EffectParamsCollection& args)
 
 void Player::reviveBinCard(const EffectParamsCollection& args)
 {
-    int binIndex = args.at(0);
+	int binIndex = args.at(0);
 	cardBinToHand(binIndex);
 }
 
 void Player::stealHandCard(const EffectParamsCollection&)
 {
-    cardAddToHand(_opponent->cardRemoveFromHand());
+	cardAddToHand(_opponent->cardRemoveFromHand());
 }
 
 void Player::exchgHandCard(const EffectParamsCollection& args)
@@ -260,14 +260,16 @@ void Player::setEnergy(const EffectParamsCollection& args)
 {
 	int points = args.at(0);
 	_energy = points;
-	if (_energy<0) _energy=0;
+	if (_energy<0)
+		_energy=0;
 }
 
 void Player::changeEnergy(const EffectParamsCollection& args)
 {
 	int points = args.at(0);
 	_energy+=points;
-	if (_energy<0) _energy=0;
+	if (_energy<0)
+		_energy=0;
 	//NETWORK: ENERGY_CHANGED
 }
 
