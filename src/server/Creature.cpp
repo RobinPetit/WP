@@ -62,6 +62,33 @@ void Creature::leaveTurn()
     _constraints.timeOutConstraints();
 }
 
+void Creature::makeAttack(Creature& victim)
+{
+	int attackForced = _owner->getCreatureConstraint(*this, CC_TEMP_FORCE_ATTACKS);
+	int attackBackfires = _owner->getCreatureConstraint(*this, CC_TEMP_BACKFIRE_ATTACKS);
+
+	if (attackBackfires==1)
+        changeHealth({_attack, attackForced});
+	else
+		victim.receiveAttack(*this, _attack, attackForced);
+}
+
+void Creature::receiveAttack(Creature& attacker, int attack, int forced, int loopCount)
+{
+	if (loopCount>=2) //If both creatures mirror attacks, no one is damaged
+		return;
+
+    int attackMirrored = _owner->getCreatureConstraint(*this, CC_TEMP_MIRROR_ATTACKS);
+    if (attackMirrored==1) //If attacks are mirrored, we send it back
+        attacker.receiveAttack(*this, attack, forced, loopCount+1);
+
+	int attackBlocked = _owner->getCreatureConstraint(*this, CC_TEMP_BLOCK_ATTACKS);
+	if (attackBlocked==1) //If attacks are blocked
+		return;
+
+	changeHealth({attack, forced});
+}
+
 /*--------------------------- GETTERS FOR EFFECTS */
 void Creature::applyEffect(int method, const EffectParamsCollection& effectArgs)
 {
@@ -115,7 +142,8 @@ void Creature::changeAttack(const EffectParamsCollection& args)
 void Creature::changeHealth(const EffectParamsCollection& args)
 {
 	int points = args.at(0);
-	//bool forced = args.at(1);
+
+	//bool forced = args.at(1) : if attack is forced, shield does not count
     if (points<0 and (args.size()==1 or args.at(1)==0))
     {
 		switch (_shieldType)

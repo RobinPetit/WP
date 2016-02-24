@@ -82,7 +82,10 @@ enum CREATURE_CONSTRAINTS : int
 	CC_TURN_HEALTH_CHANGE,			//Health points added each turn
 	CC_TURN_SHIELD_CHANGE,			//Shield points added each turn
 	//passive
+	CC_TEMP_FORCE_ATTACKS,			// Forces the next X attacks
 	CC_TEMP_BLOCK_ATTACKS,			// Block the next X attacks
+	CC_TEMP_MIRROR_ATTACKS,			// Return the next X attacks to sender
+	CC_TEMP_BACKFIRE_ATTACKS,		// The creature attacks turn against itself
 	CC_TEMP_IS_PARALYZED,			// Can not be used
 	//on creature death
 	CC_DEATH_TEAM_ATTACK_CHANGE,

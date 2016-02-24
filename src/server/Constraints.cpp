@@ -28,7 +28,7 @@ int Constraints::getConstraint(int constraintID) const
 		case GET_SUM:
 			return getSumTimedValues(constraintID);
 	}
-    return -1; //error ?
+	throw std::runtime_error("Order option not valid");
 }
 
 int Constraints::getOverallConstraint(int constraintID, int otherValue) const
@@ -58,7 +58,7 @@ int Constraints::getOverallConstraint(int constraintID, int otherValue) const
 			}
 			break;
     }
-    return -1; //error ?
+    throw std::runtime_error("Order option not valid");
 }
 
 int Constraints::getValue(int constraintID, unsigned valueIndex) const

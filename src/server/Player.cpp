@@ -129,20 +129,18 @@ void Player::useCard(int handIndex)
 	}
 }
 
-void Player::attackWithCreature(int boardIndex, int victim)
+void Player::attackWithCreature(int attackerIndex, int victimIndex)
 {
 	if (_constraints.getConstraint(PC_LIMIT_CREATURE_ATTACK) == _turnData.creatureAttacks)
 	{
 		//NETWORK: CREATURE_ATTACKS_LIMIT
 		return;
 	}
-	int attackPoints = _cardBoard.at(boardIndex)->getAttack();
-	//attackPoints += _cardBoard.at(boardIndex)->getConstraint(CC_TEMP_SELF_ATTACK_CHANGE);
-	//see if forced attacks
-	if (victim<0)
-		_opponent->applyEffect(_cardBoard.at(boardIndex), PE_CHANGE_HEALTH, {-attackPoints});
-    else
-		_opponent->applyEffectToCreature(_cardBoard.at(boardIndex), victim, CE_CHANGE_HEALTH, {-attackPoints});
+	Creature* attacker = _cardBoard.at(attackerIndex);
+    if (victimIndex<0)
+		_opponent->applyEffect(attacker, PE_CHANGE_HEALTH, {attacker->getAttack()}); //no forced attacks on opponent
+	else
+		attacker->makeAttack(*_opponent->_cardBoard.at(victimIndex));
 }
 
 /*------------------------------ APPLYING EFFECTS */

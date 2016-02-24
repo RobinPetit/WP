@@ -50,6 +50,9 @@ public:
 	void enterTurn();
 	void leaveTurn();
 
+	void makeAttack(Creature& victim);
+	void receiveAttack(Creature& attacker, int attack, int forced, int loopCount=0);
+
 	/// Effects interface
 	void applyEffect(int method, const EffectParamsCollection& effectArgs);
 
