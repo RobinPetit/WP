@@ -1,12 +1,6 @@
 #ifndef _GAME_STATE_CLIENT_HPP
 #define _GAME_STATE_CLIENT_HPP
 
-constexpr unsigned DECK_SIZE = 20;
-constexpr unsigned DFLT_HEALTH = 20;
-constexpr unsigned MAX_HEALTH = 20;
-constexpr unsigned DFLT_ENERGY = 0;
-constexpr unsigned MAX_ENERGY = 10;
-
 // std-C++ headers
 #include <vector>
 #include <atomic>
@@ -30,7 +24,8 @@ class GameState : public AbstractState
 
 		void begin();
 		void startTurn();
-		void updateData(int,unsigned);
+		void updateData(std::vector<unsigned>);
+		void pickCard(int);
 
 		///Those methods can be used for effects
 		void changeHealth(int);
@@ -41,13 +36,11 @@ class GameState : public AbstractState
 		std::vector<int> _inHand;
 		std::vector<int> _onBoard;
 		std::vector<int> _oppoBoard;
-		unsigned _lotsOfDataAboutStuff;
-		unsigned _remainCards = DECK_SIZE;
-		unsigned _selfHealth = DFLT_HEALTH;
-		unsigned _oppoHealth = DFLT_HEALTH;
-		unsigned _energy = DFLT_ENERGY;
+		unsigned _remainCards;
+		unsigned _selfHealth;
+		unsigned _oppoHealth;
+		unsigned _energy;
 		unsigned _oppoCards;
-		unsigned _nbrTurn = 0;
 		// \TODO: sync with Client::_inGame
 		std::atomic_bool _playing;
 		std::atomic_bool _myTurn;
@@ -59,7 +52,6 @@ class GameState : public AbstractState
 		std::size_t selectBoard();
 		std::size_t selectOppo();
 
-		void setEnergy(unsigned);
 		void useCard();
 		void putOnBoard(std::size_t);
 		void attackWithCreature();

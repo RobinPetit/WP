@@ -72,11 +72,17 @@ void GameState::startTurn()
 	/**/
 }
 
-void GameState::updateData(int pickedCard)
+void GameState::updateData (std::vector<unsigned> data)
 {
-	++_nbrTurn;
-	setEnergy(_nbrTurn);
+	_energy = data[0];
+	_selfHealth = data[1]; _oppoHealth = data[2];
+	_remainCards = data[3];
+	_oppoCards = data[4];
 	
+}
+
+void GameState::pickCard (int pickedCard)
+{	
 	if(_remainCards > 0)
 	{
 		_inHand.push_back(pickedCard);
@@ -86,31 +92,16 @@ void GameState::updateData(int pickedCard)
 
 void GameState::changeHealth(int health)
 {
-	if(_selfHealth+health >= MAX_HEALTH)
-		_selfHealth = MAX_HEALTH;
-	else if (_selfHealth+health <= 0)
-		_selfHealth = 0;
-	else
 		_selfHealth += health;
 }
 
 void GameState::changeOppoHealth(int health)
 {
-	if(_oppoHealth+health >= MAX_HEALTH)
-		_oppoHealth = MAX_HEALTH;
-	else if (_oppoHealth+health <= 0)
-		_oppoHealth = 0;
-	else
 		_oppoHealth += health;
 }
 
 void GameState::changeEnergy(int energy)
 {
-	if(_energy+energy >= MAX_ENERGY)
-		_energy = MAX_ENERGY;
-	else if (_energy+energy <= 0)
-		_energy = 0;
-	else
 		_energy += energy;
 }
 
@@ -162,14 +153,6 @@ std::size_t GameState::selectOppo()
 		std::cout << "Your opponent has no card on the board";
 		
 	return res;
-}
-
-void GameState::setEnergy(unsigned energy)
-{
-	if(energy >= MAX_ENERGY)
-		_energy = MAX_ENERGY;
-	else
-		_energy = energy;
 }
 
 void GameState::useCard()
