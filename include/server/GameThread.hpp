@@ -73,7 +73,7 @@ GameThread::GameThread(Player::ID player1ID, Player::ID player2ID, Function&& fu
 	_player1ID(player1ID),
 	_player2ID(player2ID),
 	_running(true),
-	_gameBoard(player1ID, player2ID, _socketPlayer1, _socketPlayer2),
+	_gameBoard({player1ID, _socketPlayer1, _specialOutputSocketPlayer1}, {player2ID, _socketPlayer2, _specialOutputSocketPlayer2}),
 	_isSynchroWithBoard(_player1ID == _gameBoard.getCurrentPlayerID())
 {
 

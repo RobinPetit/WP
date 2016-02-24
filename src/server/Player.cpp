@@ -23,9 +23,10 @@ std::function<void(Player&, const EffectParamsCollection&)> Player::_effectMetho
 	&Player::changeHealth,
 };
 
-Player::Player(Player::ID id, sf::TcpSocket& socket):
+Player::Player(Player::ID id, sf::TcpSocket& socket, sf::TcpSocket& specialSocket):
 	_id(id),
-	_socketToClient(socket)
+	_socketToClient(socket),
+	_specialSocketToClient(specialSocket)
 {
 	//NETWORK: GREETINGS_USER
 }
