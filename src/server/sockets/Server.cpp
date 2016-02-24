@@ -429,6 +429,10 @@ void Server::sendFriendshipRequests(const _iterator& it)
 	try
 	{
 		const Database::userId id{_database.getUserId(it->first)};
+		// The follwing two lines could be gathered, but by splitting them
+		// we avoid that the packet is garbaged if ServerDatabase::getFriendshipRequests
+		// throw an exception (although I don't think this is really risky,
+		// it's better to be sure).
 		FriendsList requests{_database.getFriendshipRequests(id)};
 		response << requests;
 	}
@@ -442,21 +446,40 @@ void Server::sendFriendshipRequests(const _iterator& it)
 
 void Server::sendFriends(const _iterator& it)
 {
-	std::vector<std::string> friends;
-	/// \TODO get the friends list of the user it
-	sf::Packet packet;
-	packet << friends;
-	it->second.socket->send(packet);
+	sf::Packet response;
+	try
+	{
+		const Database::userId id{_database.getUserId(it->first)};
+		// Same as sendFriendshipRequests for the two folling lines
+		FriendsList friends{_database.getFriendsList(id)};
+		response << friends;
+	}
+	catch(const std::runtime_error& e)
+	{
+		std::cout << "sendFriendshipRequests() error: " << e.what() << "\n";
+		response << FriendsList();
+	}
+	it->second.socket->send(response);
 }
 
 void Server::handleRemoveFriend(const _iterator& it, sf::Packet& transmission)
 {
 	std::string removedFriend;
 	transmission >> removedFriend;
-	/// \TODO remove removedFriend user from the friend list of the user it
-	/// \TODO remove the user it from the friend list of the user removedFriend
-	// acknowledge to client
-	sf::Packet response;
-	response << TransferType::PLAYER_ACKNOWLEDGE;
-	it->second.socket->send(response);
+	transmission.clear();
+	try
+	{
+		const Database::userId unfriendlyUserId{_database.getUserId(it->first)};
+		const Database::userId removedFriendId{_database.getUserId(removedFriend)};
+		// UNCOMMENT _database.removeFrien(unfriendlyUserId, removedFriendId);
+
+		// acknowledge to client
+		transmission << TransferType::PLAYER_ACKNOWLEDGE;
+	}
+	catch(const std::runtime_error& e)
+	{
+		transmission << TransferType::NOT_EXISTING_FRIEND;
+		std::cout << "handleRemoveFriend error: " << e.what() << "\n";
+	}
+	it->second.socket->send(transmission);
 }
