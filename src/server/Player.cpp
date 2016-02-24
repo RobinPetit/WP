@@ -96,10 +96,7 @@ void Player::useCard(int handIndex)
 	Card* usedCard = _cardHand.at(handIndex);
 
 	//TODO: use typeinfo ?
-	if (usedCard->isCreature())
-		useCreature(handIndex, usedCard);
-	else
-		useSpell(handIndex, usedCard);
+	(this->*(usedCard->isCreature() ? &Player::useCreature : &Player::useSpell))(handIndex, usedCard);
 }
 
 ////////////////////// specialized card cases
