@@ -84,12 +84,34 @@ void GameState::updateData(int pickedCard)
 	};
 }
 
-void GameState::changeEnergy(unsigned energy)
+void GameState::changeHealth(int health)
+{
+	if(_selfHealth+health >= MAX_HEALTH)
+		_selfHealth = MAX_HEALTH;
+	else if (_selfHealth+health <= 0)
+		_selfHealth = 0;
+	else
+		_selfHealth += health;
+}
+
+void GameState::changeOppoHealth(int health)
+{
+	if(_oppoHealth+health >= MAX_HEALTH)
+		_oppoHealth = MAX_HEALTH;
+	else if (_oppoHealth+health <= 0)
+		_oppoHealth = 0;
+	else
+		_oppoHealth += health;
+}
+
+void GameState::changeEnergy(int energy)
 {
 	if(_energy+energy >= MAX_ENERGY)
 		_energy = MAX_ENERGY;
+	else if (_energy+energy <= 0)
+		_energy = 0;
 	else
-		_energy+=energy;
+		_energy += energy;
 }
 
 

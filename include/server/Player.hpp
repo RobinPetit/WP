@@ -45,7 +45,7 @@ public:
 	void applyEffect(const Card* usedCard, EffectParamsCollection effectArgs);
 	//to a Creature
 	void applyEffectToCreature(Creature* casterAndSubject, EffectParamsCollection effectArgs); //With ref. to creature
-	void applyEffectToCreature(const Card* usedCard, int boardIndex, EffectParamsCollection effectArgs); //With creature index (-1=random)
+	void applyEffectToCreature(const Card* usedCard, EffectParamsCollection effectArgs, bool randomIndex=false); //With creature index from effectArgs
 	//to all Creatures
 	void applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollection effectArgs);
 
