@@ -72,7 +72,7 @@ void GameState::startTurn()
 	/**/
 }
 
-void GameState::updateData (std::vector<unsigned> data)
+void GameState::updateData(std::vector<unsigned> data)
 {
 	_energy = data[0];
 	_selfHealth = data[1]; _oppoHealth = data[2];
@@ -81,7 +81,7 @@ void GameState::updateData (std::vector<unsigned> data)
 	
 }
 
-void GameState::pickCard (int pickedCard)
+void GameState::pickCard(int pickedCard)
 {	
 	if(_remainCards > 0)
 	{
@@ -111,30 +111,56 @@ void GameState::changeEnergy(int energy)
 std::size_t GameState::selectHand()
 {
 	std::size_t res = 0;
-	if(not _inHand.empty())
+	bool goodAnswer = true;
+	do
 	{
-		for(std::size_t i = 0; i < _inHand.size(); ++i)
-			std::cout << i+1 << ". " << _inHand[i] << "\n";
-		std::cout << "Enter the index of the card : ";
-		std::cin >> res;
-	}
-	else
-		std::cout << "You have no card in your hand";
+		if(not _inHand.empty())
+		{
+			for(std::size_t i = 0; i < _inHand.size(); ++i)
+				std::cout << i+1 << ". " << _inHand[i] << "\n";
+			std::cout << "Enter the index of the card : ";
+			std::cin >> res;
+			if(res < 1 && res > _inHand.size())
+			{
+				std::cout << "Your answer should be include between" <<
+				1 << " and " << _inHand.size() << "\n Try again!\n";
+				goodAnswer = false;
+			}
+			else
+				goodAnswer = true;
+				
+		}
+		else
+			std::cout << "You have no card in your hand";
+	}while(not goodAnswer);
+		
 	return res;
 }
 	
 std::size_t GameState::selectBoard()
 {
 	std::size_t res = 0;
-	if(not _onBoard.empty())
+	bool goodAnswer = true;
+	do
 	{
-		for(std::size_t i = 0; i < _onBoard.size(); ++i)
-			std::cout << i+1 << ". " << _onBoard[i] << "\n";
-		std::cout << "Enter the index of the card : ";
-		std::cin >> res;
-	}
-	else
-		std::cout << "You have not card on the board";
+		if(not _onBoard.empty())
+		{
+			for(std::size_t i = 0; i < _onBoard.size(); ++i)
+				std::cout << i+1 << ". " << _onBoard[i] << "\n";
+			std::cout << "Enter the index of the card : ";
+			std::cin >> res;
+			if(res < 1 && res > _onBoard.size())
+			{
+				std::cout << "Your answer should be include between" <<
+				1 << " and " << _onBoard.size() << "\n Try again!\n";
+				goodAnswer = false;
+			}
+			else
+				goodAnswer = true;
+		}
+		else
+			std::cout << "You have not card on the board";
+	}while(not goodAnswer);
 		
 	return res;
 }
@@ -142,15 +168,27 @@ std::size_t GameState::selectBoard()
 std::size_t GameState::selectOppo()
 {
 	std::size_t res = 0;
-	if(not _oppoBoard.empty())
+	bool goodAnswer = true;
+	do
 	{
-		for(std::size_t i = 0; i < _oppoBoard.size(); ++i)
-			std::cout << i+1 << ". " << _oppoBoard[i] << "\n";
-		std::cout << "Enter the index of the card : ";
-		std::cin >> res;
-	}
-	else
-		std::cout << "Your opponent has no card on the board";
+		if(not _oppoBoard.empty())
+		{
+			for(std::size_t i = 0; i < _oppoBoard.size(); ++i)
+				std::cout << i+1 << ". " << _oppoBoard[i] << "\n";
+			std::cout << "Enter the index of the card : ";
+			std::cin >> res;
+			if(res < 1 && res > _oppoBoard.size())
+			{
+				std::cout << "Your answer should be include between" <<
+				1 << " and " << _oppoBoard.size() << "\n Try again!\n";
+				goodAnswer = false;
+			}
+			else
+				goodAnswer = true;
+		}
+		else
+			std::cout << "Your opponent has no card on the board";
+	}while(not goodAnswer);
 		
 	return res;
 }
