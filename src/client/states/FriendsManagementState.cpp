@@ -26,8 +26,8 @@ void FriendsManagementState::display()
 	else
 	{
 		std::cout << "Here is your friends list:\n";
-		for(const auto& friendName : friends)
-			std::cout << "* " << friendName << "\n";
+		for(const auto& friendUser : friends)
+			std::cout << "* " << friendUser.name << "\n";
 	}
 
 	// Display the actions
@@ -55,7 +55,7 @@ void FriendsManagementState::removeFriend()
 	if(_client.removeFriend(input))
 		std::cout << input << "has been removed from you friend list.\n";
 	else
-		std::cout << "An error occurred, " << input << " is not in your friends list.\n";
+		std::cout << "An error occurred, maybe " << input << " is not in your friends list.\n";
 	waitForEnter();
 }
 
@@ -66,18 +66,18 @@ void FriendsManagementState::treatRequests()
 		std::cout << "You have no incoming friendship request.\n";
 	else
 	{
-		for(const auto& name: requests)
+		for(const auto& user: requests)
 		{
-			std::cout << name << " wants to become your friend.\n"
+			std::cout << user.name << " wants to become your friend.\n"
 			          << FRIENDSHIP_REQUEST_ACCEPT << ". Accept request\n"
 			          << FRIENDSHIP_REQUEST_REFUSE << ". Refuse request\n"
 			          << FRIENDSHIP_REQUEST_IGNORE << ". Ignore request\n\t";
 			int choice;
 			std::cin >> choice;
 			if(choice == FRIENDSHIP_REQUEST_ACCEPT)
-				_client.acceptFriendshipRequest(name);
+				_client.acceptFriendshipRequest(user.name);
 			else if (choice == FRIENDSHIP_REQUEST_REFUSE)
-				_client.acceptFriendshipRequest(name, false);
+				_client.acceptFriendshipRequest(user.name, false);
 		}
 
 	}
@@ -98,5 +98,3 @@ void FriendsManagementState::backMainMenu()
 {
 	stackPop();
 }
-
-

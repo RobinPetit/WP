@@ -12,6 +12,7 @@
 #include <atomic>
 // WizardPoker headers
 #include "common/Terminal.hpp"
+#include "common/Database.hpp"// FriendsList typedef
 
 /// Client is a class representing the state of the client program (not the user!)
 class Client final
@@ -51,17 +52,17 @@ public:
 	/// The function used to to get a list of the user's friends
 	/// \return A vector of names representing all of the friends
 	/// \throw NotConnectedException if connectToServer has not been called before
-	const std::vector<std::string>& getFriends();
+	const FriendsList& getFriends();
 
 	/// The function used to get a list of the user's friends who are connected
 	/// \return A vector of names representing all of the connected friends
 	/// \throw NotConnectedException if connectedToServer has not been called before
-	std::vector<std::string> getConnectedFriends();
+	FriendsList getConnectedFriends();
 
 	/// Used to get a list of the friendship requests.
 	/// \return A vector of names representing all of the users that sent a request
 	/// \throw NotConnectedException if connectToServer has not been called before
-	const std::vector<std::string>& getFriendshipRequests();
+	const FriendsList& getFriendshipRequests();
 
 	/// Functions used to send a friendship request to another player
 	/// \return True if the player was successfully asked to become friend and false if he was already friend
@@ -113,9 +114,9 @@ private:
 	/// Gives informations about the terminal installed on the computer
 	Terminal _userTerminal;
 	/// List containing the names of the friends
-	std::vector<std::string> _friends;
+	FriendsList _friends;
 	/// List containing the names of the users that sent a friendship request to the client
-	std::vector<std::string> _friendshipRequests;
+	FriendsList _friendshipRequests;
 
 	// private methods
 	/// Used to know if a particular player is a friend or not

@@ -186,7 +186,7 @@ void Client::startGame()
 
 /////////////////// Friends management
 
-const std::vector<std::string>& Client::getFriends()
+const FriendsList& Client::getFriends()
 {
 	if(!_isConnected)
 		throw NotConnectedException("Unable to send friends");
@@ -194,17 +194,17 @@ const std::vector<std::string>& Client::getFriends()
 	return _friends;
 }
 
-std::vector<std::string> Client::getConnectedFriends()
+FriendsList Client::getConnectedFriends()
 {
 	if(!_isConnected)
 		throw NotConnectedException("Unable to send connected friends");
 	updateFriends();
-	std::vector<std::string> connectedFriends;
-	for(const auto& friendName: _friends)
+	FriendsList connectedFriends;
+	for(const auto& friendUser: _friends)
 	{
 		// ask the server if player is conencted
 		sf::Packet packet;
-		packet << TransferType::PLAYER_CHECK_CONNECTION << friendName;
+		packet << TransferType::PLAYER_CHECK_CONNECTION << friendUser.name;
 		_socket.send(packet);
 		_socket.receive(packet);
 		TransferType type;
@@ -215,12 +215,12 @@ std::vector<std::string> Client::getConnectedFriends()
 		packet >> isPresent;
 		// add to vector only if friend is present
 		if(isPresent)
-			connectedFriends.push_back(friendName);
+			connectedFriends.push_back(friendUser);
 	}
 	return connectedFriends;
 }
 
-const std::vector<std::string>& Client::getFriendshipRequests()
+const FriendsList& Client::getFriendshipRequests()
 {
 	if(!_isConnected)
 		throw NotConnectedException("Unable to send friendship requests");
@@ -230,14 +230,12 @@ const std::vector<std::string>& Client::getFriendshipRequests()
 
 void Client::updateFriends()
 {
-	if(!_isConnected)
-		throw NotConnectedException("Unable to update friends");
 	sf::Packet packet;
 	// send that friends list is asked
 	packet << TransferType::PLAYER_ASKS_FRIENDS;
 	_socket.send(packet);
 	_socket.receive(packet);
-	// std::vector packing has been defined in PacketOverload.hpp
+	// FriendsList packing has been defined in PacketOverload.hpp
 	_friends.clear();
 	packet >> _friends;
 }
@@ -245,6 +243,7 @@ void Client::updateFriends()
 void Client::updateFriendshipRequests()
 {
 	sf::Packet packet;
+	// send that requests list is asked
 	packet << TransferType::PLAYER_GETTING_FRIEND_REQUESTS;
 	_socket.send(packet);
 	_socket.receive(packet);
@@ -274,7 +273,10 @@ bool Client::sendFriendshipRequest(const std::string& name)
 
 bool Client::isFriend(const std::string& name) const
 {
-	return std::find(_friends.cbegin(), _friends.cend(), name) != _friends.cend();
+	return std::find_if(_friends.cbegin(), _friends.cend(), [&name](const Friend& friendUser)
+	{
+		return name == friendUser.name;
+	}) != _friends.cend();
 }
 
 bool Client::removeFriend(const std::string& name)
@@ -324,4 +326,3 @@ bool Client::startConversation(const std::string& playerName) const
 	system(cmd.c_str());
 	return true;
 }
-
