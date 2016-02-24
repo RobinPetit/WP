@@ -1,6 +1,7 @@
 -- WARNING: run this script reset database
 -- run with: sqlite3 :memory: ".read resources/common/initdatabase.sql"
 
+.header off
 .log stderr
 .trace /tmp/WP_initdatabase.log
 .nullvalue NULL
@@ -118,12 +119,12 @@ CREATE TABLE Account (
     -- another way to store cards is to use another table: GivenCard
 );
 
-CREATE TABLE GivenCard (
+CREATE TABLE GivenCard ( -- 20 first cards are not stored (everyone own its)
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    card INTEGER REFERENCES Card,
-    owner INTEGER REFERENCES Account,
-    counter INTEGER CHECK(counter > 0), -- TODO
-    UNIQUE(card, owner)
+    card INTEGER NOT NULL REFERENCES Card,
+    owner INTEGER NOT NULL REFERENCES Account
+    -- counter INTEGER NOT NULL DEFAULT 1 , -- CHECK(counter > 0) 
+    -- UNIQUE(card, owner)
 );
 
 CREATE INDEX givenCardOwner ON givenCard(owner);
@@ -375,12 +376,11 @@ INSERT INTO FriendRequest(from_, to_)
 
 SELECT "Give cards";
 INSERT INTO GivenCard(card,owner)
-    VALUES(1,1), (2,1), (3,1), (4,1), (5,1), (6,1), (7,1), (8,1), (9,1), (10,1),
-        (11,1), (12,1), (13,1), (14,1), (15,1), (16,1), (17,1), (18,1), (19,1), (20,1);
+    VALUES(15,1), (16,1);
 
 SELECT "Create deck";
 INSERT INTO Deck VALUES
-    (1, 'Test', 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20); 
+    (1, 'Test', 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 1, 16, 17, 18, 19, 20); 
 
 END;
 SELECT '-------';
@@ -415,3 +415,4 @@ CREATE VIEW SpellCard
         WHERE Monster.health IS NULL;
 
 .shell rm -f resources/client/cards.sql
+

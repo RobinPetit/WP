@@ -71,7 +71,23 @@ std::vector<Deck> ServerDatabase::getDecks(const int userId)
 			}
 		});
 	}
+
 	return decks;
+}
+
+CardsCollection ServerDatabase::getCardsCollection(const int userId)
+{
+	sqlite3_reset(_cardsCollectionStmt);
+	sqlite3_bind_int(_cardsCollectionStmt, 1, userId);
+
+	CardsCollection cards;
+
+	while(sqliteThrowExcept(sqlite3_step(_cardsCollectionStmt)) == SQLITE_ROW)
+	{
+		cards.addCard(sqlite3_column_int(_cardsCollectionStmt, 0));
+	}
+
+	return cards;
 }
 
 FriendsList ServerDatabase::getAnyFriendsList(const int user, sqlite3_stmt * stmt)

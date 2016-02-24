@@ -11,6 +11,7 @@
 #include <sqlite3.h>
 
 #include <common/Deck.hpp>
+#include <common/CardsCollection.hpp>
 
 struct Friend
 {

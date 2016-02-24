@@ -24,6 +24,7 @@ public:
 		return getAnyFriendsList(userId, _friendshipRequestsStmt);
 	}
 	std::vector<Deck> getDecks(const int userId);
+	CardsCollection getCardsCollection(const int userId);
 
 	virtual ~ServerDatabase();
 
@@ -38,11 +39,13 @@ private:
 	sqlite3_stmt * _loginStmt;
 	sqlite3_stmt * _friendshipRequestsStmt;
 	sqlite3_stmt * _decksStmt;
+	sqlite3_stmt * _cardsCollectionStmt;
+	sqlite3_stmt * _ladderStmt;
 
 	// `constexpr std::array::size_type size() const;`
 	// -> I consider this 4 as the definition of the variable, so it is not a magic number
 	// -> future uses have to be _statements.size() -> 4 is writed only one time
-	StatementsList<5> _statements
+	StatementsList<6> _statements
 	{
 		{
 			Statement {
@@ -70,6 +73,13 @@ private:
 				"SELECT name, Card0, Card1, Card2, Card3, Card4, Card5, Card6, Card7, Card8, Card9, "
 				"Card10, Card11, Card12, Card13, Card14, Card15, Card16, Card17, Card18, Card19 "
 				"FROM Deck WHERE Owner == ?1;"
+			},
+			Statement {
+				&_cardsCollectionStmt,
+				"SELECT card "
+				"FROM GivenCard "
+				"WHERE owner == ?1 "
+				"ORDER BY card;"
 			}
 		}
 	};
