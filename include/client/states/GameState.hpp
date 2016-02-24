@@ -2,6 +2,8 @@
 #define _GAME_STATE_CLIENT_HPP
 
 constexpr unsigned DECK_SIZE = 20;
+constexpr unsigned DFLT_HEALTH = 20;
+constexpr unsigned MAX_HEALTH = 20;
 constexpr unsigned DFLT_ENERGY = 0;
 constexpr unsigned MAX_ENERGY = 10;
 
@@ -28,8 +30,11 @@ class GameState : public AbstractState
 
 		void begin();
 		void startTurn();
+		void updateData(int);
 
-		void changeEnergy(unsigned);  ///Can be used for effects
+		///Those methods can be used for effects
+		void changeHealth(int);
+		void changeEnergy(int);
 
 	private:
 		std::vector<int> _inHand;
@@ -37,6 +42,8 @@ class GameState : public AbstractState
 		std::vector<int> _oppoBoard;
 		unsigned _lotsOfDataAboutStuff;
 		unsigned _remainCards = DECK_SIZE;
+		unsigned _selfHealth = DFLT_HEALTH;
+		unsigned _oppoHealth = DFLT_HEALTH;
 		unsigned _energy = DFLT_ENERGY;
 		unsigned _oppoCards;
 		unsigned _nbrTurn = 0;
@@ -47,16 +54,16 @@ class GameState : public AbstractState
 		/// Waits for special server data such as END_OF_TURN, BOARD_UPDATE, etc.
 		std::thread _listeningThread;
         
-        std::size_t selectHand();
-        std::size_t selectBoard();
-        std::size_t selectOppo();
+		std::size_t selectHand();
+		std::size_t selectBoard();
+		std::size_t selectOppo();
 
 		void setEnergy(unsigned);
 		void useCard();
 		void putOnBoard(std::size_t);
 		void attackWithCreature();
-        void applyOppoEffect();
-        void applySelfEffect();
+		void applyOppoEffect();
+		void applySelfEffect();
 		void endTurn();
 		void quit();
 
