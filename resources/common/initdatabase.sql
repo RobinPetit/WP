@@ -102,7 +102,7 @@ SELECT "Accounts";
 SELECT "Accounts/Tables";
 CREATE TABLE Account (
     id INTEGER PRIMARY KEY ASC,
-    login UNIQUE NOT NULL,
+    login TEXT UNIQUE NOT NULL,
     password BLOB NOT NULL,
     victories INTEGER NOT NULL DEFAULT 0,
     defeats INTEGER NOT NULL DEFAULT 0,
