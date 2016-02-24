@@ -25,7 +25,7 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -Wall -Wextra -pedantic 
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -DNDEBUG")
 
 # This variable contains the name of all libraries that has to be linked
-set(EXTERNAL_LIBRARIES ${SFML_LIBRARIES} ${SQLITE3_LIBRARIES})
+set(EXTERNAL_LIBRARIES ${SFML_LIBRARIES} ${SQLITE3_LIBRARIES} pthread)
 
 # Tell to cmake to explore src/ to build both the server and the client
 add_subdirectory(src)
@@ -39,4 +39,3 @@ add_custom_target(cleansrd COMMAND make -C ${PROJECT_SOURCE_DIR}/SRD/ mrproper)
 # Move the executables created in src/client/ and src/server/
 # to the root build directory
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-
