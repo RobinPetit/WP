@@ -566,22 +566,23 @@ Card* Player::cardExchangeFromHand(Card* givenCard, int handIndex)
 
 void Player::sendHandState()
 {
-	sf::Packet packet;
-	packet << TransferType::GAME_HAND_UPDATED;
-	std::vector<sf::Uint32> cardIds(_cardHand.size());
-	for(std::vector<int>::size_type i{0}; i < _cardHand.size(); ++i)
-		cardIds[i] = _cardHand[i]->getID();
-	packet << cardIds;
-	_specialSocketToClient.send(packet);
+	sendIDsFromVector(TransferType::GAME_HAND_UPDATED, _cardHand);
 }
 
 void Player::sendBoardState()
 {
+	sendIDsFromVector(TransferType::GAME_BOARD_UPDATED, _cardBoard);
+}
+
+// use a template to handle both Card and Creature pointers
+template <typename CardType>
+void Player::sendIDsFromVector(TransferType type, const std::vector<CardType *>& vect)
+{
 	sf::Packet packet;
-	packet << TransferType::GAME_BOARD_UPDATED;
-	std::vector<sf::Uint32> cardIds{_cardBoard.size()};
-	for(std::vector<int>::size_type i{0}; i < _cardBoard.size(); ++i)
-		cardIds[i] = _cardBoard[i]->getID();
+	packet << type;
+	std::vector<sf::Uint32> cardIds{vect.size()};
+	for(typename std::vector<CardType *>::size_type i{0}; i < vect.size(); ++i)
+		cardIds[i] = vect[i]->getID();
 	packet << cardIds;
 	_specialSocketToClient.send(packet);
 }

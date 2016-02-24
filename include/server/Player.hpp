@@ -12,6 +12,7 @@
 #include "server/Spell.hpp"
 #include "server/Constraints.hpp"
 #include "server/CardData.hpp"
+#include "common/sockets/TransferType.hpp"
 // SFML headers
 #include <SFML/Network/TcpSocket.hpp>
 
@@ -126,6 +127,9 @@ private:
 
 	void sendHandState();
 	void sendBoardState();
+
+	template <typename CardType>
+	void sendIDsFromVector(TransferType type, const std::vector<CardType *>& vect);
 };
 
 
