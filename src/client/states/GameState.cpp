@@ -78,31 +78,31 @@ void GameState::updateData(std::vector<unsigned> data)
 	_selfHealth = data[1]; _oppoHealth = data[2];
 	_remainCards = data[3];
 	_oppoCards = data[4];
-	
+
 }
 
 void GameState::pickCard(int pickedCard)
-{	
+{
 	if(_remainCards > 0)
 	{
 		_inHand.push_back(pickedCard);
 		--_remainCards; // Player took a card from his deck
-	};
+	}
 }
 
 void GameState::changeHealth(int health)
 {
-		_selfHealth += health;
+	_selfHealth += health;
 }
 
 void GameState::changeOppoHealth(int health)
 {
-		_oppoHealth += health;
+	_oppoHealth += health;
 }
 
 void GameState::changeEnergy(int energy)
 {
-		_energy += energy;
+	_energy += energy;
 }
 
 
@@ -128,15 +128,15 @@ std::size_t GameState::selectHand()
 			}
 			else
 				goodAnswer = true;
-				
+
 		}
 		else
 			std::cout << "You have no card in your hand";
 	}while(not goodAnswer);
-		
+
 	return res;
 }
-	
+
 std::size_t GameState::selectBoard()
 {
 	std::size_t res = 0;
@@ -161,10 +161,10 @@ std::size_t GameState::selectBoard()
 		else
 			std::cout << "You have not card on the board";
 	}while(not goodAnswer);
-		
+
 	return res;
 }
-		
+
 std::size_t GameState::selectOppo()
 {
 	std::size_t res = 0;
@@ -189,7 +189,7 @@ std::size_t GameState::selectOppo()
 		else
 			std::cout << "Your opponent has no card on the board";
 	}while(not goodAnswer);
-		
+
 	return res;
 }
 
@@ -232,7 +232,7 @@ void GameState::attackWithCreature()
 
 		std::cout << "Which opponent's creature would you like to attack?\n";
 		oppoCardIndex = selectOppo();
-		
+
 		///If there's cards on board
 		if(selfCardIndex > 0 && oppoCardIndex > 0)
 		{
@@ -254,10 +254,10 @@ void GameState::applyOppoEffect()
 	else
 	{
 		std::size_t oppoCardIndex;
-		std::cout << 
+		std::cout <<
 		"On which opponent's creature would you like to apply the effect?\n";
 		oppoCardIndex = selectOppo();
-		
+
 		if(oppoCardIndex > 0)
 		{
 			//TODO send the effect
@@ -277,10 +277,10 @@ void GameState::applySelfEffect()
 	else
 	{
 		size_t selfCardIndex;
-		std::cout << 
+		std::cout <<
 		"On which of your creature would you like to apply the effect?\n";
 		selfCardIndex = selectBoard();
-		
+
 		if (selfCardIndex > 0)
 		{
 			//TODO send the effect

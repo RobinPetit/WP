@@ -113,8 +113,11 @@ void Player::useCard(int handIndex)
 	Card* usedCard = _cardHand.at(handIndex);
 	if (usedCard->getEnergyCost() > _energy)
 	{
-        //NETWORK: NOT_ENOUGH_ENERGY
-        return;
+		sf::Packet packet;
+		packet << TransferType::GAME_NOT_ENOUGH_ENERGY;
+		_socketToClient.send(packet);
+		//NETWORK: NOT_ENOUGH_ENERGY
+		return;
 	}
 
 	_energy -= usedCard->getEnergyCost();
@@ -383,8 +386,10 @@ void Player::setEnergy(const EffectParamsCollection& args)
 		return;
 	}
 	_energy = points;
-	if (_energy<0) _energy=0;
-	else if (_energy>_maxEnergy) _energy=_maxEnergy;
+	if (_energy<0)
+		_energy=0;
+	else if (_energy>_maxEnergy)
+		_energy=_maxEnergy;
 	sendCurrentEnergy();
 }
 
