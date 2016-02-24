@@ -53,6 +53,8 @@ private:
 
 	std::thread _timerThread;
 
+	std::atomic_bool _turnSwap;
+
 	//////////// Private methods
 	void setSocket(sf::TcpSocket& socket, sf::TcpSocket& specialSocket, const ClientInformations& player);
 

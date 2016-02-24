@@ -4,6 +4,7 @@
 // SFML headers
 #include <SFML/Network/TcpListener.hpp>
 #include <SFML/Network/IpAddress.hpp>
+#include <SFML/Network/SocketSelector.hpp>
 #include <SFML/System/Sleep.hpp>
 // std-C++ headers
 #include <iostream>
@@ -81,10 +82,28 @@ void GameThread::startGame(const ClientInformations& player1, const ClientInform
 	packet << TransferType::GAME_STARTING << TransferType::GAME_PLAYER_LEAVE_TURN;
 	getSocketFromID(_gameBoard.getWaitingPlayerID()).send(packet);
 	_timerThread = std::thread(&GameThread::makeTimer, this);
+	// prepare data listening
+	sf::SocketSelector selector;
+	selector.add(_socketPlayer1);
+	selector.add(_socketPlayer2);
 	while(_running.load())
 	{
-		sf::sleep(sf::milliseconds(50));
+		GameThread::PlayerNumber sender;
+		if(!selector.wait(sf::milliseconds(50)))
+			continue;
+		if(selector.isReady(_socketPlayer1))
+			sender = PlayerNumber::PLAYER1;
+		else if(selector.isReady(_socketPlayer2))
+			sender = PlayerNumber::PLAYER2;
+		else
+			throw std::runtime_error("Error with selector while waiting for game data");
 		// get actions from playing client
+		sf::TcpSocket& modifiedSocket{sender == PlayerNumber::PLAYER1 ? _socketPlayer1 : _socketPlayer2};
+		modifiedSocket.receive(packet);
+		TransferType type;
+		packet >> type;
+		if(type == TransferType::GAME_PLAYER_LEAVE_TURN)
+			_turnSwap.store(true);
 	}
 	packet.clear();
 	packet << TransferType::GAME_OVER;
@@ -96,28 +115,24 @@ void GameThread::startGame(const ClientInformations& player1, const ClientInform
 // Function only called by a new thread
 void GameThread::makeTimer()
 {
-	static const std::chrono::miliseconds sleepingTime{50};
-	auto startOfTurn{std::chrono::system_clock::now()};
+	static const std::chrono::milliseconds sleepingTime{50};
+	auto startOfTurnTime{std::chrono::high_resolution_clock::now()};
 	while(_running.load())
 	{
 		std::this_thread::sleep_for(sleepingTime);
-		// if the current player finished his turn
-		if(_turnSwap.load())
-		{
-			startOfTurn = std::chrono::system_clock::now();
-			_turnSwap.store(false);
-		}
-		else if(std::chrono::seconds(std::chrono::system_clock::now()-startOfTurn) < _turnTime)
-		{
-			// send to both players their turn swapped
-			sf::Packet endOfTurn;
-			endOfTurn << TransferType::GAME_PLAYER_LEAVE_TURN;
-			getSpecialSocketFromID(_gameBoard.getCurrentPlayerID()).send(endOfTurn);
-			sf::Packet startOfTurn;
-			startOfTurn << TransferType::GAME_PLAYER_ENTER_TURN;
-			getSpecialSocketFromID(_gameBoard.getWaitingPlayerID()).send(startOfTurn);
-			_gameBoard.endTurn();
-		}
+		// if the current player didn't finished his turn and he still has got time to play, wait
+		if(!_turnSwap.load() && std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - startOfTurnTime) < _turnTime)
+			continue;
+		// send to both players their turn swapped
+		sf::Packet endOfTurn;
+		endOfTurn << TransferType::GAME_PLAYER_LEAVE_TURN;
+		getSpecialSocketFromID(_gameBoard.getCurrentPlayerID()).send(endOfTurn);
+		sf::Packet startOfTurn;
+		startOfTurn << TransferType::GAME_PLAYER_ENTER_TURN;
+		getSpecialSocketFromID(_gameBoard.getWaitingPlayerID()).send(startOfTurn);
+		_gameBoard.endTurn();
+		startOfTurnTime = std::chrono::high_resolution_clock::now();
+		_turnSwap.store(false);
 	}
 }
 
