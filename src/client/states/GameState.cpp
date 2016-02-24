@@ -32,14 +32,27 @@ GameState::GameState(StateStack& stateStack, Client& client):
 	packet >> type;
 	begin();
 	if(type == TransferType::GAME_PLAYER_ENTER_TURN)
-	{
 		_myTurn.store(true);
-		startTurn();
-	}
 	else if(type == TransferType::GAME_PLAYER_LEAVE_TURN)
 		_myTurn.store(false);
 	else
 		throw std::runtime_error("Wrong turn information: " + std::to_string(static_cast<sf::Uint32>(type)));
+	play();
+}
+
+void GameState::play()
+{
+        while(_playing.load())
+        {
+		if(_myTurn.load())
+			startTurn();
+		else
+		{
+			std::cout << "Waiting for your turn\n";
+			while(not _myTurn.load())
+				sf::sleep(sf::milliseconds(100));
+		}
+        }
 }
 
 void GameState::display()
@@ -59,6 +72,7 @@ void GameState::begin()
 
 void GameState::startTurn()
 {
+	_myTurn.store(true);
 	display();
 	std::cout << "It is now your turn, type something\n";
 	while(_myTurn.load())
@@ -67,6 +81,7 @@ void GameState::startTurn()
 		{
 			std::string command{_nonBlockingInput.receiveStdinData()};
 			std::cout << "input is: '" + command + "'" << std::endl;
+			// handleInput(command);
 		}
 	}
 	/**/
@@ -254,8 +269,7 @@ void GameState::applyOppoEffect()
 	else
 	{
 		std::size_t oppoCardIndex;
-		std::cout <<
-		"On which opponent's creature would you like to apply the effect?\n";
+		std::cout << "On which opponent's creature would you like to apply the effect?\n";
 		oppoCardIndex = selectOppo();
 
 		if(oppoCardIndex > 0)
@@ -277,8 +291,7 @@ void GameState::applySelfEffect()
 	else
 	{
 		size_t selfCardIndex;
-		std::cout <<
-		"On which of your creature would you like to apply the effect?\n";
+		std::cout << "On which of your creature would you like to apply the effect?\n";
 		selfCardIndex = selectBoard();
 
 		if (selfCardIndex > 0)
@@ -333,16 +346,28 @@ void GameState::inputListening()
 		assert(selector.isReady(listeningSocket));
 		auto receiveStatus{listeningSocket.receive(receivedPacket)};
 		if(receiveStatus == sf::Socket::Disconnected)
-			;  // \TODO: handle disconnection
+		{
+			std::cerr << "Connection lost with the server\n";
+			_playing.store(false);
+		}
 		else if(receiveStatus == sf::Socket::Error)
-			;  // \TODO: handle error
+		{
+			std::cerr << "Error while transmitting data\n";
+			_playing.store(false);
+		}
 		receivedPacket >> type;
 		if(type == TransferType::GAME_OVER)
 			_playing.store(false);
 		else if(type == TransferType::GAME_PLAYER_ENTER_TURN)
+		{
 			std::cout << "starting turn\n";  // perform turn changing here
+			_myTurn.store(true);
+		}
 		else if(type == TransferType::GAME_PLAYER_LEAVE_TURN)
+		{
 			std::cout << "ending turn\n";  // perform turn changing here
+			_myTurn.store(false);
+		}
 		else
 			std::cerr << "Unknown message received: " << static_cast<sf::Uint32>(type) << "; ignore." << std::endl;
 	}

@@ -242,7 +242,9 @@ void Server::findOpponent(const _iterator& it)
 void Server::startGame(std::size_t idx)
 {
 	std::cout << "StartGame(" << idx << ")\n";
-	GameThread& selfThread(*_runningGames[idx]);
+	_accessRunningGames.lock();
+	GameThread& selfThread{*_runningGames[idx]};
+	_accessRunningGames.unlock();
 	std::cout << "Got it\n";
 	const auto& finderById = [](unsigned playerId)
 	{
@@ -259,7 +261,9 @@ void Server::startGame(std::size_t idx)
 
 void Server::createGame(unsigned ID1, unsigned ID2)
 {
+	_accessRunningGames.lock();
 	_runningGames.emplace_back(new GameThread(ID1, ID2, &Server::startGame, this, _runningGames.size()));
+	_accessRunningGames.unlock();
 }
 
 // Friends management

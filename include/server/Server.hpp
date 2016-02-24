@@ -47,6 +47,7 @@ private:
 	std::mutex _lobbyMutex;
 	const std::string _quitPrompt;
 	std::vector<GameThread *> _runningGames;
+	std::mutex _accessRunningGames;
 	std::size_t _last_id;
 
 	// private methods
