@@ -23,9 +23,10 @@ std::function<void(Player&, const EffectParamsCollection&)> Player::_effectMetho
 	&Player::changeHealth,
 };
 
-Player::Player(Player::ID id, sf::TcpSocket& socket):
+Player::Player(Player::ID id, sf::TcpSocket& socket, sf::TcpSocket& specialSocket):
 	_id(id),
-	_socketToClient(socket)
+	_socketToClient(socket),
+	_specialSocketToClient(specialSocket)
 {
 	//NETWORK: GREETINGS_USER
 }
@@ -84,22 +85,25 @@ void Player::leaveTurn()
 		_cardBoard.at(i)->leaveTurn();
 }
 
+/// \network sends to client one of the following:
+///     + SERVER_ACKNOWLEDGEMENT if the card was successfully used
+///     + GAME_CARD_LIMIT_TURN_REACHED if the user cannot play cards for this turn
+///     + SERVER_UNABLE_TO_PERFORM  if the specialized type of the card (spell/creature) cannot be played anymore for this turn
 void Player::useCard(int handIndex)
 {
 	//TODO: verify that handIndex is not out_of_range
 
 	if (_constraints.getConstraint(PC_TEMP_CARD_USE_LIMIT) == _turnData.cardsUsed)
 	{
-		//NETWORK: USE_CARDS_LIMIT
+		sf::Packet packet;
+		packet << TransferType::GAME_CARD_LIMIT_TURN_REACHED;
+		_socketToClient.send(packet);
 		return;
 	}
 	Card* usedCard = _cardHand.at(handIndex);
 
 	//TODO: use typeinfo ?
-	if (usedCard->isCreature())
-		useCreature(handIndex, usedCard);
-	else
-		useSpell(handIndex, usedCard);
+	(this->*(usedCard->isCreature() ? &Player::useCreature : &Player::useSpell))(handIndex, usedCard);
 }
 
 ////////////////////// specialized card cases
@@ -239,6 +243,9 @@ void Player::stealHandCard(const EffectParamsCollection&)
 	cardAddToHand(_opponent->cardRemoveFromHand());
 }
 
+/// \network sends to user one of the following:
+///     + SERVER_UNABLE_TO_PERFORM if opponent has no card in his hand
+///     + SERVER_ACKNOWLEDGEMENT if card has been swapped
 void Player::exchgHandCard(const EffectParamsCollection& args)
 {
 	//TODO: check index
@@ -246,14 +253,15 @@ void Player::exchgHandCard(const EffectParamsCollection& args)
 	Card* myCard = _cardHand.at(myCardIndex);
 	Card* hisCard =  _opponent->cardExchangeFromHand(myCard);
 
+	sf::Packet packet;
 	if (hisCard == nullptr)
-	{
-		//NETWORK: COULD_NOT_EXCHANGE
-	}
+		packet << TransferType::SERVER_UNABLE_TO_PERFORM;
 	else
 	{
 		cardExchangeFromHand(hisCard, myCardIndex);
+		packet << TransferType::SERVER_ACKNOWLEDGEMENT;
 	}
+	_socketToClient.send(packet);
 }
 
 void Player::setEnergy(const EffectParamsCollection& args)
@@ -262,6 +270,7 @@ void Player::setEnergy(const EffectParamsCollection& args)
 	_energy = points;
 	if (_energy<0)
 		_energy=0;
+	sendCurrentEnergy();
 }
 
 void Player::changeEnergy(const EffectParamsCollection& args)
@@ -270,7 +279,7 @@ void Player::changeEnergy(const EffectParamsCollection& args)
 	_energy+=points;
 	if (_energy<0)
 		_energy=0;
-	//NETWORK: ENERGY_CHANGED
+	sendCurrentEnergy();
 }
 
 void Player::changeHealth(const EffectParamsCollection& args)
@@ -283,8 +292,27 @@ void Player::changeHealth(const EffectParamsCollection& args)
 		//NETWORK: NO_HEALTH_CHANGED
 		//call die()
 	}
+	sendCurrentHealth();
 }
 
+
+/////////
+
+void Player::sendCurrentEnergy()
+{
+	sf::Packet packet;
+	// cast to be sure that the right amount of bits is sent and received
+	packet << TransferType::GAME_PLAYER_ENERGY_UPDATED << static_cast<sf::Uint32>(_energy);
+	_specialSocketToClient.send(packet);
+}
+
+void Player::sendCurrentHealth()
+{
+	sf::Packet packet;
+	// cast to be sure that the right amount of bits is sent and received
+	packet << TransferType::GAME_PLAYER_HEALTH_UPDATED << static_cast<sf::Uint32>(_health);
+	_specialSocketToClient.send(packet);
+}
 
 /*--------------------------- PRIVATE */
 void Player::exploitCardEffects(Card* usedCard)

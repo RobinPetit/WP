@@ -10,12 +10,19 @@
 // SFML headers
 #include <SFML/Network/TcpSocket.hpp>
 
+struct PlayerInformations
+{
+	Player::ID id;
+	sf::TcpSocket& socket;
+	sf::TcpSocket& specialSocket;
+};
+
 /// Manages one game with two players
 class Board
 {
 public:
 	/// Constructor
-	Board(Player::ID player1, Player::ID player2, sf::TcpSocket& socketPlayer1, sf::TcpSocket& socketPlayer2);
+	Board(const PlayerInformations& player1, const PlayerInformations& player2);
 
 	/// Destructor
 	~Board() = default;
