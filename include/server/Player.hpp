@@ -39,17 +39,19 @@ public:
 	void useCard(int handIndex); 	///< Use a card
 	void attackWithCreature(int boardIndex, int victim);  ///< Attack victim (-1 for opponent) with a card
 
-	Player::ID getID();
-
 	/// Interface for applying effects
 	//to Player
-	void applyEffect(const Card* usedCard, int method, const EffectParamsCollection& effectArgs);
-	//to Creatures
-	void applyEffectToCreature(Creature* casterAndSubject, int method, const EffectParamsCollection& effectArgs);
-	void applyEffectToCreature(const Card* usedCard, int boardIndex, int method, const EffectParamsCollection& effectArgs);
-	void applyEffectToCreatures(const Card* usedCard, int method, const EffectParamsCollection& effectArgs);
+	void applyEffect(const Card* usedCard, EffectParamsCollection effectArgs);
+	//to a Creature
+	void applyEffectToCreature(Creature* casterAndSubject, EffectParamsCollection effectArgs); //With ref. to creature
+	void applyEffectToCreature(const Card* usedCard, int boardIndex, EffectParamsCollection effectArgs); //With creature index (-1=random)
+	//to all Creatures
+	void applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollection effectArgs);
+
+	/// Getters
 	int getCreatureConstraint(const Creature& subject, int constraintIDD);
 	const Card* getLastCaster();
+	Player::ID getID();
 
 private:
 	/// Types
@@ -82,7 +84,7 @@ private:
 	std::vector<Card *> _cardHand;  ///< Cards that are in the player's hand (usable)
 	std::vector<Creature *> _cardBoard;  ///< Cards that are on the board (usable for attacks)
 	std::vector<Card *> _cardBin;  ///< Cards that are discarded (dead creatures, used spells)
-	const Card* _lastCasterCard=nullptr;
+	const Card* _lastCasterCard=nullptr; ///<Last card that was used to cast an effect (his or opponent's)
 
 	// Random management
 	std::default_random_engine _engine;
@@ -90,7 +92,7 @@ private:
 	// Effects container
 	static std::function<void(Player&, const EffectParamsCollection&)> _effectMethods[P_EFFECTS_COUNT];
 
-	/// Effects
+	/// Effects (private)
 	void setConstraint(const EffectParamsCollection& args);
 	void pickDeckCards(const EffectParamsCollection& args);
 	void loseHandCards(const EffectParamsCollection& args);

@@ -98,7 +98,8 @@ enum CREATURE_CONSTRAINTS : int
 
 enum CONSTRAINT_CONDITIONS : int
 {
-	IF_CASTER_ALIVE,	//Constraint applies only if CREATURE who cast it is alive AND not paralyzed
+    NO_CASTER_NEEDED,	//Constraint does not care about the caster's state
+	IF_CASTER_ALIVE		//Constraint applies only if CREATURE who cast it is alive AND not paralyzed
 };
 
 /// Types used for card creation:
@@ -140,7 +141,7 @@ typedef std::vector<int> EffectParamsCollection;
 //EFFECT ID
 //if effect is SET_CONSTRAINT:
 //	CONSTRAINT ID
-//	followed by VALUE, TURNS (or UNLIMITED_TURNS), and eventually IF_CASTER_ALIVE option
+//	followed by VALUE, TURNS (or UNLIMITED_TURNS), CONSTRAINT CONDITIONS
 //if effect is something else:
 //	ALL ARGUMENTS (no more than 4)
 

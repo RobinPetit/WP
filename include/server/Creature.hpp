@@ -23,7 +23,6 @@ private:
 	Constraints _constraints = Constraints(C_CONSTRAINT_DEFAULTS, C_CONSTRAINTS_COUNT);
 
 	//Effects
-public:
 	static std::function<void(Creature&, const EffectParamsCollection&)> _effectMethods[P_EFFECTS_COUNT];
 
 	void setConstraint(const EffectParamsCollection& args);
@@ -54,7 +53,7 @@ public:
 	void receiveAttack(Creature& attacker, int attack, int forced, int loopCount=0);
 
 	/// Effects interface
-	void applyEffect(int method, const EffectParamsCollection& effectArgs);
+	void applyEffect(EffectParamsCollection effectArgs);
 
 	int getAttack();
 	int getPersonalConstraint(int constraintID) const;

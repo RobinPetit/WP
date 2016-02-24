@@ -42,10 +42,10 @@ void Board::useCard(int handIndex)
 	_activePlayer->useCard(handIndex);
 }
 
-void Board::attackWithCreature(int boardIndex, int victim)
+void Board::attackWithCreature(int attackerIndex, int victimIndex)
 {
 	//pass along to active player
-	_activePlayer->attackWithCreature(boardIndex, victim);
+	_activePlayer->attackWithCreature(attackerIndex, victimIndex);
 }
 
 void Board::quitGame()
@@ -70,56 +70,54 @@ void Board::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 	int subject = effectArgs.front(); //who the effect applies to
 	effectArgs.erase(effectArgs.begin());
 
-	int method = effectArgs.front(); //what method is used
-	effectArgs.erase(effectArgs.begin());
-
 	switch (subject)
 	{
 		case PLAYER_SELF:	//passive player
-			_activePlayer->applyEffect(usedCard, method, effectArgs);
+			_activePlayer->applyEffect(usedCard, effectArgs);
 			break;
 
 		case PLAYER_OPPO:	//active player
-			_passivePlayer->applyEffect(usedCard, method, effectArgs);
+			_passivePlayer->applyEffect(usedCard, effectArgs);
 			break;
 
 		case CREATURE_SELF_THIS:	//active player's creature that was used
 			{
 				Creature* usedCreature = dynamic_cast<Creature*>(usedCard);
-				_activePlayer->applyEffectToCreature(usedCreature, method, effectArgs);
+				_activePlayer->applyEffectToCreature(usedCreature, effectArgs);
 			}
 			break;
 		case CREATURE_SELF_INDX:	//active player's creature at given index
             {
 				int boardIndex = effectArgs.front();
 				effectArgs.erase(effectArgs.begin());
-				_activePlayer->applyEffectToCreature(usedCard, boardIndex, method, effectArgs);
+				_activePlayer->applyEffectToCreature(usedCard, boardIndex, effectArgs);
             }
             break;
 
 		case CREATURE_SELF_RAND:	//active player's creature at random index
-            _activePlayer->applyEffectToCreature(usedCard, -1, method, effectArgs);
+            _activePlayer->applyEffectToCreature(usedCard, -1, effectArgs);
 			break;
 
 		case CREATURE_SELF_TEAM:	//active player's team of creatures
-			_activePlayer->applyEffectToCreatures(usedCard, method, effectArgs);
+			_activePlayer->applyEffectToCreatureTeam(usedCard, effectArgs);
 			break;
 
 		case CREATURE_OPPO_INDX:	//passive player's creature at given index
 			{
 				int boardIndex = effectArgs.front();
 				effectArgs.erase(effectArgs.begin());
-				_passivePlayer->applyEffectToCreature(usedCard, boardIndex, method, effectArgs);
+				_passivePlayer->applyEffectToCreature(usedCard, boardIndex, effectArgs);
 			}
 			break;
 
 		case CREATURE_OPPO_RAND:    //passive player's creature at random index
-			_passivePlayer->applyEffectToCreature(usedCard, -1, method, effectArgs);
+			_passivePlayer->applyEffectToCreature(usedCard, -1, effectArgs);
 			break;
 
 		case CREATURE_OPPO_TEAM:	//passive player's team of creatures
-			_passivePlayer->applyEffectToCreatures(usedCard, method, effectArgs);
+			_passivePlayer->applyEffectToCreatureTeam(usedCard, effectArgs);
 			break;
 	}
+	throw std::runtime_error("Effect subject not valid");
 }
 

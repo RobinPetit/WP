@@ -8,6 +8,7 @@
 // SFML headers
 #include <SFML/Network/Packet.hpp>
 
+/*------------------------------ CONSTRUCTOR AND INIT */
 std::function<void(Player&, const EffectParamsCollection&)> Player::_effectMethods[P_EFFECTS_COUNT] =
 {
 	&Player::setConstraint,
@@ -53,9 +54,9 @@ void Player::beginGame(bool isActivePlayer)
 
 void Player::enterTurn(int turn)
 {
-	_turnData = _emptyTurnData;  // Clear the turn data
+	_turnData = _emptyTurnData;  // Reset the turn data
 
-	//Player's turn-based rules
+	//Player's turn-based constraints
 	cardDeckToHand(_constraints.getConstraint(PC_TURN_CARDS_PICKED));
 	setEnergy({_constraints.getConstraint(PC_TURN_ENERGY_INIT)});
 	changeEnergy({_constraints.getConstraint(PC_TURN_ENERGY_CHANGE)});
@@ -63,7 +64,7 @@ void Player::enterTurn(int turn)
 	if (_cardDeck.empty())
 		changeHealth({_constraints.getConstraint(PC_TURN_HEALTH_CHANGE_DECK_EMPTY)});
 
-	//Will call creature's turn-based rules
+	//Will call creature's turn-based constraints
 	for (unsigned i=0; i<_cardBoard.size(); i++)
 		_cardBoard.at(i)->enterTurn();
 
@@ -138,52 +139,59 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 	}
 	Creature* attacker = _cardBoard.at(attackerIndex);
     if (victimIndex<0)
-		_opponent->applyEffect(attacker, PE_CHANGE_HEALTH, {attacker->getAttack()}); //no forced attacks on opponent
+		_opponent->applyEffect(attacker, {PE_CHANGE_HEALTH, attacker->getAttack()}); //no forced attacks on opponent
 	else
 		attacker->makeAttack(*_opponent->_cardBoard.at(victimIndex));
 }
 
-/*------------------------------ APPLYING EFFECTS */
-void Player::applyEffect(const Card* usedCard, int method, const EffectParamsCollection& effectArgs)
+/*------------------------------ EFFECTS INTERFACE */
+void Player::applyEffect(const Card* usedCard, EffectParamsCollection effectArgs)
 {
-    _lastCasterCard = usedCard;
-    _effectMethods[method](*this, effectArgs);
+    _lastCasterCard = usedCard; //remember last used card
+
+    int method = effectArgs.front(); //what method is used
+	effectArgs.erase(effectArgs.begin());
+
+    _effectMethods[method](*this, effectArgs); //call method on self
 }
 
-void Player::applyEffectToCreature(Creature* casterAndSubject, int method, const EffectParamsCollection& effectArgs)
+void Player::applyEffectToCreature(Creature* casterAndSubject, EffectParamsCollection effectArgs)
 {
-    _lastCasterCard = casterAndSubject;
-    casterAndSubject->applyEffect(method, effectArgs);
+    _lastCasterCard = casterAndSubject; //remember last used card
+    casterAndSubject->applyEffect(effectArgs); //call method on effect subject (same as caster)
 }
 
-void Player::applyEffectToCreature(const Card* usedCard, int boardIndex, int method, const EffectParamsCollection& effectArgs)
+void Player::applyEffectToCreature(const Card* usedCard, int boardIndex, EffectParamsCollection effectArgs)
 {
-	_lastCasterCard = usedCard;
-	//If no subject was selected
+	_lastCasterCard = usedCard; //remember last used card
+
+	//If no subject was selected, choose a random one
 	if (boardIndex<0)
 		boardIndex = rand() % _cardBoard.size();
 
 	Creature* subject = _cardBoard.at(boardIndex);
-	subject->applyEffect(method, effectArgs);
+	subject->applyEffect(effectArgs);
 }
 
-void Player::applyEffectToCreatures(const Card* usedCard, int method, const EffectParamsCollection& effectArgs)
+void Player::applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollection effectArgs)
 {
 	_lastCasterCard = usedCard;
+
 	//If the effect consists in setting a constraint
-	if (method==CE_SET_CONSTRAINT)
-		setTeamConstraint(usedCard, effectArgs); //We set a team constraint instead of individual ones
-	else
+	if (effectArgs.at(0) == CE_SET_CONSTRAINT)
 	{
-		for (unsigned i=0; i<_cardBoard.size(); i++)
-		{
-			applyEffectToCreature(usedCard, i, method, effectArgs);
-		}
+		effectArgs.erase(effectArgs.begin()); //remove the method value
+		setTeamConstraint(usedCard, effectArgs); //set a team constraint instead of individual ones
 	}
+	else //other effects just get applied to each creature individually
+		for (unsigned i=0; i<_cardBoard.size(); i++)
+			applyEffectToCreature(usedCard, i, effectArgs);
 }
 
+/*------------------------------ GETTERS */
 int Player::getCreatureConstraint(const Creature& subject, int constraintID)
 {
+	//returns the value respecting both the creature and the whole team's constraints
 	int creatureValue = subject.getPersonalConstraint(constraintID);
 	return _teamConstraints.getOverallConstraint(constraintID, creatureValue);
 }
@@ -193,23 +201,66 @@ const Card* Player::getLastCaster()
     return _lastCasterCard;
 }
 
-/*--------------------------- EFFECTS */
+/*------------------------------ EFFECTS (PRIVATE) */
 void Player::setConstraint(const EffectParamsCollection& args)
 {
-	int constraintID = args.at(0);
-	int value = args.at(1);
-	int turns = args.at(2);
-	_constraints.setConstraint(constraintID, value, turns);
+	int constraintID; //constraint to set
+	int value; //value to give to it
+	int turns; //for how many turns
+	int casterOptions; //whether the constraint depends on its caster being alive
+	try //check the input
+    {
+		constraintID=args.at(0);
+		value=args.at(1);
+		turns=args.at(2);
+		casterOptions=args.at(3);
+		if (constraintID<0 or constraintID>=P_CONSTRAINTS_COUNT or turns<0)
+			throw std::out_of_range("");
+	}
+	catch (std::out_of_range)
+	{
+		//NETWORK: INPUT_ERROR
+		return;
+	}
+
+	switch (casterOptions)
+	{
+		case IF_CASTER_ALIVE:
+			_constraints.setConstraint(constraintID, value, turns, dynamic_cast<const Creature*>(getLastCaster()));
+			break;
+		default:
+			_constraints.setConstraint(constraintID, value, turns);
+	}
 }
 
 void Player::pickDeckCards(const EffectParamsCollection& args)
 {
-	cardDeckToHand(args.at(0));
+    int amount;//amount of cards
+    try //check the input
+    {
+		amount=args.at(0);
+	}
+	catch (std::out_of_range)
+	{
+		//NETWORK: INPUT_ERROR
+		return;
+	}
+	cardDeckToHand(amount);
 }
 
 void Player::loseHandCards(const EffectParamsCollection& args)
 {
-	int amount = args.at(1);
+	int amount; //amount of cards to lose
+	try //check the input
+    {
+		amount=args.at(0);
+	}
+	catch (std::out_of_range)
+	{
+		//NETWORK: INPUT_ERROR
+		return;
+	}
+
 	while (not _cardHand.empty() and amount>0)
 	{
 		amount--;
@@ -220,20 +271,42 @@ void Player::loseHandCards(const EffectParamsCollection& args)
 
 void Player::reviveBinCard(const EffectParamsCollection& args)
 {
-    int binIndex = args.at(0);
+    int binIndex; //what card to revive
+    try //check the input
+    {
+		binIndex=args.at(0);
+		_cardBin.at(binIndex);
+	}
+	catch (std::out_of_range)
+	{
+		//NETWORK: INPUT_ERROR
+		return;
+	}
 	cardBinToHand(binIndex);
 }
 
-void Player::stealHandCard(const EffectParamsCollection&)
+void Player::stealHandCard(const EffectParamsCollection& args)
 {
+	//no arguments
     cardAddToHand(_opponent->cardRemoveFromHand());
 }
 
 void Player::exchgHandCard(const EffectParamsCollection& args)
 {
-	//TODO: check index
-	int myCardIndex = args.at(0);
-	Card* myCard = _cardHand.at(myCardIndex);
+	int myCardIndex; //card to exchange = args.at(0);
+	Card* myCard;
+
+	try //check the input
+	{
+		myCardIndex = args.at(0);
+		myCard = _cardHand.at(myCardIndex);
+	}
+	catch (std::out_of_range)
+	{
+		//NETWORK: INPUT_ERROR
+		return;
+	}
+
 	Card* hisCard =  _opponent->cardExchangeFromHand(myCard);
 
 	if (hisCard == nullptr)
@@ -248,14 +321,32 @@ void Player::exchgHandCard(const EffectParamsCollection& args)
 
 void Player::setEnergy(const EffectParamsCollection& args)
 {
-	int points = args.at(0);
+	int points; //energy points to give
+	try //check the input
+	{
+		points=args.at(0);
+	}
+	catch (std::out_of_range)
+	{
+		//NETWORK: INPUT_ERROR
+		return;
+	}
 	_energy = points;
 	if (_energy<0) _energy=0;
 }
 
 void Player::changeEnergy(const EffectParamsCollection& args)
 {
-	int points = args.at(0);
+	int points; //points to add
+	try //check the input
+	{
+		points=args.at(0);
+	}
+	catch (std::out_of_range)
+	{
+		//NETWORK: INPUT_ERROR
+		return;
+	}
 	_energy+=points;
 	if (_energy<0) _energy=0;
 	//NETWORK: ENERGY_CHANGED
@@ -263,7 +354,17 @@ void Player::changeEnergy(const EffectParamsCollection& args)
 
 void Player::changeHealth(const EffectParamsCollection& args)
 {
-	int points = args.at(0);
+	int points; //points to add
+	try //check the input
+	{
+		points=args.at(0);
+	}
+	catch (std::out_of_range)
+	{
+		//NETWORK: INPUT_ERROR
+		return;
+	}
+
 	_health+=points;
 	if (_health<=0)
 	{
@@ -284,6 +385,37 @@ void Player::exploitCardEffects(Card* usedCard)
 	}
 }
 
+void Player::setTeamConstraint(const Card* usedCard, const EffectParamsCollection& args)
+{
+    int constraintID; //constraint to set
+	int value; //value to give to it
+	int turns; //for how many turns
+	int casterOptions; //whether the constraint depends on its caster being alive
+	try //check the input
+    {
+		constraintID=args.at(0);
+		value=args.at(1);
+		turns=args.at(2);
+		casterOptions=args.at(3);
+		if (constraintID<0 or constraintID>=C_CONSTRAINTS_COUNT or turns<0)
+			throw std::out_of_range("");
+	}
+	catch (std::out_of_range)
+	{
+		//NETWORK: INPUT_ERROR
+		return;
+	}
+
+	switch (casterOptions)
+	{
+		case IF_CASTER_ALIVE:
+			_constraints.setConstraint(constraintID, value, turns, dynamic_cast<const Creature*>(getLastCaster()));
+			break;
+		default:
+			_constraints.setConstraint(constraintID, value, turns);
+	}
+}
+
 void Player::cardDeckToHand(int amount)
 {
 	if(not _cardDeck.empty() and amount>0)
@@ -299,7 +431,6 @@ void Player::cardDeckToHand(int amount)
 
 void Player::cardHandToBoard(int handIndex)
 {
-	// TODO: treat properly case of handIndex being out of range
 	const auto& handIt = std::find(_cardHand.begin(), _cardHand.end(), _cardHand[handIndex]);
 	_cardBoard.push_back(dynamic_cast<Creature*>(_cardHand.at(handIndex)));
 	_cardBoard.back()->movedToBoard();
@@ -310,7 +441,6 @@ void Player::cardHandToBoard(int handIndex)
 
 void Player::cardHandToBin(int handIndex)
 {
-	// TODO: treat properly case of handIndex being out of range
 	const auto& handIt = std::find(_cardHand.begin(), _cardHand.end(), _cardHand[handIndex]);
 	_cardBin.push_back(_cardHand.at(handIndex));
 	_cardHand.erase(handIt);
@@ -372,12 +502,4 @@ Card* Player::cardExchangeFromHand(Card* givenCard, int handIndex)
 	//NETWORK: HAND_CHANGED
 	//NETWORK: CARD_EXCHANGED
 	return stolen;
-}
-
-void Player::setTeamConstraint(const Card* usedCard, const EffectParamsCollection& effectArgs)
-{
-    int constraintID = effectArgs.front();
-    int value = effectArgs.at(1);
-    int turns = effectArgs.at(2);
-	_teamConstraints.setConstraint(constraintID, value, turns, dynamic_cast<const Creature*>(usedCard));
 }

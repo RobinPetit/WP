@@ -102,8 +102,11 @@ void Creature::receiveAttack(Creature& attacker, int attack, int forced, int loo
 }
 
 /*--------------------------- GETTERS FOR EFFECTS */
-void Creature::applyEffect(int method, const EffectParamsCollection& effectArgs)
+void Creature::applyEffect(EffectParamsCollection effectArgs)
 {
+	int method = effectArgs.front(); //what method is used
+	effectArgs.erase(effectArgs.begin());
+
 	_effectMethods[method](*this, effectArgs);
 }
 
