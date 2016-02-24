@@ -25,6 +25,7 @@ public:
 	}
 	std::vector<Deck> getDecks(const int userId);
 	CardsCollection getCardsCollection(const int userId);
+	Ladder getLadder();
 
 	virtual ~ServerDatabase();
 
@@ -45,7 +46,7 @@ private:
 	// `constexpr std::array::size_type size() const;`
 	// -> I consider this 4 as the definition of the variable, so it is not a magic number
 	// -> future uses have to be _statements.size() -> 4 is writed only one time
-	StatementsList<6> _statements
+	StatementsList<7> _statements
 	{
 		{
 			Statement {
@@ -80,6 +81,13 @@ private:
 				"FROM GivenCard "
 				"WHERE owner == ?1 "
 				"ORDER BY card;"
+			},
+			Statement {
+				&_ladderStmt,
+				"SELECT login, victories, defeats "
+				"FROM Account "
+				"ORDER BY CAST(victories AS REAL)/defeats DESC, victories DESC, givingup "
+				"LIMIT ?1;"
 			}
 		}
 	};

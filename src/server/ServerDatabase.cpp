@@ -90,6 +90,23 @@ CardsCollection ServerDatabase::getCardsCollection(const int userId)
 	return cards;
 }
 
+Ladder ServerDatabase::getLadder()
+{
+	sqlite3_reset(_ladderStmt);
+	sqlite3_bind_int(_ladderStmt, 1, ladderSize);
+
+	Ladder ladder;
+
+	for(int i = 0; i < ladder.size() && sqliteThrowExcept(sqlite3_step(_ladderStmt)) == SQLITE_ROW; ++i)
+	{
+		ladder[i].name = reinterpret_cast<const char *>(sqlite3_column_text(_ladderStmt, 0));
+		ladder[i].victories = sqlite3_column_int(_ladderStmt, 1);
+		ladder[i].defeats = sqlite3_column_int(_ladderStmt, 2);
+	}
+
+	return ladder;
+}
+
 FriendsList ServerDatabase::getAnyFriendsList(const int user, sqlite3_stmt * stmt)
 {
 	// TODO: cache - size of result
