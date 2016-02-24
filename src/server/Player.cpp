@@ -3,6 +3,7 @@
 #include "server/Board.hpp"
 #include "server/Creature.hpp"
 #include "common/sockets/TransferType.hpp"
+#include "common/sockets/PacketOverload.hpp"
 // std-C++ headers
 #include <algorithm>
 // SFML headers
@@ -502,7 +503,7 @@ void Player::cardDeckToHand(int amount)
 		//NETWORK: DECK_EMPTY
 	}
 	//NETWORK: DECK_CHANGED
-	//NETWORK: HAND_CHANGED
+	sendHandState();
 }
 
 void Player::cardHandToBoard(int handIndex)
@@ -511,8 +512,8 @@ void Player::cardHandToBoard(int handIndex)
 	_cardBoard.push_back(dynamic_cast<Creature*>(_cardHand.at(handIndex)));
 	_cardBoard.back()->movedToBoard();
 	_cardHand.erase(handIt);
-	//NETWORK: HAND_CHANGED
-	//NETWORK: BOARD_CHANGED
+	sendHandState();
+	sendBoardState();
 }
 
 void Player::cardHandToBin(int handIndex)
@@ -520,8 +521,8 @@ void Player::cardHandToBin(int handIndex)
 	const auto& handIt = std::find(_cardHand.begin(), _cardHand.end(), _cardHand[handIndex]);
 	_cardBin.push_back(_cardHand.at(handIndex));
 	_cardHand.erase(handIt);
-	//NETWORK: HAND_CHANGED
-	//NETWORK: BIN_CHANGED
+	sendHandState();
+	sendGraveyardState();
 }
 
 void Player::cardBoardToBin(int boardIndex)
@@ -530,8 +531,8 @@ void Player::cardBoardToBin(int boardIndex)
 	_cardBoard.at(boardIndex)->removedFromBoard();
 	_cardBin.push_back(_cardBoard.at(boardIndex));
 	_cardBoard.erase(boardIt);
-	//NETWORK: BOARD_CHANGED
-	//NETWORK: BIN_CHANGED
+	sendBoardState();
+	sendGraveyardState();
 }
 
 void Player::cardBinToHand(int binIndex)
@@ -539,14 +540,14 @@ void Player::cardBinToHand(int binIndex)
 	const auto& binIt = std::find(_cardBin.begin(), _cardBin.end(), _cardBin[binIndex]);
 	_cardHand.push_back(_cardBin.at(binIndex));
 	_cardBin.erase(binIt);
-	//NETWORK: BIN_CHANGED
-	//NETWORK: HAND_CHANGED
+	sendGraveyardState();
+	sendHandState();
 }
 
 void Player::cardAddToHand(Card* givenCard)
 {
 	_cardHand.push_back(givenCard);
-	//NETWORK: HAND_CHANGED
+	sendHandState();
 	//NETWORK: CARD_WON
 }
 
@@ -558,7 +559,7 @@ Card* Player::cardRemoveFromHand()
 	Card* stolenCard = _cardHand[handIndex];
 	const auto& handIt = std::find(_cardHand.begin(), _cardHand.end(), _cardHand[handIndex]);
 	_cardHand.erase(handIt);
-	//NETWORK: HAND_CHANGED
+	sendHandState();
 	//NETWORK: CARD_STOLEN
 	return stolenCard;
 }
@@ -575,7 +576,35 @@ Card* Player::cardExchangeFromHand(Card* givenCard, int handIndex)
 		return nullptr;
 	Card* stolen = _cardHand[handIndex];
 	_cardHand.at(handIndex) = givenCard;
-	//NETWORK: HAND_CHANGED
+	sendHandState();
 	//NETWORK: CARD_EXCHANGED
 	return stolen;
+}
+
+void Player::sendHandState()
+{
+	sendIDsFromVector(TransferType::GAME_HAND_UPDATED, _cardHand);
+}
+
+void Player::sendBoardState()
+{
+	sendIDsFromVector(TransferType::GAME_BOARD_UPDATED, _cardBoard);
+}
+
+void Player::sendGraveyardState()
+{
+	sendIDsFromVector(TransferType::GAME_GRAVEYARD_UPDATED, _cardBin);
+}
+
+// use a template to handle both Card and Creature pointers
+template <typename CardType>
+void Player::sendIDsFromVector(TransferType type, const std::vector<CardType *>& vect)
+{
+	sf::Packet packet;
+	packet << type;
+	std::vector<sf::Uint32> cardIds{vect.size()};
+	for(typename std::vector<CardType *>::size_type i{0}; i < vect.size(); ++i)
+		cardIds[i] = vect[i]->getID();
+	packet << cardIds;
+	_specialSocketToClient.send(packet);
 }

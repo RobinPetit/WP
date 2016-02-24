@@ -21,6 +21,7 @@ public:
 	/// Getters
 	int getCost();
 	std::vector<EffectParamsCollection> getEffects();
+	int getID();
 
 
 	/// Methods
