@@ -30,10 +30,11 @@ class GameState : public AbstractState
 
 		void begin();
 		void startTurn();
-		void updateData(int);
+		void updateData(int,unsigned);
 
 		///Those methods can be used for effects
 		void changeHealth(int);
+		void changeOppoHealth(int);
 		void changeEnergy(int);
 
 	private:
