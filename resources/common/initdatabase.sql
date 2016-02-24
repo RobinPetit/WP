@@ -251,6 +251,8 @@ CREATE TABLE FriendRequest (
     UNIQUE(from_, to_)
 );
 
+CREATE INDEX FriendRequestTo ON FriendRequest(to_);
+
 SELECT "Friends/Triggers (requests)";
 CREATE TRIGGER avoidAlreadyFriendRequest
     BEFORE INSERT ON FriendRequest
