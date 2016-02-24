@@ -35,6 +35,78 @@ std::string ServerDatabase::getLogin(const int userId)
 	return reinterpret_cast<const char *>(sqlite3_column_text(_loginStmt, 0));
 }
 
+std::vector<Deck> ServerDatabase::getDecks(const int userId)
+{
+	sqlite3_reset(_decksStmt);
+	sqlite3_bind_int(_decksStmt, 1, userId);
+
+	std::vector<Deck> decks;
+
+	while(sqliteThrowExcept(sqlite3_step(_decksStmt)) == SQLITE_ROW)
+	{
+		decks.emplace_back(Deck
+		{
+			reinterpret_cast<const char *>(sqlite3_column_text(_decksStmt, 0)),
+			{
+				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 1)),
+				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 2)),
+				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 3)),
+				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 4)),
+				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 5)),
+				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 6)),
+				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 7)),
+				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 8)),
+				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 9)),
+				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 10)),
+				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 11)),
+				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 12)),
+				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 13)),
+				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 14)),
+				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 15)),
+				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 16)),
+				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 17)),
+				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 18)),
+				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 19)),
+				static_cast<Card::ID>(sqlite3_column_int(_decksStmt, 20))
+			}
+		});
+	}
+
+	return decks;
+}
+
+CardsCollection ServerDatabase::getCardsCollection(const int userId)
+{
+	sqlite3_reset(_cardsCollectionStmt);
+	sqlite3_bind_int(_cardsCollectionStmt, 1, userId);
+
+	CardsCollection cards;
+
+	while(sqliteThrowExcept(sqlite3_step(_cardsCollectionStmt)) == SQLITE_ROW)
+	{
+		cards.addCard(sqlite3_column_int(_cardsCollectionStmt, 0));
+	}
+
+	return cards;
+}
+
+Ladder ServerDatabase::getLadder()
+{
+	sqlite3_reset(_ladderStmt);
+	sqlite3_bind_int(_ladderStmt, 1, ladderSize);
+
+	Ladder ladder;
+
+	for(int i = 0; i < ladder.size() && sqliteThrowExcept(sqlite3_step(_ladderStmt)) == SQLITE_ROW; ++i)
+	{
+		ladder[i].name = reinterpret_cast<const char *>(sqlite3_column_text(_ladderStmt, 0));
+		ladder[i].victories = sqlite3_column_int(_ladderStmt, 1);
+		ladder[i].defeats = sqlite3_column_int(_ladderStmt, 2);
+	}
+
+	return ladder;
+}
+
 FriendsList ServerDatabase::getAnyFriendsList(const int user, sqlite3_stmt * stmt)
 {
 	// TODO: cache - size of result

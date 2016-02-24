@@ -1,6 +1,7 @@
 -- WARNING: run this script reset database
 -- run with: sqlite3 :memory: ".read resources/common/initdatabase.sql"
 
+.header off
 .log stderr
 .trace /tmp/WP_initdatabase.log
 .nullvalue NULL
@@ -118,12 +119,12 @@ CREATE TABLE Account (
     -- another way to store cards is to use another table: GivenCard
 );
 
-CREATE TABLE GivenCard (
+CREATE TABLE GivenCard ( -- 20 first cards are not stored (everyone own its)
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    card INTEGER REFERENCES Card,
-    owner INTEGER REFERENCES Account,
-    counter INTEGER CHECK(counter > 0), -- TODO
-    UNIQUE(card, owner)
+    card INTEGER NOT NULL REFERENCES Card,
+    owner INTEGER NOT NULL REFERENCES Account
+    -- counter INTEGER NOT NULL DEFAULT 1 , -- CHECK(counter > 0) 
+    -- UNIQUE(card, owner)
 );
 
 CREATE INDEX givenCardOwner ON givenCard(owner);
@@ -297,10 +298,17 @@ CREATE TRIGGER confirmSymmetricalFriendRequest
     FOR EACH ROW
     WHEN(SELECT 1 FROM FriendRequest WHERE (from_ = NEW.to_ AND to_ = NEW.from_))
     BEGIN
-        DELETE FROM FriendRequest WHERE (from_ = NEW.from_ AND to_ = NEW.to_); -- SQLite do not support INSTEAD OF on tables
-        DELETE FROM FriendRequest WHERE (from_ = NEW.to_ AND to_ = NEW.from_);
         INSERT INTO Friend VALUES(NEW.from_, NEW.to_);
     END;
+
+CREATE TRIGGER addFriend
+    AFTER INSERT ON Friend
+    FOR EACH ROW
+    BEGIN
+        DELETE FROM FriendRequest WHERE (from_ = NEW.first AND to_ = NEW.second); -- SQLite do not support INSTEAD OF on tables
+        DELETE FROM FriendRequest WHERE (from_ = NEW.second AND to_ = NEW.first);
+    END;
+
 
 END;
 SELECT '-------';
@@ -362,10 +370,14 @@ INSERT INTO FriendRequest
     VALUES(1,2); -- testing to testting2
 INSERT INTO FriendRequest
     VALUES(2,1); -- testing2 to testing -> confirm
-INSERT INTO Friend
+INSERT INTO FriendRequest(from_, to_)
     VALUES(
         (SELECT id FROM Account WHERE login='Alice'),
         (SELECT id FROM Account WHERE login='Bob'));
+INSERT INTO Friend
+    VALUES(
+        (SELECT id FROM Account WHERE login='Alice'),
+        (SELECT id FROM Account WHERE login='Bob')); -- -> remove request
 
 SELECT "Create testing friend requests";
 INSERT INTO FriendRequest(from_, to_)
@@ -375,12 +387,19 @@ INSERT INTO FriendRequest(from_, to_)
 
 SELECT "Give cards";
 INSERT INTO GivenCard(card,owner)
-    VALUES(1,1), (2,1), (3,1), (4,1), (5,1), (6,1), (7,1), (8,1), (9,1), (10,1),
-        (11,1), (12,1), (13,1), (14,1), (15,1), (16,1), (17,1), (18,1), (19,1), (20,1);
+    VALUES(15,1), (16,1);
 
 SELECT "Create deck";
 INSERT INTO Deck VALUES
-    (1, 'Test', 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20); 
+    (1, 'Test', 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 1, 16, 17, 18, 19, 20); 
+
+SELECT "Update victories/defeats";
+UPDATE Account SET victories = 4 WHERE id == 1 OR id == 3;
+UPDATE Account SET defeats = 4 WHERE id == 1 OR id == 4;
+UPDATE Account SET victories = 3 WHERE id == 2 OR id == 4;
+UPDATE Account SET defeats = 2 WHERE id == 2 OR id == 5;
+UPDATE Account SET defeats = 1 WHERE id == 3;
+UPDATE Account SET victories = 2 WHERE id == 5;
 
 END;
 SELECT '-------';
@@ -415,3 +434,4 @@ CREATE VIEW SpellCard
         WHERE Monster.health IS NULL;
 
 .shell rm -f resources/client/cards.sql
+
