@@ -298,10 +298,17 @@ CREATE TRIGGER confirmSymmetricalFriendRequest
     FOR EACH ROW
     WHEN(SELECT 1 FROM FriendRequest WHERE (from_ = NEW.to_ AND to_ = NEW.from_))
     BEGIN
-        DELETE FROM FriendRequest WHERE (from_ = NEW.from_ AND to_ = NEW.to_); -- SQLite do not support INSTEAD OF on tables
-        DELETE FROM FriendRequest WHERE (from_ = NEW.to_ AND to_ = NEW.from_);
         INSERT INTO Friend VALUES(NEW.from_, NEW.to_);
     END;
+
+CREATE TRIGGER addFriend
+    AFTER INSERT ON Friend
+    FOR EACH ROW
+    BEGIN
+        DELETE FROM FriendRequest WHERE (from_ = NEW.first AND to_ = NEW.second); -- SQLite do not support INSTEAD OF on tables
+        DELETE FROM FriendRequest WHERE (from_ = NEW.second AND to_ = NEW.first);
+    END;
+
 
 END;
 SELECT '-------';
@@ -363,10 +370,14 @@ INSERT INTO FriendRequest
     VALUES(1,2); -- testing to testting2
 INSERT INTO FriendRequest
     VALUES(2,1); -- testing2 to testing -> confirm
-INSERT INTO Friend
+INSERT INTO FriendRequest(from_, to_)
     VALUES(
         (SELECT id FROM Account WHERE login='Alice'),
         (SELECT id FROM Account WHERE login='Bob'));
+INSERT INTO Friend
+    VALUES(
+        (SELECT id FROM Account WHERE login='Alice'),
+        (SELECT id FROM Account WHERE login='Bob')); -- -> remove request
 
 SELECT "Create testing friend requests";
 INSERT INTO FriendRequest(from_, to_)
