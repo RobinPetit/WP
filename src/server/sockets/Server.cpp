@@ -395,27 +395,33 @@ void Server::handleFriendshipRequestResponse(const _iterator& it, sf::Packet& tr
 {
 	bool accepted;
 	std::string name;
-	transmission >> name >> accepted;
-	const auto& asker = _clients.find(name);
-	/// \TODO check if the other user is in the requests list
-	bool otherUserInRequestList{true};
-	if(not otherUserInRequestList)
+	transmission >> askerName >> accepted;
+	transmission.clear();
+	try
 	{
-		sf::Packet response;
-		response << TransferType::NOT_EXISTING_FRIEND;
-		it->second.socket->send(response);
-		return;
+		const Database::userId askerId{_database.getUserId(askerName)};
+		const Database::userId askedId{_database.getUserId(it->first)};
+		if(not otherUserInRequestList)
+		{
+			transmission << TransferType::NOT_EXISTING_FRIEND;
+			throw std::runtime_error(it->first + " responded to a friend request of an unexisting player.");
+		}
+		if(accepted)
+			/* _database.addFriend(askerId, askedId) */;
+		else
+			/* _database.removeFriendshipRequest(askerId, askedId) */;
+
+		// acknowledge to client
+		transmission << TransferType::PLAYER_ACKNOWLEDGE;
 	}
-	/// \TODO remove the other user from the requests list of the user it
-	if(accepted)
+	catch(const std::runtime_error& e)
 	{
-		/// \TODO add the other user to the friend list of the user it
-		/// \TODO add the user it to the friend list of the other user
+		// If the packet is empty, then ServerDatabase::getUserId threw
+		if(transmission.getDataSize() == 0)
+			transmission << TransferType::NOT_EXISTING_FRIEND;
+		std::cout << "Error: " << e.what() << "\n";
 	}
-	// acknowledge to client
-	sf::Packet response;
-	response << TransferType::PLAYER_ACKNOWLEDGE;
-	it->second.socket->send(response);
+	it->second.socket->send(transmission);
 }
 
 void Server::sendFriendshipRequests(const _iterator& it)
