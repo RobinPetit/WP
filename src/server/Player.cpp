@@ -199,7 +199,7 @@ void Player::applyEffectToCreature(const Card* usedCard, EffectParamsCollection 
 	_lastCasterCard = usedCard; //remember last used card
 	int boardIndex;
 	if (randIndex)
-		boardIndex = rand() % _cardBoard.size();
+		boardIndex = std::uniform_int_distribution<int>(0, _cardBoard.size())(_engine);
 	else
 	{
 		try
