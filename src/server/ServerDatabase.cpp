@@ -11,17 +11,6 @@ ServerDatabase::ServerDatabase(std::string filename) : Database(filename)
 {
 	for(int i = 0; i < _statements.size(); ++i)
 		prepareStmt(_statements[i]);
-
-#ifndef NDEBUG
-// Unit tests still to do
-	std::cout << "DEBUG" << std::endl;
-
-	assert(getFriendsList(1).front().name == "testing2");
-	assert(getUserId("testing") == 1);
-	assert(getUserId("testing2") == 2);
-	assert(getLogin(1) == "testing");
-	assert(getLogin(2) == "testing2");
-#endif
 }
 
 int ServerDatabase::getUserId(const std::string login)
@@ -46,19 +35,19 @@ std::string ServerDatabase::getLogin(const int userId)
 	return reinterpret_cast<const char *>(sqlite3_column_text(_loginStmt, 0));
 }
 
-FriendsList ServerDatabase::getFriendsList(const int user)
+FriendsList ServerDatabase::getAnyFriendsList(const int user, sqlite3_stmt * stmt)
 {
 	// TODO: cache - size of result
-	sqlite3_reset(_friendListStmt);
-	sqlite3_bind_int(_friendListStmt, 1, user);
+	sqlite3_reset(stmt);
+	sqlite3_bind_int(stmt, 1, user);
 
 	FriendsList friends;
 
-	while(sqliteThrowExcept(sqlite3_step(_friendListStmt)) == SQLITE_ROW)
+	while(sqliteThrowExcept(sqlite3_step(stmt)) == SQLITE_ROW)
 	{
-		friends.emplace_back(Friend {sqlite3_column_int(_friendListStmt, 0), // id
-		                              reinterpret_cast<const char *>(sqlite3_column_text(_friendListStmt, 1)) // name
-		                             });
+		friends.emplace_back(Friend {sqlite3_column_int(stmt, 0), // id
+		                             reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1)) // name
+		                            });
 	}
 
 	return friends;
@@ -68,10 +57,11 @@ ServerDatabase::~ServerDatabase()
 {
 	// TODO: move it to Database::~Database
 	int errcode;
+
 	for(int i = 0; i < _statements.size(); ++i)
 		if((errcode = sqlite3_finalize(*_statements[i].statement())) != SQLITE_OK)
 			std::cerr << "ERROR while finalizing statement "
-			          << i+1 << " of " << _statements.size()
+			          << i + 1 << " of " << _statements.size()
 			          << ": " << sqlite3_errstr(errcode)
 			          << std::endl;
 }
