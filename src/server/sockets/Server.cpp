@@ -106,7 +106,7 @@ void Server::connectUser(sf::Packet& connectionPacket, std::unique_ptr<sf::TcpSo
 			// Send a response indicating the error
 			client->send(connectionPacket);
 
-			std::cout << "Error: " << e.what() << "\n";
+			std::cout << "connectUser error: " << e.what() << "\n";
 			failedToConnect = true;
 
 			// Receive the new try of the client
@@ -115,7 +115,7 @@ void Server::connectUser(sf::Packet& connectionPacket, std::unique_ptr<sf::TcpSo
 			connectionPacket >> type;
 			if(type != TransferType::GAME_CONNECTION)
 			{
-				std::cout << "Error: wrong packet transmitted after failed connection (expecting another connection packet).\n";
+				std::cout << "connectUser error: wrong packet transmitted after failed connection (expecting another connection packet).\n";
 				// The socket will automatically be closed, thanks to smart pointers
 				return;
 			}
@@ -157,6 +157,7 @@ void Server::registerUser(sf::Packet& registeringPacket, std::unique_ptr<sf::Tcp
 			if(registeringPacket.getDataSize() == 0)
 				registeringPacket << TransferType::GAME_FAILED_TO_REGISTER;
 
+			std::cout << "registerUser error: " << e.what() << "\n";
 			failedToRegister = true;
 
 			// Send a response indicating the error
@@ -168,7 +169,7 @@ void Server::registerUser(sf::Packet& registeringPacket, std::unique_ptr<sf::Tcp
 			registeringPacket >> type;
 			if(type != TransferType::GAME_REGISTERING)
 			{
-				std::cout << "Error: wrong packet transmitted after failed registering (expecting another registering packet).\n";
+				std::cout << "registerUser error: wrong packet transmitted after failed registering (expecting another registering packet).\n";
 				return;
 			}
 		}
@@ -418,7 +419,7 @@ void Server::handleFriendshipRequestResponse(const _iterator& it, sf::Packet& tr
 		// If the packet is empty, then ServerDatabase::getUserId threw
 		if(transmission.getDataSize() == 0)
 			transmission << TransferType::NOT_EXISTING_FRIEND;
-		std::cout << "Error: " << e.what() << "\n";
+		std::cout << "handleFriendshipRequestResponse error: " << e.what() << "\n";
 	}
 	it->second.socket->send(transmission);
 }
@@ -438,7 +439,7 @@ void Server::sendFriendshipRequests(const _iterator& it)
 	}
 	catch(const std::runtime_error& e)
 	{
-		std::cout << "sendFriendshipRequests() error: " << e.what() << "\n";
+		std::cout << "sendFriendshipRequests error: " << e.what() << "\n";
 		response << FriendsList();
 	}
 	it->second.socket->send(response);
@@ -456,7 +457,7 @@ void Server::sendFriends(const _iterator& it)
 	}
 	catch(const std::runtime_error& e)
 	{
-		std::cout << "sendFriendshipRequests() error: " << e.what() << "\n";
+		std::cout << "sendFriends error: " << e.what() << "\n";
 		response << FriendsList();
 	}
 	it->second.socket->send(response);
