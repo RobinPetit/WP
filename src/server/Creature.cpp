@@ -39,6 +39,10 @@ void Creature::movedToBoard()
 
 void Creature::removedFromBoard()
 {
+	//Creature's death-based constraints
+	changeAttack({getConstraint(CC_DEATH_ATTACK_CHANGE)});
+	changeHealth({getConstraint(CC_DEATH_HEALTH_CHANGE)});
+	changeShield({getConstraint(CC_DEATH_ATTACK_CHANGE)});
 	_isOnBoard = false;
 }
 
@@ -51,10 +55,10 @@ bool Creature::isOnBoard() const
 /*--------------------------- PLAYER INTERFACE */
 void Creature::enterTurn()
 {
-	//Creature's turn-based rules
-	changeAttack({_owner->getCreatureConstraint(*this, CC_TURN_ATTACK_CHANGE)});
-	changeHealth({_owner->getCreatureConstraint(*this, CC_TURN_HEALTH_CHANGE)});
-	changeShield({_owner->getCreatureConstraint(*this, CC_TURN_ATTACK_CHANGE)});
+	//Creature's turn-based constraints
+	changeAttack({getConstraint(CC_TURN_ATTACK_CHANGE)});
+	changeHealth({getConstraint(CC_TURN_HEALTH_CHANGE)});
+	changeShield({getConstraint(CC_TURN_ATTACK_CHANGE)});
 }
 
 void Creature::leaveTurn()
@@ -64,10 +68,18 @@ void Creature::leaveTurn()
 
 void Creature::makeAttack(Creature& victim)
 {
-	int attackForced = _owner->getCreatureConstraint(*this, CC_TEMP_FORCE_ATTACKS);
-	int attackBackfires = _owner->getCreatureConstraint(*this, CC_TEMP_BACKFIRE_ATTACKS);
+	int isParalyzed = getConstraint(CC_TEMP_IS_PARALYZED);
+	if (isParalyzed==1) //Creature can not be used
+		return;
 
-	if (attackBackfires==1)
+	int attackDisabled = getConstraint(CC_TEMP_DISABLE_ATTACKS);
+	if (attackDisabled==1) //Creature can not attack
+		return;
+
+	int attackForced = getConstraint(CC_TEMP_FORCE_ATTACKS);
+
+	int attackBackfires = getConstraint(CC_TEMP_BACKFIRE_ATTACKS);
+	if (attackBackfires==1)	//Attack turns agains the creature
         changeHealth({_attack, attackForced});
 	else
 		victim.receiveAttack(*this, _attack, attackForced);
@@ -78,11 +90,11 @@ void Creature::receiveAttack(Creature& attacker, int attack, int forced, int loo
 	if (loopCount>=2) //If both creatures mirror attacks, no one is damaged
 		return;
 
-    int attackMirrored = _owner->getCreatureConstraint(*this, CC_TEMP_MIRROR_ATTACKS);
+    int attackMirrored = getConstraint(CC_TEMP_MIRROR_ATTACKS);
     if (attackMirrored==1) //If attacks are mirrored, we send it back
         attacker.receiveAttack(*this, attack, forced, loopCount+1);
 
-	int attackBlocked = _owner->getCreatureConstraint(*this, CC_TEMP_BLOCK_ATTACKS);
+	int attackBlocked = getConstraint(CC_TEMP_BLOCK_ATTACKS);
 	if (attackBlocked==1) //If attacks are blocked
 		return;
 
@@ -100,9 +112,14 @@ int Creature::getAttack()
 	return _attack;
 }
 
-int Creature::getConstraint(int constraintID) const
+int Creature::getPersonalConstraint(int constraintID) const
 {
     return _constraints.getConstraint(constraintID);
+}
+
+int Creature::getConstraint(int constraintID) const
+{
+	return _owner->getCreatureConstraint(*this, constraintID);
 }
 
 /*--------------------------- EFFECTS */

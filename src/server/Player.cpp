@@ -90,7 +90,7 @@ void Player::useCard(int handIndex)
 {
 	//TODO: verify that handIndex is not out_of_range
 
-	if (_constraints.getConstraint(PC_LIMIT_CARD_USE) == _turnData.cardsUsed)
+	if (_constraints.getConstraint(PC_TEMP_CARD_USE_LIMIT) == _turnData.cardsUsed)
 	{
 		//NETWORK: USE_CARDS_LIMIT
 		return;
@@ -101,7 +101,7 @@ void Player::useCard(int handIndex)
 	//TODO: use typeinfo ?
 	if (usedCard->isCreature())
 	{
-		if (_constraints.getConstraint(PC_LIMIT_CREATURE_PLACING) == _turnData.creaturesPlaced)
+		if (_constraints.getConstraint(PC_TEMP_CREATURE_PLACING_LIMIT) == _turnData.creaturesPlaced)
 		{
 			//NETWORK: PLACE_CREATURES_LIMIT
 			return;
@@ -116,7 +116,7 @@ void Player::useCard(int handIndex)
 	// If card is a spell
 	else
 	{
-		if (_constraints.getConstraint(PC_LIMIT_SPELL_CALL) == _turnData.spellCalls)
+		if (_constraints.getConstraint(PC_TEMP_SPELL_CALL_LIMIT) == _turnData.spellCalls)
 		{
 			//NETWORK: CALL_SPELLS_LIMIT
 			return;
@@ -131,7 +131,7 @@ void Player::useCard(int handIndex)
 
 void Player::attackWithCreature(int attackerIndex, int victimIndex)
 {
-	if (_constraints.getConstraint(PC_LIMIT_CREATURE_ATTACK) == _turnData.creatureAttacks)
+	if (_constraints.getConstraint(PC_TEMP_CREATURE_ATTACK_LIMIT) == _turnData.creatureAttacks)
 	{
 		//NETWORK: CREATURE_ATTACKS_LIMIT
 		return;
@@ -182,9 +182,9 @@ void Player::applyEffectToCreatures(const Card* usedCard, int method, const Effe
 	}
 }
 
-int Player::getCreatureConstraint(Creature& subject, int constraintID)
+int Player::getCreatureConstraint(const Creature& subject, int constraintID)
 {
-	int creatureValue = subject.getConstraint(constraintID);
+	int creatureValue = subject.getPersonalConstraint(constraintID);
 	return _teamConstraints.getOverallConstraint(constraintID, creatureValue);
 }
 

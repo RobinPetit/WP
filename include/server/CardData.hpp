@@ -49,11 +49,11 @@ enum PLAYER_CONSTRAINTS : int
 	PC_TURN_HEALTH_CHANGE,			//amount of health points added each turn
 	PC_TURN_HEALTH_CHANGE_DECK_EMPTY,	//amount of health points taken each turn when deck is empty
 	//passive
-	PC_LIMIT_CARD_USE,				//limit for using cards
-	PC_LIMIT_SPELL_CALL,			//limit for calling spells
-	PC_LIMIT_CREATURE_ATTACK,		//limit for attacking with creatures
-	PC_LIMIT_CREATURE_PLACING,		//limit for placing creatures on board
-	PC_LIMIT_CREATURE_BOARD,		//limit for number of creatures on the board
+	PC_TEMP_CARD_USE_LIMIT,				//limit for using cards
+	PC_TEMP_SPELL_CALL_LIMIT,			//limit for calling spells
+	PC_TEMP_CREATURE_ATTACK_LIMIT,		//limit for attacking with creatures
+	PC_TEMP_CREATURE_PLACING_LIMIT,		//limit for placing creatures on board
+	PC_TEMP_CREATURE_BOARD_LIMIT,		//limit for number of creatures on the board
 	//count
 	P_CONSTRAINTS_COUNT
 };
@@ -86,18 +86,19 @@ enum CREATURE_CONSTRAINTS : int
 	CC_TEMP_BLOCK_ATTACKS,			// Block the next X attacks
 	CC_TEMP_MIRROR_ATTACKS,			// Return the next X attacks to sender
 	CC_TEMP_BACKFIRE_ATTACKS,		// The creature attacks turn against itself
-	CC_TEMP_IS_PARALYZED,			// Can not be used
+	CC_TEMP_DISABLE_ATTACKS,		// The creature can not attack
+	CC_TEMP_IS_PARALYZED,			// The creature can not be used, its effects are ignored
 	//on creature death
-	CC_DEATH_TEAM_ATTACK_CHANGE,
-	CC_DEATH_TEAM_HEALTH_CHANGE,
-	CC_DEATH_TEAM_SHIELD_CHANGE,
+	CC_DEATH_ATTACK_CHANGE,
+	CC_DEATH_HEALTH_CHANGE,
+	CC_DEATH_SHIELD_CHANGE,
 	//count
 	C_CONSTRAINTS_COUNT
 };
 
 enum CONSTRAINT_CONDITIONS : int
 {
-	IF_CASTER_ALIVE
+	IF_CASTER_ALIVE,	//Constraint applies only if CREATURE who cast it is alive AND not paralyzed
 };
 
 /// Types used for card creation:
@@ -130,15 +131,16 @@ enum ShieldType : int
 	SHIELD_LEGENDARY	//creature attacks don't go through
 };
 
+constexpr int UNLIMITED_TURNS=100;
+
 ///How to define an effect:
 typedef std::vector<int> EffectParamsCollection;
 //In the following order:
-//EFFECT SUBJECT
-//if subject is identified by index (INDX at the end), SUBJECT INDEX
+//EFFECT SUBJECT [+ SUBJECT INDEX] if subject is identified by index (INDX at the end)
 //EFFECT ID
 //if effect is SET_CONSTRAINT:
 //	CONSTRAINT ID
-//	followed by VALUE, TURNS (use 100 for unlimited), and eventually IF_CASTER_ALIVE option
+//	followed by VALUE, TURNS (or UNLIMITED_TURNS), and eventually IF_CASTER_ALIVE option
 //if effect is something else:
 //	ALL ARGUMENTS (no more than 4)
 

@@ -84,7 +84,7 @@ int Constraints::getFirstTimedValue(int constraintID) const
 	std::vector<ConstraintTimedValue>& vect = _timedValues[constraintID]; //value, turns left, caster
 	for (auto vectIt=vect.begin(); vectIt!=vect.end();)
 	{
-		//if the caster is not remembered, or is on the board and active
+		//if the caster is not remembered, or is on the board
 		if (vectIt->caster==nullptr or vectIt->caster->isOnBoard() or vectIt->caster->getConstraint(CC_TEMP_IS_PARALYZED)==0)
             return getValue(constraintID, vectIt - vect.begin());
 

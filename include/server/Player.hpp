@@ -48,7 +48,7 @@ public:
 	void applyEffectToCreature(Creature* casterAndSubject, int method, const EffectParamsCollection& effectArgs);
 	void applyEffectToCreature(const Card* usedCard, int boardIndex, int method, const EffectParamsCollection& effectArgs);
 	void applyEffectToCreatures(const Card* usedCard, int method, const EffectParamsCollection& effectArgs);
-	int getCreatureConstraint(Creature& subject, int constraintIDD);
+	int getCreatureConstraint(const Creature& subject, int constraintIDD);
 	const Card* getLastCaster();
 
 private:
