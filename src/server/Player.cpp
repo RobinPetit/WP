@@ -82,8 +82,6 @@ void Player::leaveTurn()
 	//Time out player's creature's constraints
 	for (unsigned i=0; i<_cardBoard.size(); i++)
 		_cardBoard.at(i)->leaveTurn();
-
-	//NETWORK: TURN_ENDED
 }
 
 void Player::useCard(int handIndex)

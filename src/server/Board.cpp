@@ -23,9 +23,9 @@ Board::Board(Player::ID player1, Player::ID player2, sf::TcpSocket& socketPlayer
 void Board::endTurn()
 {
 	_turn++; //turn counter (for both players)
-    _activePlayer->leaveTurn();
-    std::swap(_activePlayer, _passivePlayer); //swap active and inactive
-    _activePlayer->enterTurn(_turn/2 +1); //ALWAYS call active player
+	_activePlayer->leaveTurn();
+	std::swap(_activePlayer, _passivePlayer); //swap active and inactive
+	_activePlayer->enterTurn(_turn/2 +1); //ALWAYS call active player
 }
 
 void Board::useCard(int handIndex)
@@ -82,15 +82,15 @@ void Board::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 			}
 			break;
 		case CREATURE_SELF_INDX:	//active player's creature at given index
-            {
+			{
 				int boardIndex = effectArgs.front();
 				effectArgs.erase(effectArgs.begin());
 				_activePlayer->applyEffectToCreature(usedCard, boardIndex, method, effectArgs);
-            }
-            break;
+			}
+			break;
 
 		case CREATURE_SELF_RAND:	//active player's creature at random index
-            _activePlayer->applyEffectToCreature(usedCard, -1, method, effectArgs);
+			_activePlayer->applyEffectToCreature(usedCard, -1, method, effectArgs);
 			break;
 
 		case CREATURE_SELF_TEAM:	//active player's team of creatures
