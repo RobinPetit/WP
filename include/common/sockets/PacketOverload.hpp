@@ -5,12 +5,18 @@
 #include <vector>
 // SFML headers
 #include <SFML/Network/Packet.hpp>
+// WizardPoker header
+#include "common/Database.hpp"
 
 template <typename T>
 sf::Packet& operator <<(sf::Packet& packet, const std::vector<T>& vec);
 
 template <typename T>
 sf::Packet& operator >>(sf::Packet& packet, std::vector<T>& vec);
+
+sf::Packet& operator <<(sf::Packet& packet, const Friend& userFriend);
+
+sf::Packet& operator >>(sf::Packet& packet, Friend& userFriend);
 
 
 // implementation

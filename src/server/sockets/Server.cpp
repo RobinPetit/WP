@@ -148,7 +148,7 @@ void Server::registerUser(sf::Packet& registeringPacket, std::unique_ptr<sf::Tcp
 				registeringPacket << TransferType::GAME_USERNAME_NOT_AVAILABLE;
 				throw std::runtime_error(playerName + " tried to register to the server but the name is not available.");
 			}
-			/* UNCOMMENT _database.registerUser(playerName, password); */
+			// UNCOMMENT _database.registerUser(playerName, password);
 			failedToRegister = false;
 		}
 		catch(const std::runtime_error& e)
@@ -371,14 +371,13 @@ void Server::handleFriendshipRequest(const _iterator& it, sf::Packet& transmissi
 	sf::Packet response;
 	std::string friendName;
 	transmission >> friendName;
-	const Database::userId thisId, friendId;
 	try
 	{
-		friendId = _database.getUserId(friendName);
-		thisId = _database.getUserId(it->first);
+		const Database::userId thisId{_database.getUserId(it->first)};
+		const Database::userId friendId{_database.getUserId(friendName)};
 
 		// Add the request into the database
-		// _database.addFriendRequest(thisId, friendId);
+		// UNCOMMENT _database.addFriendRequest(thisId, friendId);
 
 		// Send an acknowledgement to the user
 		response << TransferType::PLAYER_ACKNOWLEDGE;
@@ -394,14 +393,14 @@ void Server::handleFriendshipRequest(const _iterator& it, sf::Packet& transmissi
 void Server::handleFriendshipRequestResponse(const _iterator& it, sf::Packet& transmission)
 {
 	bool accepted;
-	std::string name;
+	std::string askerName;
 	transmission >> askerName >> accepted;
 	transmission.clear();
 	try
 	{
 		const Database::userId askerId{_database.getUserId(askerName)};
 		const Database::userId askedId{_database.getUserId(it->first)};
-		if(not otherUserInRequestList)
+		if(not true /* UNCOMMENT _database.hasSentRequest(askerId, askedId) */)
 		{
 			transmission << TransferType::NOT_EXISTING_FRIEND;
 			throw std::runtime_error(it->first + " responded to a friend request of an unexisting player.");
@@ -427,9 +426,17 @@ void Server::handleFriendshipRequestResponse(const _iterator& it, sf::Packet& tr
 void Server::sendFriendshipRequests(const _iterator& it)
 {
 	sf::Packet response;
-	/// \TODO get the requests list of the user it
-	std::vector<std::string> requests;
-	response << requests;
+	try
+	{
+		const Database::userId id{_database.getUserId(it->first)};
+		FriendsList requests{_database.getFriendshipRequests(id)};
+		response << requests;
+	}
+	catch(const std::runtime_error& e)
+	{
+		std::cout << "sendFriendshipRequests() error: " << e.what() << "\n";
+		response << FriendsList();
+	}
 	it->second.socket->send(response);
 }
 

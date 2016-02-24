@@ -5,6 +5,7 @@ set(SOURCES
 	"Terminal.cpp"
 	"ini/IniFile.cpp"
 	"sockets/TransferType.cpp"
+	"sockets/PacketOverload.cpp"
 	"Database.cpp"
 	)
 
