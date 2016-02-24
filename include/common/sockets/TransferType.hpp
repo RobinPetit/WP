@@ -72,11 +72,26 @@ enum class TransferType : sf::Uint32
 	/// Sent when the user wants its decks list
 	PLAYER_ASKS_DECKS_LIST,
 
+	/// Sent when the user wants to change the content of a deck
+	PLAYER_EDIT_DECK,
+
+	/// Sent when the user wants to create a deck
+	PLAYER_CREATE_DECK,
+
+	/// Sent when the user wants to delete a deck
+	PLAYER_DELETE_DECK,
+
 	/// Sent when the user wants its cards collection
 	PLAYER_ASKS_CARDS_COLLECTION,
 
 	/// Sent when the user wants the ladder
 	PLAYER_ASKS_LADDER,
+
+	/// Sent in case of success, from the server
+	ACKNOWLEDGE,
+
+	/// Sent in case of error, from the server
+	FAILURE,
 };
 
 /// Overloading of the sf::Packet operators so that a TransferType variable can be stored

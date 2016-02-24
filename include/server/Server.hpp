@@ -118,6 +118,15 @@ private:
 	/// Used when the user wants its decks list
 	void sendDecks(const _iterator& it);
 
+	/// Used when the user wants to change the content of a deck
+	void handleDeckEditing(const _iterator& it, sf::Packet& transmission);
+
+	/// Used when the user wants to create a deck
+	void handleDeckCreation(const _iterator& it, sf::Packet& transmission);
+
+	/// Used when the user wants to delete a deck
+	void handleDeckDeletion(const _iterator& it, sf::Packet& transmission);
+
 	/// Used when the user wants its cards collection
 	void sendCardsCollection(const _iterator& it);
 

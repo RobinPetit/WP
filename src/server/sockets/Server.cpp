@@ -239,6 +239,15 @@ void Server::receiveData()
 		case TransferType::PLAYER_ASKS_DECKS_LIST:
 			sendDecks(it);
 			break;
+		case TransferType::PLAYER_EDIT_DECK:
+			handleDeckEditing(it, packet);
+			break;
+		case TransferType::PLAYER_CREATE_DECK:
+			handleDeckCreation(it, packet);
+			break;
+		case TransferType::PLAYER_DELETE_DECK:
+			handleDeckDeletion(it, packet);
+			break;
 		case TransferType::PLAYER_ASKS_CARDS_COLLECTION:
 			sendCardsCollection(it);
 			break;
@@ -515,6 +524,63 @@ void Server::sendDecks(const _iterator& it)
 		response << std::vector<Deck>();
 	}
 	it->second.socket->send(response);
+}
+
+void Server::handleDeckEditing(const _iterator& it, sf::Packet& transmission)
+{
+	Deck editedDeck("dummyName");
+	transmission >> editedDeck;
+	transmission.clear();
+	try
+	{
+		const Database::userId id{_database.getUserId(it->first)};
+		// UNCOMMENT _database.editDeck(id, editedDeck);
+		transmission << TransferType::ACKNOWLEDGE;
+	}
+	catch(const std::runtime_error& e)
+	{
+		std::cout << "handleDeckEditing error: " << e.what() << "\n";
+		transmission << TransferType::FAILURE;
+	}
+	it->second.socket->send(transmission);
+}
+
+void Server::handleDeckCreation(const _iterator& it, sf::Packet& transmission)
+{
+	Deck newDeck("dummyName");
+	transmission >> newDeck;
+	transmission.clear();
+	try
+	{
+		const Database::userId id{_database.getUserId(it->first)};
+		// UNCOMMENT _database.createDeck(id, newDeck);
+		transmission << TransferType::ACKNOWLEDGE;
+	}
+	catch(const std::runtime_error& e)
+	{
+		std::cout << "handleDeckCreation error: " << e.what() << "\n";
+		transmission << TransferType::FAILURE;
+	}
+	it->second.socket->send(transmission);
+}
+
+void Server::handleDeckDeletion(const _iterator& it, sf::Packet& transmission)
+{
+	std::string deletedDeckName;
+	transmission >> deletedDeckName;
+	transmission.clear();
+	try
+	{
+		const Database::userId id{_database.getUserId(it->first)};
+		// UNCOMMENT _database.deleteDeck(id, deletedDeckName);
+		transmission << TransferType::ACKNOWLEDGE;
+	}
+	catch(const std::runtime_error& e)
+	{
+		std::cout << "handleDeckCreation error: " << e.what() << "\n";
+		transmission << TransferType::FAILURE;
+	}
+	it->second.socket->send(transmission);
 }
 
 void Server::sendCardsCollection(const _iterator& it)
