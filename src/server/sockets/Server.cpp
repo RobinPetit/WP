@@ -78,52 +78,53 @@ void Server::connectUser(sf::Packet& connectionPacket, std::unique_ptr<sf::TcpSo
 {
 	std::string playerName, password;
 	sf::Uint16 clientPort;
-	connectionPacket >> playerName >> password >> clientPort;
-
-	bool alreadyConnected{_clients.find(playerName) != _clients.end()};
-	Database::userId id;
-	auto tryToGetId = [&id, this](const std::string& name)
+	bool alreadyConnected, rightIdentifiers;
+	do
 	{
+		connectionPacket >> playerName >> password >> clientPort;
+		connectionPacket.clear();
 		try
 		{
-			id = _database.getUserId(name);
-			return true;
+			// Check if the user is not already connected
+			alreadyConnected = _clients.find(playerName) != _clients.end();
+			if(alreadyConnected)
+			{
+				connectionPacket << TransferType::GAME_ALREADY_CONNECTED;
+				throw std::runtime_error(playerName + " tried to connect to the server but is already connected.");
+			}
+
+			// Check if the ID is valid and matches the password
+			const Database::userId id{_database.getUserId(playerName)};
+			rightIdentifiers = true /* _database.areIdentifiersValid(id, password) */;
+			if(not rightIdentifiers)
+			{
+				connectionPacket << TransferType::GAME_WRONG_IDENTIFIERS;
+				throw std::runtime_error(playerName + " gives wrong identifiers when trying to connect.");
+			}
 		}
 		catch(const std::runtime_error& e)
 		{
-			false;
-		}
-	};
-	bool rightIdentifiers{tryToGetId(playerName) /* && _database.areIdentifiersValid(id, password) */};
-	while(alreadyConnected or not rightIdentifiers)
-	{
-		// Send a response indicating the error
-		connectionPacket.clear();
-		if(alreadyConnected)
-		{
-			std::cout << playerName << " tried to connect to the server but is already connected.\n";
-			connectionPacket << TransferType::GAME_ALREADY_CONNECTED;
-		}
-		else
-		{
-			std::cout << playerName << " gives wrong identifiers when trying to connect.\n";
-			connectionPacket << TransferType::GAME_WRONG_IDENTIFIERS;
-		}
-		client->send(connectionPacket);
+			// If the Database::getUserId threw an exception, then the packet is empty
+			if(connectionPacket.getDataSize() == 0)
+				connectionPacket << TransferType::GAME_WRONG_IDENTIFIERS;
 
-		// Receive the new try of the client
-		client->receive(connectionPacket);
-		TransferType type;
-		connectionPacket >> type;
-		if(type != TransferType::GAME_CONNECTION)
-		{
-			std::cout << "Error: wrong packet transmitted after failed connection (expecting another connection packet).\n";
-			return;
+			// Send a response indicating the error
+			client->send(connectionPacket);
+
+			std::cout << "Error: " << e.what() << "\n";
+
+			// Receive the new try of the client
+			client->receive(connectionPacket);
+			TransferType type;
+			connectionPacket >> type;
+			if(type != TransferType::GAME_CONNECTION)
+			{
+				std::cout << "Error: wrong packet transmitted after failed connection (expecting another connection packet).\n";
+				return;
+			}
 		}
-		connectionPacket >> playerName >> password >> clientPort;
-		alreadyConnected = _clients.find(playerName) != _clients.end();
-		rightIdentifiers = tryToGetId(playerName) /* && _database.areIdentifiersValid(id, password) */;
-	}
+	} while(alreadyConnected or not rightIdentifiers);
+
 	std::cout << "New player connected: " << playerName << std::endl;
 	sendAcknowledgement(*client);
 	// add this client to the selector so that its receivals are handled properly
