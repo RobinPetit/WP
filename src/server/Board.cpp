@@ -3,10 +3,10 @@
 // std-C++ headers
 #include <random>
 
-Board::Board(Player::ID player1, Player::ID player2, sf::TcpSocket& socketPlayer1, sf::TcpSocket& socketPlayer2)
+Board::Board(const PlayerInformations& player1, const PlayerInformations& player2)
 {
-	_activePlayer = new Player(player1, socketPlayer1);
-	_passivePlayer = new Player(player2, socketPlayer2);
+	_activePlayer = new Player(player1.id, player1.socket, player1.specialSocket);
+	_passivePlayer = new Player(player2.id, player2.socket, player2.specialSocket);
 	// We make sure players know their opponents
 	_activePlayer->setOpponent(_passivePlayer);
 	_passivePlayer->setOpponent(_activePlayer);

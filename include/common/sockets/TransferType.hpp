@@ -30,6 +30,10 @@ enum class TransferType : sf::Uint32
 	GAME_OVER,
 	/// Used to tell the client that he cannot play cards during this turn anymore
 	GAME_CARD_LIMIT_TURN_REACHED,
+	/// Used to tell the client that its energy points have been updated
+	GAME_PLAYER_ENERGY_UPDATED,
+	/// Used to tell the client that its health points gave been udpated
+	GAME_PLAYER_HEALTH_UPDATED,
 	/////////////// Client/Server
 	/// Used when the client quits to tell the server it disconnects
 	PLAYER_DISCONNECTION,

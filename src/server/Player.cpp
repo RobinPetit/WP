@@ -24,9 +24,10 @@ std::function<void(Player&, const EffectParamsCollection&)> Player::_effectMetho
 	&Player::changeHealth,
 };
 
-Player::Player(Player::ID id, sf::TcpSocket& socket):
+Player::Player(Player::ID id, sf::TcpSocket& socket, sf::TcpSocket& specialSocket):
 	_id(id),
-	_socketToClient(socket)
+	_socketToClient(socket),
+	_specialSocketToClient(specialSocket)
 {
 	//NETWORK: GREETINGS_USER
 }
@@ -304,6 +305,9 @@ void Player::stealHandCard(const EffectParamsCollection& args)
     cardAddToHand(_opponent->cardRemoveFromHand());
 }
 
+/// \network sends to user one of the following:
+///     + SERVER_UNABLE_TO_PERFORM if opponent has no card in his hand
+///     + SERVER_ACKNOWLEDGEMENT if card has been swapped
 void Player::exchgHandCard(const EffectParamsCollection& args)
 {
 	int myCardIndex; //card to exchange = args.at(0);
@@ -322,14 +326,15 @@ void Player::exchgHandCard(const EffectParamsCollection& args)
 
 	Card* hisCard =  _opponent->cardExchangeFromHand(myCard);
 
+	sf::Packet packet;
 	if (hisCard == nullptr)
-	{
-		//NETWORK: COULD_NOT_EXCHANGE
-	}
+		packet << TransferType::SERVER_UNABLE_TO_PERFORM;
 	else
 	{
 		cardExchangeFromHand(hisCard, myCardIndex);
+		packet << TransferType::SERVER_ACKNOWLEDGEMENT;
 	}
+	_socketToClient.send(packet);
 }
 
 void Player::setEnergy(const EffectParamsCollection& args)
@@ -347,6 +352,7 @@ void Player::setEnergy(const EffectParamsCollection& args)
 	_energy = points;
 	if (_energy<0)
 		_energy=0;
+	sendCurrentEnergy();
 }
 
 void Player::changeEnergy(const EffectParamsCollection& args)
@@ -364,7 +370,7 @@ void Player::changeEnergy(const EffectParamsCollection& args)
 	_energy+=points;
 	if (_energy<0)
 		_energy=0;
-	//NETWORK: ENERGY_CHANGED
+	sendCurrentEnergy();
 }
 
 void Player::changeHealth(const EffectParamsCollection& args)
@@ -387,8 +393,27 @@ void Player::changeHealth(const EffectParamsCollection& args)
 		//NETWORK: NO_HEALTH_CHANGED
 		//call die()
 	}
+	sendCurrentHealth();
 }
 
+
+/////////
+
+void Player::sendCurrentEnergy()
+{
+	sf::Packet packet;
+	// cast to be sure that the right amount of bits is sent and received
+	packet << TransferType::GAME_PLAYER_ENERGY_UPDATED << static_cast<sf::Uint32>(_energy);
+	_specialSocketToClient.send(packet);
+}
+
+void Player::sendCurrentHealth()
+{
+	sf::Packet packet;
+	// cast to be sure that the right amount of bits is sent and received
+	packet << TransferType::GAME_PLAYER_HEALTH_UPDATED << static_cast<sf::Uint32>(_health);
+	_specialSocketToClient.send(packet);
+}
 
 /*--------------------------- PRIVATE */
 void Player::exploitCardEffects(Card* usedCard)

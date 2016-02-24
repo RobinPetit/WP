@@ -87,6 +87,53 @@ void GameState::changeEnergy(unsigned energy)
 
 //PRIVATE METHODS
 
+std::size_t GameState::selectHand()
+{
+	std::size_t res = 0;
+	if(not _inHand.empty())
+	{
+		for(std::size_t i = 0; i < _inHand.size(); ++i)
+			std::cout << i+1 << ". " << _inHand[i] << "\n";
+		std::cout << "Enter the index of the card : ";
+		std::cin >> res;
+	}
+	else
+		std::cout << "You have no card in your hand";
+	return res;
+}
+	
+std::size_t GameState::selectBoard()
+{
+	std::size_t res = 0;
+	if(not _onBoard.empty())
+	{
+		for(std::size_t i = 0; i < _onBoard.size(); ++i)
+			std::cout << i+1 << ". " << _onBoard[i] << "\n";
+		std::cout << "Enter the index of the card : ";
+		std::cin >> res;
+	}
+	else
+		std::cout << "You have not card on the board";
+		
+	return res;
+}
+		
+std::size_t GameState::selectOppo()
+{
+	std::size_t res = 0;
+	if(not _oppoBoard.empty())
+	{
+		for(std::size_t i = 0; i < _oppoBoard.size(); ++i)
+			std::cout << i+1 << ". " << _oppoBoard[i] << "\n";
+		std::cout << "Enter the index of the card : ";
+		std::cin >> res;
+	}
+	else
+		std::cout << "Your opponent has no card on the board";
+		
+	return res;
+}
+
 void GameState::setEnergy(unsigned energy)
 {
 	if(energy >= MAX_ENERGY)
@@ -104,18 +151,11 @@ void GameState::useCard()
 	}
 	else
 	{
-		if(!_inHand.empty())
-		{
-			std::size_t cardIndex;
-			std::cout << "Which card would you like to use?\n";
-			for(std::size_t i = 0; i < _inHand.size(); ++i)
-				std::cout << i << ". " << _inHand[i] << "\n";
-			std::cout << "Enter the index of the card : ";
-			std::cin >> cardIndex;
-			putOnBoard(cardIndex);
-		}
-		else
-			std::cout << "You have no card on the board";
+		std::size_t cardIndex;
+		std::cout << "Which card would you like to use?\n";
+		cardIndex = selectHand();
+		if(cardIndex > 0)	///If hand is not empty
+			putOnBoard(cardIndex-1);
 	}
 }
 
@@ -136,19 +176,66 @@ void GameState::attackWithCreature()
 	else
 	{
 		std::size_t selfCardIndex, oppoCardIndex;
-		std::cout << "Which creature would like to attack with?\n";
-		for(std::size_t i = 0; i < _onBoard.size(); ++i)
-			std::cout << i << ". " << _onBoard[i] << "\n";
-		std::cout << "Enter the index of the card : ";
-		std::cin >> selfCardIndex;
+		std::cout << "Which creature would you like to attack with?\n";
+		selfCardIndex = selectBoard();
 
-		std::cout << "Which opponent's creature would like to attack?\n";
-		for(std::size_t i = 0; i < _oppoBoard.size(); ++i)
-			std::cout << i << ". " << _oppoBoard[i] << "\n";
-		std::cout << "Enter the index of the card : ";
-		std::cin >> oppoCardIndex;
+		std::cout << "Which opponent's creature would you like to attack?\n";
+		oppoCardIndex = selectOppo();
+		
+		///If there's cards on board
+		if(selfCardIndex > 0 && oppoCardIndex > 0)
+		{
+			//TODO send the attack
+			//Note that the indexes are vector's indexes +1
+			//0 indicate there's no card in the vector.
+		};
+	};
+}
 
-		//TODO send the attack
+void GameState::applyOppoEffect()
+/* In the case applies on a opponent's creature*/
+{
+	if(not _myTurn)
+	{
+		std::cout << "You must wait your turn!\n";
+		return;
+	}
+	else
+	{
+		size_t oppoCardIndex;
+		std::cout << 
+		"On which opponent's creature would you like to apply the effect?\n";
+		oppoCardIndex = selectOppo();
+		
+		if(oppoCardIndex > 0)
+		{
+			//TODO send the effect
+			//Note that the indexes are vector's indexes +1
+			//0 indicate there's no card in the vector.
+		};
+	};
+}
+
+void GameState::applySelfEffect()
+{
+	if(not _myTurn)
+	{
+		std::cout << "You must wait your turn!\n";
+		return;
+	}
+	else
+	{
+		size_t selfCardIndex;
+		std::cout << 
+		"On which of your creature would you like to apply the effect?\n";
+		selfCardIndex = selectBoard();
+		
+		if (selfCardIndex > 0)
+		{
+			//TODO send the effect
+			//Note that the indexes are vector's indexes +1
+			//0 indicate there's no card in the vector.
+		};
 	};
 }
 

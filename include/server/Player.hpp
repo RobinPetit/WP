@@ -26,7 +26,7 @@ public:
 	typedef std::size_t ID;
 
 	/// Constructor
-	Player(Player::ID id, sf::TcpSocket& socket);
+	Player(Player::ID id, sf::TcpSocket& socket, sf::TcpSocket& specialSocket);
 	void setOpponent(Player* opponent);  // Complementary
 
 	/// Destructor.
@@ -72,6 +72,7 @@ private:
 	int _health;
 
 	sf::TcpSocket& _socketToClient;
+	sf::TcpSocket& _specialSocketToClient;
 
 	TurnData _turnData;
 
@@ -119,6 +120,9 @@ private:
 
 	void useCreature(int handIndex, Card *& usedCard);
 	void useSpell(int handIndex, Card *& useSpell);
+
+	void sendCurrentEnergy();
+	void sendCurrentHealth();
 };
 
 

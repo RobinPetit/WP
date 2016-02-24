@@ -46,11 +46,17 @@ class GameState : public AbstractState
 		NonBlockingInput _nonBlockingInput;
 		/// Waits for special server data such as END_OF_TURN, BOARD_UPDATE, etc.
 		std::thread _listeningThread;
+        
+        std::size_t selectHand();
+        std::size_t selectBoard();
+        std::size_t selectOppo();
 
 		void setEnergy(unsigned);
 		void useCard();
 		void putOnBoard(std::size_t);
 		void attackWithCreature();
+        void applyOppoEffect();
+        void applySelfEffect();
 		void endTurn();
 		void quit();
 
