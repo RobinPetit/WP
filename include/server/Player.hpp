@@ -75,8 +75,9 @@ private:
 	Board* _board;
 	Player* _opponent = nullptr;
 	Player::ID _id;
-	int _energy;
-	int _health;
+	int _energy, _health;
+	static int _maxEnergy, _maxHealth;
+
 
 	sf::TcpSocket& _socketToClient;
 	sf::TcpSocket& _specialSocketToClient;

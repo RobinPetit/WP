@@ -111,6 +111,13 @@ void Player::useCard(int handIndex)
 		return;
 	}
 	Card* usedCard = _cardHand.at(handIndex);
+	if (usedCard->getEnergyCost() > _energy)
+	{
+        //NETWORK: NOT_ENOUGH_ENERGY
+        return;
+	}
+
+	_energy -= usedCard->getEnergyCost();
 
 	//TODO: use typeinfo ?
 	(*this.*(usedCard->isCreature() ? &Player::useCreature : &Player::useSpell))(handIndex, usedCard);
@@ -376,8 +383,8 @@ void Player::setEnergy(const EffectParamsCollection& args)
 		return;
 	}
 	_energy = points;
-	if (_energy<0)
-		_energy=0;
+	if (_energy<0) _energy=0;
+	else if (_energy>_maxEnergy) _energy=_maxEnergy;
 	sendCurrentEnergy();
 }
 
@@ -419,6 +426,8 @@ void Player::changeHealth(const EffectParamsCollection& args)
 		//NETWORK: NO_HEALTH_CHANGED
 		//call die()
 	}
+	else if (_health>_maxHealth) _health=_maxHealth;
+
 	sendCurrentHealth();
 }
 
