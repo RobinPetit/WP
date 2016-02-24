@@ -3,6 +3,7 @@
 
 // std-C++ headers
 #include <vector>
+#include <array>
 #include <atomic>
 // WizardPoker headers
 #include "client/AbstractState.hpp"
@@ -25,7 +26,7 @@ class GameState : public AbstractState
 		void begin();
 		void play();
 		void startTurn();
-		void updateData(std::vector<unsigned>);
+		void updateData(std::array<unsigned, 5>);
 		void pickCard(int);
 
 		///Those methods can be used for effects

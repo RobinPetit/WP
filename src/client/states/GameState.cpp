@@ -88,7 +88,7 @@ void GameState::startTurn()
 	/**/
 }
 
-void GameState::updateData(std::vector<unsigned> data)
+void GameState::updateData(std::array<unsigned, 5> data)
 {
 	_energy = data[0];
 	_selfHealth = data[1]; _oppoHealth = data[2];
@@ -96,6 +96,7 @@ void GameState::updateData(std::vector<unsigned> data)
 	_oppoCards = data[4];
 
 }
+
 
 void GameState::pickCard(int pickedCard)
 {
