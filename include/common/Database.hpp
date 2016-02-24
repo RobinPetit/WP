@@ -13,13 +13,6 @@
 #include <common/Deck.hpp>
 #include <common/CardsCollection.hpp>
 
-struct Friend
-{
-	int64_t id;
-	std::string name;
-};
-typedef std::vector<Friend> FriendsList;
-
 struct LadderEntry
 {
 	std::string name;
