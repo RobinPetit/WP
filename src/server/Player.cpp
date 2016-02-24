@@ -3,6 +3,7 @@
 #include "server/Board.hpp"
 #include "server/Creature.hpp"
 #include "common/sockets/TransferType.hpp"
+#include "common/sockets/PacketOverload.hpp"
 // std-C++ headers
 #include <algorithm>
 // SFML headers
@@ -485,7 +486,7 @@ void Player::cardDeckToHand(int amount)
 		//NETWORK: DECK_EMPTY
 	}
 	//NETWORK: DECK_CHANGED
-	//NETWORK: HAND_CHANGED
+	sendHandState();
 }
 
 void Player::cardHandToBoard(int handIndex)
@@ -494,7 +495,7 @@ void Player::cardHandToBoard(int handIndex)
 	_cardBoard.push_back(dynamic_cast<Creature*>(_cardHand.at(handIndex)));
 	_cardBoard.back()->movedToBoard();
 	_cardHand.erase(handIt);
-	//NETWORK: HAND_CHANGED
+	sendHandState();
 	//NETWORK: BOARD_CHANGED
 }
 
@@ -503,7 +504,7 @@ void Player::cardHandToBin(int handIndex)
 	const auto& handIt = std::find(_cardHand.begin(), _cardHand.end(), _cardHand[handIndex]);
 	_cardBin.push_back(_cardHand.at(handIndex));
 	_cardHand.erase(handIt);
-	//NETWORK: HAND_CHANGED
+	sendHandState();
 	//NETWORK: BIN_CHANGED
 }
 
@@ -523,13 +524,13 @@ void Player::cardBinToHand(int binIndex)
 	_cardHand.push_back(_cardBin.at(binIndex));
 	_cardBin.erase(binIt);
 	//NETWORK: BIN_CHANGED
-	//NETWORK: HAND_CHANGED
+	sendHandState();
 }
 
 void Player::cardAddToHand(Card* givenCard)
 {
 	_cardHand.push_back(givenCard);
-	//NETWORK: HAND_CHANGED
+	sendHandState();
 	//NETWORK: CARD_WON
 }
 
@@ -541,7 +542,7 @@ Card* Player::cardRemoveFromHand()
 	Card* stolenCard = _cardHand[handIndex];
 	const auto& handIt = std::find(_cardHand.begin(), _cardHand.end(), _cardHand[handIndex]);
 	_cardHand.erase(handIt);
-	//NETWORK: HAND_CHANGED
+	sendHandState();
 	//NETWORK: CARD_STOLEN
 	return stolenCard;
 }
@@ -558,7 +559,18 @@ Card* Player::cardExchangeFromHand(Card* givenCard, int handIndex)
 		return nullptr;
 	Card* stolen = _cardHand[handIndex];
 	_cardHand.at(handIndex) = givenCard;
-	//NETWORK: HAND_CHANGED
+	sendHandState();
 	//NETWORK: CARD_EXCHANGED
 	return stolen;
+}
+
+void Player::sendHandState()
+{
+	sf::Packet packet;
+	packet << TransferType::GAME_HAND_UPDATED;
+	std::vector<sf::Uint32> cardIds(_cardHand.size());
+	for(std::vector<int>::size_type i{0}; i < _cardHand.size(); ++i)
+		cardIds[i] = _cardHand[i]->getID();
+	packet << cardIds;
+	_specialSocketToClient.send(packet);
 }

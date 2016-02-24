@@ -123,6 +123,8 @@ private:
 
 	void sendCurrentEnergy();
 	void sendCurrentHealth();
+
+	void sendHandState();
 };
 
 
