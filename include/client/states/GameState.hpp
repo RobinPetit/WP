@@ -3,6 +3,7 @@
 
 constexpr unsigned DECK_SIZE = 20;
 constexpr unsigned DFLT_HEALTH = 20;
+constexpr unsigned MAX_HEALTH = 20;
 constexpr unsigned DFLT_ENERGY = 0;
 constexpr unsigned MAX_ENERGY = 10;
 
@@ -31,7 +32,9 @@ class GameState : public AbstractState
 		void startTurn();
 		void updateData(int);
 
-		void changeEnergy(unsigned);  ///Can be used for effects
+		///Those methods can be used for effects
+		void changeHealth(int);
+		void changeEnergy(int);
 
 	private:
 		std::vector<int> _inHand;
