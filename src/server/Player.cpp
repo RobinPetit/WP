@@ -92,7 +92,15 @@ void Player::leaveTurn()
 ///	 + SERVER_UNABLE_TO_PERFORM  if the specialized type of the card (spell/creature) cannot be played anymore for this turn
 void Player::useCard(int handIndex)
 {
-	//TODO: verify that handIndex is not out_of_range
+	try //check the input
+	{
+		_cardHand.at(myCardIndex);
+	}
+	catch (std::out_of_range)
+	{
+		//NETWORK: INPUT_ERROR
+		return;
+	}
 
 	if (_constraints.getConstraint(PC_TEMP_CARD_USE_LIMIT) == _turnData.cardsUsed)
 	{
@@ -144,6 +152,17 @@ void Player::useSpell(int handIndex, Card *& usedCard)
 void Player::attackWithCreature(int attackerIndex, int victimIndex)
 {
 	sf::Packet response;
+
+	try //check the input
+	{
+		_cardHand.at(attackerIndex);
+		_opponent->_cardHand.at(victimIndex);
+	}
+	catch (std::out_of_range)
+	{
+		//NETWORK: INPUT_ERROR
+		return;
+	}
 	if (_constraints.getConstraint(PC_TEMP_CREATURE_ATTACK_LIMIT) == _turnData.creatureAttacks)
 		response << TransferType::SERVER_UNABLE_TO_PERFORM;
 	else
