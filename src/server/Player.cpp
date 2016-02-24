@@ -45,7 +45,7 @@ Player::ID Player::getID()
 /*------------------------------ BOARD INTERFACE */
 void Player::beginGame(bool isActivePlayer)
 {
-    //if (isActivePlayer)
+	//if (isActivePlayer)
 		//NETWORK: GAME_STARTED_ACTIVE
 	//else
 		//NETWORK: GAME_STARTED_INACTIVE
@@ -87,9 +87,9 @@ void Player::leaveTurn()
 }
 
 /// \network sends to client one of the following:
-///     + SERVER_ACKNOWLEDGEMENT if the card was successfully used
-///     + GAME_CARD_LIMIT_TURN_REACHED if the user cannot play cards for this turn
-///     + SERVER_UNABLE_TO_PERFORM  if the specialized type of the card (spell/creature) cannot be played anymore for this turn
+///	 + SERVER_ACKNOWLEDGEMENT if the card was successfully used
+///	 + GAME_CARD_LIMIT_TURN_REACHED if the user cannot play cards for this turn
+///	 + SERVER_UNABLE_TO_PERFORM  if the specialized type of the card (spell/creature) cannot be played anymore for this turn
 void Player::useCard(int handIndex)
 {
 	//TODO: verify that handIndex is not out_of_range
@@ -161,18 +161,18 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 /*------------------------------ EFFECTS INTERFACE */
 void Player::applyEffect(const Card* usedCard, EffectParamsCollection effectArgs)
 {
-    _lastCasterCard = usedCard; //remember last used card
+	_lastCasterCard = usedCard; //remember last used card
 
-    int method = effectArgs.front(); //what method is used
+	int method = effectArgs.front(); //what method is used
 	effectArgs.erase(effectArgs.begin());
 
-    _effectMethods[method](*this, effectArgs); //call method on self
+	_effectMethods[method](*this, effectArgs); //call method on self
 }
 
 void Player::applyEffectToCreature(Creature* casterAndSubject, EffectParamsCollection effectArgs)
 {
-    _lastCasterCard = casterAndSubject; //remember last used card
-    casterAndSubject->applyEffect(effectArgs); //call method on effect subject (same as caster)
+	_lastCasterCard = casterAndSubject; //remember last used card
+	casterAndSubject->applyEffect(effectArgs); //call method on effect subject (same as caster)
 }
 
 void Player::applyEffectToCreature(const Card* usedCard, int boardIndex, EffectParamsCollection effectArgs)
@@ -212,7 +212,7 @@ int Player::getCreatureConstraint(const Creature& subject, int constraintID)
 
 const Card* Player::getLastCaster()
 {
-    return _lastCasterCard;
+	return _lastCasterCard;
 }
 
 /*------------------------------ EFFECTS (PRIVATE) */
@@ -223,7 +223,7 @@ void Player::setConstraint(const EffectParamsCollection& args)
 	int turns; //for how many turns
 	int casterOptions; //whether the constraint depends on its caster being alive
 	try //check the input
-    {
+	{
 		constraintID=args.at(0);
 		value=args.at(1);
 		turns=args.at(2);
@@ -249,9 +249,9 @@ void Player::setConstraint(const EffectParamsCollection& args)
 
 void Player::pickDeckCards(const EffectParamsCollection& args)
 {
-    int amount;//amount of cards
-    try //check the input
-    {
+	int amount;//amount of cards
+	try //check the input
+	{
 		amount=args.at(0);
 	}
 	catch (std::out_of_range)
@@ -266,7 +266,7 @@ void Player::loseHandCards(const EffectParamsCollection& args)
 {
 	int amount; //amount of cards to lose
 	try //check the input
-    {
+	{
 		amount=args.at(0);
 	}
 	catch (std::out_of_range)
@@ -285,9 +285,9 @@ void Player::loseHandCards(const EffectParamsCollection& args)
 
 void Player::reviveBinCard(const EffectParamsCollection& args)
 {
-    int binIndex; //what card to revive
-    try //check the input
-    {
+	int binIndex; //what card to revive
+	try //check the input
+	{
 		binIndex=args.at(0);
 		_cardBin.at(binIndex);
 	}
@@ -302,12 +302,12 @@ void Player::reviveBinCard(const EffectParamsCollection& args)
 void Player::stealHandCard(const EffectParamsCollection& args)
 {
 	//no arguments
-    cardAddToHand(_opponent->cardRemoveFromHand());
+	cardAddToHand(_opponent->cardRemoveFromHand());
 }
 
 /// \network sends to user one of the following:
-///     + SERVER_UNABLE_TO_PERFORM if opponent has no card in his hand
-///     + SERVER_ACKNOWLEDGEMENT if card has been swapped
+///	 + SERVER_UNABLE_TO_PERFORM if opponent has no card in his hand
+///	 + SERVER_ACKNOWLEDGEMENT if card has been swapped
 void Player::exchgHandCard(const EffectParamsCollection& args)
 {
 	int myCardIndex; //card to exchange = args.at(0);
@@ -427,12 +427,12 @@ void Player::exploitCardEffects(Card* usedCard)
 
 void Player::setTeamConstraint(const Card* usedCard, const EffectParamsCollection& args)
 {
-    int constraintID; //constraint to set
+	int constraintID; //constraint to set
 	int value; //value to give to it
 	int turns; //for how many turns
 	int casterOptions; //whether the constraint depends on its caster being alive
 	try //check the input
-    {
+	{
 		constraintID=args.at(0);
 		value=args.at(1);
 		turns=args.at(2);
@@ -509,9 +509,9 @@ void Player::cardBinToHand(int binIndex)
 
 void Player::cardAddToHand(Card* givenCard)
 {
-    _cardHand.push_back(givenCard);
-    //NETWORK: HAND_CHANGED
-    //NETWORK: CARD_WON
+	_cardHand.push_back(givenCard);
+	//NETWORK: HAND_CHANGED
+	//NETWORK: CARD_WON
 }
 
 Card* Player::cardRemoveFromHand()

@@ -14,7 +14,7 @@ void Constraints::setConstraint(int constraintID, int value, int turns)
 
 void Constraints::setConstraint(int constraintID, int value, int turns, const Creature* caster)
 {
-    _timedValues[constraintID].push_back({value, turns, caster});
+	_timedValues[constraintID].push_back({value, turns, caster});
 }
 
 int Constraints::getConstraint(int constraintID) const
@@ -33,19 +33,19 @@ int Constraints::getConstraint(int constraintID) const
 
 int Constraints::getOverallConstraint(int constraintID, int otherValue) const
 {
-    switch (_defaultValues[constraintID].orderOption)
-    {
-        case GET_FIRST:
-            {
-                if (otherValue == _defaultValues[constraintID].value)
-                    return getFirstTimedValue(constraintID);
+	switch (_defaultValues[constraintID].orderOption)
+	{
+		case GET_FIRST:
+			{
+				if (otherValue == _defaultValues[constraintID].value)
+					return getFirstTimedValue(constraintID);
 				else
 					return otherValue;
-            }
-            break;
+			}
+			break;
 		case GET_LAST:
 			{
-                if (otherValue == _defaultValues[constraintID].value)
+				if (otherValue == _defaultValues[constraintID].value)
 					return getLastTimedValue(constraintID);
 				else
 					return otherValue;
@@ -57,14 +57,14 @@ int Constraints::getOverallConstraint(int constraintID, int otherValue) const
 				return otherValue;
 			}
 			break;
-    }
-    throw std::runtime_error("Order option not valid");
+	}
+	throw std::runtime_error("Order option not valid");
 }
 
 int Constraints::getValue(int constraintID, unsigned valueIndex) const
 {
 	int value = _timedValues[constraintID].at(valueIndex).value;
-    switch(_defaultValues[constraintID].valueOption) //rules
+	switch(_defaultValues[constraintID].valueOption) //rules
 	{
 		case VALUE_GET_INCREMENT:
 			_timedValues[constraintID].at(valueIndex).value++;
@@ -86,13 +86,13 @@ int Constraints::getFirstTimedValue(int constraintID) const
 	{
 		//if the caster is not remembered, or is on the board
 		if (vectIt->caster==nullptr or vectIt->caster->isOnBoard() or vectIt->caster->getConstraint(CC_TEMP_IS_PARALYZED)==0)
-            return getValue(constraintID, vectIt - vect.begin());
+			return getValue(constraintID, vectIt - vect.begin());
 
 		//if caster is dead or paralyzed
 		else
 			vectIt++;
 	}
-    return _defaultValues[constraintID].value;
+	return _defaultValues[constraintID].value;
 }
 
 int Constraints::getLastTimedValue(int constraintID) const
@@ -102,30 +102,30 @@ int Constraints::getLastTimedValue(int constraintID) const
 	{
 		//if the caster is not remembered, or is on the board and active
 		if (vectIt->caster==nullptr or vectIt->caster->isOnBoard() or vectIt->caster->getConstraint(CC_TEMP_IS_PARALYZED)==0)
-            return getValue(constraintID, vectIt - vect.rbegin());
+			return getValue(constraintID, vectIt - vect.rbegin());
 
 		//if caster is dead or paralyzed
 		else
 			vectIt++;
 	}
-    return _defaultValues[constraintID].value;
+	return _defaultValues[constraintID].value;
 }
 
 int Constraints::getSumTimedValues(int constraintID) const
 {
-    int value = _defaultValues[constraintID].value;
+	int value = _defaultValues[constraintID].value;
 	std::vector<ConstraintTimedValue>& vect = _timedValues[constraintID]; //value, turns left, caster
 	for (auto vectIt=vect.begin(); vectIt!=vect.end();)
 	{
 		//if the caster is not remembered, or is on the board and active
 		if (vectIt->caster==nullptr or vectIt->caster->isOnBoard() or vectIt->caster->getConstraint(CC_TEMP_IS_PARALYZED)==0)
-            value += getValue(constraintID, vectIt - vect.begin());
+			value += getValue(constraintID, vectIt - vect.begin());
 
 		//if caster is dead or paralyzed
 		else
 			vectIt++;
 	}
-    return value;
+	return value;
 }
 
 void Constraints::timeOutConstraints()

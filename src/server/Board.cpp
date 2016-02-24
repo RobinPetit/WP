@@ -102,7 +102,7 @@ void Board::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 			}
 			break;
 
-		case CREATURE_OPPO_RAND:    //passive player's creature at random index
+		case CREATURE_OPPO_RAND:	//passive player's creature at random index
 			_passivePlayer->applyEffectToCreature(usedCard, -1, effectArgs);
 			break;
 

@@ -98,7 +98,7 @@ enum CREATURE_CONSTRAINTS : int
 
 enum CONSTRAINT_CONDITIONS : int
 {
-    NO_CASTER_NEEDED,	//Constraint does not care about the caster's state
+	NO_CASTER_NEEDED,	//Constraint does not care about the caster's state
 	IF_CASTER_ALIVE		//Constraint applies only if CREATURE who cast it is alive AND not paralyzed
 };
 

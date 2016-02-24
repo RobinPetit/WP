@@ -34,7 +34,7 @@ bool Creature::isSpell()
 
 void Creature::movedToBoard()
 {
-    _isOnBoard = true;
+	_isOnBoard = true;
 }
 
 void Creature::removedFromBoard()
@@ -63,7 +63,7 @@ void Creature::enterTurn()
 
 void Creature::leaveTurn()
 {
-    _constraints.timeOutConstraints();
+	_constraints.timeOutConstraints();
 }
 
 void Creature::makeAttack(Creature& victim)
@@ -80,7 +80,7 @@ void Creature::makeAttack(Creature& victim)
 
 	int attackBackfires = getConstraint(CC_TEMP_BACKFIRE_ATTACKS);
 	if (attackBackfires==1)	//Attack turns agains the creature
-        changeHealth({_attack, attackForced});
+		changeHealth({_attack, attackForced});
 	else
 		victim.receiveAttack(*this, _attack, attackForced);
 }
@@ -90,9 +90,9 @@ void Creature::receiveAttack(Creature& attacker, int attack, int forced, int loo
 	if (loopCount>=2) //If both creatures mirror attacks, no one is damaged
 		return;
 
-    int attackMirrored = getConstraint(CC_TEMP_MIRROR_ATTACKS);
-    if (attackMirrored==1) //If attacks are mirrored, we send it back
-        attacker.receiveAttack(*this, attack, forced, loopCount+1);
+	int attackMirrored = getConstraint(CC_TEMP_MIRROR_ATTACKS);
+	if (attackMirrored==1) //If attacks are mirrored, we send it back
+		attacker.receiveAttack(*this, attack, forced, loopCount+1);
 
 	int attackBlocked = getConstraint(CC_TEMP_BLOCK_ATTACKS);
 	if (attackBlocked==1) //If attacks are blocked
@@ -117,7 +117,7 @@ int Creature::getAttack()
 
 int Creature::getPersonalConstraint(int constraintID) const
 {
-    return _constraints.getConstraint(constraintID);
+	return _constraints.getConstraint(constraintID);
 }
 
 int Creature::getConstraint(int constraintID) const
@@ -164,8 +164,8 @@ void Creature::changeHealth(const EffectParamsCollection& args)
 	int points = args.at(0);
 
 	//bool forced = args.at(1) : if attack is forced, shield does not count
-    if (points<0 and (args.size()==1 or args.at(1)==0))
-    {
+	if (points<0 and (args.size()==1 or args.at(1)==0))
+	{
 		switch (_shieldType)
 		{
 			case 0:
@@ -179,7 +179,7 @@ void Creature::changeHealth(const EffectParamsCollection& args)
 				points=0;	//Legendary shield, regular attacks don't go through
 				break;
 		}
-    }
+	}
 
 	_health+=points;
 	if (_health<=0)

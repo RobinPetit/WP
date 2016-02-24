@@ -19,22 +19,22 @@ enum CONSTRAINT_VALUE_OPTIONS : int
 enum CONSTRAINT_ORDER_OPTIONS : int
 {
 	GET_FIRST,
-    GET_LAST,
-    GET_SUM,
+	GET_LAST,
+	GET_SUM,
 };
 
 struct ConstraintDefaultValue
 {
-    int value;
-    CONSTRAINT_VALUE_OPTIONS valueOption;
-    CONSTRAINT_ORDER_OPTIONS orderOption;
+	int value;
+	CONSTRAINT_VALUE_OPTIONS valueOption;
+	CONSTRAINT_ORDER_OPTIONS orderOption;
 };
 
 struct ConstraintTimedValue
 {
-    int value;
-    int turns;
-    const Creature* caster;
+	int value;
+	int turns;
+	const Creature* caster;
 };
 
 constexpr ConstraintDefaultValue P_CONSTRAINT_DEFAULTS[P_CONSTRAINTS_COUNT] =
