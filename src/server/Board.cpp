@@ -82,12 +82,12 @@ void Board::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 			{
 				int boardIndex = effectArgs.front();
 				effectArgs.erase(effectArgs.begin());
-				_activePlayer->applyEffectToCreature(usedCard, boardIndex, method, effectArgs);
+				_activePlayer->applyEffectToCreature(usedCard, boardIndex, effectArgs);
 			}
 			break;
 
 		case CREATURE_SELF_RAND:	//active player's creature at random index
-			_activePlayer->applyEffectToCreature(usedCard, -1, method, effectArgs);
+			_activePlayer->applyEffectToCreature(usedCard, -1, effectArgs);
 			break;
 
 		case CREATURE_SELF_TEAM:	//active player's team of creatures

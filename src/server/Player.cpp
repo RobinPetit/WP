@@ -94,7 +94,7 @@ void Player::useCard(int handIndex)
 {
 	try //check the input
 	{
-		_cardHand.at(myCardIndex);
+		_cardHand.at(handIndex);
 	}
 	catch (std::out_of_range)
 	{
@@ -169,7 +169,7 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 	{
 		Creature* attacker = _cardBoard.at(attackerIndex);
 		if (victimIndex<0)
-			_opponent->applyEffect(attacker, PE_CHANGE_HEALTH, {attacker->getAttack()}); //no forced attacks on opponent
+			_opponent->applyEffect(attacker, {PE_CHANGE_HEALTH, -attacker->getAttack()}); //no forced attacks on opponent
 		else
 			attacker->makeAttack(*_opponent->_cardBoard.at(victimIndex));
 		response << TransferType::SERVER_ACKNOWLEDGEMENT;
