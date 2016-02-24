@@ -8,6 +8,7 @@
 #include <SFML/Network/Packet.hpp>
 // std-C++ headers
 #include <unordered_map>
+#include <memory>
 #include <string>
 #include <atomic>
 #include <thread>
@@ -16,12 +17,12 @@
 /// on a single client
 struct ClientInformations
 {
-	sf::TcpSocket *socket;
-	sf::Uint16 listeningPort;  // used to send connection for the chat
-	std::vector<std::string> friendshipRequests;  // players client asked to become friends with
-	std::vector<std::string> acceptedRequests;  // players who accepted the friendship request
-	std::vector<std::string> refusedRequests;  // players who refused the friendship request
-	std::vector<std::string> externalRequests;  // players who asked to become friend with client
+	/// Holds the connection with the client. The smart pointers helps closing
+	/// the connection when needed, so that when the ClientInformations instance
+	/// gets deleted, the connection is closed (but a simple instance of socket
+	/// is not sufficient, because we need a dynamic allocation).
+	std::unique_ptr<sf::TcpSocket> socket;
+	sf::Uint16 listeningPort;  ///< Used to send connection for the chat.
 };
 
 class Server final
@@ -59,14 +60,26 @@ private:
 	void takeConnection();
 	/// Used to handle data sent by a logged user
 	void receiveData();
+	/// Used to receive packet when the user want to connect.
+	/// This functions takes the ownership of the socket, so that the responsability
+	/// of deleting the object is transferred. For example, if the connection
+	/// does not succeded, the function can safely delete the socket. It is not
+	/// up to the caller to know whether the socket must be deleted or not.
+	void connectUser(sf::Packet& connectionPacket, std::unique_ptr<sf::TcpSocket> client);
+	/// Used to receive packet when the user want to register.
+	/// See connectUser for informations about the smart pointer.
+	void registerUser(sf::Packet& registeringPacket, std::unique_ptr<sf::TcpSocket> client);
+	/// Send an acknowledgement packet.
+	void sendAcknowledgement(sf::TcpSocket& client);
 
 	/// Handle the input in stdin and quit the server if asked
 	void waitQuit();
 
 	// Friends management
 
-	/// Used to exchange the correct informations with the clients when a chat request is made
-	void handleChatRequest(sf::Packet& packet, sf::TcpSocket& client);
+	/// Used to exchange the correct informations with the clients when a chat request is made.
+	/// See connectUser for informations about the smart pointer.
+	void handleChatRequest(sf::Packet& packet, std::unique_ptr<sf::TcpSocket> client);
 	/// Used to remove a player from the server connection
 	void removeClient(const _iterator& it);
 	/// Used to tell whether or not a user is connected
@@ -81,8 +94,6 @@ private:
 	void handleFriendshipRequestResponse(const _iterator& it, sf::Packet& transmission);
 	/// Used to send to a client the friendship request he received
 	void sendFriendshipRequests(const _iterator& it);
-	/// Used to send to a client the current state of the friendship requests state
-	void sendFriendshipRequestsState(const _iterator& it);
 
 	// Game management
 

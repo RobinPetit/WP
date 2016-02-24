@@ -14,8 +14,20 @@ enum class TransferType : sf::Uint32
 	/// Used during the chat communications: tells that the other player wants to end the conversation
 	CHAT_QUIT,
 	// GAME
-	/// Not used yet, will be when the game core will be coded
+	/// Used when the user authenticates to the server
 	GAME_CONNECTION,
+	/// Used when the user tried to authenticates but gives wrong identifiers
+	GAME_WRONG_IDENTIFIERS,
+	/// Used when the user tried to authenticates but is already connected
+	GAME_ALREADY_CONNECTED,
+	/// Used when a new user register to the server
+	GAME_REGISTERING,
+	/// Used when a new user wants to register but the username is already taken
+	GAME_USERNAME_NOT_AVAILABLE,
+	/// Used when a new user wants to register but another error than GAME_USERNAME_NOT_AVAILABLE occurred
+	GAME_FAILED_TO_REGISTER,
+	/// Used when the server successfuly connected or registered the user
+	GAME_CONNECTION_OR_REGISTERING_OK,
 	/// Used when a player asks to find an opponent
 	GAME_REQUEST,
 	// Client/Server
@@ -27,16 +39,16 @@ enum class TransferType : sf::Uint32
 	PLAYER_ASKS_FRIENDS,
 	/// Used when a client asks another player to be his friend
 	PLAYER_NEW_FRIEND,
-	/// Used when a player remove anotther player from its friend list
+	/// Used when a player remove another player from its friend list
 	PLAYER_REMOVE_FRIEND,
 	/// Used as an "error-value" for acknowledgement of friendship requests
 	NOT_EXISTING_FRIEND,
 	/// Used when a client answers a friendship request
 	PLAYER_RESPONSE_FRIEND_REQUEST,
-	/// Used when a client asks which of his own requests were accepted/refused
-	PLAYER_GETTING_FRIEND_REQUESTS_STATE,
 	/// Used when a client asks what friendship requests he got
 	PLAYER_GETTING_FRIEND_REQUESTS,
+	/// Used to acknowledge the client that the client request succeeded, it is used for all requests
+	PLAYER_ACKNOWLEDGE
 };
 
 /// Overloading of the sf::Packet operators so that a TransferType variable can be stored
