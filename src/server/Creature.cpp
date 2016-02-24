@@ -128,40 +128,81 @@ int Creature::getConstraint(int constraintID) const
 /*--------------------------- EFFECTS */
 void Creature::setConstraint(const EffectParamsCollection& args)
 {
-	int constraintID = args.at(0);
-	int value = args.at(1);
-	int turns = args.at(2);
-	if (args.size()>3)
-		_constraints.setConstraint(constraintID, value, turns);
-	else
-		_constraints.setConstraint(constraintID, value, turns, dynamic_cast<const Creature*>(_owner->getLastCaster()));
+	int constraintID; //constraint to set
+	int value; //value to give to it
+	int turns; //for how many turns
+	int casterOptions; //whether the constraint depends on its caster being alive
+	try //check the input
+	{
+		constraintID=args.at(0);
+		value=args.at(1);
+		turns=args.at(2);
+		casterOptions=args.at(3);
+		if (constraintID<0 or constraintID>=C_CONSTRAINTS_COUNT or turns<0)
+			throw std::out_of_range("");
+	}
+	catch (std::out_of_range)
+	{
+		//NETWORK: INPUT_ERROR
+		return;
+	}
+
+	switch (casterOptions)
+	{
+		case IF_CASTER_ALIVE:
+			_constraints.setConstraint(constraintID, value, turns, dynamic_cast<const Creature*>(_owner->getLastCaster()));
+			break;
+		default:
+			_constraints.setConstraint(constraintID, value, turns);
+	}
 }
 
-void Creature::resetAttack(const EffectParamsCollection&)
+void Creature::resetAttack(const EffectParamsCollection& args)
 {
+	//no arguments
 	 _attack = _attackInit;
 }
 
-void Creature::resetHealth(const EffectParamsCollection&)
+void Creature::resetHealth(const EffectParamsCollection& args)
 {
+	//arguments
 	 _health = _healthInit;
 }
 
-void Creature::resetShield(const EffectParamsCollection&)
+void Creature::resetShield(const EffectParamsCollection& args)
 {
+	//no arguments
 	 _shield = _shieldInit;
 }
 
 void Creature::changeAttack(const EffectParamsCollection& args)
 {
-	int points = args.at(0);
+	int points; //attack points to add
+	try //check the input
+	{
+		points=args.at(0);
+	}
+	catch (std::out_of_range)
+	{
+		//NETWORK: INPUT_ERROR
+		return;
+	}
 	_attack+=points;
 	if (_attack<0) _attack=0;
 }
 
 void Creature::changeHealth(const EffectParamsCollection& args)
 {
-	int points = args.at(0);
+	int points; //health points to add
+	try //check the input
+	{
+		points=args.at(0);
+	}
+	catch (std::out_of_range)
+	{
+		//NETWORK: INPUT_ERROR
+		return;
+	}
 
 	//bool forced = args.at(1) : if attack is forced, shield does not count
 	if (points<0 and (args.size()==1 or args.at(1)==0))
@@ -191,7 +232,16 @@ void Creature::changeHealth(const EffectParamsCollection& args)
 
 void Creature::changeShield(const EffectParamsCollection& args)
 {
-	int points = args.at(0);
+	int points; //shield points to add
+	try //check the input
+	{
+		points=args.at(0);
+	}
+	catch (std::out_of_range)
+	{
+		//NETWORK: INPUT_ERROR
+		return;
+	}
 	_shield += points;
 	if (_shield<0) _shield=0;
 }
