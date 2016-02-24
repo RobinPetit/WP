@@ -1,29 +1,27 @@
 #include "server/ServerDatabase.hpp"
 
-#include <cstring>
+#ifndef NDEBUG
+#include <cassert>
+#endif
 
 #define AUTO_QUERY_LENGTH -1
 
 const char ServerDatabase::FILENAME[] = "../resources/server/database.db";
-const char ServerDatabase::FRIEND_LIST_QUERY[] =
-    "SELECT id,login "
-    "FROM Friendship "
-    "INNER JOIN Account ON second == id "
-    "WHERE first == ?1;";
-const char ServerDatabase::USER_ID_QUERY[] =
-    "SELECT id FROM Account WHERE login == ?1;";
-const char ServerDatabase::LOGIN_QUERY[] =
-    "SELECT login FROM Account WHERE id == ?1;";
 ServerDatabase::ServerDatabase(std::string filename) : Database(filename)
 {
-	prepareStmt(FRIEND_LIST_QUERY, &_friendListStmt);
-	prepareStmt(USER_ID_QUERY, &_userIdStmt);
-	prepareStmt(LOGIN_QUERY, &_loginStmt);
+	for(int i = 0; i < _statements.size(); ++i)
+		prepareStmt(_statements[i]);
 
-	/* TEST */
-	std::cout << getFriendsList(1)->front().name << std::endl;
-	std::cout << getUserId("testing") << getUserId("testing2") << std::endl;
-	std::cout << getLogin(1) << getLogin(2) << std::endl;
+#ifndef NDEBUG
+// Unit tests still to do
+	std::cout << "DEBUG" << std::endl;
+
+	assert(getFriendsList(1)->front().name == "testing2");
+	assert(getUserId("testing") == 1);
+	assert(getUserId("testing2") == 2);
+	assert(getLogin(1) == "testing");
+	assert(getLogin(2) == "testing2");
+#endif
 }
 
 const FriendsList * ServerDatabase::getFriendsList(const int user)
@@ -68,15 +66,14 @@ std::string ServerDatabase::getLogin(const int userId)
 
 ServerDatabase::~ServerDatabase()
 {
-	if(sqlite3_finalize(friendListStmt) != SQLITE_OK
-	        || sqlite3_finalize(userIdStmt) != SQLITE_OK
-	        || sqlite3_finalize(loginStmt) != SQLITE_OK)
-		std::cerr << "ERROR while finalizing statements" << std::endl;
-}
-
-void ServerDatabase::prepareStmt(const char* const query, sqlite3_stmt ** stmt)
-{
-	sqliteThrowExcept(sqlite3_prepare_v2(_database, query, std::strlen(query), stmt, nullptr));
+	// TODO: move it to Database::~Database
+	int errcode;
+	for(int i = 0; i < _statements.size(); ++i)
+		if((errcode = sqlite3_finalize(*_statements[i].statement())) != SQLITE_OK)
+			std::cerr << "ERROR while finalizing statement "
+			          << i+1 << " of " << _statements.size()
+			          << ": " << sqlite3_errstr(errcode)
+			          << std::endl;
 }
 
 // TODO Monster to Creature
