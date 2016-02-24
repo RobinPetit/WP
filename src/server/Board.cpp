@@ -5,8 +5,6 @@
 
 Board::Board(Player::ID player1, Player::ID player2, sf::TcpSocket& socketPlayer1, sf::TcpSocket& socketPlayer2)
 {
-	//TODO: request player decks from Database
-
 	// A random player starts the game
 	std::default_random_engine engine;
 	if(std::bernoulli_distribution(0.5)(engine) == 1)
@@ -25,7 +23,7 @@ Board::Board(Player::ID player1, Player::ID player2, sf::TcpSocket& socketPlayer
 	_activePlayer->setOpponent(_passivePlayer);
 	_passivePlayer->setOpponent(_activePlayer);
 
-	_activePlayer->beginGame(true);
+	_activePlayer->beginGame(true); //TODO: these have to request deck selection from player
 	_passivePlayer->beginGame(false);
 }
 
@@ -78,11 +76,11 @@ void Board::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 	switch (subject)
 	{
 		case PLAYER_SELF:	//passive player
-			Player::effectMethods[method](*_activePlayer, effectArgs);
+			_activePlayer->applyEffect(usedCard, method, effectArgs);
 			break;
 
 		case PLAYER_OPPO:	//active player
-			Player::effectMethods[method](*_passivePlayer, effectArgs);
+			_passivePlayer->applyEffect(usedCard, method, effectArgs);
 			break;
 
 		case CREATURE_SELF_THIS:	//active player's creature that was used

@@ -8,7 +8,7 @@
 // SFML headers
 #include <SFML/Network/Packet.hpp>
 
-std::function<void(Player&, const EffectParamsCollection&)> Player::effectMethods[P_EFFECTS_COUNT] =
+std::function<void(Player&, const EffectParamsCollection&)> Player::_effectMethods[P_EFFECTS_COUNT] =
 {
 	&Player::setConstraint,
 	&Player::pickDeckCards,
@@ -40,9 +40,18 @@ Player::ID Player::getID()
 	return _id;
 }
 
-/*--------------------------- BOARD INTERFACE */
+/*------------------------------ BOARD INTERFACE */
+void Player::beginGame(bool isActivePlayer)
+{
+    //if (isActivePlayer)
+		//NETWORK: GAME_STARTED_ACTIVE
+	//else
+		//NETWORK: GAME_STARTED_INACTIVE
 
-void Player::enterTurn(int)
+	//TODO: request Deck selection
+}
+
+void Player::enterTurn(int turn)
 {
 	_turnData = _emptyTurnData;  // Clear the turn data
 
@@ -64,10 +73,11 @@ void Player::enterTurn(int)
 	_socketToClient.send(packet);
 }
 
-void Player::leaveTurn(int)
+void Player::leaveTurn()
 {
 	//Time out player constraints
 	_constraints.timeOutConstraints();
+	_teamConstraints.timeOutConstraints();
 
 	//Time out player's creature's constraints
 	for (unsigned i=0; i<_cardBoard.size(); i++)
@@ -130,14 +140,24 @@ void Player::attackWithCreature(int boardIndex, int victim)
 	//attackPoints += _cardBoard.at(boardIndex)->getConstraint(CC_TEMP_SELF_ATTACK_CHANGE);
 	//see if forced attacks
 	if (victim<0)
-		_opponent->changeHealth({-attackPoints});
+		_opponent->applyEffect(_cardBoard.at(boardIndex), PE_CHANGE_HEALTH, {-attackPoints});
     else
-    {
-		_opponent->applyEffectToCreature(_cardBoard.at(boardIndex), victim, CE_CHANGE_HEALTH, {attackPoints});
-    }
+		_opponent->applyEffectToCreature(_cardBoard.at(boardIndex), victim, CE_CHANGE_HEALTH, {-attackPoints});
 }
 
-/*--------------------------- BOARD AND CREATURE INTERFACE */
+/*------------------------------ APPLYING EFFECTS */
+void Player::applyEffect(const Card* usedCard, int method, const EffectParamsCollection& effectArgs)
+{
+    _lastCasterCard = usedCard;
+    _effectMethods[method](*this, effectArgs);
+}
+
+void Player::applyEffectToCreature(Creature* casterAndSubject, int method, const EffectParamsCollection& effectArgs)
+{
+    _lastCasterCard = casterAndSubject;
+    casterAndSubject->applyEffect(method, effectArgs);
+}
+
 void Player::applyEffectToCreature(const Card* usedCard, int boardIndex, int method, const EffectParamsCollection& effectArgs)
 {
 	_lastCasterCard = usedCard;
@@ -145,8 +165,8 @@ void Player::applyEffectToCreature(const Card* usedCard, int boardIndex, int met
 	if (boardIndex<0)
 		boardIndex = rand() % _cardBoard.size();
 
-	Creature* usedCreature = _cardBoard.at(boardIndex);
-    Creature::effectMethods[method](*usedCreature, effectArgs);
+	Creature* subject = _cardBoard.at(boardIndex);
+	subject->applyEffect(method, effectArgs);
 }
 
 void Player::applyEffectToCreatures(const Card* usedCard, int method, const EffectParamsCollection& effectArgs)

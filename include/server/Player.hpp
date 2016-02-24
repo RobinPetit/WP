@@ -22,7 +22,9 @@ class Creature;
 class Player
 {
 public:
+	/// Types
 	typedef std::size_t ID;
+
 	/// Constructor
 	Player(Player::ID id, sf::TcpSocket& socket);
 	void setOpponent(Player* opponent);  // Complementary
@@ -31,36 +33,26 @@ public:
 	~Player() = default;
 
 	/// Interface for basic gameplay (board)
+	void beginGame(bool isActivePlayer);
 	void enterTurn(int turn);
-	void leaveTurn(int turn);
+	void leaveTurn();
 	void useCard(int handIndex); 	///< Use a card
-	void attackWithCreature(int boardIndex, int victim);  ///< Attack victim with a card
+	void attackWithCreature(int boardIndex, int victim);  ///< Attack victim (-1 for opponent) with a card
 
 	Player::ID getID();
 
-	/// Effects
-	void setConstraint(const EffectParamsCollection& args);
-	void pickDeckCards(const EffectParamsCollection& args);
-	void loseHandCards(const EffectParamsCollection& args);
-	void reviveBinCard(const EffectParamsCollection& args);
-
-	void stealHandCard(const EffectParamsCollection& args);
-	void exchgHandCard(const EffectParamsCollection& args);
-
-	void setEnergy(const EffectParamsCollection& args);
-	void changeEnergy(const EffectParamsCollection& args);
-	void changeHealth(const EffectParamsCollection& args);
-
-	static std::function<void(Player&, const EffectParamsCollection&)> effectMethods[P_EFFECTS_COUNT];
-
-	///Pass along effects to creatures
-	void applyEffectToCreatures(const Card* usedCard, int method, const EffectParamsCollection& effectArgs);
+	/// Interface for applying effects
+	//to Player
+	void applyEffect(const Card* usedCard, int method, const EffectParamsCollection& effectArgs);
+	//to Creatures
+	void applyEffectToCreature(Creature* casterAndSubject, int method, const EffectParamsCollection& effectArgs);
 	void applyEffectToCreature(const Card* usedCard, int boardIndex, int method, const EffectParamsCollection& effectArgs);
+	void applyEffectToCreatures(const Card* usedCard, int method, const EffectParamsCollection& effectArgs);
 	int getCreatureConstraint(Creature& subject, int constraintIDD);
 	const Card* getLastCaster();
 
 private:
-	//////////// type definitions
+	/// Types
 	struct TurnData
 	{
 		int cardsUsed;
@@ -68,23 +60,22 @@ private:
 		int creatureAttacks;
 		int spellCalls;
 	};
+	constexpr static TurnData _emptyTurnData = {0, 0, 0, 0};
 
-	//////////// attributes
+	/// Attributes
 	Board* _board;
 	Player* _opponent = nullptr;
 	Player::ID _id;
-
 	int _energy;
 	int _health;
 
 	sf::TcpSocket& _socketToClient;
 
+	TurnData _turnData;
+
 	// Constraints
 	Constraints _constraints = Constraints(P_CONSTRAINT_DEFAULTS, P_CONSTRAINTS_COUNT);
 	Constraints _teamConstraints = Constraints(C_CONSTRAINT_DEFAULTS, C_CONSTRAINTS_COUNT);
-
-	constexpr static TurnData _emptyTurnData = {0, 0, 0, 0};
-	TurnData _turnData;
 
 	// Card holders
 	std::stack<Card *> _cardDeck;  ///< Cards that are in the deck (not usable yet)
@@ -93,11 +84,24 @@ private:
 	std::vector<Card *> _cardBin;  ///< Cards that are discarded (dead creatures, used spells)
 	const Card* _lastCasterCard=nullptr;
 
-	// random management
+	// Random management
 	std::default_random_engine _engine;
 
+	// Effects container
+	static std::function<void(Player&, const EffectParamsCollection&)> _effectMethods[P_EFFECTS_COUNT];
 
-	//////////// Private methods
+	/// Effects
+	void setConstraint(const EffectParamsCollection& args);
+	void pickDeckCards(const EffectParamsCollection& args);
+	void loseHandCards(const EffectParamsCollection& args);
+	void reviveBinCard(const EffectParamsCollection& args);
+	void stealHandCard(const EffectParamsCollection& args);
+	void exchgHandCard(const EffectParamsCollection& args);
+	void setEnergy(const EffectParamsCollection& args);
+	void changeEnergy(const EffectParamsCollection& args);
+	void changeHealth(const EffectParamsCollection& args);
+
+	/// Other private methods
 	void exploitCardEffects(Card* usedCard);
 	void setTeamConstraint(const Card* usedCard, const EffectParamsCollection& effectArgs);
 

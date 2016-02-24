@@ -1,6 +1,6 @@
 #include "server/Creature.hpp"
 
-std::function<void(Creature&, const EffectParamsCollection&)> Creature::effectMethods[P_EFFECTS_COUNT] =
+std::function<void(Creature&, const EffectParamsCollection&)> Creature::_effectMethods[P_EFFECTS_COUNT] =
 {
 	&Creature::setConstraint,
 	&Creature::resetAttack,
@@ -63,12 +63,17 @@ void Creature::leaveTurn()
 }
 
 /*--------------------------- GETTERS FOR EFFECTS */
+void Creature::applyEffect(int method, const EffectParamsCollection& effectArgs)
+{
+	_effectMethods[method](*this, effectArgs);
+}
+
 int Creature::getAttack()
 {
 	return _attack;
 }
 
-int Creature::getConstraint(int constraintID)
+int Creature::getConstraint(int constraintID) const
 {
     return _constraints.getConstraint(constraintID);
 }
