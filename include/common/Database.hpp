@@ -10,6 +10,8 @@
 
 #include <sqlite3.h>
 
+#include <common/Deck.hpp>
+
 struct Friend
 {
 	int64_t id;
