@@ -42,6 +42,7 @@ public:
 private:
 	int _turn = 0;
 	Player *_activePlayer, *_passivePlayer;
+	bool turnCanEnd=false;
 };
 
 
