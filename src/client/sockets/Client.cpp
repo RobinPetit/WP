@@ -69,6 +69,7 @@ void Client::quit()
 	sf::Packet packet;
 	packet << TransferType::PLAYER_DISCONNECTION;
 	_socket.send(packet);
+	_inGame.store(false);
 	_threadLoop.store(false);
 	_listenerThread.join();
 	_isConnected = false;
@@ -87,6 +88,7 @@ void Client::startGame()
 	sf::Packet packet;
 	packet << TransferType::GAME_REQUEST;
 	_socket.send(packet);
+	// \TODO: have possibility to stop waiting
 	_socket.receive(packet);
 	packet >> _inGameOpponentName;
 	std::cout << "opponent found: " << _inGameOpponentName << std::endl;
@@ -100,31 +102,11 @@ sf::TcpSocket& Client::getGameSocket()
 	return _inGameSocket;
 }
 
-void Client::initInGameListener()
+sf::TcpSocket& Client::getGameListeningSocket()
 {
-	_inGameListeningThread = std::thread(&Client::inputGameListening, this);
-}
-
-// function called by a new thread only
-void Client::inputGameListening()
-{
-	waitTillReadyToPlay();
-	sf::Packet receivedPacket;
-	TransferType type;
-	while(true)
-	{
-		_inGameListeningSocket.receive(receivedPacket);
-		receivedPacket >> type;
-		if(type == TransferType::GAME_OVER)
-			break;
-		else if(type == TransferType::GAME_PLAYER_ENTER_TURN)
-			;  // perform turn changing here
-		else if(type == TransferType::GAME_PLAYER_LEAVE_TURN)
-			;  // perform turn changing here
-		else
-			std::cerr << "Unknown message received: " << static_cast<sf::Uint32>(type) << "; ignore." << std::endl;
-	}
-	std::cout << "Game is over" << std::endl;
+	if(!_inGame)
+		throw std::runtime_error("No socket available: not in game");
+	return _inGameListeningSocket;
 }
 
 void Client::waitTillReadyToPlay()
@@ -295,7 +277,6 @@ void Client::startConversation(const std::string& playerName) const
 // function called by a new thread only
 void Client::inputListening()
 {
-	//bool volatile _continue = *loop;
 	sf::TcpListener chatListener;
 	//~ use of a selector to be non-blocking. There may be a better idea
 	sf::SocketSelector selector;
@@ -358,6 +339,5 @@ void Client::initInGameConnection(sf::Packet& transmission)
 	_inGameSocket.connect(_socket.getRemoteAddress(), serverListeningPort);
 	_inGameListeningSocket.connect(_socket.getRemoteAddress(), serverListeningPort);
 	_readyToPlay.store(true);
-	initInGameListener();
 }
 

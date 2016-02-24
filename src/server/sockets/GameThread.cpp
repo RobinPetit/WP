@@ -4,6 +4,7 @@
 // SFML headers
 #include <SFML/Network/TcpListener.hpp>
 #include <SFML/Network/IpAddress.hpp>
+#include <SFML/System/Sleep.hpp>
 // std-C++ headers
 #include <iostream>
 #include <chrono>
@@ -82,6 +83,7 @@ void GameThread::startGame(const ClientInformations& player1, const ClientInform
 	_timerThread = std::thread(&GameThread::makeTimer, this);
 	while(_running.load())
 	{
+		sf::sleep(sf::milliseconds(50));
 		// get actions from playing client
 	}
 	packet.clear();
@@ -99,10 +101,10 @@ void GameThread::makeTimer()
 		std::this_thread::sleep_for(_turnTime);
 		sf::Packet endOfTurn;
 		endOfTurn << TransferType::GAME_PLAYER_LEAVE_TURN;
-		getSocketFromID(_gameBoard.getCurrentPlayerID()).send(endOfTurn);
+		getSpecialSocketFromID(_gameBoard.getCurrentPlayerID()).send(endOfTurn);
 		sf::Packet startOfTurn;
 		startOfTurn << TransferType::GAME_PLAYER_ENTER_TURN;
-		getSocketFromID(_gameBoard.getWaitingPlayerID()).send(startOfTurn);
+		getSpecialSocketFromID(_gameBoard.getWaitingPlayerID()).send(startOfTurn);
 		_gameBoard.endTurn();
 	}
 }

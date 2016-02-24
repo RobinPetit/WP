@@ -5,11 +5,12 @@ constexpr unsigned DECK_SIZE = 20;
 constexpr unsigned DFLT_ENERGY = 0;
 constexpr unsigned MAX_ENERGY = 10;
 
+// std-C++ headers
 #include <vector>
+#include <atomic>
+// WizardPoker headers
 #include "client/AbstractState.hpp"
-// \TODO place Card in common or create a new class for client
-// No it's wrong
-// #include "server/Card.hpp"
+#include "client/NonBlockingInput.hpp"
 
 // Forward declarations
 class StateStack;
@@ -25,29 +26,38 @@ class GameState : public AbstractState
 		/// It must do all things related to drawing or printing stuff on the screen.
 		virtual void display() override;
 
-		//~Didn't catch the difference between begin and start turn (NBA).
-		void begin(unsigned lotsOfDataAboutStuff);
+		void begin();
 		void startTurn();
 
 		void changeEnergy(unsigned);  ///Can be used for effects
 
 	private:
-		// Commented because Card does not exist yet
-		// std::vector<Card> _inHand;
-		// std::vector<Card> _onBoard;
+		std::vector<int> _inHand;
+		std::vector<int> _onBoard;
+		std::vector<int> _oppoBoard;
 		unsigned _lotsOfDataAboutStuff;
 		unsigned _remainCards = DECK_SIZE;
 		unsigned _energy = DFLT_ENERGY;
 		unsigned _oppoCards;
 		unsigned _nbrTurn = 0;
-		bool _myTurn;
+		// \TODO: sync with Client::_inGame
+		std::atomic_bool _playing;
+		std::atomic_bool _myTurn;
+		NonBlockingInput _nonBlockingInput;
+		/// Waits for special server data such as END_OF_TURN, BOARD_UPDATE, etc.
+		std::thread _listeningThread;
 
 		void setEnergy(unsigned);
 		void useCard();
+		void putOnBoard(std::size_t);
 		void attackWithCreature();
 		void endTurn();
 		void quit();
 
+		/// Start the new thread waiting for special data
+		void initListening();
+		/// Called by the game listening thread: waits for server game thread special data
+		void inputListening();
 };
 
 #endif  // _GAME_STATE_CLIENT_HPP

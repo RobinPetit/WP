@@ -92,6 +92,10 @@ public:
 	/// \throw std::runtime_error if the method is called and no game has started
 	sf::TcpSocket& getGameSocket();
 
+	/// Used to ask the socked used to listen to server special data
+	/// \throw std::runtime_error if the method is called and no game has started
+	sf::TcpSocket& getGameListeningSocket();
+
 	/// The function used to rest assured all conections are stopped and the client is
 	/// not waiting for entering chat connections anymore
 	void quit();
@@ -140,15 +144,13 @@ private:
 	//////// Game related attributes
 
 	/// Tell whether the client is currently playing or not
-	bool _inGame;
+	std::atomic_bool _inGame;
 	/// Socket used only when a game is started to communicate with the specialized thread in the server
 	sf::TcpSocket _inGameSocket;
 	/// Socket used to receive special data from the server game thread
 	sf::TcpSocket _inGameListeningSocket;
 	/// Name of the opponent when in game
 	std::string _inGameOpponentName;
-	/// Waits for special server data such as END_OF_TURN, BOARD_UPDATE, etc.
-	std::thread _inGameListeningThread;
 	/// Tells whether everything has been set up correctly and the user is ready to start
 	std::atomic_bool _readyToPlay;
 
@@ -163,10 +165,6 @@ private:
 	void startChat(sf::Packet& transmission);
 	/// This function is used to make the proper exchanges with the srever when a game is started
 	void initInGameConnection(sf::Packet& transmission);
-	/// Start the new thread waiting for special data
-	void initInGameListener();
-	/// Called by the game listening thread: waits for server game thread special data
-	void inputGameListening();
 };
 
 #endif // _CONNECTION_HPP_
