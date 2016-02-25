@@ -85,7 +85,7 @@ Ladder ServerDatabase::getLadder()
 	return ladder;
 }
 
-void ServerDatabase::addFriend(int userId, const int newFriendId)
+void ServerDatabase::addFriend(const int userId, const int newFriendId)
 {
 	sqlite3_reset(_addFriendStmt);
 	sqliteThrowExcept(sqlite3_bind_int(_addFriendStmt, 1, userId));

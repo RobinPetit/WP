@@ -26,7 +26,7 @@ public:
 	std::vector<Deck> getDecks(const int userId);
 	CardsCollection getCardsCollection(const int userId);
 	Ladder getLadder();
-	void addFriend(int userId, const int newFriendId);
+	void addFriend(const int userId, const int newFriendId);
 
 	virtual ~ServerDatabase();
 
