@@ -408,6 +408,8 @@ void Player::changeEnergy(const EffectParamsCollection& args)
 	_energy+=points;
 	if (_energy<0)
 		_energy=0;
+	else if (_energy>_maxEnergy)
+		_energy=_maxEnergy;
 	sendCurrentEnergy();
 }
 
