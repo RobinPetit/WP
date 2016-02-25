@@ -1,43 +1,57 @@
 % si on ne précise pas le sort explicitement, il n'est pas content... Ça me gonfle donc je laisse comme ça pour l'instant...
+% //~ TODO modifier le Sort des 2 derniers selon votre convenance
 
-\newglossaryentry{duel}{
+\newglossaryentry{Duel}{
     type=glossary,
     name={duel},
     description={Affrontement entre deux utilisateurs se solvant en la victoire de l'un des deux joueurs},
     sort=45
 }
 
-\newglossaryentry{facultatif}{
+\newglossaryentry{Facultatif}{
     type=glossary,
     name={facultatif},
     description={Non-requis explicitement ou implicitement par le client mais qui pourra être implémenté par la suite},
     sort=65
 }
 
-\newglossaryentry{deck}{
+\newglossaryentry{Deck}{
     type=glossary,
     name={deck},
     description={Paquet d'exactement 20 cartes de jeu ne comprenant pas plus de deux fois la même carte},
     sort=43
 }
 
-\newglossaryentry{fosse}{
+\newglossaryentry{Fosse}{
     type=glossary,
     name={fosse},
     description={\textit{Pseudo-lieu} du plateau où sont stockées les cartes ayant servi et étant arrivées en fin de vie},
     sort=67
 }
 
-\newglossaryentry{lobby}{
+\newglossaryentry{Lobby}{
     type=glossary,
     name={lobby},
     description={\textit{Pseudo} salle d'attente où les joueurs patientent le temps que le serveur leur désigne un adversaire},
     sort=125
 }
 
-\newglossaryentry{invoquer}{
+\newglossaryentry{Invoquer}{
     type=glossary,
     name={invoquer},
     description={Utiliser une carte. Consiste à placer un monstre sur le terrain, attquer avec un monstre ou lancer un sort},
     sort=95
+}
+\newglossaryentry{Creature}{
+    type=glossary,
+    name={Creature},
+    description={Une créature, (ou \textbf{Creature}) est une carte jouable sur le plateau. Elle dispose d'un certain montant de point de vie, d'un coût d'invocation, d'une
+    valeur d'attaque et éventuellement d'un ou plusieurs effets, qu'il soit direct ou qu'il applique des contraintes à qui que ce soit.},
+    sort=45
+}
+\newglossaryentry{Sort}{
+    type=glossary,
+    name={Sort},
+    description={Un sort, (ou \textbf{Spell}) est une carte qui déclenche un effet à l'activation. Un sort ne dipose que d'un coût, et d'un ou plusieurs effets.},
+    sort=45
 }
