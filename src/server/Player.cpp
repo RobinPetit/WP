@@ -104,7 +104,7 @@ void Player::useCard(int handIndex)
 	}
 	catch (std::out_of_range)
 	{
-		//NETWORK: INPUT_ERROR
+		sendValueToClient(_socketToClient, TransferType::SERVER_UNABLE_TO_PERFORM);
 		return;
 	}
 
@@ -171,9 +171,10 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 	}
 	catch (std::out_of_range)
 	{
-		//NETWORK: INPUT_ERROR
+		sendValueToClient(_socketToClient, TransferType::SERVER_UNABLE_TO_PERFORM);
 		return;
 	}
+
 	if (_constraints.getConstraint(PC_TEMP_CREATURE_ATTACK_LIMIT) == _turnData.creatureAttacks)
 		response << TransferType::SERVER_UNABLE_TO_PERFORM;
 	else
@@ -205,22 +206,10 @@ void Player::applyEffectToCreature(Creature* casterAndSubject, EffectParamsColle
 	casterAndSubject->applyEffect(effectArgs); //call method on effect subject (same as caster)
 }
 
-void Player::applyEffectToCreature(const Card* usedCard, EffectParamsCollection effectArgs, IndexOption indexOpt)
+void Player::applyEffectToCreature(const Card* usedCard, EffectParamsCollection effectArgs, int boardIndex)
 {
 	_lastCasterCard = usedCard; //remember last used card
-	int boardIndex;
-
-	switch (indexOpt)
-	{
-		case INDEX_RANDOM:
-			boardIndex = std::uniform_int_distribution<int>(0, _cardBoard.size()-1)(_engine);
-		case INDEX_REQUEST:
-			boardIndex = 0;
-			//NETWORK: ASK_FOR_INDEX
-	}
-
-	Creature* subject = _cardBoard.at(boardIndex);
-	subject->applyEffect(effectArgs);
+	_cardBoard.at(boardIndex)->applyEffect(effectArgs);
 }
 
 void Player::applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollection effectArgs)
@@ -249,6 +238,21 @@ int Player::getCreatureConstraint(const Creature& subject, int constraintID)
 const Card* Player::getLastCaster()
 {
 	return _lastCasterCard;
+}
+
+int Player::getRandomBoardIndex()
+{
+	return std::uniform_int_distribution<int>(0, _cardBoard.size()-1)(_engine);
+}
+
+int Player::requestSelfBoardIndex()
+{
+	return 0; //NETWORK: REQUEST SELF BOARD INDEX
+}
+
+int Player::requestOppoBoardIndex()
+{
+	return 0; //NETWORK: REQUEST OPPO BOARD INDEX
 }
 
 /*------------------------------ EFFECTS (PRIVATE) */
@@ -346,7 +350,8 @@ void Player::stealHandCard(const EffectParamsCollection& args)
 ///	 + SERVER_ACKNOWLEDGEMENT if card has been swapped
 void Player::exchgHandCard(const EffectParamsCollection& args)
 {
-	int myCardIndex; //card to exchange = args.at(0);
+	int myCardIndex; //card to exchange
+	sf::Packet packet;
 	Card* myCard;
 
 	try //check the input
@@ -362,7 +367,6 @@ void Player::exchgHandCard(const EffectParamsCollection& args)
 
 	Card* hisCard =  _opponent->cardExchangeFromHand(myCard);
 
-	sf::Packet packet;
 	if (hisCard == nullptr)
 		packet << TransferType::SERVER_UNABLE_TO_PERFORM;
 	else
@@ -370,7 +374,7 @@ void Player::exchgHandCard(const EffectParamsCollection& args)
 		cardExchangeFromHand(hisCard, myCardIndex);
 		packet << TransferType::SERVER_ACKNOWLEDGEMENT;
 	}
-	_socketToClient.send(packet);
+	_socketToClient.send(packet); //Shouldn't this be called before cardExchangeFromHand ?
 }
 
 void Player::resetEnergy(const EffectParamsCollection& args)
@@ -507,9 +511,7 @@ void Player::cardDeckToHand(int amount)
 		amount--;
 		_cardHand.push_back(_cardDeck.top());
 		_cardDeck.pop();
-		//NETWORK: DECK_EMPTY
 	}
-	//NETWORK: DECK_CHANGED
 	sendHandState();
 }
 
@@ -555,7 +557,6 @@ void Player::cardAddToHand(Card* givenCard)
 {
 	_cardHand.push_back(givenCard);
 	sendHandState();
-	//NETWORK: CARD_WON
 }
 
 Card* Player::cardRemoveFromHand()
@@ -567,7 +568,6 @@ Card* Player::cardRemoveFromHand()
 	const auto& handIt = std::find(_cardHand.begin(), _cardHand.end(), _cardHand[handIndex]);
 	_cardHand.erase(handIt);
 	sendHandState();
-	//NETWORK: CARD_STOLEN
 	return stolenCard;
 }
 
@@ -584,7 +584,6 @@ Card* Player::cardExchangeFromHand(Card* givenCard, int handIndex)
 	Card* stolen = _cardHand[handIndex];
 	_cardHand.at(handIndex) = givenCard;
 	sendHandState();
-	//NETWORK: CARD_EXCHANGED
 	return stolen;
 }
 

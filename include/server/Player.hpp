@@ -19,12 +19,6 @@
 class Board;
 class Creature;
 
-enum IndexOption : int
-{
-    INDEX_RANDOM,
-    INDEX_REQUEST
-};
-
 /// Represents one of the two players for a given game.
 class Player
 {
@@ -51,7 +45,7 @@ public:
 	void applyEffect(const Card* usedCard, EffectParamsCollection effectArgs);
 	//to a Creature
 	void applyEffectToCreature(Creature* casterAndSubject, EffectParamsCollection effectArgs); //With ref. to creature
-	void applyEffectToCreature(const Card* usedCard, EffectParamsCollection effectArgs, IndexOption indexOpt); //With creature index from effectArgs
+	void applyEffectToCreature(const Card* usedCard, EffectParamsCollection effectArgs, int boardIndex); //With creature index
 	//to all Creatures
 	void applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollection effectArgs);
 
@@ -60,6 +54,9 @@ public:
 	const Card* getLastCaster();
 	Player::ID getID();
 	const std::vector<Creature *>& getBoard();
+	int getRandomBoardIndex();
+	int requestSelfBoardIndex();
+	int requestOppoBoardIndex();
 
 private:
 	/// Types
@@ -76,13 +73,14 @@ private:
 	Board* _board;
 	Player* _opponent = nullptr;
 	Player::ID _id;
-	int _energy, _energyInit = 0, _health;
-	static const int _maxEnergy = 10, _maxHealth = 20;
 
-
+	//Client communication
 	sf::TcpSocket& _socketToClient;
 	sf::TcpSocket& _specialSocketToClient;
 
+	// Gameplay
+	int _energy, _energyInit = 0, _health;
+	static const int _maxEnergy = 10, _maxHealth = 20;
 	TurnData _turnData;
 
 	// Constraints

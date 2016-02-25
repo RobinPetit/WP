@@ -28,25 +28,21 @@ class GameState : public AbstractState
 		void play();
 		void startTurn();
 		void updateData(std::array<unsigned, 5>);
-		void pickCard(int);
-
-		///Those methods can be used for effects
-		void changeHealth(int);
-		void changeOppoHealth(int);
-		void changeEnergy(int);
 
 	private:
 		///////////////// attributes
 
-		std::vector<sf::Uint32> _inHand;
-		std::vector<sf::Uint32> _onBoard;
-		std::vector<sf::Uint32> _oppoBoard;
-		std::vector<sf::Uint32> _graveyard;  // is this necessary?
-		unsigned _remainCards;
-		unsigned _selfHealth;
-		unsigned _oppoHealth;
-		unsigned _energy;
-		unsigned _oppoCards;
+		std::vector<sf::Uint32> _selfHandCards;
+		std::vector<sf::Uint32> _selfBoardCards;
+		std::vector<sf::Uint32> _selfGraveCards; //needed for reviving spells
+		std::vector<sf::Uint32> _oppoBoardCards;
+		unsigned _selfDeckSize;
+		unsigned _oppoHandSize;
+		
+	
+		unsigned _selfHealth, _oppoHealth;
+		unsigned _selfEnergy;
+		
 		// allow to update these values without interfering during a turn
 		std::mutex _accessHealth;
 		std::mutex _accessEnergy;
@@ -59,15 +55,17 @@ class GameState : public AbstractState
 
 		//////////////// private methods
 
-		std::size_t selectHand();
-		std::size_t selectBoard();
-		std::size_t selectOppo();
+		// Requests user for additional input
+		int askIndex(int maxIndex, std::string inputMessage);
+		int askSelfHandIndex();
+		int askSelfBoardIndex();
+		int askSelfGraveyardIndex();
+		int askOppoBoardIndex();
+		int askOppoHandIndex();
 
+		// User interface ("actions")
 		void useCard();
-		void putOnBoard(std::size_t);
 		void attackWithCreature();
-		void applyOppoEffect();
-		void applySelfEffect();
 		void endTurn();
 		void quit();
 
@@ -75,6 +73,16 @@ class GameState : public AbstractState
 		void initListening();
 		/// Called by the game listening thread: waits for server game thread special data
 		void inputListening();
+		
+		// Not needed ?
+		///Those methods can be used for effects
+		//void changeHealth(int);
+		//void changeOppoHealth(int);
+		//void changeEnergy(int);
+		//void pickCard(int); //HAPPENS IN SERVER
+		//void applyOppoEffect();
+		//void applySelfEffect();
+		//void putOnBoard(std::size_t);
 };
 
 #endif  // _GAME_STATE_CLIENT_HPP

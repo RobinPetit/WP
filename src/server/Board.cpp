@@ -88,11 +88,11 @@ void Board::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 			break;
 		case CREATURE_SELF_INDX:	//active player's creature at given index
 			//TODO: NETWORK : ASK_FOR_INDEX (_activePlayer)
-			_activePlayer->applyEffectToCreature(usedCard, effectArgs, INDEX_REQUEST);
+			_activePlayer->applyEffectToCreature(usedCard, effectArgs, _activePlayer->requestSelfBoardIndex());
 			break;
 
 		case CREATURE_SELF_RAND:	//active player's creature at random index
-			_activePlayer->applyEffectToCreature(usedCard, effectArgs, INDEX_RANDOM);
+			_activePlayer->applyEffectToCreature(usedCard, effectArgs, _activePlayer->getRandomBoardIndex());
 			break;
 
 		case CREATURE_SELF_TEAM:	//active player's team of creatures
@@ -101,11 +101,11 @@ void Board::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 
 		case CREATURE_OPPO_INDX:	//passive player's creature at given index
 			//TODO: NETWORK : ASK_FOR_INDEX (_activePlayer)
-			_passivePlayer->applyEffectToCreature(usedCard, effectArgs, INDEX_REQUEST);
+			_passivePlayer->applyEffectToCreature(usedCard, effectArgs, _activePlayer->requestOppoBoardIndex());
 			break;
 
 		case CREATURE_OPPO_RAND:	//passive player's creature at random index
-			_passivePlayer->applyEffectToCreature(usedCard, effectArgs, INDEX_RANDOM);
+			_passivePlayer->applyEffectToCreature(usedCard, effectArgs, _activePlayer->getRandomBoardIndex());
 			break;
 
 		case CREATURE_OPPO_TEAM:	//passive player's team of creatures
