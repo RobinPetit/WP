@@ -20,7 +20,7 @@ std::function<void(Player&, const EffectParamsCollection&)> Player::_effectMetho
 	&Player::stealHandCard,
 	&Player::exchgHandCard,
 
-	&Player::setEnergy,
+	&Player::resetEnergy,
 	&Player::changeEnergy,
 	&Player::changeHealth,
 };
@@ -65,7 +65,7 @@ void Player::enterTurn(int turn)
 
 	//Player's turn-based constraints
 	cardDeckToHand(_constraints.getConstraint(PC_TURN_CARDS_PICKED));
-	setEnergy({_constraints.getConstraint(PC_TURN_ENERGY_INIT)});
+	resetEnergy({_constraints.getConstraint(PC_TURN_ENERGY_INIT_CHANGE)});
 	changeEnergy({_constraints.getConstraint(PC_TURN_ENERGY_CHANGE)});
 	changeHealth({_constraints.getConstraint(PC_TURN_HEALTH_CHANGE)});
 	if (_cardDeck.empty())
@@ -373,23 +373,25 @@ void Player::exchgHandCard(const EffectParamsCollection& args)
 	_socketToClient.send(packet);
 }
 
-void Player::setEnergy(const EffectParamsCollection& args)
+void Player::resetEnergy(const EffectParamsCollection& args)
 {
-	int points; //energy points to give
+	int additionalPoints; //energy points to add to reset value
 	try //check the input
 	{
-		points=args.at(0);
+		additionalPoints=args.at(0);
 	}
 	catch (std::out_of_range)
 	{
 		//SERVER: CARD_ERROR
 		return;
 	}
-	_energy = points;
-	if (_energy<0)
-		_energy=0;
+	_energyInit += additionalPoints; //add points to initial amount of energy
+	if (_energyInit<0)
+		_energyInit=0;
 	else if (_energy>_maxEnergy)
-		_energy=_maxEnergy;
+		_energyInit=_maxEnergy;
+
+	_energy = _energyInit;
 	sendCurrentEnergy();
 }
 
@@ -408,6 +410,8 @@ void Player::changeEnergy(const EffectParamsCollection& args)
 	_energy+=points;
 	if (_energy<0)
 		_energy=0;
+	else if (_energy>_maxEnergy)
+		_energy=_maxEnergy;
 	sendCurrentEnergy();
 }
 
@@ -610,7 +614,7 @@ void Player::sendIDsFromVector(TransferType type, const std::vector<CardType *>&
 {
 	sf::Packet packet;
 	packet << type;
-	std::vector<sf::Uint32> cardIds{vect.size()};
+	std::vector<sf::Uint32> cardIds{static_cast<sf::Uint32>(vect.size())};
 	for(typename std::vector<CardType *>::size_type i{0}; i < vect.size(); ++i)
 		cardIds[i] = vect[i]->getID();
 	packet << cardIds;

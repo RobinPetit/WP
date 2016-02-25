@@ -44,7 +44,7 @@ enum PLAYER_CONSTRAINTS : int
 {
 	//turn-by-turn
 	PC_TURN_CARDS_PICKED, 			//amount of cards to pick each turn
-	PC_TURN_ENERGY_INIT,			//initial amount of energy points each turn
+	PC_TURN_ENERGY_INIT_CHANGE,		//amount of points added to init value each turn
 	PC_TURN_ENERGY_CHANGE,			//amount of energy points added each turn
 	PC_TURN_HEALTH_CHANGE,			//amount of health points added each turn
 	PC_TURN_HEALTH_CHANGE_DECK_EMPTY,	//amount of health points taken each turn when deck is empty

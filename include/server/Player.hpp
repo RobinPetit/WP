@@ -76,7 +76,7 @@ private:
 	Board* _board;
 	Player* _opponent = nullptr;
 	Player::ID _id;
-	int _energy, _health;
+	int _energy, _energyInit = 0, _health;
 	static const int _maxEnergy = 10, _maxHealth = 20;
 
 
@@ -109,7 +109,7 @@ private:
 	void reviveBinCard(const EffectParamsCollection& args);
 	void stealHandCard(const EffectParamsCollection& args);
 	void exchgHandCard(const EffectParamsCollection& args);
-	void setEnergy(const EffectParamsCollection& args);
+	void resetEnergy(const EffectParamsCollection& args);
 	void changeEnergy(const EffectParamsCollection& args);
 	void changeHealth(const EffectParamsCollection& args);
 
