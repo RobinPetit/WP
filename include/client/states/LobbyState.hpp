@@ -1,5 +1,5 @@
-#ifndef _MATCHMAKING_STATE_CLIENT_HPP
-#define _MATCHMAKING_STATE_CLIENT_HPP
+#ifndef _LOBBY_STATE_CLIENT_HPP
+#define _LOBBY_STATE_CLIENT_HPP
 
 #include "client/AbstractState.hpp"
 
@@ -7,11 +7,11 @@
 class StateStack;
 
 /// Cannot be more explicit.
-class MatchmakingState : public AbstractState
+class LobbyState : public AbstractState
 {
 	public:
 		/// Constructor.
-		MatchmakingState(StateStack& stateStack, Client& client);
+		LobbyState(StateStack& stateStack, Client& client);
 
 		/// The display function.
 		/// It must do all things related to drawing or printing stuff on the screen.
@@ -22,5 +22,5 @@ class MatchmakingState : public AbstractState
 
 };
 
-#endif// _MATCHMAKING_STATE_CLIENT_HPP
+#endif// _LOBBY_STATE_CLIENT_HPP
 
