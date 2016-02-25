@@ -30,14 +30,14 @@ void HomeState::display()
 
 void HomeState::connect()
 {
-	IniFile config;
-	int status = config.readFromFile(SERVER_CONFIG_FILE_PATH);
-	if(status != SUCCESS)
-		throw std::runtime_error("No config file");
-	if(config.find("SERVER_PORT") == config.end() || config.find("SERVER_ADDRESS") == config.end())
-		throw std::runtime_error("Missing data in config file");
 	try
 	{
+		IniFile config;
+		int status = config.readFromFile(SERVER_CONFIG_FILE_PATH);
+		if(status != SUCCESS)
+			throw std::runtime_error("No config file");
+		if(config.find("SERVER_PORT") == config.end() || config.find("SERVER_ADDRESS") == config.end())
+			throw std::runtime_error("Missing data in config file");
 		auto identifiers = askIdentifiers();
 		_client.connectToServer(identifiers.first,
 				identifiers.second,
@@ -49,19 +49,20 @@ void HomeState::connect()
 	{
 		std::cout << "Error: " << e.what() << "\n";
 		std::cout << "Unable to connect to server\n";
+		waitForEnter();
 	}
 }
 
 void HomeState::createAccount()
 {
-	IniFile config;
-	int status = config.readFromFile(SERVER_CONFIG_FILE_PATH);
-	if(status != SUCCESS)
-		throw std::runtime_error("No config file");
-	if(config.find("SERVER_PORT") == config.end() || config.find("SERVER_ADDRESS") == config.end())
-		throw std::runtime_error("Missing data in config file");
 	try
 	{
+		IniFile config;
+		int status = config.readFromFile(SERVER_CONFIG_FILE_PATH);
+		if(status != SUCCESS)
+			throw std::runtime_error("No config file");
+		if(config.find("SERVER_PORT") == config.end() || config.find("SERVER_ADDRESS") == config.end())
+			throw std::runtime_error("Missing data in config file");
 		auto identifiers = askIdentifiers();
 		_client.registerToServer(identifiers.first,
 				identifiers.second,
@@ -72,8 +73,9 @@ void HomeState::createAccount()
 	catch(const std::runtime_error& e)
 	{
 		std::cout << "Error: " << e.what() << "\n";
-		std::cout << "Unable to register to server, try again (or CTRL+C to exit):\n";
+		std::cout << "Unable to register to server, try again.\n";
 	}
+	waitForEnter();
 }
 
 void HomeState::quit()

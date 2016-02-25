@@ -71,7 +71,6 @@ void Client::sendConnectionToken(const std::string& password)
 	switch(response)
 	{
 	case TransferType::GAME_ALREADY_CONNECTED:
-		//TODO throw an exception rather than cout
 		throw std::runtime_error("you are already connected!");
 
 	case TransferType::GAME_WRONG_IDENTIFIERS:
