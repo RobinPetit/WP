@@ -14,14 +14,6 @@
 
 \graphicspath{{"Diagrams/"}}
 
-\title{Software Requirement Document : Wizard Poker \\ Groupe 5}
-\author{Baudoux Nicolas \and Berrewaerts Jonathan \and Gueniffrey Stanislas \and Muranovic Allan \and Petit Robin \and Reynouard Alexis \and Verhelst Théo}
-\date{année académique 2015-2016}
-
-\begin{center}\includegraphics[scale=1]{ULB.png}\end{center}
-
-\newpage
-
 \newglossary[glg]{glossary}{slm}{sbl}{Glossaire}
 \input{glossaire.tex}
 \makeglossaries
@@ -49,7 +41,56 @@
 \begin{document}
 
 \pagenumbering{Roman}
-\maketitle
+
+
+\begin{titlepage}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}} % Defines a new command for the horizontal lines
+
+\center % Center everything on the page
+
+%----------------------------------------------------------------------------------------
+%	HEADING SECTIONS
+%----------------------------------------------------------------------------------------
+
+\textsc{\LARGE Université libre de Bruxelles}\\[1.5cm]
+\textsc{\Large INFO-F-209}\\[0.5cm]
+\textsc{\large Projet d'année 2}\\[0.5cm]
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\HRule \\[0.4cm]
+{ \huge \bfseries Software Requirement Document : Wizard Poker \\ Groupe 5}\\[0.4cm]
+\HRule \\[1.5cm]
+
+%----------------------------------------------------------------------------------------
+%	AUTHOR SECTION
+%----------------------------------------------------------------------------------------
+
+\Large \emph{Auteurs :}\\
+Baudoux Nicolas, Berrewaerts Jonathan, Gueniffrey Stanislas,  Muranovic Allan, Petit Robin, Reynouard Alexis et Verhelst Théo
+
+%----------------------------------------------------------------------------------------
+%	DATE SECTION
+%----------------------------------------------------------------------------------------
+
+{\large \today}\\[2cm]
+
+%----------------------------------------------------------------------------------------
+%	LOGO SECTION
+%----------------------------------------------------------------------------------------
+
+\includegraphics{ULB.png}\\[1cm]
+
+%----------------------------------------------------------------------------------------
+
+\vfill
+
+\end{titlepage}
+
+
 \tableofcontents
 \newpage
 \pagenumbering{arabic}
@@ -74,7 +115,7 @@
 			\gls{Creature} tant que leur coût d'utilisation/d'invocation/, ne dépasse pas l'énergie disponible du joueur. ( Le joueur gagne un point d'énergie supplémentaire par tour jusqu'à atteindre son maximum de 10.)
 			Les cartes peuvent attaquer soit l'adversaire directmeent, soit une , soit une \gls{Creature} adverse. Ou encore avoir un ou plusieurs effets \textit{spéciaux}\footnote{Par exemple : \gls{invoquer} une carte au hasard, redonner de la vie, augmenter l'attaque, etc.}. Lorsqu'une carte
 			arrive à la fin de sa période d'existence (points de vie de la carte arrivés à 0, sort détruisant ladite carte, effet terminé, etc.), elle est
-			défaussée, c'est-à-dire qu'elle est envoyée dans la \gls{fosse}. 
+			défaussée, c'est-à-dire qu'elle est envoyée dans la \gls{fosse}.
 			Lorsqu'une carte est dans la \gls{fosse} (également appelé cimetière), elle
 			peut éventuellement être réutilisée à l'aide de sorts particuliers par exemple. Une carte défaussée n'est pas perdue, elle reste propriété du joueur :
 			à la fin de la partie, les joueurs ont les mêmes cartes qu'au début de la partie si ce n'est que le gagnant a reçu une carte supplémentaire
