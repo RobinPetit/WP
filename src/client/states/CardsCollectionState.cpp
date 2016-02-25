@@ -2,10 +2,18 @@
 #include "client/states/CardsCollectionState.hpp"
 
 CardsCollectionState::CardsCollectionState(StateStack& stateStack, Client& client):
-	AbstractState(stateStack, client),
-	_cardsCollection{_client.getCardsCollection()}
+	AbstractState(stateStack, client)
 {
 	addAction("Back to main menu", &CardsCollectionState::backMainMenu);
+	try
+	{
+		_cardsCollection = _client.getCardsCollection();
+	}
+	catch(const std::runtime_error& e)
+	{
+		std::cout << "Error: " << e.what() << "\n";
+		std::cout << "Default card collection loaded.\n";
+	}
 }
 
 void CardsCollectionState::display()

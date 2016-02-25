@@ -2,12 +2,21 @@
 #include "client/states/LadderState.hpp"
 
 LadderState::LadderState(StateStack& stateStack, Client& client):
-	AbstractState(stateStack, client),
-	_ladder{_client.getLadder()}
+	AbstractState(stateStack, client)
 {
 	addAction("Back to main menu", &LadderState::backMainMenu);
 	// Sort the ladder according to user's win games/played games ratio
 	// This sorting criterion can really be improved
+	try
+	{
+		_ladder = _client.getLadder();
+	}
+	catch(const std::runtime_error& e)
+	{
+		std::cout << "Error: " << e.what() << "\n";
+		std::cout << "Empty ladder loaded.\n";
+		return;
+	}
 	std::sort(_ladder.begin(), _ladder.end(), [](const LadderEntry& lhs, const LadderEntry& rhs)
 	{
 		if(lhs.victories + lhs.defeats == 0)

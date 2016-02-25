@@ -4,6 +4,7 @@
 #include "client/states/FriendsManagementState.hpp"
 #include "client/states/LadderState.hpp"
 #include "client/states/MainMenuState.hpp"
+#include "client/states/GameState.hpp"
 
 MainMenuState::MainMenuState(StateStack& stateStack, Client& client):
 	AbstractState(stateStack, client)
@@ -30,7 +31,10 @@ void MainMenuState::display()
 void MainMenuState::findGame()
 {
 	std::cout << "So, let's find an opponent...\n";
-	_client.startGame();
+	if(_client.startGame())
+		stackPush<GameState>();
+	else
+		std::cout << "You left the lobby.\n";
 }
 
 void MainMenuState::manageDecks()

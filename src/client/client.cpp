@@ -4,7 +4,6 @@
 
 // std-C++ headers
 #include <iostream>
-#include <cstdlib>
 // WizardPoker heaaders
 #include "client/StateStack.hpp"
 #include "client/states/HomeState.hpp"
@@ -22,7 +21,16 @@ int main()
 		std::cout << "What do you want to do? ";
 		std::string input;
 		std::getline(std::cin, input);
-		stack.handleInput(input);
+		try
+		{
+			stack.handleInput(input);
+		}
+		catch(std::runtime_error& error)
+		{
+			std::cerr << "Exception caught: " << error.what();
+			stack.clear();
+			return -1;
+		}
 	}
 	return 0;
 }

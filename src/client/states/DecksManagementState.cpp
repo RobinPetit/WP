@@ -2,17 +2,22 @@
 #include "client/states/DecksManagementState.hpp"
 
 DecksManagementState::DecksManagementState(StateStack& stateStack, Client& client):
-	AbstractState(stateStack, client),
-	_decks{_client.getDecks()},
-	_cardsCollection{_client.getCardsCollection()}
+	AbstractState(stateStack, client)
 {
 	addAction("Back to main menu", &DecksManagementState::backMainMenu);
 	addAction("Display a deck", &DecksManagementState::displayDeck);
 	addAction("Edit a deck", &DecksManagementState::editDeck);
 	addAction("Create a deck", &DecksManagementState::createDeck);
 	addAction("Delete a deck", &DecksManagementState::deleteDeck);
-	// Get the decks from the server...
-	// And the card collection too (for now this is the default card collection)
+	{
+		_decks = _client.getDecks();
+		_cardsCollection = _client.getCardsCollection();
+	}
+	catch(const std::runtime_error& e)
+	{
+		std::cout << "Error: " << e.what() << "\n";
+		std::cout << "Default card collection loaded.\n";
+	}
 }
 
 void DecksManagementState::display()
@@ -81,10 +86,17 @@ void DecksManagementState::editDeck()
 		}
 		catch(const std::logic_error& e)
 		{
-			std::cout << e.what() << "\n";
+			std::cout << "Error: " << e.what() << "\n";
 		}
 	};
-	_client.handleDeckEditing(_decks[deckIndex]);
+	try
+	{
+		_client.handleDeckEditing(_decks[deckIndex]);
+	}
+	catch(const std::runtime_error& e)
+	{
+		std::cout << "Error: " << e.what() << "\n";
+	}
 }
 std::size_t DecksManagementState::askForReplacedCard(std::size_t deckIndex)
 {
@@ -120,7 +132,14 @@ void DecksManagementState::createDeck()
 	std::string input;
 	std::getline(std::cin, input);
 	_decks.emplace_back(input);
-	_client.handleDeckCreation(_decks.back());
+	try
+	{
+		_client.handleDeckCreation(_decks.back());
+	}
+	catch(const std::runtime_error& e)
+	{
+		std::cout << "Error: " << e.what() << "\n";
+	}
 }
 
 void DecksManagementState::deleteDeck()
@@ -140,6 +159,10 @@ void DecksManagementState::deleteDeck()
 	catch(const std::logic_error& e)
 	{
 		std::cout << "Wrong input!\n";
+	}
+	catch(const std::runtime_error& e)
+	{
+		std::cout << "Error: " << e.what() << "\n";
 	}
 }
 

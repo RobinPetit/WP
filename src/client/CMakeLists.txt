@@ -2,8 +2,8 @@ set(SOURCES	"client.cpp"
 		"ClientDatabase.cpp"
 		# sockets
 		"sockets/Client.cpp"
-		"sockets/ChatListening.cpp"
 		"client.cpp"
+		"NonBlockingInput.cpp"
 		# states
 		"AbstractState.cpp"
 		"StateStack.cpp"
@@ -11,8 +11,10 @@ set(SOURCES	"client.cpp"
 		"states/DecksManagementState.cpp"
 		"states/FriendsManagementState.cpp"
 		"states/LadderState.cpp"
+		"states/LobbyState.cpp"
 		"states/MainMenuState.cpp"
 		"states/HomeState.cpp"
+		"states/GameState.cpp"
 	)
 
 set(CLIENT_NAME "${PROJECT_NAME}_client")

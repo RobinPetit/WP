@@ -7,24 +7,16 @@
 #include <SFML/Network/TcpSocket.hpp>
 #include <SFML/Network/SocketSelector.hpp>
 #include <SFML/Network/Packet.hpp>
+// WizardPoker headers
+#include "server/GameThread.hpp"
+#include "server/ClientInformations.hpp"
 // std-C++ headers
 #include <unordered_map>
 #include <memory>
 #include <string>
 #include <atomic>
 #include <thread>
-
-/// structure used inside of the server program to keep informations
-/// on a single client
-struct ClientInformations
-{
-	/// Holds the connection with the client. The smart pointers helps closing
-	/// the connection when needed, so that when the ClientInformations instance
-	/// gets deleted, the connection is closed (but a simple instance of socket
-	/// is not sufficient, because we need a dynamic allocation).
-	std::unique_ptr<sf::TcpSocket> socket;
-	sf::Uint16 listeningPort;  ///< Used to send connection for the chat.
-};
+#include <mutex>
 
 class Server final
 {
@@ -54,8 +46,12 @@ private:
 	std::thread _quitThread;
 	std::string _waitingPlayer;
 	bool _isAPlayerWaiting;
+	std::mutex _lobbyMutex;
 	const std::string _quitPrompt;
 	ServerDatabase _database;
+	std::vector<GameThread *> _runningGames;
+	std::mutex _accessRunningGames;
+	std::size_t _last_id;
 
 	// private methods
 	/// Used to handle a newconnection request (when the listener gets a packet)
@@ -108,12 +104,21 @@ private:
 	/// Used to send to a client the friendship request he received
 	void sendFriendshipRequests(const _iterator& it);
 
-	// Game management
+	//////////// Game management
 
-	/// Used when a player want to play with another player
+	/// Used when a player wants to play with another player
 	void findOpponent(const _iterator& it);
 
-	// Cards management
+	/// Used when a player wants to leave the lobby
+	void clearLobby(const _iterator& it);
+
+	/// Called by the new GameThread to start a game for two players
+	void startGame(std::size_t idx);
+
+	/// Starts the new thread for the new game
+	void createGame(unsigned ID1, unsigned ID2);
+
+	//////////// Cards management
 
 	/// Used when the user wants its decks list
 	void sendDecks(const _iterator& it);
@@ -130,7 +135,7 @@ private:
 	/// Used when the user wants its cards collection
 	void sendCardsCollection(const _iterator& it);
 
-	// Others
+	//////////// Others
 
 	/// Sent when the user wants the ladder
 	void sendLadder(const _iterator& it);

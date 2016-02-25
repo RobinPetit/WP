@@ -21,7 +21,8 @@ Server::Server():
 	_waitingPlayer(),
 	_isAPlayerWaiting(false),
 	_quitPrompt(":QUIT"),
-	_database()
+	_database(),
+	_last_id(0)
 {
 
 }
@@ -127,7 +128,7 @@ void Server::connectUser(sf::Packet& connectionPacket, std::unique_ptr<sf::TcpSo
 	// (be sure that this line is before the next, otherwise we get a segfault)
 	_socketSelector.add(*client);
 	// and add the new socket to the clients
-	_clients[playerName] = {std::move(client), clientPort};
+	_clients[playerName] = {std::move(client), clientPort, {}, {}, {}, {}, {}, ++_last_id};
 }
 
 void Server::registerUser(sf::Packet& registeringPacket, std::unique_ptr<sf::TcpSocket> client)
@@ -222,7 +223,7 @@ void Server::receiveData()
 			handleFriendshipRequest(it, packet);
 			break;
 		case TransferType::PLAYER_REMOVE_FRIEND:
-			handleRemoveFriend(it, packet);
+			handleRemoveFriend(packet);
 			break;
 		case TransferType::PLAYER_RESPONSE_FRIEND_REQUEST:
 			handleFriendshipRequestResponse(it, packet);
@@ -233,6 +234,9 @@ void Server::receiveData()
 		// Game management
 		case TransferType::GAME_REQUEST:
 			findOpponent(it);
+			break;
+		case TransferType::GAME_CANCEL_REQUEST:
+			clearLobby(it);
 			break;
 		// Cards management
 		case TransferType::PLAYER_ASKS_DECKS_LIST:
@@ -287,12 +291,22 @@ void Server::checkPresence(const _iterator& it, sf::Packet& transmission)
 
 void Server::quit()
 {
+	// End game threads
+	for(auto& gameThread: _runningGames)
+	{
+		gameThread->interruptGame();
+		gameThread->join();
+		delete gameThread;
+	}
+	_runningGames.clear();
 	// in case the method is called even though server has not been manually ended
 	_done.store(true);
 	_quitThread.join();
 	_threadRunning.store(false);
 	_socketSelector.clear();
 	_clients.clear();
+	// leave listening port
+	_listener.close();
 }
 
 Server::~Server()
@@ -314,12 +328,11 @@ void Server::waitQuit()
 	std::cout << "ending server..." << std::endl;
 }
 
-
-
 //////////////// Game management
 
 void Server::findOpponent(const _iterator& it)
 {
+	_lobbyMutex.lock();
 	if(!_isAPlayerWaiting)
 	{
 		_isAPlayerWaiting = true;
@@ -339,8 +352,49 @@ void Server::findOpponent(const _iterator& it)
 			it->second.socket->send(toSecond);
 			waitingPlayer->second.socket->send(toFirst);
 			_isAPlayerWaiting = false;
+			createGame(waitingPlayer->second.id, it->second.id);
 		}
 	}
+	_lobbyMutex.unlock();
+}
+
+void Server::clearLobby(const _iterator& it)
+{
+	_lobbyMutex.lock();
+	if(not _isAPlayerWaiting or _waitingPlayer != it->first)
+	{
+		std::cerr << "Trying to remove another player from lobby; ignored\n";
+		return;
+	}
+	else
+		_isAPlayerWaiting = false;
+	_lobbyMutex.unlock();
+}
+
+void Server::startGame(std::size_t idx)
+{
+	std::cout << "StartGame(" << idx << ")\n";
+	_accessRunningGames.lock();
+	GameThread& selfThread{*_runningGames[idx]};
+	_accessRunningGames.unlock();
+	const auto& finderById = [](unsigned playerId)
+	{
+		return [playerId](const std::pair<const std::string, ClientInformations>& it)
+		{
+			return it.second.id == playerId;
+		};
+	};
+	const auto& player1 = std::find_if(_clients.begin(), _clients.end(), finderById(selfThread._player1ID));
+	const auto& player2 = std::find_if(_clients.begin(), _clients.end(), finderById(selfThread._player2ID));
+	std::cout << "Game " << idx << " is starting: " << player1->first << " vs. " << player2->first << "\n";
+	selfThread.startGame(player1->second, player2->second);
+}
+
+void Server::createGame(unsigned ID1, unsigned ID2)
+{
+	_accessRunningGames.lock();
+	_runningGames.emplace_back(new GameThread(ID1, ID2, &Server::startGame, this, _runningGames.size()));
+	_accessRunningGames.unlock();
 }
 
 ///////////////////////// Friends management
@@ -369,13 +423,13 @@ void Server::handleChatRequest(sf::Packet& packet, std::unique_ptr<sf::TcpSocket
 		sf::TcpSocket toCallee;
 		std::cout << "address is " << _clients[calleeName].socket->getRemoteAddress() << " and port is " << _clients[calleeName].listeningPort << std::endl;
 		if(toCallee.connect(_clients[calleeName].socket->getRemoteAddress(), _clients[calleeName].listeningPort) != sf::Socket::Done)
-			std::cerr << "Unable to connect to calle (" << calleeName << ")\n";
+			std::cerr << "Unable to connect to callee (" << calleeName << ")\n";
 		else
 		{
 			std::cout << "connected\n";
 			// as the listening port has a delay, set communications as blokcing
 			toCallee.setBlocking(true);
-			packetToCalle << client->getRemoteAddress().toInteger() << callerPort << calleeName << callerName;
+			packetToCalle << TransferType::CHAT_PLAYER_IP << client->getRemoteAddress().toInteger() << callerPort << calleeName << callerName;
 			std::cout << "sending to callee\n";
 			if(toCallee.send(packetToCalle) != sf::Socket::Done)
 				std::cerr << "unable to send to calle\n";
@@ -465,6 +519,9 @@ void Server::sendFriendshipRequests(const _iterator& it)
 		response << FriendsList();
 	}
 	it->second.socket->send(response);
+	// make the friendship relation
+	it->second.friends.push_back(name);
+	asker->second.friends.push_back(it->first);
 }
 
 void Server::sendFriends(const _iterator& it)
