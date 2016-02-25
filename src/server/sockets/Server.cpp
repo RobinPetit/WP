@@ -384,7 +384,7 @@ void Server::handleChatRequest(sf::Packet& packet, std::unique_ptr<sf::TcpSocket
 			std::cout << "connected\n";
 			// as the listening port has a delay, set communications as blokcing
 			toCallee.setBlocking(true);
-			packetToCalle << client->getRemoteAddress().toInteger() << callerPort << calleeName << callerName;
+			packetToCalle << TransferType::CHAT_PLAYER_IP << client->getRemoteAddress().toInteger() << callerPort << calleeName << callerName;
 			std::cout << "sending to callee\n";
 			if(toCallee.send(packetToCalle) != sf::Socket::Done)
 				std::cerr << "unable to send to calle\n";
