@@ -178,7 +178,7 @@ bool Client::startGame()
 {
 	static const std::string cancelWaitingString{"q"};
 	NonBlockingInput input;
-	std::cout << "Entering the lobby. Type '" << cancelWaitingString << "' to leave the lobby.\n";
+	std::cout << "Entering the lobby. Type '" << cancelWaitingString << "' to leave.\n";
 	sf::Packet packet;
 	packet << TransferType::GAME_REQUEST;
 	_socket.send(packet);

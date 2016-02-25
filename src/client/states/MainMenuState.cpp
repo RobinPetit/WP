@@ -34,7 +34,7 @@ void MainMenuState::findGame()
 	if(_client.startGame())
 		stackPush<GameState>();
 	else
-		std::cout << "Youleft the lobby.\n";
+		std::cout << "You left the lobby.\n";
 }
 
 void MainMenuState::manageDecks()

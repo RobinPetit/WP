@@ -334,7 +334,7 @@ void Server::clearLobby(const _iterator& it)
 	_lobbyMutex.lock();
 	if(not _isAPlayerWaiting or _waitingPlayer != it->first)
 	{
-		std::cerr << "Trying to remvoe another player from lobby; ignored\n";
+		std::cerr << "Trying to remove another player from lobby; ignored\n";
 		return;
 	}
 	else
