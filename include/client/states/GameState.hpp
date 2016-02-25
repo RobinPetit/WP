@@ -29,11 +29,6 @@ class GameState : public AbstractState
 		void startTurn();
 		void updateData(std::array<unsigned, 5>);
 
-		///Those methods can be used for effects
-		void changeHealth(int);
-		void changeOppoHealth(int);
-		void changeEnergy(int);
-
 	private:
 		///////////////// attributes
 
@@ -80,6 +75,10 @@ class GameState : public AbstractState
 		void inputListening();
 		
 		// Not needed ?
+		///Those methods can be used for effects
+		//void changeHealth(int);
+		//void changeOppoHealth(int);
+		//void changeEnergy(int);
 		//void pickCard(int); //HAPPENS IN SERVER
 		//void applyOppoEffect();
 		//void applySelfEffect();

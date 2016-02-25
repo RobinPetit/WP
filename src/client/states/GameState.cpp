@@ -88,30 +88,6 @@ void GameState::startTurn()
 	/**/
 }
 
-void GameState::updateData(std::array<unsigned, 5> data)
-{
-	_selfEnergy = data[0];
-	_selfHealth = data[1]; _oppoHealth = data[2];
-	_selfDeckSize = data[3];
-	_oppoHandSize = data[4];
-
-}
-
-void GameState::changeHealth(int health)
-{
-	_selfHealth += health;
-}
-
-void GameState::changeOppoHealth(int health)
-{
-	_oppoHealth += health;
-}
-
-void GameState::changeEnergy(int energy)
-{
-	_selfEnergy += energy;
-}
-
 
 //PRIVATE METHODS
 
@@ -315,6 +291,30 @@ void GameState::inputListening()
 }
 
 //Not needed ?
+/*
+void GameState::updateData(std::array<unsigned, 5> data)
+{
+	_selfEnergy = data[0];
+	_selfHealth = data[1]; _oppoHealth = data[2];
+	_selfDeckSize = data[3];
+	_oppoHandSize = data[4];
+
+}
+
+void GameState::changeHealth(int health)
+{
+	_selfHealth += health;
+}
+
+void GameState::changeOppoHealth(int health)
+{
+	_oppoHealth += health;
+}
+
+void GameState::changeEnergy(int energy)
+{
+	_selfEnergy += energy;
+}*/
 /*void GameState::pickCard(int pickedCard)
 {
 	if(_remainCards > 0)
