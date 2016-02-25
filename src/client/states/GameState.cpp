@@ -361,44 +361,51 @@ void GameState::inputListening()
 		if(type == TransferType::GAME_OVER)
 			_playing.store(false);
 		else if(type == TransferType::GAME_PLAYER_ENTER_TURN)
-		{
-			std::cout << "starting turn\n";  // perform turn changing here
 			_myTurn.store(true);
-		}
 		else if(type == TransferType::GAME_PLAYER_LEAVE_TURN)
-		{
-			std::cout << "ending turn\n";  // perform turn changing here
 			_myTurn.store(false);
-		}
 		else if(type == TransferType::GAME_PLAYER_ENERGY_UPDATED)
 		{
 			std::cout << "Energy points updated" << std::endl;
-			// \TODO code energy points change
+			// energy (and health and others) are transmitted through the network as 32 bit
+			// unsigned integers. So be sure to receive the exact same thing to avoid encoding
+			// errors and then set it in the "real" attribute
+			sf::Uint32 energy32;
+			_accessEnergy.lock();
+			receivedPacket >> energy32;
+			_energy = energy32;
+			_accessEnergy.unlock();
 		}
 		else if(type == TransferType::GAME_PLAYER_HEALTH_UPDATED)
 		{
 			std::cout << "Health points updated" << std::endl;
-			// \TODO code HP change
+			sf::Uint32 health32;
+			_accessHealth.lock();
+			receivedPacket >> health32;
+			_selfHealth = health32;
+			_accessHealth.unlock();
 		}
 		else if(type == TransferType::GAME_BOARD_UPDATED)
 		{
 			std::cout << "Board updated" << std::endl;
-			std::vector<sf::Uint32> newBoard;
-			receivedPacket >> newBoard;
+			receivedPacket >> _onBoard;
 			// \TODO display changes
+		}
+		else if(type == TransferType::GAME_OPPONENT_BOARD_UPDATED)
+		{
+			std::cout << "Opponent's board updated" << std::endl;
+			receivedPacket >> _oppoBoard;
 		}
 		else if(type == TransferType::GAME_GRAVEYARD_UPDATED)
 		{
 			std::cout << "Graveyard updated" << std::endl;
-			std::vector<sf::Uint32> newGraveyard;
-			receivedPacket >> newGraveyard;
+			receivedPacket >> _graveyard;
 			// \TODO display changes
 		}
 		else if(type == TransferType::GAME_HAND_UPDATED)
 		{
 			std::cout << "Hand updated" << std::endl;
-			std::vector<sf::Uint32> newHand;
-			receivedPacket >> newHand;
+			receivedPacket >> _inHand;
 			// \TODO display changes
 		}
 		else

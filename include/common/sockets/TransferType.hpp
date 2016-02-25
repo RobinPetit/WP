@@ -38,6 +38,8 @@ enum class TransferType : sf::Uint32
 	GAME_PLAYER_HEALTH_UPDATED,
 	/// Used when sending to the client the current state of the board
 	GAME_BOARD_UPDATED,
+	/// Used when sending to the client the state of its opponent's board
+	GAME_OPPONENT_BOARD_UPDATED,
 	/// Used when sending to the client the current state of its graveyard
 	GAME_GRAVEYARD_UPDATED,
 	/// Used when sending to the client the current state of its hand

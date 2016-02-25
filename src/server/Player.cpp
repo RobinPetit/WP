@@ -43,6 +43,11 @@ Player::ID Player::getID()
 	return _id;
 }
 
+const std::vector<Creature *>& Player::getBoard()
+{
+	return _cardBoard;
+}
+
 /*------------------------------ BOARD INTERFACE */
 void Player::beginGame(bool isActivePlayer)
 {
@@ -587,6 +592,11 @@ void Player::sendHandState()
 void Player::sendBoardState()
 {
 	sendIDsFromVector(TransferType::GAME_BOARD_UPDATED, _cardBoard);
+}
+
+void Player::sendOpponentBoardState()
+{
+	sendIDsFromVector(TransferType::GAME_OPPONENT_BOARD_UPDATED, _opponent->getBoard());
 }
 
 void Player::sendGraveyardState()

@@ -59,6 +59,7 @@ public:
 	int getCreatureConstraint(const Creature& subject, int constraintIDD);
 	const Card* getLastCaster();
 	Player::ID getID();
+	const std::vector<Creature *>& getBoard();
 
 private:
 	/// Types
@@ -134,6 +135,7 @@ private:
 
 	void sendHandState();
 	void sendBoardState();
+	void sendOpponentBoardState();
 	void sendGraveyardState();
 
 	template <typename CardType>

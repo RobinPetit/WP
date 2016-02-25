@@ -5,6 +5,7 @@
 #include <vector>
 #include <array>
 #include <atomic>
+#include <mutex>
 // WizardPoker headers
 #include "client/AbstractState.hpp"
 #include "client/NonBlockingInput.hpp"
@@ -35,20 +36,28 @@ class GameState : public AbstractState
 		void changeEnergy(int);
 
 	private:
-		std::vector<int> _inHand;
-		std::vector<int> _onBoard;
-		std::vector<int> _oppoBoard;
+		///////////////// attributes
+
+		std::vector<sf::Uint32> _inHand;
+		std::vector<sf::Uint32> _onBoard;
+		std::vector<sf::Uint32> _oppoBoard;
+		std::vector<sf::Uint32> _graveyard;  // is this necessary?
 		unsigned _remainCards;
 		unsigned _selfHealth;
 		unsigned _oppoHealth;
 		unsigned _energy;
 		unsigned _oppoCards;
+		// allow to update these values without interfering during a turn
+		std::mutex _accessHealth;
+		std::mutex _accessEnergy;
 		// \TODO: sync with Client::_inGame
 		std::atomic_bool _playing;
 		std::atomic_bool _myTurn;
 		NonBlockingInput _nonBlockingInput;
 		/// Waits for special server data such as END_OF_TURN, BOARD_UPDATE, etc.
 		std::thread _listeningThread;
+
+		//////////////// private methods
 
 		std::size_t selectHand();
 		std::size_t selectBoard();
