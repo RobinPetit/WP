@@ -2,7 +2,6 @@ set(SOURCES	"client.cpp"
 		"ClientDatabase.cpp"
 		# sockets
 		"sockets/Client.cpp"
-		"client.cpp"
 		"NonBlockingInput.cpp"
 		# states
 		"AbstractState.cpp"
