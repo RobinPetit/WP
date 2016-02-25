@@ -385,7 +385,7 @@ void Player::resetEnergy(const EffectParamsCollection& args)
 		//SERVER: CARD_ERROR
 		return;
 	}
-	_energyInit += points
+	_energyInit += additionalPoints;
 	_energy = _energyInit;
 	if (_energy<0)
 		_energy=0;
