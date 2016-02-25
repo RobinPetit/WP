@@ -43,13 +43,13 @@ void HomeState::connect()
 				identifiers.second,
 				config["SERVER_ADDRESS"],
 				static_cast<sf::Uint16>(std::stoi(config["SERVER_PORT"], nullptr, AUTO_BASE)));
+		stackPush<MainMenuState>();
 	}
 	catch(const std::runtime_error& e)
 	{
 		std::cout << "Error: " << e.what() << "\n";
 		std::cout << "Unable to connect to server\n";
 	}
-	stackPush<MainMenuState>();
 }
 
 void HomeState::createAccount()
@@ -74,7 +74,6 @@ void HomeState::createAccount()
 		std::cout << "Error: " << e.what() << "\n";
 		std::cout << "Unable to register to server, try again (or CTRL+C to exit):\n";
 	}
-	stackPush<MainMenuState>();
 }
 
 void HomeState::quit()
