@@ -5,7 +5,25 @@
 # remove pdf too
 *.pdf
 
+# Build
 build/
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+# Precompiled Headers
+*.gch
+*.pch
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
 
 # Only keep sources and diagrams for SRD
 SRD/*
@@ -25,6 +43,9 @@ CMakeCache.txt
 
 # Do not track executable files
 bin/
+*.exe
+*.out
+*.app
 
 # Add your IDE's temporary files extension here
 	# code::blocks
@@ -32,3 +53,6 @@ bin/
 *.layout
 	# Geany
 *.geany
+	# CodeLite
+*.workspace
+*.project
