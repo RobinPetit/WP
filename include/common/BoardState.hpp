@@ -15,7 +15,7 @@
 /// obfuscates the code. So we loose a bit of space but save a lot of time.
 struct BoardState
 {
-	// TODO Use Card::ID rather than int
+	// TODO Use ClientCard::ID rather than int
 	bool _thisPlayerCardsInHandChanged;
 	std::vector<int> _thisPlayerCardsInHand;
 

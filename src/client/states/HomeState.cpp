@@ -79,11 +79,11 @@ void HomeState::createAccount()
 			_client.registerToServer(identifiers.first,
 					identifiers.second,
 					config["SERVER_ADDRESS"],
-					std::stoi(config["SERVER_PORT"], nullptr, AUTO_BASE));
+					static_cast<sf::Uint16>(std::stoi(config["SERVER_PORT"]), nullptr, AUTO_BASE));
 			_client.connectToServer(identifiers.first,
 					identifiers.second,
 					config["SERVER_ADDRESS"],
-					std::stoi(config["SERVER_PORT"], nullptr, AUTO_BASE));
+					static_cast<sf::Uint16>(std::stoi(config["SERVER_PORT"]), nullptr, AUTO_BASE));
 			registeringSuccessful = true;
 		}
 		catch(const std::runtime_error& e)
@@ -92,7 +92,7 @@ void HomeState::createAccount()
 			std::cout << "Unable to register to server, try again (or CTRL+C to exit):\n";
 			registeringSuccessful = false;
 		}
-	} while(not connectingSuccesful);
+	} while(not registeringSuccessful);
 	stackPush<MainMenuState>();
 }
 

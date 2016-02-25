@@ -206,7 +206,7 @@ private:
 	/// \param name The name of the user
 	/// \param address The address where the server stands
 	/// \param port The port the server occupies
-	bool initServer(const std::string& name, const sf::IpAddress& address, sf::Uint16 port);
+	void initServer(const std::string& name, const sf::IpAddress& address, sf::Uint16 port);
 
 	/// The function used to establish a connection in the user point of view,
 	/// authentificating the user and allowing it to effectively play the game.

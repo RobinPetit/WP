@@ -20,15 +20,18 @@
 Client::Client():
 	_socket(),
 	_chatListenerPort(0),
-	_currentConversations(),
 	_isConnected(false),
-	_threadLoop(0),
+	_name(),
+	_listenerThread(),
 	_serverAddress(),
-	_chatListenerPort(0),
-	_isConnected(false),
 	_serverPort(0),
 	_threadLoop(false),
+	_userTerminal(),
+	_currentConversations(),
 	_inGame(false),
+	_inGameSocket(),
+	_inGameListeningSocket(),
+	_inGameOpponentName(),
 	_readyToPlay(false)
 {
 
@@ -97,7 +100,7 @@ void Client::sendRegisteringToken(const std::string& name, const std::string& pa
 	{
 	case TransferType::GAME_USERNAME_NOT_AVAILABLE:
 		//TODO throw an exception rather than cout
-		throw std::runtime_error("the username " << name << " is not available.");
+		throw std::runtime_error("the username " + name + " is not available.");
 
 	case TransferType::GAME_FAILED_TO_REGISTER:
 		throw std::runtime_error("the server failed to register your account.");
@@ -335,8 +338,8 @@ void Client::acceptFriendshipRequest(const std::string& name, bool accept)
 	packet << TransferType::PLAYER_RESPONSE_FRIEND_REQUEST << name << accept;
 	_socket.send(packet);
 	_socket.receive(packet);
-	TransferType status;
-	packet >> status;
+	TransferType type;
+	packet >> type;
 	if(type != TransferType::PLAYER_ACKNOWLEDGE)
 		throw std::runtime_error("failed to accept request from " + name + ".");
 }
@@ -451,7 +454,7 @@ std::vector<Deck> Client::getDecks()
 	return deckList;
 }
 
-bool Client::handleDeckEditing(const Deck& editedDeck)
+void Client::handleDeckEditing(const Deck& editedDeck)
 {
 	if(!_isConnected)
 		throw NotConnectedException("unable to get the decks list.");
@@ -466,7 +469,7 @@ bool Client::handleDeckEditing(const Deck& editedDeck)
 		throw std::runtime_error("unable to send deck editing to the server.");
 }
 
-bool Client::handleDeckCreation(const Deck& createdDeck)
+void Client::handleDeckCreation(const Deck& createdDeck)
 {
 	if(!_isConnected)
 		throw NotConnectedException("unable to get the decks list.");
@@ -481,7 +484,7 @@ bool Client::handleDeckCreation(const Deck& createdDeck)
 		throw std::runtime_error("unable to send deck editing to the server.");
 }
 
-bool Client::handleDeckDeletion(const std::string& deletedDeckName)
+void Client::handleDeckDeletion(const std::string& deletedDeckName)
 {
 	if(!_isConnected)
 		throw NotConnectedException("unable to get the decks list.");

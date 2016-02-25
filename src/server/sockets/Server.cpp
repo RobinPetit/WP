@@ -128,7 +128,7 @@ void Server::connectUser(sf::Packet& connectionPacket, std::unique_ptr<sf::TcpSo
 	// (be sure that this line is before the next, otherwise we get a segfault)
 	_socketSelector.add(*client);
 	// and add the new socket to the clients
-	_clients[playerName] = {std::move(client), clientPort, {}, {}, {}, {}, {}, ++_last_id};
+	_clients[playerName] = {std::move(client), clientPort, ++_last_id};
 }
 
 void Server::registerUser(sf::Packet& registeringPacket, std::unique_ptr<sf::TcpSocket> client)
@@ -223,7 +223,7 @@ void Server::receiveData()
 			handleFriendshipRequest(it, packet);
 			break;
 		case TransferType::PLAYER_REMOVE_FRIEND:
-			handleRemoveFriend(packet);
+			handleRemoveFriend(it, packet);
 			break;
 		case TransferType::PLAYER_RESPONSE_FRIEND_REQUEST:
 			handleFriendshipRequestResponse(it, packet);
@@ -519,9 +519,6 @@ void Server::sendFriendshipRequests(const _iterator& it)
 		response << FriendsList();
 	}
 	it->second.socket->send(response);
-	// make the friendship relation
-	it->second.friends.push_back(name);
-	asker->second.friends.push_back(it->first);
 }
 
 void Server::sendFriends(const _iterator& it)
