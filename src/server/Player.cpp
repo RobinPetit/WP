@@ -65,7 +65,7 @@ void Player::enterTurn(int turn)
 
 	//Player's turn-based constraints
 	cardDeckToHand(_constraints.getConstraint(PC_TURN_CARDS_PICKED));
-	resetEnergy({_constraints.getConstraint(PC_TURN_ENERGY_INIT)});
+	resetEnergy({_constraints.getConstraint(PC_TURN_ENERGY_INIT_CHANGE)});
 	changeEnergy({_constraints.getConstraint(PC_TURN_ENERGY_CHANGE)});
 	changeHealth({_constraints.getConstraint(PC_TURN_HEALTH_CHANGE)});
 	if (_cardDeck.empty())
@@ -385,12 +385,13 @@ void Player::resetEnergy(const EffectParamsCollection& args)
 		//SERVER: CARD_ERROR
 		return;
 	}
-	_energyInit += additionalPoints;
-	_energy = _energyInit;
-	if (_energy<0)
-		_energy=0;
+	_energyInit += additionalPoints; //add points to initial amount of energy
+	if (_energyInit<0)
+		_energyInit=0;
 	else if (_energy>_maxEnergy)
-		_energy=_maxEnergy;
+		_energyInit=_maxEnergy;
+
+	_energy = _energyInit;
 	sendCurrentEnergy();
 }
 
