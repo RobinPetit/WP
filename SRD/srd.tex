@@ -18,6 +18,10 @@
 \author{Baudoux Nicolas \and Berrewaerts Jonathan \and Gueniffrey Stanislas \and Muranovic Allan \and Petit Robin \and Reynouard Alexis \and Verhelst Théo}
 \date{année académique 2015-2016}
 
+\begin{center}\includegraphics[scale=1]{ULB.png}\end{center}
+
+\newpage
+
 \newglossary[glg]{glossary}{slm}{sbl}{Glossaire}
 \input{glossaire.tex}
 \makeglossaries
@@ -66,11 +70,12 @@
 		\subsubsection{Description du Wizard Poker}
 			Le Wizard Poker est un jeu de cartes dans lequel deux joueurs s'affrontent en \gls{duel} au tour par tour. Chaque joueur a son propre \gls{deck}
 			choisi parmi sa collection de cartes. Au début de chaque duel, les deux joueurs ont le même nombre de points de vie (à savoir 20) et piochent 5
-			cartes de leur \gls{deck}. Chacun à leur tour, les joueurs invoquent des cartes à l'aide des points d'énergie qu'ils reçoivent à chaque début de tour.
-			Les cartes peuvent soit attaquer l'adversaire (en diminuant directement les points de vie de l'adversaire ou ceux d'une carte invoquée par l'adversaire), soit
-			avoir un effet \textit{spécial}\footnote{Par exemple : \gls{invoquer} une carte au hasard, redonner de la vie, augmenter l'attaque, etc.}. Lorsqu'une carte
+			cartes de leur \gls{deck}.Le premier joueur sera choisi aléatoirement par le serveur. Ensuite, tout à tour, les joueurs pourront utiliser leurs cartes, qu'elles soient un \gls{Sort} ou une
+			\gls{Creature} tant que leur coût d'utilisation/d'invocation/, ne dépasse pas l'énergie disponible du joueur. ( Le joueur gagne un point d'énergie supplémentaire par tour jusqu'à atteindre son maximum de 10.)
+			Les cartes peuvent attaquer soit l'adversaire directmeent, soit une , soit une \gls{Creature} adverse. Ou encore avoir un ou plusieurs effets \textit{spéciaux}\footnote{Par exemple : \gls{invoquer} une carte au hasard, redonner de la vie, augmenter l'attaque, etc.}. Lorsqu'une carte
 			arrive à la fin de sa période d'existence (points de vie de la carte arrivés à 0, sort détruisant ladite carte, effet terminé, etc.), elle est
-			défaussée, c'est-à-dire qu'elle est envoyée dans la \gls{fosse}. Lorsqu'une carte est dans la fosse (également appelé cimetière), elle
+			défaussée, c'est-à-dire qu'elle est envoyée dans la \gls{fosse}. 
+			Lorsqu'une carte est dans la \gls{fosse} (également appelé cimetière), elle
 			peut éventuellement être réutilisée à l'aide de sorts particuliers par exemple. Une carte défaussée n'est pas perdue, elle reste propriété du joueur :
 			à la fin de la partie, les joueurs ont les mêmes cartes qu'au début de la partie si ce n'est que le gagnant a reçu une carte supplémentaire
 			suite à sa victoire. La partie s'arrête lorsqu'un des deux joueurs a un nombre inférieur ou égal à 0 points de vie ou a passé 10 tours sans carte en main.
@@ -82,11 +87,15 @@
 
 	\subsection{Historique}
 		\begin{itemize}
-			\item[11/12/2015] réunion (équipe complète) ;
-			\item[11/12/2015] squelette du SRD (équipe SRD) ;
-			\item[15/12/2015] création des diagrammes UML (équipe UML) ;
-			\item[15/12/2015] rédaction de la version propre du SRD (Robin).
+			\item[11/12/2015] Réunion (équipe complète) ;
+			\item[11/12/2015] Squelette du SRD (équipe SRD) ;
+			\item[15/12/2015] Création des diagrammes UML (équipe UML) ;
+			\item[15/12/2015] Rédaction de la version propre du SRD (Robin).
+			\item[31/01/2016] -> [26/02/2016] Développement du projet (en console uniquement).
+			\item[25/02/2016]  Mise à jour du SRD (Allan).
 		\end{itemize}
+
+\newpage
 
 \section{Besoins de l'utilisateur}
 	L'utilisateur de l'application, à savoir le joueur, a un certain nombre de besoins. Ces derniers doivent être satisfaits afin de garantir un confort d'utilisation
@@ -231,6 +240,8 @@
 			\item empêcher la triche dans la mesure du possible.
 		\end{itemize}
 
+\newpage
+
 \section{Besoins du système}
 	\subsection{Exigences fonctionnelles}
 		Dans un premier temps, l'application \textbf{doit} tourner en ligne de commande et \textbf{doit}, dans un second temps adopter une interface
@@ -243,6 +254,8 @@
 		La structure du programme est résumée dans les classes suivantes (servant également de \textit{pseudo-squelette de code}) :
 
 		\begin{center}\includegraphics[scale=0.5]{Model2_Classes.png}\end{center}
+
+\newpage
 
 \section{Index}
 		\printglossary[type=glossary, style=Index, title=]
