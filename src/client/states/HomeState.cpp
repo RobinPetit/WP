@@ -36,25 +36,19 @@ void HomeState::connect()
 		throw std::runtime_error("No config file");
 	if(config.find("SERVER_PORT") == config.end() || config.find("SERVER_ADDRESS") == config.end())
 		throw std::runtime_error("Missing data in config file");
-	bool connectingSuccesful;
-	do
+	try
 	{
-		try
-		{
-			auto identifiers = askIdentifiers();
-			_client.connectToServer(identifiers.first,
-					identifiers.second,
-					config["SERVER_ADDRESS"],
-					static_cast<sf::Uint16>(std::stoi(config["SERVER_PORT"], nullptr, AUTO_BASE)));
-			connectingSuccesful = true;
-		}
-		catch(const std::runtime_error& e)
-		{
-			std::cout << "Error: " << e.what() << "\n";
-			std::cout << "Unable to connect to server, try again (or CTRL+C to exit):\n";
-			connectingSuccesful = false;
-		}
-	} while(not connectingSuccesful);
+		auto identifiers = askIdentifiers();
+		_client.connectToServer(identifiers.first,
+				identifiers.second,
+				config["SERVER_ADDRESS"],
+				static_cast<sf::Uint16>(std::stoi(config["SERVER_PORT"], nullptr, AUTO_BASE)));
+	}
+	catch(const std::runtime_error& e)
+	{
+		std::cout << "Error: " << e.what() << "\n";
+		std::cout << "Unable to connect to server\n";
+	}
 	stackPush<MainMenuState>();
 }
 
@@ -66,29 +60,20 @@ void HomeState::createAccount()
 		throw std::runtime_error("No config file");
 	if(config.find("SERVER_PORT") == config.end() || config.find("SERVER_ADDRESS") == config.end())
 		throw std::runtime_error("Missing data in config file");
-	bool registeringSuccessful;
-	do
+	try
 	{
-		try
-		{
-			auto identifiers = askIdentifiers();
-			_client.registerToServer(identifiers.first,
-					identifiers.second,
-					config["SERVER_ADDRESS"],
-					static_cast<sf::Uint16>(std::stoi(config["SERVER_PORT"]), nullptr, AUTO_BASE));
-			_client.connectToServer(identifiers.first,
-					identifiers.second,
-					config["SERVER_ADDRESS"],
-					static_cast<sf::Uint16>(std::stoi(config["SERVER_PORT"]), nullptr, AUTO_BASE));
-			registeringSuccessful = true;
-		}
-		catch(const std::runtime_error& e)
-		{
-			std::cout << "Error: " << e.what() << "\n";
-			std::cout << "Unable to register to server, try again (or CTRL+C to exit):\n";
-			registeringSuccessful = false;
-		}
-	} while(not registeringSuccessful);
+		auto identifiers = askIdentifiers();
+		_client.registerToServer(identifiers.first,
+				identifiers.second,
+				config["SERVER_ADDRESS"],
+				static_cast<sf::Uint16>(std::stoi(config["SERVER_PORT"]), nullptr, AUTO_BASE));
+		std::cout << "You have been successfuly registered!\n";
+	}
+	catch(const std::runtime_error& e)
+	{
+		std::cout << "Error: " << e.what() << "\n";
+		std::cout << "Unable to register to server, try again (or CTRL+C to exit):\n";
+	}
 	stackPush<MainMenuState>();
 }
 

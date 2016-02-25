@@ -77,111 +77,70 @@ void Server::connectUser(sf::Packet& connectionPacket, std::unique_ptr<sf::TcpSo
 {
 	std::string playerName, password;
 	sf::Uint16 clientPort;
-	bool failedToConnect{false};
-	// N + 1/2 loop (the 1/2 is the error handling)
-	do
+	connectionPacket >> playerName >> password >> clientPort;
+	connectionPacket.clear();
+	try
 	{
-		try
+		// Check if the user is not already connected
+		if(_clients.find(playerName) != _clients.end())
 		{
-			connectionPacket >> playerName >> password >> clientPort;
-			connectionPacket.clear();
-
-			// Check if the user is not already connected
-			if(_clients.find(playerName) != _clients.end())
-			{
-				connectionPacket << TransferType::GAME_ALREADY_CONNECTED;
-				throw std::runtime_error(playerName + " tried to connect to the server but is already connected.");
-			}
-
-			if(false /* UNCOMMENT _database.areIdentifiersValid(playerName, password) */)
-			{
-				connectionPacket << TransferType::GAME_WRONG_IDENTIFIERS;
-				throw std::runtime_error(playerName + " gives wrong identifiers when trying to connect.");
-			}
-			failedToConnect = false;
+			connectionPacket << TransferType::GAME_ALREADY_CONNECTED;
+			throw std::runtime_error(playerName + " tried to connect to the server but is already connected.");
 		}
-		catch(const std::runtime_error& e)
+
+		if(false /* UNCOMMENT _database.areIdentifiersValid(playerName, password) */)
 		{
-			// Send a response indicating the error
-			client->send(connectionPacket);
-
-			std::cout << "connectUser error: " << e.what() << "\n";
-			failedToConnect = true;
-
-			// Receive the new try of the client
-			client->receive(connectionPacket);
-			TransferType type;
-			connectionPacket >> type;
-			if(type != TransferType::GAME_CONNECTION)
-			{
-				std::cout << "connectUser error: wrong packet transmitted after failed connection (expecting another connection packet).\n";
-				// The socket will automatically be closed, thanks to smart pointers
-				return;
-			}
+			connectionPacket << TransferType::GAME_WRONG_IDENTIFIERS;
+			throw std::runtime_error(playerName + " gives wrong identifiers when trying to connect.");
 		}
-	} while(failedToConnect);
-
-	std::cout << "New player connected: " << playerName << std::endl;
-	sendAcknowledgement(*client);
-	// add this client to the selector so that its receivals are handled properly
-	// (be sure that this line is before the next, otherwise we get a segfault)
-	_socketSelector.add(*client);
-	// and add the new socket to the clients
-	_clients[playerName] = {std::move(client), clientPort, ++_last_id};
+		std::cout << "New player connected: " << playerName << std::endl;
+		connectionPacket << TransferType::ACKNOWLEDGE;
+		// Send a response
+		client->send(connectionPacket);
+		// add this client to the selector so that its receivals are handled properly
+		// (be sure that this line is before the next, otherwise we get a segfault)
+		_socketSelector.add(*client);
+		// and add the new socket to the clients
+		_clients[playerName] = {std::move(client), clientPort, ++_last_id};
+	}
+	catch(const std::runtime_error& e)
+	{
+		std::cout << "connectUser error: " << e.what() << "\n";
+		// Send a response
+		client->send(connectionPacket);
+	}
+	// The line client->send(connectionPacket); cannot be placed here to factorize it
+	// because if everything goes well, the sokect is moved into _clients,
+	// so the unique_ptr client become invalid.
 }
 
 void Server::registerUser(sf::Packet& registeringPacket, std::unique_ptr<sf::TcpSocket> client)
 {
 	std::string playerName, password;
-	bool failedToRegister;
-	// N + 1/2 loop (the 1/2 is the error handling)
-	do
+	registeringPacket >> playerName >> password;
+	registeringPacket.clear();
+	try
 	{
-		try
+
+		if(false /* UNCOMMENT _database.isRegistered(playerName) */)
 		{
-			registeringPacket >> playerName >> password;
-			registeringPacket.clear();
-
-			if(false /* UNCOMMENT _database.isRegistered(playerName) */)
-			{
-				registeringPacket << TransferType::GAME_USERNAME_NOT_AVAILABLE;
-				throw std::runtime_error(playerName + " tried to register to the server but the name is not available.");
-			}
-			// UNCOMMENT _database.registerUser(playerName, password);
-			failedToRegister = false;
+			registeringPacket << TransferType::GAME_USERNAME_NOT_AVAILABLE;
+			throw std::runtime_error(playerName + " tried to register to the server but the name is not available.");
 		}
-		catch(const std::runtime_error& e)
-		{
-			// If Database::registerUser threw an exception, the packet is empty
-			if(registeringPacket.getDataSize() == 0)
-				registeringPacket << TransferType::GAME_FAILED_TO_REGISTER;
+		// UNCOMMENT _database.registerUser(playerName, password);
+		registeringPacket << TransferType::ACKNOWLEDGE;
+		std::cout << "New player registered: " << playerName << std::endl;
+	}
+	catch(const std::runtime_error& e)
+	{
+		// If Database::registerUser threw an exception, the packet is empty
+		if(registeringPacket.getDataSize() == 0)
+			registeringPacket << TransferType::GAME_FAILED_TO_REGISTER;
 
-			std::cout << "registerUser error: " << e.what() << "\n";
-			failedToRegister = true;
-
-			// Send a response indicating the error
-			client->send(registeringPacket);
-
-			// Receive the new try of the client
-			client->receive(registeringPacket);
-			TransferType type;
-			registeringPacket >> type;
-			if(type != TransferType::GAME_REGISTERING)
-			{
-				std::cout << "registerUser error: wrong packet transmitted after failed registering (expecting another registering packet).\n";
-				return;
-			}
-		}
-	} while(failedToRegister);
-
-	sendAcknowledgement(*client);
-	std::cout << "New player registered: " << playerName << std::endl;
-}
-void Server::sendAcknowledgement(sf::TcpSocket& client)
-{
-	sf::Packet packet;
-	packet << TransferType::ACKNOWLEDGE;
-	client.send(packet);
+		std::cout << "registerUser error: " << e.what() << "\n";
+	}
+	// Send a response
+	client->send(registeringPacket);
 }
 
 void Server::receiveData()
