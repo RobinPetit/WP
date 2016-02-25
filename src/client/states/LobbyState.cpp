@@ -11,23 +11,23 @@
 #include <common/Terminal.hpp>
 #include <common/ini/IniFile.hpp>
 #include "client/states/MainMenuState.hpp"
-#include "client/states/MatchmakingState.hpp"
+#include "client/states/LobbyState.hpp"
 
-MatchmakingState::MatchmakingState(StateStack& stateStack, Client& client):
+LobbyState::LobbyState(StateStack& stateStack, Client& client):
 	AbstractState(stateStack, client)
 {
-	addAction("Quit", &MatchmakingState::quit);
+	addAction("Quit", &LobbyState::quit);
 }
 
-void MatchmakingState::display()
+void LobbyState::display()
 {
-	std::cout << "Welcome to the MatchMaking lobby!\n";
+	std::cout << "Welcome to the matchmaking lobby!\n";
 
 	// Display the actions
 	AbstractState::display();
 }
 
-void MatchmakingState::quit()
+void LobbyState::quit()
 {
 	stackClear();
 }
