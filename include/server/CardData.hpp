@@ -145,26 +145,26 @@ typedef std::vector<int> EffectParamsCollection;
 //if effect is something else:
 //	ALL ARGUMENTS (no more than 4)
 
-struct CardData
+///Creature struct
+struct CreatureData
+{
+	std::string name;
+	CostValue cost;
+	AttackValue attack;
+	HealthValue health;
+	ShieldValue shield;
+	ShieldType shieldType;
+	std::vector<EffectParamsCollection> effects;
+	std::string description;
+};
+
+///Spell struct
+struct SpellData
 {
 	std::string name;
 	CostValue cost;
 	std::vector<EffectParamsCollection> effects;
 	std::string description;
-};
-
-///Creature struct
-struct CreatureData : public CardData
-{
-	AttackValue attack;
-	HealthValue health;
-	ShieldValue shield;
-	ShieldType shieldType;
-};
-
-///Spell struct
-struct SpellData : public CardData
-{
 };
 
 extern const CreatureData ALL_CREATURES[];
