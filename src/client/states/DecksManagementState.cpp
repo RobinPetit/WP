@@ -2,7 +2,9 @@
 #include "client/states/DecksManagementState.hpp"
 
 DecksManagementState::DecksManagementState(StateStack& stateStack, Client& client):
-	AbstractState(stateStack, client)
+	AbstractState(stateStack, client),
+	_decks{_client.getDecks()},
+	_cardsCollection{_client.getCardsCollection()}
 {
 	addAction("Back to main menu", &DecksManagementState::backMainMenu);
 	addAction("Display a deck", &DecksManagementState::displayDeck);
@@ -82,6 +84,7 @@ void DecksManagementState::editDeck()
 			std::cout << e.what() << "\n";
 		}
 	};
+	_client.handleDeckEditing(_decks[deckIndex]);
 }
 std::size_t DecksManagementState::askForReplacedCard(std::size_t deckIndex)
 {
@@ -117,6 +120,7 @@ void DecksManagementState::createDeck()
 	std::string input;
 	std::getline(std::cin, input);
 	_decks.emplace_back(input);
+	_client.handleDeckCreation(_decks.back());
 }
 
 void DecksManagementState::deleteDeck()
@@ -130,6 +134,7 @@ void DecksManagementState::deleteDeck()
 	{
 		std::cout << "Which deck would you like to delete? ";
 		const std::size_t input{askForNumber(1, _decks.size() + 1) - 1};
+		_client.handleDeckDeletion(_decks[input].getName());
 		_decks.erase(_decks.begin() + input);
 	}
 	catch(const std::logic_error& e)
