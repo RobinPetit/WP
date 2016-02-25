@@ -492,12 +492,12 @@ void Server::sendFriends(const _iterator& it)
 		const Database::userId id{_database.getUserId(it->first)};
 		// Same as sendFriendshipRequests for the two folling lines
 		FriendsList friends{_database.getFriendsList(id)};
-		response << friends;
+		response << TransferType::ACKNOWLEDGE << friends;
 	}
 	catch(const std::runtime_error& e)
 	{
 		std::cout << "sendFriends error: " << e.what() << "\n";
-		response << FriendsList();
+		response << TransferType::FAILURE;
 	}
 	it->second.socket->send(response);
 }
