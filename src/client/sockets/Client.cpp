@@ -1,8 +1,11 @@
 // SFML headers
 #include <SFML/System/Sleep.hpp>
 #include <SFML/Network/IpAddress.hpp>
+#include <SFML/Network/SocketSelector.hpp>
 // WizardPoker headers
 #include "client/sockets/Client.hpp"
+#include "client/ErrorCode.hpp"
+#include "client/NonBlockingInput.hpp"
 #include "common/constants.hpp"
 #include "common/sockets/TransferType.hpp"
 #include "common/NotConnectedException.hpp"
@@ -10,41 +13,48 @@
 // std-C++ headers
 #include <iostream>
 #include <thread>
-#include <cstdlib>
 #include <algorithm>
-
-extern void chatListening(sf::Uint16 *port, const std::atomic_bool *loop, Terminal terminal);
+#include <atomic>
+#include <string>
 
 Client::Client():
 	_socket(),
-	_currentConversations(),
-	_isConnected(false),
 	_chatListenerPort(0),
-	_threadLoop(0),
+	_isConnected(false),
+	_name(),
+	_listenerThread(),
 	_serverAddress(),
 	_serverPort(0),
-	_userTerminal()
+	_threadLoop(false),
+	_userTerminal(),
+	_currentConversations(),
+	_inGame(false),
+	_inGameSocket(),
+	_inGameListeningSocket(),
+	_inGameOpponentName(),
+	_readyToPlay(false)
 {
 
 }
 
-bool Client::connectToServer(const std::string& name, const std::string& password, const sf::IpAddress& address, sf::Uint16 port)
+void Client::connectToServer(const std::string& name, const std::string& password, const sf::IpAddress& address, sf::Uint16 port)
 {
-	return initServer(name, address, port) && sendConnectionToken(password);
+	initServer(name, address, port);
+	sendConnectionToken(password);
 }
 
-bool Client::registerToServer(const std::string& name, const std::string& password, const sf::IpAddress& address, sf::Uint16 port)
+void Client::registerToServer(const std::string& name, const std::string& password, const sf::IpAddress& address, sf::Uint16 port)
 {
 	std::string shrinkedName = shrinkName(name);
 	// The local socket used only to register, it does not need to be keeped as attribute
 	sf::TcpSocket socket;
 	// if connection does not work, don't go further
 	if(socket.connect(address, port) != sf::Socket::Done)
-		return false;
-	return sendRegisteringToken(shrinkedName, password, socket);
+		throw std::runtime_error("unable to connect to server on port " + std::to_string(port) + ".");
+	sendRegisteringToken(shrinkedName, password, socket);
 }
 
-bool Client::sendConnectionToken(const std::string& password)
+void Client::sendConnectionToken(const std::string& password)
 {
 	sf::Packet packet;
 	packet << TransferType::GAME_CONNECTION
@@ -52,10 +62,7 @@ bool Client::sendConnectionToken(const std::string& password)
 	       << password
 	       << static_cast<sf::Uint16>(_chatListenerPort);
 	if(_socket.send(packet) != sf::Socket::Done)
-	{
-		std::cout << "Failed to send connection packet\n";
-		return false;
-	}
+		throw std::runtime_error("failed to send connection packet.");
 
 	// Receive the server response
 	_socket.receive(packet);
@@ -65,32 +72,25 @@ bool Client::sendConnectionToken(const std::string& password)
 	{
 	case TransferType::GAME_ALREADY_CONNECTED:
 		//TODO throw an exception rather than cout
-		std::cout << "Error: you are already connected!\n";
-		return false;
+		throw std::runtime_error("you are already connected!");
 
 	case TransferType::GAME_WRONG_IDENTIFIERS:
-		std::cout << "Error: invalid username or password.\n";
-		return false;
+		throw std::runtime_error("invalid username or password.");
 
 	case TransferType::GAME_CONNECTION_OR_REGISTERING_OK:
 		_isConnected = true;
 		updateFriends();
-		return true;
 
 	default:
-		std::cout << "Error: unidentified server response.\n";
-		return false;
+		throw std::runtime_error("unidentified server response.");
 	}
 }
-bool Client::sendRegisteringToken(const std::string& name, const std::string& password, sf::TcpSocket& socket)
+void Client::sendRegisteringToken(const std::string& name, const std::string& password, sf::TcpSocket& socket)
 {
 	sf::Packet packet;
 	packet << TransferType::GAME_REGISTERING << name << password;
 	if(socket.send(packet) != sf::Socket::Done)
-	{
-		std::cout << "sending packet failed";
-		return false;
-	}
+		throw std::runtime_error("sending packet failed.");
 
 	// Receive the server response
 	socket.receive(packet);
@@ -100,45 +100,35 @@ bool Client::sendRegisteringToken(const std::string& name, const std::string& pa
 	{
 	case TransferType::GAME_USERNAME_NOT_AVAILABLE:
 		//TODO throw an exception rather than cout
-		std::cout << "Error: the username " << name << " is not available\n";
-		return false;
+		throw std::runtime_error("the username " + name + " is not available.");
 
 	case TransferType::GAME_FAILED_TO_REGISTER:
-		std::cout << "Error: the server failed to register your account.\n";
-		return false;
+		throw std::runtime_error("the server failed to register your account.");
 
 	case TransferType::GAME_CONNECTION_OR_REGISTERING_OK:
-		return true;
+		return;
 
 	default:
-		std::cout << "Error: unidentified server response.\n";
-		return false;
+		throw std::runtime_error("unidentified server response.");
 	}
 }
 
-bool Client::initServer(const std::string& name, const sf::IpAddress& address, sf::Uint16 port)
+void Client::initServer(const std::string& name, const sf::IpAddress& address, sf::Uint16 port)
 {
 	// if client is already connected to a server, do not try to re-connect it
 	if(_isConnected)
-	{
-		std::cout << "Already connected\n";
-		return false;
-	}
+		throw std::runtime_error("already connected.");
 	_name = shrinkName(name);
 	_serverAddress = address;
 	_serverPort = port;
 	// if connection does not work, don't go further
 	if(_socket.connect(address, port) != sf::Socket::Done)
-	{
-		std::cout << "Failed to establish socket connection\n";
-		return false;
-	}
+		throw std::runtime_error("unable to connect to server on port " + std::to_string(port) + ".");
 	if(!_userTerminal.hasKnownTerminal())
 		std::cout << "Warning: as no known terminal has been found, chat is disabled" << std::endl;
 	else
 		initListener();  // creates the new thread which listens for entring chat conenctions
 	sf::sleep(SOCKET_TIME_SLEEP);  // wait a quarter second to let the listening thread init the port
-	return true;
 }
 
 std::string Client::shrinkName(const std::string& name)
@@ -149,7 +139,7 @@ std::string Client::shrinkName(const std::string& name)
 void Client::initListener()
 {
 	_threadLoop.store(true);
-	_listenerThread = std::thread(chatListening, &_chatListenerPort, &_threadLoop, _userTerminal);
+	_listenerThread = std::thread(&Client::inputListening, this);
 }
 
 void Client::quit()
@@ -161,6 +151,8 @@ void Client::quit()
 	packet << TransferType::PLAYER_DISCONNECTION;
 	_socket.send(packet);
 	_socket.disconnect();
+	// internal part
+	_inGame.store(false);
 	_threadLoop.store(false);
 	_listenerThread.join();
 	_isConnected = false;
@@ -171,39 +163,88 @@ Client::~Client()
 	quit();
 }
 
-// Game management
+///////// Game management
 
-void Client::startGame()
+bool Client::startGame()
 {
+	static const std::string cancelWaitingString{"q"};
+	NonBlockingInput input;
+	std::cout << "Entering the lobby. Type '" << cancelWaitingString << "' to leave.\n";
+	// send a request for the server to place the client in its internal lobby
 	sf::Packet packet;
 	packet << TransferType::GAME_REQUEST;
 	_socket.send(packet);
-	_socket.receive(packet);
-	std::string opponentName;
-	packet >> opponentName;
-	std::cout << "opponent found: " << opponentName << std::endl;
+	// use a selector to
+	sf::SocketSelector selector;
+	selector.add(_socket);
+	bool loop{true};
+	// wait for a server response (opponent found) or a user entry to leave
+	while(loop)
+	{
+		// if the server found an opponent
+		if(selector.wait(sf::milliseconds(50)))
+		{
+			loop = false;
+			_socket.receive(packet);
+			packet >> _inGameOpponentName;
+			std::cout << "opponent found: " << _inGameOpponentName << std::endl;
+			_inGame = true;
+		}
+		// if the player typed something and it is the right string
+		else if(input.waitForData(0.05) && input.receiveStdinData() == cancelWaitingString)
+		{
+			loop =  _inGame = false;
+			// send a request to leave the lobby
+			packet.clear();
+			packet << TransferType::GAME_CANCEL_REQUEST;
+			_socket.send(packet);
+		}
+	}
+	return _inGame;
 }
 
-// Friends management
+sf::TcpSocket& Client::getGameSocket()
+{
+	if(!_inGame)
+		throw std::runtime_error("no socket available: not in game.");
+	return _inGameSocket;
+}
 
-const std::vector<std::string>& Client::getFriends()
+sf::TcpSocket& Client::getGameListeningSocket()
+{
+	if(!_inGame)
+		throw std::runtime_error("no socket available: not in game.");
+	return _inGameListeningSocket;
+}
+
+void Client::waitTillReadyToPlay()
+{
+	static const sf::Time awaitingDelay(sf::milliseconds(50));  // arbitrary
+	while(!_readyToPlay.load())
+		sf::sleep(awaitingDelay);
+}
+
+/////////////////// Friends management
+
+const FriendsList& Client::getFriends()
 {
 	if(!_isConnected)
-		throw NotConnectedException("Unable to send friends");
+		throw NotConnectedException("unable to send friends.");
 	updateFriends();
 	return _friends;
 }
 
-std::vector<std::string> Client::getConnectedFriends()
+FriendsList Client::getConnectedFriends()
 {
 	if(!_isConnected)
-		throw NotConnectedException("Unable to send connected friends");
-	std::vector<std::string> connectedFriends;
-	for(const auto& friendName: _friends)
+		throw NotConnectedException("unable to send connected friends.");
+	updateFriends();
+	FriendsList connectedFriends;
+	for(const auto& friendUser: _friends)
 	{
 		// ask the server if player is conencted
 		sf::Packet packet;
-		packet << TransferType::PLAYER_CHECK_CONNECTION << friendName;
+		packet << TransferType::PLAYER_CHECK_CONNECTION << friendUser.name;
 		_socket.send(packet);
 		_socket.receive(packet);
 		TransferType type;
@@ -214,95 +255,88 @@ std::vector<std::string> Client::getConnectedFriends()
 		packet >> isPresent;
 		// add to vector only if friend is present
 		if(isPresent)
-			connectedFriends.push_back(friendName);
+			connectedFriends.push_back(friendUser);
 	}
 	return connectedFriends;
 }
 
-void Client::updateFriends()
+const FriendsList& Client::getFriendshipRequests()
 {
 	if(!_isConnected)
-		throw NotConnectedException("Unable to update friends");
+		throw NotConnectedException("unable to send friendship requests.");
+	updateFriendshipRequests();
+	return _friendshipRequests;
+}
+
+void Client::updateFriends()
+{
 	sf::Packet packet;
 	// send that friends list is asked
 	packet << TransferType::PLAYER_ASKS_FRIENDS;
 	_socket.send(packet);
 	_socket.receive(packet);
-	// std::vector packing has been defined in PacketOverload.hpp
+	// FriendsList packing has been defined in PacketOverload.hpp
 	_friends.clear();
 	packet >> _friends;
 }
 
-bool Client::askNewFriend(const std::string& name)
-{
-	if(!_isConnected)
-		throw NotConnectedException("Unable to ask a new friend");
-	// Cannot be friend with yourself
-	if(name == _name)
-		return false;
-	// Don't ask a friend to become your friend
-	if(isFriend(name))
-		return false;
-	sf::Packet packet;
-	packet << TransferType::PLAYER_NEW_FRIEND << name;
-	_socket.send(packet);
-	// server acknowledges with PLAYER_NEW_FRIEND if request was correctly made and by NOT_EXISTING_FRIEND otherwise
-	_socket.receive(packet);
-	TransferType type;
-	packet >> type;
-	if(type == TransferType::PLAYER_NEW_FRIEND)
-		_friendsRequests.push_back(name);
-	return true;
-}
-
-bool Client::getIncomingFriendshipRequests(std::vector<std::string>& incomingRequests)
+void Client::updateFriendshipRequests()
 {
 	sf::Packet packet;
+	// send that requests list is asked
 	packet << TransferType::PLAYER_GETTING_FRIEND_REQUESTS;
 	_socket.send(packet);
 	_socket.receive(packet);
-	TransferType type;
-	packet >> type;
-	if(type != TransferType::PLAYER_GETTING_FRIEND_REQUESTS)
-		return false;
-	packet >> incomingRequests;
-	return true;
+	_friendshipRequests.clear();
+	packet >> _friendshipRequests;
 }
 
-bool Client::updateFriendshipRequests(std::vector<std::string>& acceptedSentRequests,
-	std::vector<std::string>& refusedSentRequests)
+void Client::sendFriendshipRequest(const std::string& name)
 {
+	if(!_isConnected)
+		throw NotConnectedException("unable to ask a new friend.");
+	// Cannot be friend with yourself
+	if(name == _name)
+		throw std::runtime_error("can't be friend with yourself.");
+	// Don't ask a friend to become your friend
+	if(isFriend(name))
+		throw std::runtime_error(name + "is already your friend.");
 	sf::Packet packet;
-	packet << TransferType::PLAYER_GETTING_FRIEND_REQUESTS_STATE;
+	packet << TransferType::PLAYER_NEW_FRIEND << name;
 	_socket.send(packet);
+	// server acknowledges with PLAYER_ACKNOWLEDGE if request was correctly made and by NOT_EXISTING_FRIEND otherwise
 	_socket.receive(packet);
 	TransferType type;
 	packet >> type;
-	if(type != TransferType::PLAYER_GETTING_FRIEND_REQUESTS_STATE)
-		return false;
-	packet >> acceptedSentRequests >> refusedSentRequests;
-	for(const auto& accpeted: acceptedSentRequests)
-		_friends.push_back(accpeted);
-	return true;
+	if(type != TransferType::PLAYER_ACKNOWLEDGE)
+		throw std::runtime_error("failed to send a request to " + name + ".");
 }
+
 
 bool Client::isFriend(const std::string& name) const
 {
-	return std::find(_friends.cbegin(), _friends.cend(), name) != _friends.cend();
+	return std::find_if(_friends.cbegin(), _friends.cend(), [&name](const Friend& friendUser)
+	{
+		return name == friendUser.name;
+	}) != _friends.cend();
 }
 
-bool Client::removeFriend(const std::string& name)
+void Client::removeFriend(const std::string& name)
 {
 	if(!_isConnected)
-		throw NotConnectedException("Unable to remove friend");
+		throw NotConnectedException("unable to remove friend.");
 	if(!isFriend(name))
-		return false;
+		throw std::runtime_error(name + "is not a friend of yours.");
 	sf::Packet packet;
 	// send that the user remove name from its friend list
 	packet << TransferType::PLAYER_REMOVE_FRIEND;
 	packet << name;
 	_socket.send(packet);
-	return true;
+	_socket.receive(packet);
+	TransferType type;
+	packet >> type;
+	if(type != TransferType::PLAYER_ACKNOWLEDGE)
+		throw std::runtime_error("failed to remove " + name + " from your friend list.");
 }
 
 void Client::acceptFriendshipRequest(const std::string& name, bool accept)
@@ -311,17 +345,23 @@ void Client::acceptFriendshipRequest(const std::string& name, bool accept)
 	packet << TransferType::PLAYER_RESPONSE_FRIEND_REQUEST << name << accept;
 	_socket.send(packet);
 	_socket.receive(packet);
-	TransferType status;
-	packet >> status;
-	if(status == TransferType::PLAYER_RESPONSE_FRIEND_REQUEST && accept)
-		_friends.push_back(name);
+	TransferType type;
+	packet >> type;
+	if(type != TransferType::PLAYER_ACKNOWLEDGE)
+		throw std::runtime_error("failed to accept request from " + name + ".");
 }
 
-bool Client::startConversation(const std::string& playerName) const
+void Client::startConversation(const std::string& playerName) const
 {
 	// rest assured the client is connected to a server before trying to access it
-	if(!_isConnected || !_userTerminal.hasKnownTerminal() || playerName == _name || !isFriend(playerName))
-		return false;
+	if(!_isConnected)
+		throw NotConnectedException("not connected.");
+	else if(!_userTerminal.hasKnownTerminal())
+		throw std::runtime_error("no known terminal.");
+	else if(playerName == _name)
+		throw std::runtime_error("chatting with yourself is not allowed.");
+	else if(!isFriend(playerName))
+		throw std::runtime_error("you are only allowed to chat with your friends.");
 	std::string cmd;
 	cmd = _userTerminal.startProgram(
 		"WizardPoker_chat",
@@ -334,6 +374,164 @@ bool Client::startConversation(const std::string& playerName) const
 			// there is not more parameters!
 		});
 	system(cmd.c_str());
-	return true;
 }
 
+////////////// Listening thread
+
+// function called by a new thread only
+void Client::inputListening()
+{
+	sf::TcpListener chatListener;
+	//~ use of a selector to be non-blocking. There may be a better idea
+	sf::SocketSelector selector;
+	if(chatListener.listen(sf::Socket::AnyPort) != sf::Socket::Done)
+	{
+		std::cerr << "Unable to listen to arriving chat connections!" << std::endl;
+		_chatListenerPort = 0;
+		exit(UNABLE_TO_LISTEN);
+	}
+	else
+		_chatListenerPort = chatListener.getLocalPort();
+	std::cout << "waiting for connections on port " << _chatListenerPort << std::endl;
+	selector.add(chatListener);
+	while(_threadLoop.load())
+	{
+		// set waiting to 0.1 second so that the loop variable is checked frequently enough
+		if(!selector.wait(SOCKET_TIME_SLEEP))
+			continue;
+		sf::TcpSocket socket;
+		if(chatListener.accept(socket) == sf::Socket::Done)
+		{
+			sf::Packet packet;
+			socket.receive(packet);
+			TransferType type;
+			packet >> type;
+			if(type == TransferType::CHAT_PLAYER_IP)
+				startChat(packet);
+			else if(type == TransferType::NEW_GAME_SERVER_CONNECTION)
+				initInGameConnection(packet);
+			else
+				std::cerr << "Unknown type of message\n";
+			std::cin.ignore();
+		}
+	}
+}
+
+void Client::startChat(sf::Packet& transmission)
+{
+	sf::Uint32 address;
+	sf::Uint16 port;
+	std::string otherName, selfName;
+	transmission >> address >> port >> selfName >> otherName;
+	std::string cmd;
+	cmd = _userTerminal.startProgram(
+		"WizardPoker_chat",
+		{
+			"callee",
+			std::to_string(address),
+			std::to_string(port),
+			selfName,
+			otherName
+		});
+	system(cmd.c_str());
+}
+
+void Client::initInGameConnection(sf::Packet& transmission)
+{
+	sf::Uint16 serverListeningPort;
+	transmission >> serverListeningPort;
+	_inGameSocket.connect(_socket.getRemoteAddress(), serverListeningPort);
+	_inGameListeningSocket.connect(_socket.getRemoteAddress(), serverListeningPort);
+	_readyToPlay.store(true);
+}
+
+//////////////// Cards managment
+
+std::vector<Deck> Client::getDecks()
+{
+	if(!_isConnected)
+		throw NotConnectedException("unable to get the decks list.");
+	sf::Packet packet;
+	// send that friends list is asked
+	packet << TransferType::PLAYER_ASKS_DECKS_LIST;
+	_socket.send(packet);
+	_socket.receive(packet);
+	std::vector<Deck> deckList;
+	packet >> deckList;
+	return deckList;
+}
+
+void Client::handleDeckEditing(const Deck& editedDeck)
+{
+	if(!_isConnected)
+		throw NotConnectedException("unable to get the decks list.");
+	sf::Packet packet;
+	// send that friends list is asked
+	packet << TransferType::PLAYER_EDIT_DECK << editedDeck;
+	_socket.send(packet);
+	_socket.receive(packet);
+	TransferType type;
+	packet >> type;
+	if(type != TransferType::ACKNOWLEDGE)
+		throw std::runtime_error("unable to send deck editing to the server.");
+}
+
+void Client::handleDeckCreation(const Deck& createdDeck)
+{
+	if(!_isConnected)
+		throw NotConnectedException("unable to get the decks list.");
+	sf::Packet packet;
+	// send that friends list is asked
+	packet << TransferType::PLAYER_CREATE_DECK << createdDeck;
+	_socket.send(packet);
+	_socket.receive(packet);
+	TransferType type;
+	packet >> type;
+	if(type != TransferType::ACKNOWLEDGE)
+		throw std::runtime_error("unable to send deck editing to the server.");
+}
+
+void Client::handleDeckDeletion(const std::string& deletedDeckName)
+{
+	if(!_isConnected)
+		throw NotConnectedException("unable to get the decks list.");
+	sf::Packet packet;
+	// send that friends list is asked
+	packet << TransferType::PLAYER_DELETE_DECK << deletedDeckName;
+	_socket.send(packet);
+	_socket.receive(packet);
+	TransferType type;
+	packet >> type;
+	if(type != TransferType::ACKNOWLEDGE)
+		throw std::runtime_error("unable to send deck deleting to the server.");
+}
+
+CardsCollection Client::getCardsCollection()
+{
+	if(!_isConnected)
+		throw NotConnectedException("unable to get the decks list.");
+	sf::Packet packet;
+	// send that friends list is asked
+	packet << TransferType::PLAYER_ASKS_CARDS_COLLECTION;
+	_socket.send(packet);
+	_socket.receive(packet);
+	CardsCollection cardCollection;
+	packet >> cardCollection;
+	return cardCollection;
+}
+
+////////////////// Others
+
+Ladder Client::getLadder()
+{
+	if(!_isConnected)
+		throw NotConnectedException("unable to get the decks list.");
+	sf::Packet packet;
+	// send that friends list is asked
+	packet << TransferType::PLAYER_ASKS_LADDER;
+	_socket.send(packet);
+	_socket.receive(packet);
+	Ladder ladder;
+	packet >> ladder;
+	return ladder;
+}

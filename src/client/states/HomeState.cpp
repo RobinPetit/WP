@@ -1,15 +1,12 @@
 // std-C++ headers
 #include <iostream>
-#include <cstdlib>
 // SFML headers
 #include <SFML/Network/IpAddress.hpp>
 // WizardPoker headers
-#include <common/constants.hpp>
-#include <client/ErrorCode.hpp>
-#include <client/sockets/Client.hpp>
-#include <common/sockets/TransferType.hpp>
-#include <common/Terminal.hpp>
-#include <common/ini/IniFile.hpp>
+#include "common/constants.hpp"
+#include "client/ErrorCode.hpp"
+#include "client/sockets/Client.hpp"
+#include "common/ini/IniFile.hpp"
 #include "client/states/MainMenuState.hpp"
 #include "client/states/HomeState.hpp"
 
@@ -29,51 +26,69 @@ void HomeState::display()
 	AbstractState::display();
 }
 
+// \TODO: factorize connect and createAccount
+
 void HomeState::connect()
 {
-	auto identifiers = askIdentifiers();
 	IniFile config;
-	// \TODO: write exceptions for connection errors, then catch them in main
-	// and return a status according to the exception catched.
 	int status = config.readFromFile(SERVER_CONFIG_FILE_PATH);
 	if(status != SUCCESS)
-		//return status;
-		return;
+		throw std::runtime_error("No config file");
 	if(config.find("SERVER_PORT") == config.end() || config.find("SERVER_ADDRESS") == config.end())
-		//return WRONG_FORMAT_CONFIG_FILE;
-		return;
-	while(!_client.connectToServer(identifiers.first, identifiers.second, config["SERVER_ADDRESS"], std::stoi(config["SERVER_PORT"], nullptr, AUTO_BASE)))
+		throw std::runtime_error("Missing data in config file");
+	bool connectingSuccesful;
+	do
 	{
-		std::cout << "Unable to connect to server, try again (or CTRL+C to exit):\n";
-		identifiers = askIdentifiers();
-	}
+		try
+		{
+			auto identifiers = askIdentifiers();
+			_client.connectToServer(identifiers.first,
+					identifiers.second,
+					config["SERVER_ADDRESS"],
+					static_cast<sf::Uint16>(std::stoi(config["SERVER_PORT"], nullptr, AUTO_BASE)));
+			connectingSuccesful = true;
+		}
+		catch(const std::runtime_error& e)
+		{
+			std::cout << "Error: " << e.what() << "\n";
+			std::cout << "Unable to connect to server, try again (or CTRL+C to exit):\n";
+			connectingSuccesful = false;
+		}
+	} while(not connectingSuccesful);
 	stackPush<MainMenuState>();
 }
 
 void HomeState::createAccount()
 {
-	auto identifiers = askIdentifiers();
 	IniFile config;
-	// \TODO: write exceptions for connection errors, then catch them in main
-	// and return a status according to the exception catched.
 	int status = config.readFromFile(SERVER_CONFIG_FILE_PATH);
 	if(status != SUCCESS)
-		//return status;
-		return;
+		throw std::runtime_error("No config file");
 	if(config.find("SERVER_PORT") == config.end() || config.find("SERVER_ADDRESS") == config.end())
-		//return WRONG_FORMAT_CONFIG_FILE;
-		return;
-	while(!_client.registerToServer(identifiers.first, identifiers.second, config["SERVER_ADDRESS"], std::stoi(config["SERVER_PORT"], nullptr, AUTO_BASE)))
+		throw std::runtime_error("Missing data in config file");
+	bool registeringSuccessful;
+	do
 	{
-		std::cout << "Unable to register to server, try again (or CTRL+C to exit):" << std::endl;
-		identifiers = askIdentifiers();
-	}
-	if(!_client.connectToServer(identifiers.first, identifiers.second, config["SERVER_ADDRESS"], std::stoi(config["SERVER_PORT"], nullptr, AUTO_BASE)))
-	{
-		std::cout << "Unable to connect to the server after registering.\n";
-		waitForEnter();
-		return;
-	}
+		try
+		{
+			auto identifiers = askIdentifiers();
+			_client.registerToServer(identifiers.first,
+					identifiers.second,
+					config["SERVER_ADDRESS"],
+					static_cast<sf::Uint16>(std::stoi(config["SERVER_PORT"]), nullptr, AUTO_BASE));
+			_client.connectToServer(identifiers.first,
+					identifiers.second,
+					config["SERVER_ADDRESS"],
+					static_cast<sf::Uint16>(std::stoi(config["SERVER_PORT"]), nullptr, AUTO_BASE));
+			registeringSuccessful = true;
+		}
+		catch(const std::runtime_error& e)
+		{
+			std::cout << "Error: " << e.what() << "\n";
+			std::cout << "Unable to register to server, try again (or CTRL+C to exit):\n";
+			registeringSuccessful = false;
+		}
+	} while(not registeringSuccessful);
 	stackPush<MainMenuState>();
 }
 
