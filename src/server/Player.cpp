@@ -614,7 +614,7 @@ void Player::sendIDsFromVector(TransferType type, const std::vector<CardType *>&
 {
 	sf::Packet packet;
 	packet << type;
-	std::vector<sf::Uint32> cardIds{vect.size()};
+	std::vector<sf::Uint32> cardIds{static_cast<sf::Uint32>(vect.size())};
 	for(typename std::vector<CardType *>::size_type i{0}; i < vect.size(); ++i)
 		cardIds[i] = vect[i]->getID();
 	packet << cardIds;
