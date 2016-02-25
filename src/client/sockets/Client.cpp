@@ -79,6 +79,7 @@ void Client::sendConnectionToken(const std::string& password)
 	case TransferType::ACKNOWLEDGE:
 		_isConnected = true;
 		updateFriends();
+		break;
 
 	default:
 		throw std::runtime_error("unidentified server response.");

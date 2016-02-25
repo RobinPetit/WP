@@ -49,6 +49,9 @@ void HomeState::connect()
 	{
 		std::cout << "Error: " << e.what() << "\n";
 		std::cout << "Unable to connect to server\n";
+		// If the error was caused by client::updateFriends, the client is connected
+		// but the user will stay on this state. The client must be deconnected.
+		_client.quit();
 		waitForEnter();
 	}
 }
@@ -67,7 +70,7 @@ void HomeState::createAccount()
 		_client.registerToServer(identifiers.first,
 				identifiers.second,
 				config["SERVER_ADDRESS"],
-				static_cast<sf::Uint16>(std::stoi(config["SERVER_PORT"]), nullptr, AUTO_BASE));
+				static_cast<sf::Uint16>(std::stoi(config["SERVER_PORT"], nullptr, AUTO_BASE)));
 		std::cout << "You have been successfuly registered!\n";
 	}
 	catch(const std::runtime_error& e)
