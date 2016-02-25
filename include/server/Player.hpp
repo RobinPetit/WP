@@ -54,6 +54,9 @@ public:
 	const Card* getLastCaster();
 	Player::ID getID();
 	const std::vector<Creature *>& getBoard();
+	int getRandomBoardIndex();
+	int requestSelfBoardIndex();
+	int requestOppoBoardIndex();
 
 private:
 	/// Types

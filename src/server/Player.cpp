@@ -239,6 +239,21 @@ const Card* Player::getLastCaster()
 	return _lastCasterCard;
 }
 
+int Player::getRandomBoardIndex()
+{
+	return std::uniform_int_distribution<int>(0, _cardBoard.size()-1)(_engine);
+}
+
+int Player::requestSelfBoardIndex()
+{
+	return 0; //NETWORK: REQUEST SELF BOARD INDEX
+}
+
+int Player::requestOppoBoardIndex()
+{
+	return 0; //NETWORK: REQUEST OPPO BOARD INDEX
+}
+
 /*------------------------------ EFFECTS (PRIVATE) */
 void Player::setConstraint(const EffectParamsCollection& args)
 {
