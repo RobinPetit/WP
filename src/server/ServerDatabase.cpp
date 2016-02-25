@@ -16,7 +16,7 @@ ServerDatabase::ServerDatabase(std::string filename) : Database(filename)
 int ServerDatabase::getUserId(const std::string login)
 {
 	sqlite3_reset(_userIdStmt);
-	sqlite3_bind_text(_userIdStmt, 1, login.c_str(), AUTO_QUERY_LENGTH, SQLITE_TRANSIENT);
+	sqliteThrowExcept(sqlite3_bind_text(_userIdStmt, 1, login.c_str(), AUTO_QUERY_LENGTH, SQLITE_TRANSIENT));
 
 	if(sqliteThrowExcept(sqlite3_step(_userIdStmt)) == SQLITE_DONE)
 		throw std::runtime_error("ERROR login not found");
@@ -27,7 +27,7 @@ int ServerDatabase::getUserId(const std::string login)
 std::string ServerDatabase::getLogin(const int userId)
 {
 	sqlite3_reset(_loginStmt);
-	sqlite3_bind_int(_loginStmt, 1, userId);
+	sqliteThrowExcept(sqlite3_bind_int(_loginStmt, 1, userId));
 
 	if(sqliteThrowExcept(sqlite3_step(_loginStmt)) == SQLITE_DONE)
 		throw std::runtime_error("ERROR userId not found");
@@ -38,7 +38,7 @@ std::string ServerDatabase::getLogin(const int userId)
 std::vector<Deck> ServerDatabase::getDecks(const int userId)
 {
 	sqlite3_reset(_decksStmt);
-	sqlite3_bind_int(_decksStmt, 1, userId);
+	sqliteThrowExcept(sqlite3_bind_int(_decksStmt, 1, userId));
 
 	std::vector<Deck> decks;
 
@@ -56,7 +56,7 @@ std::vector<Deck> ServerDatabase::getDecks(const int userId)
 CardsCollection ServerDatabase::getCardsCollection(const int userId)
 {
 	sqlite3_reset(_cardsCollectionStmt);
-	sqlite3_bind_int(_cardsCollectionStmt, 1, userId);
+	sqliteThrowExcept(sqlite3_bind_int(_cardsCollectionStmt, 1, userId));
 
 	CardsCollection cards;
 
@@ -71,7 +71,7 @@ CardsCollection ServerDatabase::getCardsCollection(const int userId)
 Ladder ServerDatabase::getLadder()
 {
 	sqlite3_reset(_ladderStmt);
-	sqlite3_bind_int(_ladderStmt, 1, ladderSize);
+	sqliteThrowExcept(sqlite3_bind_int(_ladderStmt, 1, ladderSize));
 
 	Ladder ladder;
 
@@ -88,8 +88,8 @@ Ladder ServerDatabase::getLadder()
 void ServerDatabase::addFriend(int userId, const int newFriendId)
 {
 	sqlite3_reset(_addFriendStmt);
-	sqlite3_bind_int(_addFriendStmt, 1, userId);
-	sqlite3_bind_int(_addFriendStmt, 2, newFriendId);
+	sqliteThrowExcept(sqlite3_bind_int(_addFriendStmt, 1, userId));
+	sqliteThrowExcept(sqlite3_bind_int(_addFriendStmt, 2, newFriendId));
 
 	sqlite3_step(_addFriendStmt);
 }
@@ -97,7 +97,7 @@ void ServerDatabase::addFriend(int userId, const int newFriendId)
 FriendsList ServerDatabase::getAnyFriendsList(const int user, sqlite3_stmt * stmt)
 {
 	sqlite3_reset(stmt);
-	sqlite3_bind_int(stmt, 1, user);
+	sqliteThrowExcept(sqlite3_bind_int(stmt, 1, user));
 
 	FriendsList friends;
 
