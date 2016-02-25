@@ -226,6 +226,9 @@ void Server::receiveData()
 		case TransferType::GAME_REQUEST:
 			findOpponent(it);
 			break;
+		case TransferType::GAME_CANCEL_REQUEST:
+			clearLobby(it);
+			break;
 		default:
 			std::cerr << "Error: unknown code " << static_cast<sf::Uint32>(type) << std::endl;
 			break;
@@ -323,6 +326,19 @@ void Server::findOpponent(const _iterator& it)
 			createGame(waitingPlayer->second.id, it->second.id);
 		}
 	}
+	_lobbyMutex.unlock();
+}
+
+void Server::clearLobby(const _iterator& it)
+{
+	_lobbyMutex.lock();
+	if(not _isAPlayerWaiting or _waitingPlayer != it->first)
+	{
+		std::cerr << "Trying to remvoe another player from lobby; ignored\n";
+		return;
+	}
+	else
+		_isAPlayerWaiting = false;
 	_lobbyMutex.unlock();
 }
 

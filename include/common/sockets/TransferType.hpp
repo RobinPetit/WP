@@ -30,6 +30,8 @@ enum class TransferType : sf::Uint32
 	GAME_CONNECTION_OR_REGISTERING_OK,
 	/// Used when a player asks to find an opponent
 	GAME_REQUEST,
+	/// Used when a player asks to leave the lobby
+	GAME_CANCEL_REQUEST,
 	/// Used when a new game is started when the server thread creates the different connections
 	NEW_GAME_SERVER_CONNECTION,
 	/// Used when the server tells the player the game is setup correctly and can begin

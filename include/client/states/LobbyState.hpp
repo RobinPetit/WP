@@ -2,6 +2,7 @@
 #define _LOBBY_STATE_CLIENT_HPP
 
 #include "client/AbstractState.hpp"
+#include <string>
 
 // Forward declarations
 class StateStack;
@@ -18,8 +19,11 @@ class LobbyState : public AbstractState
 		virtual void display() override;
 
 	private:
-		void quit();
+		/////////// attributes
+		static const std::string _quitString;
 
+		/////////// private methods
+		void quit();
 };
 
 #endif// _LOBBY_STATE_CLIENT_HPP

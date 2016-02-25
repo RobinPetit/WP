@@ -5,6 +5,7 @@
 // WizardPoker headers
 #include "client/sockets/Client.hpp"
 #include "client/ErrorCode.hpp"
+#include "client/NonBlockingInput.hpp"
 #include "common/constants.hpp"
 #include "common/sockets/TransferType.hpp"
 #include "common/NotConnectedException.hpp"
@@ -173,17 +174,36 @@ Client::~Client()
 
 ///////// Game management
 
-void Client::startGame()
+bool Client::startGame()
 {
-	std::cout << "starting game\n";
+	static const std::string cancelWaitingString{"q"};
+	NonBlockingInput input;
+	std::cout << "Entering the lobby. Type '" << cancelWaitingString << "' to leave the lobby.\n";
 	sf::Packet packet;
 	packet << TransferType::GAME_REQUEST;
 	_socket.send(packet);
-	// \TODO: have possibility to stop waiting
-	_socket.receive(packet);
-	packet >> _inGameOpponentName;
-	std::cout << "opponent found: " << _inGameOpponentName << std::endl;
-	_inGame = true;
+	sf::SocketSelector selector;
+	selector.add(_socket);
+	bool loop{true};
+	while(loop)
+	{
+		if(selector.wait(sf::milliseconds(50)))
+		{
+			loop = false;
+			_socket.receive(packet);
+			packet >> _inGameOpponentName;
+			std::cout << "opponent found: " << _inGameOpponentName << std::endl;
+			_inGame = true;
+		}
+		else if(input.waitForData(0.05) && input.receiveStdinData() == cancelWaitingString)
+		{
+			loop = false;
+			packet.clear();
+			packet << TransferType::GAME_CANCEL_REQUEST;
+			_socket.send(packet);
+		}
+	}
+	return _inGame;
 }
 
 sf::TcpSocket& Client::getGameSocket()

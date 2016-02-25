@@ -99,7 +99,7 @@ public:
 	////////// Game management
 
 	/// \TODO Complete this method (and its signature)
-	void startGame();
+	bool startGame();
 
 	/// Used to ask (from the menus for instance) the socket used in game
 	/// \throw std::runtime_error if the method is called and no game has started
