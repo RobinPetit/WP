@@ -42,5 +42,3 @@ void LadderState::backMainMenu()
 {
 	stackPop();
 }
-
-
