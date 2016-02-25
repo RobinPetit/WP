@@ -145,7 +145,6 @@ void Server::registerUser(sf::Packet& registeringPacket, std::unique_ptr<sf::Tcp
 
 void Server::receiveData()
 {
-	std::cout << "Data received.\n";
 	// first find which socket it is
 	auto it = std::find_if(_clients.begin(), _clients.end(), [this](const auto& pair)
 	{
@@ -160,6 +159,8 @@ void Server::receiveData()
 	sf::Packet packet;
 	sf::TcpSocket& client(*(it->second.socket));
 	sf::Socket::Status receivalStatus = client.receive(packet);
+	std::cout << "Data received from " + userToString(it) + "\n";
+
 	if(receivalStatus == sf::Socket::Done)
 	{
 		TransferType type;
@@ -167,7 +168,7 @@ void Server::receiveData()
 		switch(type)
 		{
 		case TransferType::PLAYER_DISCONNECTION:
-			std::cout << "Player " << it->first << " quits the game!" << std::endl;
+			std::cout << "Player " + userToString(it) + " quits the game!" << std::endl;
 			removeClient(it);
 			break;
 		// Friendship management
@@ -223,11 +224,11 @@ void Server::receiveData()
 	}
 	else if(receivalStatus == sf::Socket::Disconnected)
 	{
-		std::cerr << "Connection with player " << it->first << " is lost: forced disconnection from server." << std::endl;
+		std::cerr << "Connection with player " + userToString(it) + " is lost: forced disconnection from server.\n";
 		removeClient(it);
 	}
 	else
-		std::cerr << "data not well received." << std::endl;
+		std::cerr << "Data not well received.\n";
 }
 
 void Server::removeClient(const _iterator& it)
@@ -284,6 +285,11 @@ void Server::waitQuit()
 	}
 	_threadRunning.store(false);
 	std::cout << "ending server..." << std::endl;
+}
+
+std::string Server::userToString(const _iterator& it)
+{
+	return it->first + " (" + it->second.socket->getRemoteAddress().toString() + ")";
 }
 
 //////////////// Game management
@@ -344,7 +350,7 @@ void Server::startGame(std::size_t idx)
 	};
 	const auto& player1 = std::find_if(_clients.begin(), _clients.end(), finderById(selfThread._player1ID));
 	const auto& player2 = std::find_if(_clients.begin(), _clients.end(), finderById(selfThread._player2ID));
-	std::cout << "Game " << idx << " is starting: " << player1->first << " vs. " << player2->first << "\n";
+	std::cout << "Game " << idx << " is starting: " + userToString(player1) + " vs. " + userToString(player2) + "\n";
 	selfThread.startGame(player1->second, player2->second);
 }
 
@@ -436,7 +442,7 @@ void Server::handleFriendshipRequestResponse(const _iterator& it, sf::Packet& tr
 		if(not true /* UNCOMMENT _database.hasSentRequest(askerId, askedId) */)
 		{
 			transmission << TransferType::NOT_EXISTING_FRIEND;
-			throw std::runtime_error(it->first + " responded to a friend request of an unexisting player.");
+			throw std::runtime_error(userToString(it) + " responded to a friend request of an unexisting player.");
 		}
 		if(accepted)
 			_database.addFriend(askerId, askedId);
