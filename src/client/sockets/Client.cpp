@@ -160,8 +160,9 @@ void Client::quit()
 	sf::Packet packet;
 	packet << TransferType::PLAYER_DISCONNECTION;
 	_socket.send(packet);
-	_inGame.store(false);
 	_socket.disconnect();
+	// internal part
+	_inGame.store(false);
 	_threadLoop.store(false);
 	_listenerThread.join();
 	_isConnected = false;

@@ -26,12 +26,12 @@ void HomeState::display()
 	AbstractState::display();
 }
 
+// \TODO: factorize connect and createAccount
+
 void HomeState::connect()
 {
 	auto identifiers = askIdentifiers();
 	IniFile config;
-	// \TODO: write exceptions for connection errors, then catch them in main
-	// and return a status according to the caught exception.
 	int status = config.readFromFile(SERVER_CONFIG_FILE_PATH);
 	if(status != SUCCESS)
 		throw std::runtime_error("No config file");
@@ -49,15 +49,11 @@ void HomeState::createAccount()
 {
 	auto identifiers = askIdentifiers();
 	IniFile config;
-	// \TODO: write exceptions for connection errors, then catch them in main
-	// and return a status according to the exception catched.
 	int status = config.readFromFile(SERVER_CONFIG_FILE_PATH);
 	if(status != SUCCESS)
-		//return status;
-		return;
+		throw std::runtime_error("No config file");
 	if(config.find("SERVER_PORT") == config.end() || config.find("SERVER_ADDRESS") == config.end())
-		//return WRONG_FORMAT_CONFIG_FILE;
-		return;
+		throw std::runtime_error("Missing data in config file");
 	while(!_client.registerToServer(identifiers.first, identifiers.second, config["SERVER_ADDRESS"], std::stoi(config["SERVER_PORT"], nullptr, AUTO_BASE)))
 	{
 		std::cout << "Unable to register to server, try again (or CTRL+C to exit):" << std::endl;
