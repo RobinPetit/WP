@@ -494,7 +494,7 @@ void Server::handleRemoveFriend(const _iterator& it, sf::Packet& transmission)
 	{
 		const Database::userId unfriendlyUserId{_database.getUserId(it->first)};
 		const Database::userId removedFriendId{_database.getUserId(removedFriend)};
-		// UNCOMMENT _database.removeFriend(unfriendlyUserId, removedFriendId);
+		_database.removeFriend(unfriendlyUserId, removedFriendId);
 
 		// acknowledge to client
 		transmission << TransferType::PLAYER_ACKNOWLEDGE;
