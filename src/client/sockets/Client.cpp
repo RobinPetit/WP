@@ -77,7 +77,7 @@ void Client::sendConnectionToken(const std::string& password)
 	case TransferType::GAME_WRONG_IDENTIFIERS:
 		throw std::runtime_error("invalid username or password.");
 
-	case TransferType::GAME_CONNECTION_OR_REGISTERING_OK:
+	case TransferType::ACKNOWLEDGE:
 		_isConnected = true;
 		updateFriends();
 
@@ -105,7 +105,7 @@ void Client::sendRegisteringToken(const std::string& name, const std::string& pa
 	case TransferType::GAME_FAILED_TO_REGISTER:
 		throw std::runtime_error("the server failed to register your account.");
 
-	case TransferType::GAME_CONNECTION_OR_REGISTERING_OK:
+	case TransferType::ACKNOWLEDGE:
 		return;
 
 	default:
@@ -304,11 +304,11 @@ void Client::sendFriendshipRequest(const std::string& name)
 	sf::Packet packet;
 	packet << TransferType::PLAYER_NEW_FRIEND << name;
 	_socket.send(packet);
-	// server acknowledges with PLAYER_ACKNOWLEDGE if request was correctly made and by NOT_EXISTING_FRIEND otherwise
+	// server acknowledges with ACKNOWLEDGE if request was correctly made and by NOT_EXISTING_FRIEND otherwise
 	_socket.receive(packet);
 	TransferType type;
 	packet >> type;
-	if(type != TransferType::PLAYER_ACKNOWLEDGE)
+	if(type != TransferType::ACKNOWLEDGE)
 		throw std::runtime_error("failed to send a request to " + name + ".");
 }
 
@@ -335,7 +335,7 @@ void Client::removeFriend(const std::string& name)
 	_socket.receive(packet);
 	TransferType type;
 	packet >> type;
-	if(type != TransferType::PLAYER_ACKNOWLEDGE)
+	if(type != TransferType::ACKNOWLEDGE)
 		throw std::runtime_error("failed to remove " + name + " from your friend list.");
 }
 
@@ -347,8 +347,10 @@ void Client::acceptFriendshipRequest(const std::string& name, bool accept)
 	_socket.receive(packet);
 	TransferType type;
 	packet >> type;
-	if(type != TransferType::PLAYER_ACKNOWLEDGE)
-		throw std::runtime_error("failed to accept request from " + name + ".");
+	if(type == TransferType::NOT_EXISTING_FRIEND)
+		throw std::runtime_error("it seems that " + name + " does not exists.");
+	else
+		throw std::runtime_error("failed send response to " + name + ".");
 }
 
 void Client::startConversation(const std::string& playerName) const

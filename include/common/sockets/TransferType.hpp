@@ -35,41 +35,53 @@ enum class TransferType : sf::Uint32
 	/// Used when a new user wants to register but another error than GAME_USERNAME_NOT_AVAILABLE occurred
 	GAME_FAILED_TO_REGISTER,
 
-	/// Used when the server successfuly connected or registered the user
-	GAME_CONNECTION_OR_REGISTERING_OK,
-
 	/// Used when a player asks to find an opponent
 	GAME_REQUEST,
 
 	/// Used when a player asks to leave the lobby
 	GAME_CANCEL_REQUEST,
+
 	/// Used when a new game is started when the server thread creates the different connections
 	NEW_GAME_SERVER_CONNECTION,
+
 	/// Used when the server tells the player the game is setup correctly and can begin
 	GAME_STARTING,
+
 	/// Used when the server tells the client its turn begins
 	GAME_PLAYER_ENTER_TURN,
+
 	/// Used when the server tells the client its turn ends
 	GAME_PLAYER_LEAVE_TURN,
+
 	/// Used to tell the client the game is over: one player won, the other failed
 	GAME_OVER,
+
 	/// Used to tell the client that he cannot play cards during this turn anymore
 	GAME_CARD_LIMIT_TURN_REACHED,
+
 	/// Used to tell the client that its energy is unsufficient to cast a spell or a monster
 	GAME_NOT_ENOUGH_ENERGY,
+
 	/// Used to tell the client that its energy points have been updated
 	GAME_PLAYER_ENERGY_UPDATED,
+
 	/// Used to tell the client that its health points gave been udpated
 	GAME_PLAYER_HEALTH_UPDATED,
+
 	/// Used when sending to the client the current state of the board
 	GAME_BOARD_UPDATED,
+
 	/// Used when sending to the client the state of its opponent's board
 	GAME_OPPONENT_BOARD_UPDATED,
+
 	/// Used when sending to the client the current state of its graveyard
 	GAME_GRAVEYARD_UPDATED,
+
 	/// Used when sending to the client the current state of its hand
 	GAME_HAND_UPDATED,
+
 	/////////////// Client/Server
+
 	/// Used when the client quits to tell the server it disconnects
 	PLAYER_DISCONNECTION,
 
@@ -115,17 +127,13 @@ enum class TransferType : sf::Uint32
 	/// Sent when the user wants the ladder
 	PLAYER_ASKS_LADDER,
 
-	/// Sent in case of success, from the server
+	////////////////// General headers
+
+	/// Used to acknowledge to client something happened correctly
 	ACKNOWLEDGE,
 
-	/// Sent in case of error, from the server
-	FAILURE,
-
-	//////////////////
-	/// Used to acknowledge to client something happened correctly
-	SERVER_ACKNOWLEDGEMENT,
 	/// Used as a "false-valued boolean" for actions requested by the client
-	SERVER_UNABLE_TO_PERFORM
+	FAILURE
 };
 
 /// Overloading of the sf::Packet operators so that a TransferType variable can be stored

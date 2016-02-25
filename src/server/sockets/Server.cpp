@@ -73,7 +73,6 @@ void Server::takeConnection()
 		std::cout << "Error: wrong code!" << std::endl;
 }
 
-// TODO these methods (connect/register) should be rewritten in many smaller methods
 void Server::connectUser(sf::Packet& connectionPacket, std::unique_ptr<sf::TcpSocket> client)
 {
 	std::string playerName, password;
@@ -181,7 +180,7 @@ void Server::registerUser(sf::Packet& registeringPacket, std::unique_ptr<sf::Tcp
 void Server::sendAcknowledgement(sf::TcpSocket& client)
 {
 	sf::Packet packet;
-	packet << TransferType::GAME_CONNECTION_OR_REGISTERING_OK;
+	packet << TransferType::ACKNOWLEDGE;
 	client.send(packet);
 }
 
@@ -454,7 +453,7 @@ void Server::handleFriendshipRequest(const _iterator& it, sf::Packet& transmissi
 		// UNCOMMENT _database.addFriendRequest(thisId, friendId);
 
 		// Send an acknowledgement to the user
-		response << TransferType::PLAYER_ACKNOWLEDGE;
+		response << TransferType::ACKNOWLEDGE;
 	}
 	catch(const std::runtime_error& e)
 	{
@@ -488,13 +487,13 @@ void Server::handleFriendshipRequestResponse(const _iterator& it, sf::Packet& tr
 		}
 
 		// acknowledge to client
-		transmission << TransferType::PLAYER_ACKNOWLEDGE;
+		transmission << TransferType::ACKNOWLEDGE;
 	}
 	catch(const std::runtime_error& e)
 	{
-		// If the packet is empty, then ServerDatabase::getUserId threw
+		// If the packet is empty, then _database threw
 		if(transmission.getDataSize() == 0)
-			transmission << TransferType::NOT_EXISTING_FRIEND;
+			transmission << TransferType::FAILURE;
 		std::cout << "handleFriendshipRequestResponse error: " << e.what() << "\n";
 	}
 	it->second.socket->send(transmission);
@@ -551,7 +550,7 @@ void Server::handleRemoveFriend(const _iterator& it, sf::Packet& transmission)
 		_database.removeFriend(unfriendlyUserId, removedFriendId);
 
 		// acknowledge to client
-		transmission << TransferType::PLAYER_ACKNOWLEDGE;
+		transmission << TransferType::ACKNOWLEDGE;
 	}
 	catch(const std::runtime_error& e)
 	{
