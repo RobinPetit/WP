@@ -257,6 +257,11 @@ CREATE INDEX friendFirst ON Friend(first);
 
 CREATE INDEX friendSecond ON Friend(second);
 
+-- It s not possible to create a trigger to allow
+-- DELETE FROM Friend requests to be rearranged (first and second)
+-- because sqlite neither support INSTEAD OF triggers on table
+-- nor FOR EACH STATEMENT tiggers
+
 SELECT "Friends/View";
 CREATE VIEW Friendship AS
     SELECT * FROM Friend UNION SELECT second AS first, first AS second FROM Friend;
@@ -308,7 +313,6 @@ CREATE TRIGGER addFriend
         DELETE FROM FriendRequest WHERE (from_ = NEW.first AND to_ = NEW.second); -- SQLite do not support INSTEAD OF on tables
         DELETE FROM FriendRequest WHERE (from_ = NEW.second AND to_ = NEW.first);
     END;
-
 
 END;
 SELECT '-------';

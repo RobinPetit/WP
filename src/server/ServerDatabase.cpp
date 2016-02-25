@@ -85,13 +85,22 @@ Ladder ServerDatabase::getLadder()
 	return ladder;
 }
 
-void ServerDatabase::addFriend(const int userId, const int newFriendId)
+void ServerDatabase::addFriend(const int userId1, const int userId2)
 {
 	sqlite3_reset(_addFriendStmt);
-	sqliteThrowExcept(sqlite3_bind_int(_addFriendStmt, 1, userId));
-	sqliteThrowExcept(sqlite3_bind_int(_addFriendStmt, 2, newFriendId));
+	sqliteThrowExcept(sqlite3_bind_int(_addFriendStmt, 1, userId1));
+	sqliteThrowExcept(sqlite3_bind_int(_addFriendStmt, 2, userId2));
 
 	sqlite3_step(_addFriendStmt);
+}
+
+void ServerDatabase::removeFriend(const int userId1, const int userId2)
+{
+	sqlite3_reset(_removeFriendStmt);
+	sqliteThrowExcept(sqlite3_bind_int(_removeFriendStmt, 1, userId1 < userId2 ? userId1 : userId2));
+	sqliteThrowExcept(sqlite3_bind_int(_removeFriendStmt, 2, userId1 < userId2 ? userId2 : userId1));
+
+	sqlite3_step(_removeFriendStmt);
 }
 
 FriendsList ServerDatabase::getAnyFriendsList(const int user, sqlite3_stmt * stmt)

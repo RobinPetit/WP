@@ -26,7 +26,8 @@ public:
 	std::vector<Deck> getDecks(const int userId);
 	CardsCollection getCardsCollection(const int userId);
 	Ladder getLadder();
-	void addFriend(const int userId, const int newFriendId);
+	void addFriend(const int userId1, const int userId2);
+	void removeFriend(const int userId1, const int userId2);
 
 	virtual ~ServerDatabase();
 
@@ -44,11 +45,12 @@ private:
 	sqlite3_stmt * _cardsCollectionStmt;
 	sqlite3_stmt * _ladderStmt;
 	sqlite3_stmt * _addFriendStmt;
+	sqlite3_stmt * _removeFriendStmt;
 
 	// `constexpr std::array::size_type size() const;`
-	// -> I consider this 4 as the definition of the variable, so it is not a magic number
-	// -> future uses have to be _statements.size() -> 4 is writed only one time
-	StatementsList<8> _statements
+	// -> I consider this 9 as the definition of the variable, so it is not a magic number
+	// -> future uses have to be _statements.size() -> 9 is writed only one time
+	StatementsList<9> _statements
 	{
 		{
 			Statement {
@@ -95,6 +97,11 @@ private:
 				&_addFriendStmt,
 				"INSERT INTO Friend "
 				"	VALUES(?1,?2);" // TRIGGER addFriend will remove obselete friendshipRequests
+			},
+			Statement {
+				&_removeFriendStmt,
+				"DELETE FROM Friend "
+				"	WHERE(first == ?1 AND second == ?2);" // With ?1 < ?2. See initdatabase.sql to reason
 			}
 		}
 	};
