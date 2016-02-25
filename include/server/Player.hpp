@@ -73,13 +73,14 @@ private:
 	Board* _board;
 	Player* _opponent = nullptr;
 	Player::ID _id;
-	int _energy, _energyInit = 0, _health;
-	static const int _maxEnergy = 10, _maxHealth = 20;
 
-
+	//Client communication
 	sf::TcpSocket& _socketToClient;
 	sf::TcpSocket& _specialSocketToClient;
 
+	// Gameplay
+	int _energy, _energyInit = 0, _health;
+	static const int _maxEnergy = 10, _maxHealth = 20;
 	TurnData _turnData;
 
 	// Constraints
