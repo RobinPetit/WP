@@ -1,6 +1,13 @@
 # INFOF-209
 Wizard Poker
 
+## To the assistants
+
+In order to run our project, download the repo as a zip (or clone) and then
+run the executables in `binNO4/`.
+We use libraries not available on the NO4 computers, so we compiled the project
+statically in order to run it on NO4 computers, and put the binaries in the repo.
+
 ## Compilation
 
 It is better to do an out-of-source build:
@@ -226,4 +233,3 @@ depending on the directory of the file.
 		_myInt = newMyInt;
 	}
 ```
-
