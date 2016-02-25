@@ -106,8 +106,7 @@ enum class TransferType : sf::Uint32
 	/// Used when a client asks what friendship requests he got
 	PLAYER_GETTING_FRIEND_REQUESTS,
 
-	/// Used to acknowledge the client that the client request succeeded, it is used for all requests
-	PLAYER_ACKNOWLEDGE,
+	/////////////////////// Cards managment
 
 	/// Sent when the user wants its decks list
 	PLAYER_ASKS_DECKS_LIST,

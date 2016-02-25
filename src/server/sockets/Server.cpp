@@ -24,7 +24,6 @@ Server::Server():
 	_database(),
 	_last_id(0)
 {
-
 }
 
 int Server::start(const sf::Uint16 listenerPort)
@@ -475,12 +474,12 @@ void Server::sendFriendshipRequests(const _iterator& it)
 		// throw an exception (although I don't think this is really risky,
 		// it's better to be sure).
 		FriendsList requests{_database.getFriendshipRequests(id)};
-		response << requests;
+		response << TransferType::ACKNOWLEDGE << requests;
 	}
 	catch(const std::runtime_error& e)
 	{
 		std::cout << "sendFriendshipRequests error: " << e.what() << "\n";
-		response << FriendsList();
+		response << TransferType::FAILURE;
 	}
 	it->second.socket->send(response);
 }
@@ -535,12 +534,12 @@ void Server::sendDecks(const _iterator& it)
 		const Database::userId id{_database.getUserId(it->first)};
 		// Same as sendFriendshipRequests for the two folling lines
 		std::vector<Deck> decks{_database.getDecks(id)};
-		response << decks;
+		response << TransferType::ACKNOWLEDGE << decks;
 	}
 	catch(const std::runtime_error& e)
 	{
 		std::cout << "sendDecks error: " << e.what() << "\n";
-		response << std::vector<Deck>();
+		response << TransferType::FAILURE;
 	}
 	it->second.socket->send(response);
 }
@@ -610,12 +609,12 @@ void Server::sendCardsCollection(const _iterator& it)
 		const Database::userId id{_database.getUserId(it->first)};
 		// Same as sendFriendshipRequests for the two folling lines
 		CardsCollection cards{_database.getCardsCollection(id)};
-		response << cards;
+		response << TransferType::ACKNOWLEDGE << cards;
 	}
 	catch(const std::runtime_error& e)
 	{
 		std::cout << "sendCardsCollection error: " << e.what() << "\n";
-		response << CardsCollection();
+		response << TransferType::FAILURE;
 	}
 	it->second.socket->send(response);
 }
@@ -628,12 +627,12 @@ void Server::sendLadder(const _iterator& it)
 	try
 	{
 		Ladder ladder{_database.getLadder()};
-		response << ladder;
+		response << TransferType::PLAYER_ASKS_LADDER << ladder;
 	}
 	catch(const std::runtime_error& e)
 	{
 		std::cout << "sendLadder error: " << e.what() << "\n";
-		response << Ladder();
+		response << TransferType::FAILURE;
 	}
 	it->second.socket->send(response);
 }
