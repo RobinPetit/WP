@@ -30,7 +30,7 @@ struct Statement : private std::pair<sqlite3_stmt **, const char *> // I dont ca
 	{
 		return first;
 	}
-	const char * const query() const
+	const char * query() const
 	{
 		return second;
 	}

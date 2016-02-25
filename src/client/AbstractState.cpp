@@ -3,8 +3,8 @@
 #include "client/AbstractState.hpp"
 
 AbstractState::AbstractState(StateStack& stateStack, Client& client):
-	_stateStack{stateStack},
-	_client{client}
+	_client{client},
+	_stateStack{stateStack}
 {
 
 }

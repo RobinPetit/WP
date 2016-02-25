@@ -45,18 +45,18 @@ void chatListening(sf::Uint16 *port, const std::atomic_bool *loop, Terminal term
 		if(chatListener.accept(socket) == sf::Socket::Done)
 		{
 			sf::Uint32 address;
-			sf::Uint16 port;
+			sf::Uint16 chatPort;
 			std::string otherName, selfName;
 			sf::Packet packet;
 			socket.receive(packet);
-			packet >> address >> port >> selfName >> otherName;
+			packet >> address >> chatPort >> selfName >> otherName;
 			std::string cmd;
 			cmd = terminal.startProgram(
 				"WizardPoker_chat",
 				{
 					"callee",
 					std::to_string(address),
-					std::to_string(port),
+					std::to_string(chatPort),
 					selfName,
 					otherName
 				});

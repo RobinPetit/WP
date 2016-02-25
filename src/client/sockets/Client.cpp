@@ -17,9 +17,9 @@ extern void chatListening(sf::Uint16 *port, const std::atomic_bool *loop, Termin
 
 Client::Client():
 	_socket(),
+	_chatListenerPort(0),
 	_currentConversations(),
 	_isConnected(false),
-	_chatListenerPort(0),
 	_threadLoop(0),
 	_serverAddress(),
 	_serverPort(0),

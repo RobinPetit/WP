@@ -58,7 +58,7 @@ sf::Packet& operator >>(sf::Packet& packet, std::vector<T>& vec)
 	typename std::vector<T>::size_type length;
 	packet >> tmp;
 	length = tmp;
-	for(int i = 0; i < length; ++i)
+	for(typename std::vector<T>::size_type i = 0; i < length; ++i)
 	{
 		T value;
 		packet >> value;
