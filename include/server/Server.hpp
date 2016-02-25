@@ -95,11 +95,13 @@ private:
 
 	//////////// Game management
 
-	/// Used when a player want to play with another player
+	/// Used when a player wants to play with another player
 	void findOpponent(const _iterator& it);
-	///
+	/// Used when a player wants to leave the lobby
+	void clearLobby(const _iterator& it);
+	/// Called by the new GameThread to start a game for two players
 	void startGame(std::size_t idx);
-	///
+	/// Starts the new thread for the new game
 	void createGame(unsigned ID1, unsigned ID2);
 };
 

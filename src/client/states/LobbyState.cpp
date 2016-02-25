@@ -1,17 +1,12 @@
 // std-C++ headers
 #include <iostream>
-#include <cstdlib>
 // SFML headers
-#include <SFML/Network/IpAddress.hpp>
+#include <SFML/Network/SocketSelector.hpp>
 // WizardPoker headers
-#include <common/constants.hpp>
-#include <client/ErrorCode.hpp>
-#include <client/sockets/Client.hpp>
-#include <common/sockets/TransferType.hpp>
-#include <common/Terminal.hpp>
-#include <common/ini/IniFile.hpp>
-#include "client/states/MainMenuState.hpp"
+#include "client/sockets/Client.hpp"
+#include "common/sockets/TransferType.hpp"
 #include "client/states/LobbyState.hpp"
+#include "client/NonBlockingInput.hpp"
 
 LobbyState::LobbyState(StateStack& stateStack, Client& client):
 	AbstractState(stateStack, client)
@@ -22,6 +17,9 @@ LobbyState::LobbyState(StateStack& stateStack, Client& client):
 void LobbyState::display()
 {
 	std::cout << "Welcome to the matchmaking lobby!\n";
+	NonBlockingInput input;
+	sf::SocketSelector selector;
+	_client.startGame();
 
 	// Display the actions
 	AbstractState::display();
