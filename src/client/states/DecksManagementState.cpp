@@ -9,11 +9,16 @@ DecksManagementState::DecksManagementState(StateStack& stateStack, Client& clien
 	addAction("Edit a deck", &DecksManagementState::editDeck);
 	addAction("Create a deck", &DecksManagementState::createDeck);
 	addAction("Delete a deck", &DecksManagementState::deleteDeck);
-	// Get the decks from the server...
-	_decks.emplace_back("Default deck");
-	_decks.emplace_back("Aggro deck");
-	_decks.emplace_back("Defense deck");
-	// And the card collection too (for now this is the default card collection)
+	try
+	{
+		_decks = _client.getDecks();
+		_cardsCollection = _client.getCardsCollection();
+	}
+	catch(const std::runtime_error& e)
+	{
+		std::cout << "Error: " << e.what() << "\n";
+		std::cout << "Default card collection loaded.\n";
+	}
 }
 
 void DecksManagementState::display()
@@ -82,9 +87,17 @@ void DecksManagementState::editDeck()
 		}
 		catch(const std::logic_error& e)
 		{
-			std::cout << e.what() << "\n";
+			std::cout << "Error: " << e.what() << "\n";
 		}
 	};
+	try
+	{
+		_client.handleDeckEditing(_decks[deckIndex]);
+	}
+	catch(const std::runtime_error& e)
+	{
+		std::cout << "Error: " << e.what() << "\n";
+	}
 }
 std::size_t DecksManagementState::askForReplacedCard(std::size_t deckIndex)
 {
@@ -96,14 +109,14 @@ std::size_t DecksManagementState::askForReplacedCard(std::size_t deckIndex)
 	return askForNumber(0, Deck::size + 1);
 }
 
-Card::ID DecksManagementState::askForReplacingCard(std::size_t deckIndex)
+ClientCard::ID DecksManagementState::askForReplacingCard(std::size_t deckIndex)
 {
 	std::cout << "Content of your card collection:\n";
 	for(const auto& card : _cardsCollection)
 		std::cout << static_cast<std::size_t>(card) << ". " << card << "\n";
 	std::cout << "Which card do you want to put in you deck? ";
 	// \TODO Replace 666 by the number of different cards in the game
-	Card::ID replacingCard{askForNumber(0, 666)};
+	ClientCard::ID replacingCard{static_cast<ClientCard::ID>(askForNumber(0, 666))};
 
 	// Check if the given card is valid
 	if(not _cardsCollection.contains(replacingCard))
@@ -120,6 +133,14 @@ void DecksManagementState::createDeck()
 	std::string input;
 	std::getline(std::cin, input);
 	_decks.emplace_back(input);
+	try
+	{
+		_client.handleDeckCreation(_decks.back());
+	}
+	catch(const std::runtime_error& e)
+	{
+		std::cout << "Error: " << e.what() << "\n";
+	}
 }
 
 void DecksManagementState::deleteDeck()
@@ -133,11 +154,16 @@ void DecksManagementState::deleteDeck()
 	{
 		std::cout << "Which deck would you like to delete? ";
 		const std::size_t input{askForNumber(1, _decks.size() + 1) - 1};
+		_client.handleDeckDeletion(_decks[input].getName());
 		_decks.erase(_decks.begin() + input);
 	}
 	catch(const std::logic_error& e)
 	{
 		std::cout << "Wrong input!\n";
+	}
+	catch(const std::runtime_error& e)
+	{
+		std::cout << "Error: " << e.what() << "\n";
 	}
 }
 

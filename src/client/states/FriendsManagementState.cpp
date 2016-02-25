@@ -3,7 +3,7 @@
 
 enum
 {
-	FRIENDSHIP_REQUEST_ACCEPT,
+	FRIENDSHIP_REQUEST_ACCEPT = 1,
 	FRIENDSHIP_REQUEST_REFUSE,
 	FRIENDSHIP_REQUEST_IGNORE,
 };
@@ -14,23 +14,28 @@ FriendsManagementState::FriendsManagementState(StateStack& stateStack, Client& c
 	addAction("Back to main menu", &FriendsManagementState::backMainMenu);
 	addAction("Add a friend to the list", &FriendsManagementState::addFriend);
 	addAction("Remove a friend from the list", &FriendsManagementState::removeFriend);
-	addAction("Check friendship requests", &FriendsManagementState::checkRequests);
 	addAction("Treat friendship requests", &FriendsManagementState::treatRequests);
 	addAction("Chat with a friend", &FriendsManagementState::startChat);
 }
 
 void FriendsManagementState::display()
 {
-	const auto& friends(_client.getFriends());
-	if(friends.empty())
-		std::cout << "You have no friend yet!\n";
-	else
+	try
 	{
-		std::cout << "Here is your friends list:\n";
-		for(const auto& friendName : friends)
-			std::cout << "* " << friendName << "\n";
+		const auto& friends(_client.getFriends());
+		if(friends.empty())
+			std::cout << "You have no friend yet!\n";
+		else
+		{
+			std::cout << "Here is your friends list:\n";
+			for(const auto& friendUser : friends)
+				std::cout << "* " << friendUser.name << "\n";
+		}
 	}
-
+	catch(const std::runtime_error& e)
+	{
+		std::cout << "Error: " << e.what() << "\n";
+	}
 	// Display the actions
 	AbstractState::display();
 }
@@ -43,12 +48,12 @@ void FriendsManagementState::addFriend()
 	// Get the user data from the user name (input)...
 	try
 	{
-		_client.askNewFriend(input);
+		_client.sendFriendshipRequest(input);
 		std::cout << "A friendship request has been sent to " << input << ".\n";
 	}
 	catch(std::runtime_error& error)
 	{
-		std::cerr << error.what();
+		std::cerr << "Error: " << error.what() << "\n";
 	}
 	waitForEnter();
 }
@@ -65,64 +70,39 @@ void FriendsManagementState::removeFriend()
 	}
 	catch(std::runtime_error& error)
 	{
-		std::cerr << error.what();
+		std::cerr << "Error: " << error.what() << "\n";
 	}
 	waitForEnter();
-}
-
-void FriendsManagementState::checkRequests()
-{
-	std::vector<std::string> acceptedRequests;
-	std::vector<std::string> refusedRequests;
-	if(!_client.updateFriendshipRequests(acceptedRequests, refusedRequests))
-	{
-		std::cerr << "Unable to get requests state from the server.\n";
-		return;
-	}
-	if(not acceptedRequests.empty())
-	{
-		std::cout << "\nThe following players accepted your friendship requests:\n";
-		for(const auto& name: acceptedRequests)
-			std::cout << "+ " << name << std::endl;
-	}
-	if(not refusedRequests.empty())
-	{
-		std::cout << "\nThe following players refused you friendship requests:\n";
-		for(const auto& name: refusedRequests)
-			std::cout << "+ " << name << std::endl;
-	}
-	if(acceptedRequests.empty() and refusedRequests.empty())
-		std::cout << "There is nothing new with your friendship requests.\n";
-	waitForEnter();
-
 }
 
 void FriendsManagementState::treatRequests()
 {
-	std::vector<std::string> incomingRequests;
-	if(!_client.getIncomingFriendshipRequests(incomingRequests))
+	try
 	{
-		std::cerr << "Unable to get requests state from the server.\n";
-		return;
-	}
-	if(incomingRequests.empty())
-		std::cout << "You have no incoming friendship request.\n";
-	else
-	{
-		for(const auto& name: incomingRequests)
+		const auto& requests(_client.getFriendshipRequests());
+		if(requests.empty())
+			std::cout << "You have no incoming friendship request.\n";
+		else
 		{
-			std::cout << name << " wants to become your friend.\n"
-			          << FRIENDSHIP_REQUEST_ACCEPT << ". Accept request\n"
-			          << FRIENDSHIP_REQUEST_REFUSE << ". Refuse request\n"
-			          << FRIENDSHIP_REQUEST_IGNORE << ". Ignore request\n\t";
-			int choice;
-			std::cin >> choice;
-			if(choice == FRIENDSHIP_REQUEST_ACCEPT)
-				_client.acceptFriendshipRequest(name);
-			else if (choice == FRIENDSHIP_REQUEST_REFUSE)
-				_client.acceptFriendshipRequest(name, false);
-		}
+			for(const auto& user: requests)
+			{
+				std::cout << user.name << " wants to become your friend.\n"
+						  << FRIENDSHIP_REQUEST_ACCEPT << ". Accept request\n"
+						  << FRIENDSHIP_REQUEST_REFUSE << ". Refuse request\n"
+						  << FRIENDSHIP_REQUEST_IGNORE << ". Ignore request\n\t";
+				int choice;
+				std::cin >> choice;
+				if(choice == FRIENDSHIP_REQUEST_ACCEPT)
+					_client.acceptFriendshipRequest(user.name);
+				else if (choice == FRIENDSHIP_REQUEST_REFUSE)
+					_client.acceptFriendshipRequest(user.name, false);
+			}
 
+		}
+	}
+	catch(const std::runtime_error& e)
+	{
+		std::cout << "Error: " << e.what() << "\n";
 	}
 	waitForEnter();
 }
@@ -138,7 +118,7 @@ void FriendsManagementState::startChat()
 	}
 	catch(const std::runtime_error& error)
 	{
-		std::cerr << "Unable to chat with " << friendName << ": " << error.what();
+		std::cerr << "Unable to chat with " << friendName << ": " << error.what() << "\n";
 	}
 	waitForEnter();
 }
@@ -147,5 +127,3 @@ void FriendsManagementState::backMainMenu()
 {
 	stackPop();
 }
-
-

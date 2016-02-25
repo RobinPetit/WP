@@ -21,7 +21,6 @@ class FriendsManagementState : public AbstractState
 		void addFriend();
 		void removeFriend();
 		void backMainMenu();
-		void checkRequests();
 		void treatRequests();
 		void startChat();
 };

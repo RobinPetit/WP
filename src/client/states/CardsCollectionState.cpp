@@ -5,7 +5,15 @@ CardsCollectionState::CardsCollectionState(StateStack& stateStack, Client& clien
 	AbstractState(stateStack, client)
 {
 	addAction("Back to main menu", &CardsCollectionState::backMainMenu);
-	// Get the list of cards from the server...
+	try
+	{
+		_cardsCollection = _client.getCardsCollection();
+	}
+	catch(const std::runtime_error& e)
+	{
+		std::cout << "Error: " << e.what() << "\n";
+		std::cout << "Default card collection loaded.\n";
+	}
 }
 
 void CardsCollectionState::display()
@@ -24,5 +32,3 @@ void CardsCollectionState::backMainMenu()
 {
 	stackPop();
 }
-
-
