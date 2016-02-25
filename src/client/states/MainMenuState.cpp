@@ -7,12 +7,13 @@
 #include "client/states/LadderState.hpp"
 #include "client/states/MainMenuState.hpp"
 #include "client/states/GameState.hpp"
+#include "client/states/LobbyState.hpp"
 
 MainMenuState::MainMenuState(StateStack& stateStack, Client& client):
 	AbstractState(stateStack, client)
 {
 	addAction("Quit", &MainMenuState::quit);
-	addAction("Find a game", &MainMenuState::findGame);
+	addAction("Enter in the matchmaking lobby", &MainMenuState::findGame);
 	addAction("Manage your decks", &MainMenuState::manageDecks);
 	addAction("See your collection of cards", &MainMenuState::seeCollection);
 	addAction("Manage your friends", &MainMenuState::manageFriends);
@@ -32,11 +33,7 @@ void MainMenuState::display()
 
 void MainMenuState::findGame()
 {
-	std::cout << "So, let's find an opponent...\n";
-	if(_client.startGame())
-		stackPush<GameState>();
-	else
-		std::cout << "You left the lobby.\n";
+	stackPush<LobbyState>();
 }
 
 void MainMenuState::manageDecks()

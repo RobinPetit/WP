@@ -24,6 +24,7 @@ class LobbyState : public AbstractState
 
 		/////////// private methods
 		void quit();
+		void startGame();
 };
 
 #endif// _LOBBY_STATE_CLIENT_HPP
