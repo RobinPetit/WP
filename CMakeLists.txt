@@ -2,11 +2,21 @@ cmake_minimum_required(VERSION 3.0.2)
 
 project("WizardPoker")
 
-#Set path to Find* scripts
+# Define an option for enabling building for NO4
+# In fact that will just link SFML as static library
+if(NOT DEFINED BUILD_NO4)
+	set(BUILD_NO4 FALSE)
+endif()
+set(BUILD_NO4 ${BUILD_NO4} CACHE BOOL "Build the executable as static, for NO4 computers" FORCE)
+
+# Set path to Find* scripts
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
-#Find dependencies
-find_package(SFML 2.1 COMPONENTS system network REQUIRED)
+# Tell to SFML whether we compile in static mode if we build for the NO4
+set(SFML_STATIC_LIBRARIES BUILD_NO4)
+
+# Find dependencies
+find_package(SFML 2.1 COMPONENTS network system REQUIRED)
 find_package(SQLite3 REQUIRED)
 
 # Set the include directory of the project
@@ -16,7 +26,11 @@ include_directories(
 	"${SQLITE3_INCLUDE_DIRS}"
 	)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin/")
+if(BUILD_NO4)
+	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/binNO4/")
+else()
+	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin/")
+endif()
 
 set(CMAKE_CXX_COMPILER "g++-5")
 # Set compiler flags (they must be in one line)
@@ -27,6 +41,11 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -DNDEBUG")
 # This variable contains the name of all libraries that has to be linked
 set(EXTERNAL_LIBRARIES ${SFML_LIBRARIES} ${SQLITE3_LIBRARIES} pthread)
 
+# If we build in static (for the NO4), SFML expects its dependencies to be linked
+if(BUILD_NO4)
+	set(EXTERNAL_LIBRARIES ${EXTERNAL_LIBRARIES} ${SFML_DEPENDENCIES})
+endif()
+
 # Tell to cmake to explore src/ to build both the server and the client
 add_subdirectory(src)
 
@@ -35,7 +54,3 @@ add_custom_target(srd
 		COMMAND cp ${PROJECT_SOURCE_DIR}/SRD/srd.pdf ${PROJECT_SOURCE_DIR}/srd.pdf
 	)
 add_custom_target(cleansrd COMMAND make -C ${PROJECT_SOURCE_DIR}/SRD/ mrproper)
-
-# Move the executables created in src/client/ and src/server/
-# to the root build directory
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})

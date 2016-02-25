@@ -82,9 +82,11 @@ private:
 			},
 			Statement {
 				&_friendshipRequestsStmt,
-				"WITH FriendRequests(from_) AS (SELECT from_ FROM FriendRequest WHERE to_ == ?1) "
+				/*"WITH FriendRequests(from_) AS (SELECT from_ FROM FriendRequest WHERE to_ == ?1) "
 				"SELECT from_ AS id, login AS name "
-				"	FROM FriendRequests INNER JOIN Account ON from_ == id;"
+				"	FROM FriendRequests INNER JOIN Account ON from_ == id;"*/ // Bug on some platforms/configs (*32?)
+				"SELECT from_ AS id, login AS name "
+				"	FROM FriendRequest INNER JOIN Account ON from_ == id WHERE to_ == ?1;"
 			},
 			Statement {
 				&_decksStmt,
