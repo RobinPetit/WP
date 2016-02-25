@@ -20,7 +20,7 @@ std::function<void(Player&, const EffectParamsCollection&)> Player::_effectMetho
 	&Player::stealHandCard,
 	&Player::exchgHandCard,
 
-	&Player::setEnergy,
+	&Player::resetEnergy,
 	&Player::changeEnergy,
 	&Player::changeHealth,
 };
@@ -65,7 +65,7 @@ void Player::enterTurn(int turn)
 
 	//Player's turn-based constraints
 	cardDeckToHand(_constraints.getConstraint(PC_TURN_CARDS_PICKED));
-	setEnergy({_constraints.getConstraint(PC_TURN_ENERGY_INIT)});
+	resetEnergy({_constraints.getConstraint(PC_TURN_ENERGY_INIT)});
 	changeEnergy({_constraints.getConstraint(PC_TURN_ENERGY_CHANGE)});
 	changeHealth({_constraints.getConstraint(PC_TURN_HEALTH_CHANGE)});
 	if (_cardDeck.empty())
@@ -373,19 +373,20 @@ void Player::exchgHandCard(const EffectParamsCollection& args)
 	_socketToClient.send(packet);
 }
 
-void Player::setEnergy(const EffectParamsCollection& args)
+void Player::resetEnergy(const EffectParamsCollection& args)
 {
-	int points; //energy points to give
+	int additionalPoints; //energy points to add to reset value
 	try //check the input
 	{
-		points=args.at(0);
+		additionalPoints=args.at(0);
 	}
 	catch (std::out_of_range)
 	{
 		//SERVER: CARD_ERROR
 		return;
 	}
-	_energy = points;
+	_energyInit += points
+	_energy = _energyInit;
 	if (_energy<0)
 		_energy=0;
 	else if (_energy>_maxEnergy)
