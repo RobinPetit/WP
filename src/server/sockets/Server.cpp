@@ -414,7 +414,7 @@ void Server::handleFriendshipRequest(const _iterator& it, sf::Packet& transmissi
 		const Database::userId friendId{_database.getUserId(friendName)};
 
 		// Add the request into the database
-		// UNCOMMENT _database.addFriendRequest(thisId, friendId);
+		_database.addFriendshipRequest(thisId, friendId);
 
 		// Send an acknowledgement to the user
 		response << TransferType::ACKNOWLEDGE;
@@ -438,7 +438,7 @@ void Server::handleFriendshipRequestResponse(const _iterator& it, sf::Packet& tr
 	{
 		const Database::userId askerId{_database.getUserId(askerName)};
 		const Database::userId askedId{_database.getUserId(it->first)};
-		if(not true /* UNCOMMENT _database.hasSentRequest(askerId, askedId) */)
+		if(not _database.isFriendshipRequestSent(askerId, askedId))
 		{
 			transmission << TransferType::NOT_EXISTING_FRIEND;
 			throw std::runtime_error(userToString(it) + " responded to a friend request of an unexisting player.");
@@ -446,9 +446,7 @@ void Server::handleFriendshipRequestResponse(const _iterator& it, sf::Packet& tr
 		if(accepted)
 			_database.addFriend(askerId, askedId);
 		else
-		{
-			/* _database.removeFriendshipRequest(askerId, askedId) */;
-		}
+			_database.removeFriendshipRequest(askerId, askedId);
 
 		// acknowledge to client
 		transmission << TransferType::ACKNOWLEDGE;
