@@ -91,7 +91,7 @@ void ServerDatabase::addFriend(const int userId1, const int userId2)
 	sqliteThrowExcept(sqlite3_bind_int(_addFriendStmt, 1, userId1));
 	sqliteThrowExcept(sqlite3_bind_int(_addFriendStmt, 2, userId2));
 
-	sqlite3_step(_addFriendStmt);
+	sqliteThrowExcept(sqlite3_step(_addFriendStmt));
 }
 
 void ServerDatabase::removeFriend(const int userId1, const int userId2)
@@ -100,7 +100,44 @@ void ServerDatabase::removeFriend(const int userId1, const int userId2)
 	sqliteThrowExcept(sqlite3_bind_int(_removeFriendStmt, 1, userId1 < userId2 ? userId1 : userId2));
 	sqliteThrowExcept(sqlite3_bind_int(_removeFriendStmt, 2, userId1 < userId2 ? userId2 : userId1));
 
-	sqlite3_step(_removeFriendStmt);
+	sqliteThrowExcept(sqlite3_step(_removeFriendStmt));
+	assert(sqlite3_step(_removeFriendStmt) == SQLITE_DONE);
+}
+
+bool ServerDatabase::areFriend(const int userId1, const int userId2)
+{
+	sqlite3_reset(_areFriendStmt);
+	sqliteThrowExcept(sqlite3_bind_int(_areFriendStmt, 1, userId1));
+	sqliteThrowExcept(sqlite3_bind_int(_areFriendStmt, 2, userId2));
+
+	return sqliteThrowExcept(sqlite3_step(_areFriendStmt)) == SQLITE_ROW;
+}
+
+void ServerDatabase::addFriendshipRequest(const int from, const int to)
+{
+	sqlite3_reset(_addFriendshipRequestStmt);
+	sqliteThrowExcept(sqlite3_bind_int(_addFriendshipRequestStmt, 1, from));
+	sqliteThrowExcept(sqlite3_bind_int(_addFriendshipRequestStmt, 2, to));
+
+	assert(sqliteThrowExcept(sqlite3_step(_addFriendshipRequestStmt)) == SQLITE_DONE);
+}
+
+void ServerDatabase::removeFriendshipRequest(const int from, const int to)
+{
+	sqlite3_reset(_removeFriendshipRequestStmt);
+	sqliteThrowExcept(sqlite3_bind_int(_removeFriendshipRequestStmt, 1, from));
+	sqliteThrowExcept(sqlite3_bind_int(_removeFriendshipRequestStmt, 2, to));
+
+	assert(sqliteThrowExcept(sqlite3_step(_removeFriendshipRequestStmt)) == SQLITE_DONE);
+}
+
+bool ServerDatabase::isFriendshipRequestSent(const int from, const int to)
+{
+	sqlite3_reset(_isFriendshipRequestSentStmt);
+	sqliteThrowExcept(sqlite3_bind_int(_isFriendshipRequestSentStmt, 1, from));
+	sqliteThrowExcept(sqlite3_bind_int(_isFriendshipRequestSentStmt, 2, to));
+
+	return sqliteThrowExcept(sqlite3_step(_isFriendshipRequestSentStmt)) == SQLITE_ROW;
 }
 
 FriendsList ServerDatabase::getAnyFriendsList(const int user, sqlite3_stmt * stmt)

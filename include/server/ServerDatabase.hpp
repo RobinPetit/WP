@@ -28,6 +28,10 @@ public:
 	Ladder getLadder();
 	void addFriend(const int userId1, const int userId2);
 	void removeFriend(const int userId1, const int userId2);
+	bool areFriend(const int userId1, const int userId2);
+	void addFriendshipRequest(const int from, const int to);
+	void removeFriendshipRequest(const int from, const int to);
+	bool isFriendshipRequestSent(const int from, const int to);
 
 	virtual ~ServerDatabase();
 
@@ -46,11 +50,15 @@ private:
 	sqlite3_stmt * _ladderStmt;
 	sqlite3_stmt * _addFriendStmt;
 	sqlite3_stmt * _removeFriendStmt;
+	sqlite3_stmt * _areFriendStmt;
+	sqlite3_stmt * _addFriendshipRequestStmt;
+	sqlite3_stmt * _removeFriendshipRequestStmt;
+	sqlite3_stmt * _isFriendshipRequestSentStmt;
 
 	// `constexpr std::array::size_type size() const;`
 	// -> I consider this 9 as the definition of the variable, so it is not a magic number
 	// -> future uses have to be _statements.size() -> 9 is writed only one time
-	StatementsList<9> _statements
+	StatementsList<13> _statements
 	{
 		{
 			Statement {
@@ -101,7 +109,27 @@ private:
 			Statement {
 				&_removeFriendStmt,
 				"DELETE FROM Friend "
-				"	WHERE(first == ?1 AND second == ?2);" // With ?1 < ?2. See initdatabase.sql to reason
+				"	WHERE(first == ?1 AND second == ?2);" // With ?1 < ?2. See initdatabase.sql for reason
+			},
+			Statement {
+				&_areFriendStmt,
+				"SELECT 1 FROM Friendship "
+				"	WHERE(first == ?1 AND second == ?2);"
+			},
+			Statement {
+				&_addFriendshipRequestStmt,
+				"INSERT INTO FriendRequest(from_, to_) "
+				"	VALUES(?1,?2);"
+			},
+			Statement {
+				&_removeFriendshipRequestStmt,
+				"DELETE FROM FriendRequest "
+				"	WHERE from_ == ?1 AND to_ == ?2;"
+			},
+			Statement {
+				&_isFriendshipRequestSentStmt,
+				"SELECT 1 FROM FriendRequest "
+				"	WHERE from_ ==?1 AND to_ ==?2;"
 			}
 		}
 	};
