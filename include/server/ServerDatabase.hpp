@@ -15,6 +15,7 @@ public:
 
 	int getUserId(const std::string login);
 	std::string getLogin(const int userId);
+
 	inline FriendsList getFriendsList(const int userId)
 	{
 		return getAnyFriendsList(userId, _friendListStmt);
@@ -23,15 +24,19 @@ public:
 	{
 		return getAnyFriendsList(userId, _friendshipRequestsStmt);
 	}
-	std::vector<Deck> getDecks(const int userId);
-	CardsCollection getCardsCollection(const int userId);
 	Ladder getLadder();
+
 	void addFriend(const int userId1, const int userId2);
 	void removeFriend(const int userId1, const int userId2);
 	bool areFriend(const int userId1, const int userId2);
+
 	void addFriendshipRequest(const int from, const int to);
 	void removeFriendshipRequest(const int from, const int to);
 	bool isFriendshipRequestSent(const int from, const int to);
+
+	CardsCollection getCardsCollection(const int userId);
+
+	std::vector<Deck> getDecks(const int userId);
 
 	virtual ~ServerDatabase();
 

@@ -35,39 +35,6 @@ std::string ServerDatabase::getLogin(const int userId)
 	return reinterpret_cast<const char *>(sqlite3_column_text(_loginStmt, 0));
 }
 
-std::vector<Deck> ServerDatabase::getDecks(const int userId)
-{
-	sqlite3_reset(_decksStmt);
-	sqliteThrowExcept(sqlite3_bind_int(_decksStmt, 1, userId));
-
-	std::vector<Deck> decks;
-
-	while(sqliteThrowExcept(sqlite3_step(_decksStmt)) == SQLITE_ROW)
-	{
-		decks.emplace_back(Deck(reinterpret_cast<const char *>(sqlite3_column_text(_decksStmt, 0))));
-
-		for(size_t i {0}; i < Deck::size; ++i)
-			decks.back().changeCard(i, static_cast<ClientCard::ID>(sqlite3_column_int(_decksStmt, i + 1)));
-	}
-
-	return decks;
-}
-
-CardsCollection ServerDatabase::getCardsCollection(const int userId)
-{
-	sqlite3_reset(_cardsCollectionStmt);
-	sqliteThrowExcept(sqlite3_bind_int(_cardsCollectionStmt, 1, userId));
-
-	CardsCollection cards;
-
-	while(sqliteThrowExcept(sqlite3_step(_cardsCollectionStmt)) == SQLITE_ROW)
-	{
-		cards.addCard(sqlite3_column_int(_cardsCollectionStmt, 0));
-	}
-
-	return cards;
-}
-
 Ladder ServerDatabase::getLadder()
 {
 	sqlite3_reset(_ladderStmt);
@@ -138,6 +105,39 @@ bool ServerDatabase::isFriendshipRequestSent(const int from, const int to)
 	sqliteThrowExcept(sqlite3_bind_int(_isFriendshipRequestSentStmt, 2, to));
 
 	return sqliteThrowExcept(sqlite3_step(_isFriendshipRequestSentStmt)) == SQLITE_ROW;
+}
+
+CardsCollection ServerDatabase::getCardsCollection(const int userId)
+{
+	sqlite3_reset(_cardsCollectionStmt);
+	sqliteThrowExcept(sqlite3_bind_int(_cardsCollectionStmt, 1, userId));
+
+	CardsCollection cards;
+
+	while(sqliteThrowExcept(sqlite3_step(_cardsCollectionStmt)) == SQLITE_ROW)
+	{
+		cards.addCard(sqlite3_column_int(_cardsCollectionStmt, 0));
+	}
+
+	return cards;
+}
+
+std::vector<Deck> ServerDatabase::getDecks(const int userId)
+{
+	sqlite3_reset(_decksStmt);
+	sqliteThrowExcept(sqlite3_bind_int(_decksStmt, 1, userId));
+
+	std::vector<Deck> decks;
+
+	while(sqliteThrowExcept(sqlite3_step(_decksStmt)) == SQLITE_ROW)
+	{
+		decks.emplace_back(Deck(reinterpret_cast<const char *>(sqlite3_column_text(_decksStmt, 0))));
+
+		for(size_t i {0}; i < Deck::size; ++i)
+			decks.back().changeCard(i, static_cast<ClientCard::ID>(sqlite3_column_int(_decksStmt, i + 1)));
+	}
+
+	return decks;
 }
 
 FriendsList ServerDatabase::getAnyFriendsList(const int user, sqlite3_stmt * stmt)
