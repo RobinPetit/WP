@@ -110,6 +110,11 @@ public:
 	/// Used when the user wants its cards collection
 	CardsCollection getCardsCollection();
 
+	// Others
+
+	/// Used when the user wants the ladder
+	Ladder getLadder();
+
 private:
 	/// The socket that's connected to the server
 	sf::TcpSocket _socket;

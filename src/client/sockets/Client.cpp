@@ -327,7 +327,7 @@ bool Client::startConversation(const std::string& playerName) const
 	return true;
 }
 
-///////////// Cards managment
+//////////////// Cards managment
 
 std::vector<Deck> Client::getDecks()
 {
@@ -397,4 +397,20 @@ CardsCollection Client::getCardsCollection()
 	CardsCollection cardCollection;
 	packet >> cardCollection;
 	return cardCollection;
+}
+
+////////////////// Others
+
+Ladder Client::getLadder()
+{
+	if(!_isConnected)
+		throw NotConnectedException("Unable to get the decks list.");
+	sf::Packet packet;
+	// send that friends list is asked
+	packet << TransferType::PLAYER_ASKS_LADDER;
+	_socket.send(packet);
+	_socket.receive(packet);
+	Ladder ladder;
+	packet >> ladder;
+	return ladder;
 }
