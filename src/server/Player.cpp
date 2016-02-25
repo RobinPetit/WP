@@ -205,22 +205,10 @@ void Player::applyEffectToCreature(Creature* casterAndSubject, EffectParamsColle
 	casterAndSubject->applyEffect(effectArgs); //call method on effect subject (same as caster)
 }
 
-void Player::applyEffectToCreature(const Card* usedCard, EffectParamsCollection effectArgs, IndexOption indexOpt)
+void Player::applyEffectToCreature(const Card* usedCard, EffectParamsCollection effectArgs, int boardIndex)
 {
 	_lastCasterCard = usedCard; //remember last used card
-	int boardIndex;
-
-	switch (indexOpt)
-	{
-		case INDEX_RANDOM:
-			boardIndex = std::uniform_int_distribution<int>(0, _cardBoard.size()-1)(_engine);
-		case INDEX_REQUEST:
-			boardIndex = 0;
-			//NETWORK: ASK_FOR_INDEX
-	}
-
-	Creature* subject = _cardBoard.at(boardIndex);
-	subject->applyEffect(effectArgs);
+	_cardBoard.at(boardIndex)->applyEffect(effectArgs);
 }
 
 void Player::applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollection effectArgs)

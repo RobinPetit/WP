@@ -19,12 +19,6 @@
 class Board;
 class Creature;
 
-enum IndexOption : int
-{
-    INDEX_RANDOM,
-    INDEX_REQUEST
-};
-
 /// Represents one of the two players for a given game.
 class Player
 {
@@ -51,7 +45,7 @@ public:
 	void applyEffect(const Card* usedCard, EffectParamsCollection effectArgs);
 	//to a Creature
 	void applyEffectToCreature(Creature* casterAndSubject, EffectParamsCollection effectArgs); //With ref. to creature
-	void applyEffectToCreature(const Card* usedCard, EffectParamsCollection effectArgs, IndexOption indexOpt); //With creature index from effectArgs
+	void applyEffectToCreature(const Card* usedCard, EffectParamsCollection effectArgs, int boardIndex); //With creature index
 	//to all Creatures
 	void applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollection effectArgs);
 
