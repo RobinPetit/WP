@@ -31,7 +31,7 @@ class Deck
         /// construct a `std::vector<Deck>` because std::vector requires that its
         /// elements are default-constructible. This is not the case if name
         /// has no default value.
-		explicit Deck(const std::string& name = "");
+		explicit Deck(const std::string& name = ""); // should take Deck id
 
 		/// Constructor.
 		/// Creates a deck from an array of cards.

@@ -45,7 +45,8 @@ std::vector<Deck> ServerDatabase::getDecks(const int userId)
 	while(sqliteThrowExcept(sqlite3_step(_decksStmt)) == SQLITE_ROW)
 	{
 		decks.emplace_back(Deck(reinterpret_cast<const char *>(sqlite3_column_text(_decksStmt, 0))));
-		for(size_t i{0}; i < Deck::size; ++i)
+
+		for(size_t i {0}; i < Deck::size; ++i)
 			decks.back().changeCard(i, static_cast<Card::ID>(sqlite3_column_int(_decksStmt, i + 1)));
 	}
 
@@ -84,9 +85,17 @@ Ladder ServerDatabase::getLadder()
 	return ladder;
 }
 
+void ServerDatabase::addFriend(int userId, const int newFriendId)
+{
+	sqlite3_reset(_addFriendStmt);
+	sqlite3_bind_int(_addFriendStmt, 1, userId);
+	sqlite3_bind_int(_addFriendStmt, 2, newFriendId);
+
+	sqlite3_step(_addFriendStmt);
+}
+
 FriendsList ServerDatabase::getAnyFriendsList(const int user, sqlite3_stmt * stmt)
 {
-	// TODO: cache - size of result
 	sqlite3_reset(stmt);
 	sqlite3_bind_int(stmt, 1, user);
 
