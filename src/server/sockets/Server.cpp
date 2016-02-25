@@ -427,9 +427,11 @@ void Server::handleFriendshipRequestResponse(const _iterator& it, sf::Packet& tr
 			throw std::runtime_error(it->first + " responded to a friend request of an unexisting player.");
 		}
 		if(accepted)
-			/* _database.addFriend(askerId, askedId) */;
+			_database.addFriend(askerId, askedId);
 		else
+		{
 			/* _database.removeFriendshipRequest(askerId, askedId) */;
+		}
 
 		// acknowledge to client
 		transmission << TransferType::PLAYER_ACKNOWLEDGE;
