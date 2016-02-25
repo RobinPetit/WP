@@ -24,10 +24,14 @@ class Deck
 		/// Destructor.
 		virtual ~Deck() = default;
 
-		/// Constructor.
+		/// Default constructor.
 		/// Creates a default deck. The default deck is the set of the \a size
 		/// first cards (with the cards ordered by their ID).
-		explicit Deck(const std::string& name);
+		/// Without the default value for name, this would impossible to
+        /// construct a `std::vector<Deck>` because std::vector requires that its
+        /// elements are default-constructible. This is not the case if name
+        /// has no default value.
+		explicit Deck(const std::string& name = "");
 
 		/// Constructor.
 		/// Creates a deck from an array of cards.

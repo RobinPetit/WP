@@ -2,10 +2,10 @@
 #include "client/states/CardsCollectionState.hpp"
 
 CardsCollectionState::CardsCollectionState(StateStack& stateStack, Client& client):
-	AbstractState(stateStack, client)
+	AbstractState(stateStack, client),
+	_cardsCollection{_client.getCardsCollection()}
 {
 	addAction("Back to main menu", &CardsCollectionState::backMainMenu);
-	// Get the list of cards from the server...
 }
 
 void CardsCollectionState::display()
@@ -24,5 +24,3 @@ void CardsCollectionState::backMainMenu()
 {
 	stackPop();
 }
-
-

@@ -13,13 +13,6 @@
 #include <common/Deck.hpp>
 #include <common/CardsCollection.hpp>
 
-struct Friend
-{
-	int64_t id;
-	std::string name;
-};
-typedef std::vector<Friend> FriendsList;
-
 struct LadderEntry
 {
 	std::string name;
@@ -37,7 +30,7 @@ struct Statement : private std::pair<sqlite3_stmt **, const char *> // I dont ca
 	{
 		return first;
 	}
-	const char * const query() const
+	const char * query() const
 	{
 		return second;
 	}

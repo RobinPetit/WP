@@ -7,7 +7,6 @@
 #include "server/ErrorCode.hpp"
 #include "common/sockets/TransferType.hpp"
 #include "common/sockets/PacketOverload.hpp"
-#include "common/PasswordHasher.hpp"
 // std-C++ headers
 #include <iostream>
 #include <algorithm>
@@ -235,6 +234,26 @@ void Server::receiveData()
 		case TransferType::GAME_REQUEST:
 			findOpponent(it);
 			break;
+		// Cards management
+		case TransferType::PLAYER_ASKS_DECKS_LIST:
+			sendDecks(it);
+			break;
+		case TransferType::PLAYER_EDIT_DECK:
+			handleDeckEditing(it, packet);
+			break;
+		case TransferType::PLAYER_CREATE_DECK:
+			handleDeckCreation(it, packet);
+			break;
+		case TransferType::PLAYER_DELETE_DECK:
+			handleDeckDeletion(it, packet);
+			break;
+		case TransferType::PLAYER_ASKS_CARDS_COLLECTION:
+			sendCardsCollection(it);
+			break;
+		// Others
+		case TransferType::PLAYER_ASKS_LADDER:
+			sendLadder(it);
+			break;
 		default:
 			std::cerr << "Error: unknown code " << static_cast<sf::Uint32>(type) << std::endl;
 			break;
@@ -297,7 +316,7 @@ void Server::waitQuit()
 
 
 
-// Game management
+//////////////// Game management
 
 void Server::findOpponent(const _iterator& it)
 {
@@ -385,6 +404,7 @@ void Server::handleFriendshipRequest(const _iterator& it, sf::Packet& transmissi
 	}
 	catch(const std::runtime_error& e)
 	{
+		std::cout << "handleFriendshipRequest error: " << e.what() << "\n";
 		// Send an error to the user
 		response << TransferType::NOT_EXISTING_FRIEND;
 	}
@@ -472,7 +492,7 @@ void Server::handleRemoveFriend(const _iterator& it, sf::Packet& transmission)
 	{
 		const Database::userId unfriendlyUserId{_database.getUserId(it->first)};
 		const Database::userId removedFriendId{_database.getUserId(removedFriend)};
-		// UNCOMMENT _database.removeFrien(unfriendlyUserId, removedFriendId);
+		// UNCOMMENT _database.removeFriend(unfriendlyUserId, removedFriendId);
 
 		// acknowledge to client
 		transmission << TransferType::PLAYER_ACKNOWLEDGE;
@@ -483,4 +503,117 @@ void Server::handleRemoveFriend(const _iterator& it, sf::Packet& transmission)
 		std::cout << "handleRemoveFriend error: " << e.what() << "\n";
 	}
 	it->second.socket->send(transmission);
+}
+
+// Cards management
+
+void Server::sendDecks(const _iterator& it)
+{
+	sf::Packet response;
+	try
+	{
+		const Database::userId id{_database.getUserId(it->first)};
+		// Same as sendFriendshipRequests for the two folling lines
+		std::vector<Deck> decks{_database.getDecks(id)};
+		response << decks;
+	}
+	catch(const std::runtime_error& e)
+	{
+		std::cout << "sendDecks error: " << e.what() << "\n";
+		response << std::vector<Deck>();
+	}
+	it->second.socket->send(response);
+}
+
+void Server::handleDeckEditing(const _iterator& it, sf::Packet& transmission)
+{
+	Deck editedDeck;
+	transmission >> editedDeck;
+	transmission.clear();
+	try
+	{
+		const Database::userId id{_database.getUserId(it->first)};
+		// UNCOMMENT _database.editDeck(id, editedDeck);
+		transmission << TransferType::ACKNOWLEDGE;
+	}
+	catch(const std::runtime_error& e)
+	{
+		std::cout << "handleDeckEditing error: " << e.what() << "\n";
+		transmission << TransferType::FAILURE;
+	}
+	it->second.socket->send(transmission);
+}
+
+void Server::handleDeckCreation(const _iterator& it, sf::Packet& transmission)
+{
+	Deck newDeck;
+	transmission >> newDeck;
+	transmission.clear();
+	try
+	{
+		const Database::userId id{_database.getUserId(it->first)};
+		// UNCOMMENT _database.createDeck(id, newDeck);
+		transmission << TransferType::ACKNOWLEDGE;
+	}
+	catch(const std::runtime_error& e)
+	{
+		std::cout << "handleDeckCreation error: " << e.what() << "\n";
+		transmission << TransferType::FAILURE;
+	}
+	it->second.socket->send(transmission);
+}
+
+void Server::handleDeckDeletion(const _iterator& it, sf::Packet& transmission)
+{
+	std::string deletedDeckName;
+	transmission >> deletedDeckName;
+	transmission.clear();
+	try
+	{
+		const Database::userId id{_database.getUserId(it->first)};
+		// UNCOMMENT _database.deleteDeck(id, deletedDeckName);
+		transmission << TransferType::ACKNOWLEDGE;
+	}
+	catch(const std::runtime_error& e)
+	{
+		std::cout << "handleDeckCreation error: " << e.what() << "\n";
+		transmission << TransferType::FAILURE;
+	}
+	it->second.socket->send(transmission);
+}
+
+void Server::sendCardsCollection(const _iterator& it)
+{
+	sf::Packet response;
+	try
+	{
+		const Database::userId id{_database.getUserId(it->first)};
+		// Same as sendFriendshipRequests for the two folling lines
+		CardsCollection cards{_database.getCardsCollection(id)};
+		response << cards;
+	}
+	catch(const std::runtime_error& e)
+	{
+		std::cout << "sendCardsCollection error: " << e.what() << "\n";
+		response << CardsCollection();
+	}
+	it->second.socket->send(response);
+}
+
+// Others
+
+void Server::sendLadder(const _iterator& it)
+{
+	sf::Packet response;
+	try
+	{
+		Ladder ladder{_database.getLadder()};
+		response << ladder;
+	}
+	catch(const std::runtime_error& e)
+	{
+		std::cout << "sendLadder error: " << e.what() << "\n";
+		response << Ladder();
+	}
+	it->second.socket->send(response);
 }
