@@ -1,4 +1,6 @@
+// std-C++ headers
 #include <iostream>
+// WizardPoker headers
 #include "client/states/CardsCollectionState.hpp"
 #include "client/states/DecksManagementState.hpp"
 #include "client/states/FriendsManagementState.hpp"

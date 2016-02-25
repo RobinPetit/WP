@@ -179,14 +179,18 @@ bool Client::startGame()
 	static const std::string cancelWaitingString{"q"};
 	NonBlockingInput input;
 	std::cout << "Entering the lobby. Type '" << cancelWaitingString << "' to leave.\n";
+	// send a request for the server to place the client in its internal lobby
 	sf::Packet packet;
 	packet << TransferType::GAME_REQUEST;
 	_socket.send(packet);
+	// use a selector to
 	sf::SocketSelector selector;
 	selector.add(_socket);
 	bool loop{true};
+	// wait for a server response (opponent found) or a user entry to leave
 	while(loop)
 	{
+		// if the server found an opponent
 		if(selector.wait(sf::milliseconds(50)))
 		{
 			loop = false;
@@ -195,9 +199,11 @@ bool Client::startGame()
 			std::cout << "opponent found: " << _inGameOpponentName << std::endl;
 			_inGame = true;
 		}
+		// if the player typed something and it is the right string
 		else if(input.waitForData(0.05) && input.receiveStdinData() == cancelWaitingString)
 		{
-			loop = false;
+			loop =  _inGame = false;
+			// send a request to leave the lobby
 			packet.clear();
 			packet << TransferType::GAME_CANCEL_REQUEST;
 			_socket.send(packet);
