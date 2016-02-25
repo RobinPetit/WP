@@ -3,7 +3,7 @@
 
 CardsCollection::CardsCollection()
 {
-	for(std::size_t i{0}; i < Deck::size; ++i)
+	for(std::size_t i{1}; i <= Deck::size; ++i)
 		_cards.insert(static_cast<Card::ID>(i));
 }
 

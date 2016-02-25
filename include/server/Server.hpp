@@ -11,6 +11,7 @@
 #include "server/ClientInformations.hpp"
 // std-C++ headers
 #include <unordered_map>
+#include <memory>
 #include <string>
 #include <atomic>
 #include <thread>
@@ -55,14 +56,26 @@ private:
 	void takeConnection();
 	/// Used to handle data sent by a logged user
 	void receiveData();
+	/// Used to receive packet when the user want to connect.
+	/// This functions takes the ownership of the socket, so that the responsability
+	/// of deleting the object is transferred. For example, if the connection
+	/// does not succeded, the function can safely delete the socket. It is not
+	/// up to the caller to know whether the socket must be deleted or not.
+	void connectUser(sf::Packet& connectionPacket, std::unique_ptr<sf::TcpSocket> client);
+	/// Used to receive packet when the user want to register.
+	/// See connectUser for informations about the smart pointer.
+	void registerUser(sf::Packet& registeringPacket, std::unique_ptr<sf::TcpSocket> client);
+	/// Send an acknowledgement packet.
+	void sendAcknowledgement(sf::TcpSocket& client);
 
 	/// Handle the input in stdin and quit the server if asked
 	void waitQuit();
 
 	// Friends management
 
-	/// Used to exchange the correct informations with the clients when a chat request is made
-	void handleChatRequest(sf::Packet& packet, sf::TcpSocket& client);
+	/// Used to exchange the correct informations with the clients when a chat request is made.
+	/// See connectUser for informations about the smart pointer.
+	void handleChatRequest(sf::Packet& packet, std::unique_ptr<sf::TcpSocket> client);
 	/// Used to remove a player from the server connection
 	void removeClient(const _iterator& it);
 	/// Used to tell whether or not a user is connected

@@ -27,32 +27,122 @@ Client::Client():
 
 }
 
-bool Client::connectToServer(const std::string& name, const sf::IpAddress& address, sf::Uint16 port)
+bool Client::connectToServer(const std::string& name, const std::string& password, const sf::IpAddress& address, sf::Uint16 port)
+{
+	return initServer(name, address, port) && sendConnectionToken(password);
+}
+
+bool Client::registerToServer(const std::string& name, const std::string& password, const sf::IpAddress& address, sf::Uint16 port)
+{
+	std::string shrinkedName = shrinkName(name);
+	// The local socket used only to register, it does not need to be keeped as attribute
+	sf::TcpSocket socket;
+	// if connection does not work, don't go further
+	if(socket.connect(address, port) != sf::Socket::Done)
+		return false;
+	return sendRegisteringToken(shrinkedName, password, socket);
+}
+
+bool Client::sendConnectionToken(const std::string& password)
+{
+	sf::Packet packet;
+	packet << TransferType::GAME_CONNECTION
+	       << _name
+	       << password
+	       << static_cast<sf::Uint16>(_chatListenerPort);
+	if(_socket.send(packet) != sf::Socket::Done)
+	{
+		std::cout << "Failed to send connection packet\n";
+		return false;
+	}
+
+	// Receive the server response
+	_socket.receive(packet);
+	TransferType response;
+	packet >> response;
+	switch(response)
+	{
+	case TransferType::GAME_ALREADY_CONNECTED:
+		//TODO throw an exception rather than cout
+		std::cout << "Error: you are already connected!\n";
+		return false;
+
+	case TransferType::GAME_WRONG_IDENTIFIERS:
+		std::cout << "Error: invalid username or password.\n";
+		return false;
+
+	case TransferType::GAME_CONNECTION_OR_REGISTERING_OK:
+		_isConnected = true;
+		updateFriends();
+		return true;
+
+	default:
+		std::cout << "Error: unidentified server response.\n";
+		return false;
+	}
+}
+bool Client::sendRegisteringToken(const std::string& name, const std::string& password, sf::TcpSocket& socket)
+{
+	sf::Packet packet;
+	packet << TransferType::GAME_REGISTERING << name << password;
+	if(socket.send(packet) != sf::Socket::Done)
+	{
+		std::cout << "sending packet failed";
+		return false;
+	}
+
+	// Receive the server response
+	socket.receive(packet);
+	TransferType response;
+	packet >> response;
+	switch(response)
+	{
+	case TransferType::GAME_USERNAME_NOT_AVAILABLE:
+		//TODO throw an exception rather than cout
+		std::cout << "Error: the username " << name << " is not available\n";
+		return false;
+
+	case TransferType::GAME_FAILED_TO_REGISTER:
+		std::cout << "Error: the server failed to register your account.\n";
+		return false;
+
+	case TransferType::GAME_CONNECTION_OR_REGISTERING_OK:
+		return true;
+
+	default:
+		std::cout << "Error: unidentified server response.\n";
+		return false;
+	}
+}
+
+bool Client::initServer(const std::string& name, const sf::IpAddress& address, sf::Uint16 port)
 {
 	// if client is already connected to a server, do not try to re-connect it
 	if(_isConnected)
+	{
+		std::cout << "Already connected\n";
 		return false;
-	// forces the name to not be larger than MAX_NAME_LENGTH
-	_name = (name.size() < MAX_NAME_LENGTH) ? name : name.substr(0, MAX_NAME_LENGTH);
+	}
+	_name = shrinkName(name);
 	_serverAddress = address;
 	_serverPort = port;
+	// if connection does not work, don't go further
+	if(_socket.connect(address, port) != sf::Socket::Done)
+	{
+		std::cout << "Failed to establish socket connection\n";
+		return false;
+	}
 	if(!_userTerminal.hasKnownTerminal())
 		std::cout << "Warning: as no known terminal has been found, chat is disabled" << std::endl;
 	else
 		initListener();  // creates the new thread which listens for entring chat conenctions
 	sf::sleep(SOCKET_TIME_SLEEP);  // wait a quarter second to let the listening thread init the port
-	// if connection does not work, don't go further
-	if(_socket.connect(address, port) != sf::Socket::Done)
-		return false;
-	sf::Packet packet;
-	packet << TransferType::GAME_CONNECTION
-	       << _name
-	       << static_cast<sf::Uint16>(_chatListenerPort);
-	if(_socket.send(packet) != sf::Socket::Done)
-		return false;
-	_isConnected = true;
-	updateFriends();
 	return true;
+}
+
+std::string Client::shrinkName(const std::string& name)
+{
+	return (name.size() < MAX_NAME_LENGTH) ? name : name.substr(0, MAX_NAME_LENGTH);
 }
 
 void Client::initListener()
@@ -70,6 +160,7 @@ void Client::quit()
 	packet << TransferType::PLAYER_DISCONNECTION;
 	_socket.send(packet);
 	_inGame.store(false);
+	_socket.disconnect();
 	_threadLoop.store(false);
 	_listenerThread.join();
 	_isConnected = false;
