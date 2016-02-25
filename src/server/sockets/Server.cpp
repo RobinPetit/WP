@@ -7,7 +7,6 @@
 #include "server/ErrorCode.hpp"
 #include "common/sockets/TransferType.hpp"
 #include "common/sockets/PacketOverload.hpp"
-#include "common/PasswordHasher.hpp"
 // std-C++ headers
 #include <iostream>
 #include <algorithm>
