@@ -24,6 +24,9 @@ build/
 *.so
 *.dylib
 *.dll
+# Compiled README
+README.html
+**/README.html
 
 # Only keep sources and diagrams for SRD
 SRD/*
