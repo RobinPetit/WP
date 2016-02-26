@@ -1,4 +1,4 @@
-#include "server/CardData.hpp"
+#include "common/CardData.hpp"
 
 ///CREATURES
 const CreatureData ALL_CREATURES[] = {

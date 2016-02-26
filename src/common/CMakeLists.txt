@@ -7,6 +7,7 @@ set(SOURCES
 	"sockets/TransferType.cpp"
 	"sockets/PacketOverload.cpp"
 	"Database.cpp"
+	"CardData.cpp" #temporary
 	)
 
 add_library(${COMMON_NAME} ${SOURCES})

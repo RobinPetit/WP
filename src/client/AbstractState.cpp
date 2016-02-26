@@ -52,3 +52,17 @@ void AbstractState::waitForEnter()
 	std::string tmp;
 	std::getline(std::cin, tmp);
 }
+
+std::size_t AbstractState::askForNumber(std::size_t from, std::size_t to)
+{
+	std::string input;
+	do
+	{
+		std::getline(std::cin, input);
+	} while(input == "");
+	// Get a number from the user input
+	const std::size_t intInput{std::stoul(input)};
+	if(intInput < from or intInput >= to)
+		throw std::out_of_range("Index out of range.");
+	return intInput;
+}

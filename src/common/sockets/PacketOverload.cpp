@@ -47,7 +47,7 @@ sf::Packet& operator >>(sf::Packet& packet, Deck& deck)
 	{
 		sf::Int64 card;
 		packet >> card;
-		deck.changeCard(i, static_cast<ClientCard::ID>(card));
+		deck.changeCard(i, static_cast<cardId>(card));
 	}
 	return packet;
 }
@@ -71,7 +71,7 @@ sf::Packet& operator <<(sf::Packet& packet, const CardsCollection& cardCollectio
 
 	for(auto it = cardCollection.cbegin(); it != cardCollection.cend(); ++it)
 	{
-		const ClientCard::ID card{*it};
+		const cardId card{*it};
 		// If this is a base card not already processed
 		if(card > 0 and static_cast<std::size_t>(card) < baseCardsAlreadyProcessed.size() and not baseCardsAlreadyProcessed[card])
 			baseCardsAlreadyProcessed[card] = true;
@@ -90,7 +90,7 @@ sf::Packet& operator >>(sf::Packet& packet, CardsCollection& cardCollection)
 	{
 		sf::Int64 card;
 		packet >> card;
-		cardCollection.addCard(static_cast<ClientCard::ID>(card));
+		cardCollection.addCard(static_cast<cardId>(card));
 	}
 	return packet;
 }

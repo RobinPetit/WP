@@ -5,7 +5,7 @@
 #include "server/Card.hpp"
 #include "server/Player.hpp"
 #include "server/Constraints.hpp"
-#include "server/CardData.hpp"
+#include "common/CardData.hpp"
 
 ///Creature card : One of the 2 playables card
 class Creature : public Card
@@ -36,8 +36,8 @@ private:
 
 public:
 	/// Constructors
-	Creature(int cost=0, int attack=0, int health=1, int shield=0, int shieldType=0,
-			std::vector<EffectParamsCollection> effects = {{}});
+	Creature(cardId cardIdentifier, int cost, int attack, int health, int shield, int shieldType,
+			std::vector<EffectParamsCollection> effects);
 
 	/// Player interface
 	virtual bool isCreature() override;
