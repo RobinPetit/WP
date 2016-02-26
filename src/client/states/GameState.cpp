@@ -292,6 +292,7 @@ void GameState::inputListening()
 			receivedPacket >> energy32;
 			_selfEnergy = energy32;
 			_accessEnergy.unlock();
+			displayGame();
 		}
 		else if(type == TransferType::GAME_PLAYER_HEALTH_UPDATED)
 		{
@@ -301,29 +302,31 @@ void GameState::inputListening()
 			receivedPacket >> health32;
 			_selfHealth = health32;
 			_accessHealth.unlock();
+			displayGame();
 		}
 		else if(type == TransferType::GAME_BOARD_UPDATED)
 		{
 			std::cout << "Board updated" << std::endl;
 			receivedPacket >> _selfBoardCards;
-			// \TODO display changes
+			displayGame();
 		}
 		else if(type == TransferType::GAME_OPPONENT_BOARD_UPDATED)
 		{
 			std::cout << "Opponent's board updated" << std::endl;
 			receivedPacket >> _oppoBoardCards;
+			displayGame();
 		}
 		else if(type == TransferType::GAME_GRAVEYARD_UPDATED)
 		{
 			std::cout << "Graveyard updated" << std::endl;
 			receivedPacket >> _selfGraveCards;
-			// \TODO display changes
+			displayGame();
 		}
 		else if(type == TransferType::GAME_HAND_UPDATED)
 		{
 			std::cout << "Hand updated" << std::endl;
 			receivedPacket >> _selfHandCards;
-			// \TODO display changes
+			displayGame();
 		}
 		else
 			std::cerr << "Unknown message received: " << static_cast<sf::Uint32>(type) << "; ignore." << std::endl;
