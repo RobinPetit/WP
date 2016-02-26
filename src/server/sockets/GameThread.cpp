@@ -88,6 +88,7 @@ void GameThread::receiveDecks()
 	if(type != TransferType::GAME_PLAYER_GIVE_DECK_ID)
 		throw std::runtime_error("Unable to get player 2's deck");
 	deckPacket >> _player2DeckIdx;
+	// TODO: have the content of the deck from the index
 }
 
 void GameThread::startGame(const ClientInformations& player1, const ClientInformations& player2)
