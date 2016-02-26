@@ -27,7 +27,7 @@ class Player
 {
 public:
 	/// Constructor
-	Player(ServerDatabase& database, userId id, sf::TcpSocket& socket, sf::TcpSocket& specialSocket);
+	Player(userId id, sf::TcpSocket& socket, sf::TcpSocket& specialSocket);
 	void setOpponent(Player* opponent);  // Complementary
 
 	/// Destructor.
@@ -55,6 +55,9 @@ public:
 	userId getID();
 	const std::vector<Creature *>& getBoard();
 
+	/// Setters
+	void setDeck(const Deck& newDeck);
+
 	///
 	/// \return a vector of indices selected
 	/// \param selection a vector of values telling whether the choice must be in player's cards or opponent's cards
@@ -73,7 +76,6 @@ private:
 	constexpr static TurnData _emptyTurnData = {0, 0, 0, 0};
 
 	/// Attributes
-	ServerDatabase& _database;
 	Board* _board;
 	Player* _opponent = nullptr;
 	userId _id;
@@ -116,7 +118,6 @@ private:
 	void changeHealth(const EffectParamsCollection& args);
 
 	/// Other private methods
-	void loadCardDeck(const std::string& chosenDeckName);
 	void exploitCardEffects(Card* usedCard);
 	void setTeamConstraint(const Card* usedCard, const EffectParamsCollection& effectArgs);
 

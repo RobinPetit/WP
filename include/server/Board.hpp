@@ -37,6 +37,9 @@ public:
 	userId getCurrentPlayerID();
 	userId getWaitingPlayerID();
 
+	/// Used by the GameThread instance when it gets the decks names from the users
+	void givePlayersDecksNames(const std::string& player1DeckName, const std::string& player2DeckName);
+
 	/// Interface for Player and Card classes
 	void applyEffect(Card* usedCard, EffectParamsCollection effect);
 

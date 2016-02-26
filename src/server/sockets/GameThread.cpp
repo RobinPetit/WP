@@ -77,18 +77,20 @@ void GameThread::receiveDecks()
 	std::cout << "waiting for decks\n";
 	sf::Packet deckPacket;
 	TransferType type;
+
 	_socketPlayer1.receive(deckPacket);
 	deckPacket >> type;
-	if(type != TransferType::GAME_PLAYER_GIVE_DECK_ID){
-		std::cout << '\t' << static_cast<sf::Uint32>(type) << '\n';
-		throw std::runtime_error("Unable to get player 1's deck");}
-	deckPacket >> _player1DeckIdx;
+	if(type != TransferType::GAME_PLAYER_GIVE_DECK_NAMES)
+		throw std::runtime_error("Unable to get player 1's deck");
+	deckPacket >> _player1DeckName;
+
 	_socketPlayer2.receive(deckPacket);
 	deckPacket >> type;
-	if(type != TransferType::GAME_PLAYER_GIVE_DECK_ID)
+	if(type != TransferType::GAME_PLAYER_GIVE_DECK_NAMES)
 		throw std::runtime_error("Unable to get player 2's deck");
-	deckPacket >> _player2DeckIdx;
-	// TODO: have the content of the deck from the index
+	deckPacket >> _player2DeckName;
+
+	_gameBoard.givePlayersDecksNames(_player1DeckName, _player2DeckName);
 }
 
 void GameThread::startGame(const ClientInformations& player1, const ClientInformations& player2)

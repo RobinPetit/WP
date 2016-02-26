@@ -7,8 +7,8 @@
 Board::Board(ServerDatabase& database, const PlayerInformations& player1, const PlayerInformations& player2):
 	_database(database)
 {
-	_activePlayer = new Player(_database, player1.id, player1.socket, player1.specialSocket);
-	_passivePlayer = new Player(_database, player2.id, player2.socket, player2.specialSocket);
+	_activePlayer = new Player(player1.id, player1.socket, player1.specialSocket);
+	_passivePlayer = new Player(player2.id, player2.socket, player2.specialSocket);
 	// We make sure players know their opponents
 	_activePlayer->setOpponent(_passivePlayer);
 	_passivePlayer->setOpponent(_activePlayer);
@@ -17,7 +17,7 @@ Board::Board(ServerDatabase& database, const PlayerInformations& player1, const 
 	if(std::bernoulli_distribution(0.5)(engine))
 		std::swap(_activePlayer, _passivePlayer);
 
-	_activePlayer->beginGame(true); //TODO: these have to request deck selection from player
+	_activePlayer->beginGame(true);
 	_passivePlayer->beginGame(false);
 }
 
@@ -56,6 +56,13 @@ userId Board::getCurrentPlayerID()
 userId Board::getWaitingPlayerID()
 {
 	return _passivePlayer->getID();
+}
+
+void Board::givePlayersDecksNames(const std::string& player1DeckName, const std::string& player2DeckName)
+{
+	// TODO This have 1/2 probability to assign the wrong deck to the wrong player
+	_activePlayer->setDeck(_database.getDeckByName(_activePlayer->getID(), player1DeckName));
+	_passivePlayer->setDeck(_database.getDeckByName(_passivePlayer->getID(), player2DeckName));
 }
 
 /*------------------------------ PLAYER AND CARD INTERFACE */

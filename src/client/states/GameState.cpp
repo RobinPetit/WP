@@ -54,16 +54,16 @@ void GameState::chooseDeck()
 	std::vector<Deck> decks = _client.getDecks();
 	// ask for the deck to use during the game
 	std::cout << "Choose your deck:\n\t";
-	for(auto i{0U}; i < decks.size(); ++i)
-		std::cout << i+1 << ": " << decks[i].getName() << std::endl;
+	for(auto deck : decks)
+		std::cout << deck.getName() << std::endl;
 	std::cin.clear();
-	sf::Uint32 chosenDeck;
+	std::string chosenDeckName;
 	bool loop{true};
 	do
 	{
 		try
 		{
-			chosenDeck = askForNumber(1, decks.size()+1)-1;
+			std::getline(std::cin, chosenDeckName);
 			loop = false;
 		}
 		catch(std::exception& e)
@@ -75,7 +75,7 @@ void GameState::chooseDeck()
 	std::cout << "sending your deck...\n";
 	// send the deck ID to the server
 	sf::Packet deckIdPacket;
-	deckIdPacket << TransferType::GAME_PLAYER_GIVE_DECK_ID << chosenDeck;
+	deckIdPacket << TransferType::GAME_PLAYER_GIVE_DECK_NAMES << chosenDeckName;
 	_client.getGameSocket().send(deckIdPacket);
 }
 

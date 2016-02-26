@@ -57,8 +57,8 @@ private:
 
 	std::atomic_bool _turnSwap;
 
-	sf::Uint32 _player1DeckIdx;
-	sf::Uint32 _player2DeckIdx;
+	std::string _player1DeckName;
+	std::string _player2DeckName;
 
 	//////////// Private methods
 	void setSocket(sf::TcpSocket& socket, sf::TcpSocket& specialSocket, const ClientInformations& player);

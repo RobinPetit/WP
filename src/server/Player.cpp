@@ -25,8 +25,7 @@ std::function<void(Player&, const EffectParamsCollection&)> Player::_effectMetho
 	&Player::changeHealth,
 };
 
-Player::Player(ServerDatabase& database, userId id, sf::TcpSocket& socket, sf::TcpSocket& specialSocket):
-	_database(database),
+Player::Player(userId id, sf::TcpSocket& socket, sf::TcpSocket& specialSocket):
 	_id(id),
 	_socketToClient(socket),
 	_specialSocketToClient(specialSocket)
@@ -49,6 +48,30 @@ const std::vector<Creature *>& Player::getBoard()
 	return _cardBoard;
 }
 
+void Player::setDeck(const Deck& newDeck)
+{
+	std::vector<Card* > loadedCards;
+	for(std::size_t i{0}; i < Deck::size; ++i)
+	{
+		const cardId card{newDeck.getCard(i)};
+		// FIXME For now, we consider that cardId <= 10 are creatures,
+		// and higher cardId are spells. THIS SHOULD BE FIXED.
+		if(card <= 10)
+		{
+			CreatureData creat = ALL_CREATURES[card];
+			loadedCards.push_back(new Creature(card, creat.cost, creat.attack, creat.health, creat.shield, creat.shieldType, creat.effects));
+		}
+		else
+		{
+			SpellData spell = ALL_SPELLS[card - 10];
+			loadedCards.push_back(new Spell(card, spell.cost, spell.effects));
+		}
+	}
+	std::shuffle(loadedCards.begin(), loadedCards.end(), _engine);
+	for (int i=0; i<20; i++)
+		_cardDeck.push(loadedCards.at(i));
+}
+
 /*------------------------------ BOARD INTERFACE */
 void Player::beginGame(bool isActivePlayer)
 {
@@ -56,10 +79,6 @@ void Player::beginGame(bool isActivePlayer)
 		//NETWORK: GAME_STARTED_ACTIVE
 	//else
 		//NETWORK: GAME_STARTED_INACTIVE
-
-	//NETWORK: request Deck selection from client
-	std::string name = "Deck1";
-	loadCardDeck(name);
 }
 
 void Player::enterTurn(int turn)
@@ -461,29 +480,6 @@ void Player::sendCurrentHealth()
 }
 
 /*--------------------------- PRIVATE */
-void Player::loadCardDeck(const std::string& chosenDeckName)
-{
-	Deck chosenDeckInstance(_database.getDeckByName(getID(), chosenDeckName));
-	std::vector<Card* > loadedCards;
-	for(const auto& card : chosenDeckInstance)
-	{
-		// FIXME For now, we consider that cardId <= 10 are creatures,
-		// and higher cardId are spells. THIS SHOULD BE FIXED.
-		if(card <= 10)
-		{
-			CreatureData creat = ALL_CREATURES[card];
-			loadedCards.push_back(new Creature(card, creat.cost, creat.attack, creat.health, creat.shield, creat.shieldType, creat.effects));
-		}
-		else
-		{
-			SpellData spell = ALL_SPELLS[card - 10];
-			loadedCards.push_back(new Spell(card, spell.cost, spell.effects));
-		}
-	}
-	std::shuffle(loadedCards.begin(), loadedCards.end(), _engine);
-	for (int i=0; i<20; i++)
-		_cardDeck.push(loadedCards.at(i));
-}
 
 void Player::exploitCardEffects(Card* usedCard)
 {
