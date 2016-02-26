@@ -6,12 +6,14 @@
 /// Interface to the client database.
 class ClientDatabase : public Database
 {
-	/// Default relative path to sqlite3 file
-	static constexpr char FILENAME[] = "../ressources/client/database.db";
 public:
 	/// Constructor
 	/// \param filename: relative path to sqlite3 file.
 	explicit ClientDatabase(const std::string filename = FILENAME);
+
+private:
+	/// Default relative path to sqlite3 file
+	static const char FILENAME[];
 };
 
 #endif // _CLIENT_DATABASE_CLIENT_HPP
