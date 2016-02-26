@@ -38,6 +38,7 @@ public:
 	CardsCollection getCardsCollection(const int userId);
 
 	std::vector<Deck> getDecks(const int userId);
+	void createDeck(const int userId, const Deck& deck);
 
 	bool areIdentifersValid(const std::string& login, const std::string& password);
 	bool isRegistered(const std::string& login);
@@ -66,11 +67,12 @@ private:
 	sqlite3_stmt * _isFriendshipRequestSentStmt;
 	sqlite3_stmt * _registerUserStmt;
 	sqlite3_stmt * _areIdentifersValidStmt;
+	sqlite3_stmt * _createDeckStmt;
 
 	// `constexpr std::array::size_type size() const;`
 	// -> I consider this 15 as the definition of the variable, so it is not a magic number
 	// -> future uses have to be _statements.size() -> 15 is writed only one time
-	StatementsList<15> _statements
+	StatementsList<16> _statements
 	{
 		{
 			Statement {
@@ -154,6 +156,13 @@ private:
 				&_areIdentifersValidStmt,
 				"SELECT 1 FROM Account "
 				"	WHERE(login == ?1 and password == ?2);"
+			},
+			Statement {
+				&_createDeckStmt,
+				"INSERT INTO Deck(owner, name, Card0, Card1, Card2, Card3, Card4, Card5, Card6, Card7, Card8, Card9, "
+				"		Card10, Card11, Card12, Card13, Card14, Card15, Card16, Card17, Card18, Card19) "
+				"	VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, "
+				"		?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22);"
 			}
 		}
 	};

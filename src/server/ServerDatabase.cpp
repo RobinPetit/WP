@@ -6,6 +6,9 @@
 
 #define AUTO_QUERY_LENGTH -1
 
+// TODO: this is multi-threaded
+// Rien à voir mais j'y pense maintenant: ajouter aux requirements que l'utilisateur doit pouvoir supprimer toutes ses données personnelles
+
 const char ServerDatabase::FILENAME[] = "../resources/server/database.db";
 ServerDatabase::ServerDatabase(std::string filename) : Database(filename)
 {
@@ -140,10 +143,26 @@ std::vector<Deck> ServerDatabase::getDecks(const int userId)
 	return decks;
 }
 
+void ServerDatabase::createDeck(const int userId, const Deck& deck)
+{
+	sqlite3_reset(_createDeckStmt);
+	sqliteThrowExcept(sqlite3_bind_int(_createDeckStmt, 1, userId));
+	sqliteThrowExcept(sqlite3_bind_text(_createDeckStmt, 2, deck.getName().c_str(), AUTO_QUERY_LENGTH,
+	                                    SQLITE_TRANSIENT));
+
+	for(int card = 0; card < Deck::size; ++card)
+	{
+		sqliteThrowExcept(sqlite3_bind_int(_createDeckStmt, card + 3, deck.getCard(card)));
+	}
+
+	assert(sqliteThrowExcept(sqlite3_step(_createDeckStmt)) == SQLITE_DONE);
+}
+
 bool ServerDatabase::areIdentifersValid(const std::string& login, const std::string& password)
 {
 	sqlite3_reset(_areIdentifersValidStmt);
-	sqliteThrowExcept(sqlite3_bind_text(_areIdentifersValidStmt, 1, login.c_str(), AUTO_QUERY_LENGTH, SQLITE_TRANSIENT));
+	sqliteThrowExcept(sqlite3_bind_text(_areIdentifersValidStmt, 1, login.c_str(), AUTO_QUERY_LENGTH,
+	                                    SQLITE_TRANSIENT));
 	sqliteThrowExcept(sqlite3_bind_blob(_areIdentifersValidStmt, 2, password.c_str(), sizeof(password.c_str()),
 	                                    SQLITE_TRANSIENT));
 
