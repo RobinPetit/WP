@@ -39,6 +39,7 @@ public:
 	void leaveTurn();
 	void useCard(int handIndex); 	///< Use a card
 	void attackWithCreature(int boardIndex, int victim);  ///< Attack victim (-1 for opponent) with a card
+	void endGame(); //TODO: define behavior and call for opponent when quitting
 
 	/// Interface for applying effects
 	//to Player
@@ -86,6 +87,7 @@ private:
 
 	// Gameplay
 	int _energy, _energyInit = 0, _health;
+	int _turnsSinceEmptyDeck;
 	static const int _maxEnergy = 10, _maxHealth = 20;
 	TurnData _turnData;
 

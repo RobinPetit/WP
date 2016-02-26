@@ -84,6 +84,12 @@ void Player::beginGame(bool isActivePlayer)
 void Player::enterTurn(int turn)
 {
 	_turnData = _emptyTurnData;  // Reset the turn data
+	if (_cardDeck.empty())
+	{
+		_turnsSinceEmptyDeck++;
+		if (_turnsSinceEmptyDeck==10)
+			endGame(); //TODO define arguments here
+	}
 
 	//Player's turn-based constraints
 	cardDeckToHand(_constraints.getConstraint(PC_TURN_CARDS_PICKED));
@@ -218,6 +224,11 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 		response << TransferType::ACKNOWLEDGE;
 	}
 	_socketToClient.send(response);
+}
+
+void Player::endGame()
+{
+    //I have no idea what to do here.
 }
 
 /*------------------------------ EFFECTS INTERFACE */
@@ -452,6 +463,8 @@ void Player::changeHealth(const EffectParamsCollection& args)
 	if (_health<=0)
 	{
 		_health=0;
+		endGame(); //TODO define arguments here
+		_opponent->endGame();
 		//NETWORK: NO_HEALTH_CHANGED
 		//call die()
 	}
