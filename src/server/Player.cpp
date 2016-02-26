@@ -56,14 +56,14 @@ void Player::setDeck(const Deck& newDeck)
 		const cardId card{newDeck.getCard(i)-1};
 		// FIXME For now, we consider that cardId <= 10 are creatures,
 		// and higher cardId are spells. THIS SHOULD BE FIXED.
-		if(card < 10)
+		if(card <= 10)
 		{
-			CreatureData creat = ALL_CREATURES[card];
+			CreatureData creat = ALL_CREATURES[card-1];
 			loadedCards.push_back(new Creature(card, creat.cost, creat.attack, creat.health, creat.shield, creat.shieldType, creat.effects));
 		}
 		else
 		{
-			SpellData spell = ALL_SPELLS[card - 10];
+			SpellData spell = ALL_SPELLS[card - 11];
 			loadedCards.push_back(new Spell(card, spell.cost, spell.effects));
 		}
 	}
