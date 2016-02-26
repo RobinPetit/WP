@@ -99,6 +99,7 @@ void GameState::display()
 	std::cout << "Here are your options:\n";
 	// Display the actions
 	AbstractState::display();
+	displayGame();
 }
 
 void GameState::startTurn()
