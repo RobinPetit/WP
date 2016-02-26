@@ -90,7 +90,10 @@ void GameThread::receiveDecks()
 		throw std::runtime_error("Unable to get player 2's deck");
 	deckPacket >> _player2DeckName;
 
-	_gameBoard.givePlayersDecksNames(_player1DeckName, _player2DeckName);
+	if(_isSynchroWithBoard)
+		_gameBoard.givePlayersDecksNames(_player1DeckName, _player2DeckName);
+	else
+		_gameBoard.givePlayersDecksNames(_player2DeckName, _player1DeckName);
 }
 
 void GameThread::startGame(const ClientInformations& player1, const ClientInformations& player2)
