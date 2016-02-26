@@ -291,9 +291,41 @@ Baudoux Nicolas, Berrewaerts Jonathan, Gueniffrey Stanislas,  Muranovic Allan, P
 		Le système \textbf{doit} être maintenable et pensé dans l'optique d'une future adaptation avec interface graphique.
 
 	\subsection{Design et fonctionnement du système}
-		La structure du programme est résumée dans les classes suivantes (servant également de \textit{pseudo-squelette de code}) :
+		La structure du programme est résumée dans le diagramme de classe ci-dessous. Chaque élément sera développé par après.
+		\begin{center}\includegraphics[scale=0.5]{Global.png}\end{center}
 
-		\begin{center}\includegraphics[scale=0.5]{Model2_Classes.png}\end{center}
+		Nous pouvons constater que le client (Player) se connecte au serveur qui, lui, gère les parties (le tableau de jeu) ainsi que la base de donnée et tout ce dont cette dernière comprend.
+
+		\newpage
+		\subsection{Diagramme de classe du \gls{deck} et des cartes}
+		\begin{center}\includegraphics[scale=0.5]{deck.png}\end{center}
+			Comme indiqué sur ce diagramme, un \gls{deck} est composé de cartes, 20 pour être précis. Les cartes sont soit des \gls{Creature}
+			soit des \gls{Sort} et on ne peut posséder que maximum 2 exemplaire d'une même carte au sein d'un même \gls{deck}.
+			A savoir également que les \gls{deck} sont indépendants, il est donc possible de posséder uniquement 2x la même carte,
+			mais avoir plusieurs \gls{deck} qui possèdent 1 ou 2x cette carte.
+
+			L'application des effets est simple : chaque effet est un effet direct, que ce soit infliger X points de dégats, comme soigner un allié ou encore interdire le joueur adverse de jouer pendant Y tours.
+			Un effet plus complexe est également un effet direct, seulement, il va modifier la liste de contraintes de la partie et c'est cette liste qui va permettre d'appliquer des effets sur la durée, ou en respectant bien certaines conditions (applique tel effet tant que tel créature est en vie par exemple).
+
+		\newpage
+		\subsection{Diagramme de classe du serveur et de sa base de données}
+		\begin{center}\includegraphics[scale=0.5]{Server.png}\end{center}
+			Ici, la structure est un peu plus complexe : Le serveur est composé d'une base de donnée en SQL qui est héritée par 
+			une base de donnée utilisable par l'application serveur (en c++ cette fois).
+
+			C'est ce serveur qui va naturellement tout gérer, des parties, jusqu'aux requêtes d'amis en passant
+			par la gestion/modification des \gls{deck}/de compte. Tout sera stocké de son côté dans la base de données.
+			Le client ne possedera aucune données, il est obligé de passer par les serveur quel que soit son intention.
+
+		\newpage
+		\subsection{Diagramme des classes intervenant dans une partie (simplifié)}
+		\begin{center}\includegraphics[scale=0.5]{Game.png}\end{center}
+			Il est à noter que c'est un diagramme de classe, et non d'activités, il regroupe juste les plus grosses classes intervenant dans la partie,
+			et non pas leur lien/fonctionnement entre elles.
+			Pour qu'une partie puisse avoir lieu, il nous faut 2 joueurs connecté au serveur qui s'occupera lui-même de modifier le plateau de jeu.
+			
+	Toutes les méthodes servant à une expérience de jeu optimal sont implémentées, mais en console.
+	L'interface graphique arrive à la prochaine étape du développement de ce projet, tout ce qui gère le fonctionnement du jeu est néanmoins présent.
 
 \newpage
 
