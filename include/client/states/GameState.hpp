@@ -81,6 +81,7 @@ class GameState : public AbstractState
 		// Game display
 		void displayGame();
 		void displayCardVector(std::vector<sf::Uint32> cardVector);
+		void displayBoardVector(std::vector<sf::Uint32> cardVector);
 		CardData getCardData(int cardID);
 
 		/// Start the new thread waiting for special data

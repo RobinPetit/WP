@@ -234,8 +234,8 @@ void GameState::displayGame()
 
 	std::cout << "-----HEALTH & ENERGY-----" << std::endl;
 	std::cout << "Your opponent has " << _oppoHealth << " life points left." << std::endl;
-	std::cout << "Your have " << _selfHealth << " life points left." << std::endl;
-	std::cout << "Your have " << _selfEnergy << " energy points left." << std::endl;
+	std::cout << "You have " << _selfHealth << " life points left." << std::endl;
+	std::cout << "You have " << _selfEnergy << " energy points left." << std::endl;
 }
 
 void GameState::displayCardVector(std::vector<sf::Uint32> cardVector)
@@ -243,7 +243,22 @@ void GameState::displayCardVector(std::vector<sf::Uint32> cardVector)
 	for (int i=0; i<cardVector.size(); i++)
 	{
 		CardData thisCard = getCardData(cardVector.at(i));
-		std::cout << i << " : " << thisCard.name << "(" << thisCard.cost << ")";
+		std::cout << i << " : " << thisCard.name << "(cost:" << thisCard.cost << ")";
+		//TODO use card names instead of card IDs ?
+		if (i!=cardVector.size()-1)
+			std::cout << ", ";
+	}
+	std::cout << std::endl;
+}
+
+void GameState::displayBoardVector(std::vector<sf::Uint32> cardVector)
+{
+	//THE BOARD VECTOR ALSO CONTAINS REAL_TIME INFORMATION ABOUT THE CARDS (HEALTH, ATTACK, SHIELD, SHIELD TYPE)
+	//THIS METHOD SHOULD DISPLAY THESE INFORMATiONS AND BE CALLED ONLY FOR DISPLAYING THE BOARD
+	for (int i=0; i<cardVector.size(); i++)
+	{
+		CardData thisCard = getCardData(cardVector.at(i));
+		std::cout << i << " : " << thisCard.name << "(cost:" << thisCard.cost << ")";
 		//TODO use card names instead of card IDs ?
 		if (i!=cardVector.size()-1)
 			std::cout << ", ";
