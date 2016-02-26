@@ -140,6 +140,34 @@ std::vector<Deck> ServerDatabase::getDecks(const int userId)
 	return decks;
 }
 
+bool ServerDatabase::areIdentifersValid(const std::string& login, const std::string& password)
+{
+	sqlite3_reset(_areIdentifersValidStmt);
+	sqliteThrowExcept(sqlite3_bind_text(_areIdentifersValidStmt, 1, login.c_str(), AUTO_QUERY_LENGTH, SQLITE_TRANSIENT));
+	sqliteThrowExcept(sqlite3_bind_blob(_areIdentifersValidStmt, 2, password.c_str(), sizeof(password.c_str()),
+	                                    SQLITE_TRANSIENT));
+
+	return sqliteThrowExcept(sqlite3_step(_areIdentifersValidStmt)) == SQLITE_ROW;
+}
+
+bool ServerDatabase::isRegistered(const std::string& login)
+{
+	sqlite3_reset(_userIdStmt);
+	sqliteThrowExcept(sqlite3_bind_text(_userIdStmt, 1, login.c_str(), AUTO_QUERY_LENGTH, SQLITE_TRANSIENT));
+
+	return sqliteThrowExcept(sqlite3_step(_userIdStmt)) == SQLITE_ROW;
+}
+
+void ServerDatabase::registerUser(const std::string& login, const std::string& password)
+{
+	sqlite3_reset(_registerUserStmt);
+	sqliteThrowExcept(sqlite3_bind_text(_registerUserStmt, 1, login.c_str(), AUTO_QUERY_LENGTH, SQLITE_TRANSIENT));
+	sqliteThrowExcept(sqlite3_bind_blob(_registerUserStmt, 2, password.c_str(), sizeof(password.c_str()),
+	                                    SQLITE_TRANSIENT));
+
+	assert(sqliteThrowExcept(sqlite3_step(_registerUserStmt)) == SQLITE_DONE);
+}
+
 FriendsList ServerDatabase::getAnyFriendsList(const int user, sqlite3_stmt * stmt)
 {
 	sqlite3_reset(stmt);

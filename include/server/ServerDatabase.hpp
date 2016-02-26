@@ -24,6 +24,7 @@ public:
 	{
 		return getAnyFriendsList(userId, _friendshipRequestsStmt);
 	}
+
 	Ladder getLadder();
 
 	void addFriend(const int userId1, const int userId2);
@@ -37,6 +38,10 @@ public:
 	CardsCollection getCardsCollection(const int userId);
 
 	std::vector<Deck> getDecks(const int userId);
+
+	bool areIdentifersValid(const std::string& login, const std::string& password);
+	bool isRegistered(const std::string& login);
+	void registerUser(const std::string& login, const std::string& password);
 
 	virtual ~ServerDatabase();
 
@@ -59,11 +64,13 @@ private:
 	sqlite3_stmt * _addFriendshipRequestStmt;
 	sqlite3_stmt * _removeFriendshipRequestStmt;
 	sqlite3_stmt * _isFriendshipRequestSentStmt;
+	sqlite3_stmt * _registerUserStmt;
+	sqlite3_stmt * _areIdentifersValidStmt;
 
 	// `constexpr std::array::size_type size() const;`
-	// -> I consider this 9 as the definition of the variable, so it is not a magic number
-	// -> future uses have to be _statements.size() -> 9 is writed only one time
-	StatementsList<13> _statements
+	// -> I consider this 15 as the definition of the variable, so it is not a magic number
+	// -> future uses have to be _statements.size() -> 15 is writed only one time
+	StatementsList<15> _statements
 	{
 		{
 			Statement {
@@ -88,7 +95,7 @@ private:
 				"SELECT from_ AS id, login AS name "
 				"	FROM FriendRequest INNER JOIN Account ON from_ == id WHERE to_ == ?1;"
 			},
-			Statement {
+			Statement { // 4
 				&_decksStmt,
 				"SELECT name, Card0, Card1, Card2, Card3, Card4, Card5, Card6, Card7, Card8, Card9, "
 				"		Card10, Card11, Card12, Card13, Card14, Card15, Card16, Card17, Card18, Card19 "
@@ -113,7 +120,7 @@ private:
 				"INSERT INTO Friend "
 				"	VALUES(?1,?2);" // TRIGGER addFriend will remove obselete friendshipRequests
 			},
-			Statement {
+			Statement { // 8
 				&_removeFriendStmt,
 				"DELETE FROM Friend "
 				"	WHERE(first == ?1 AND second == ?2);" // With ?1 < ?2. See initdatabase.sql for reason
@@ -133,10 +140,20 @@ private:
 				"DELETE FROM FriendRequest "
 				"	WHERE from_ == ?1 AND to_ == ?2;"
 			},
-			Statement {
+			Statement { // 12
 				&_isFriendshipRequestSentStmt,
 				"SELECT 1 FROM FriendRequest "
-				"	WHERE from_ ==?1 AND to_ ==?2;"
+				"	WHERE from_ == ?1 AND to_ == ?2;"
+			},
+			Statement {
+				&_registerUserStmt,
+				"INSERT INTO Account(login, password) "
+				"	VALUES(?1,?2);"
+			},
+			Statement {
+				&_areIdentifersValidStmt,
+				"SELECT 1 FROM Account "
+				"	WHERE(login == ?1 and password == ?2);"
 			}
 		}
 	};
