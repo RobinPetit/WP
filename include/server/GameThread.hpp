@@ -37,7 +37,7 @@ public:
 	enum class PlayerNumber { PLAYER1, PLAYER2 };
 
 	//~Currently low for tests
-	static constexpr std::chrono::seconds _turnTime{8};  // arbitrary
+	static constexpr std::chrono::seconds _turnTime{30};  // arbitrary
 
 private:
 	//////////// Attributes
@@ -55,6 +55,9 @@ private:
 
 	std::atomic_bool _turnSwap;
 
+	sf::Uint32 _player1DeckIdx;
+	sf::Uint32 _player2DeckIdx;
+
 	//////////// Private methods
 	void setSocket(sf::TcpSocket& socket, sf::TcpSocket& specialSocket, const ClientInformations& player);
 
@@ -63,6 +66,7 @@ private:
 	sf::TcpSocket& getSpecialSocketFromID(const Player::ID ID);
 
 	void makeTimer();
+	void receiveDecks();
 };
 
 ///////// template code

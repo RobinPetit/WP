@@ -29,6 +29,8 @@ class GameState : public AbstractState
 		void startTurn();
 		void updateData(std::array<unsigned, 5>);
 
+		~GameState();
+
 	private:
 		///////////////// attributes
 
@@ -38,11 +40,11 @@ class GameState : public AbstractState
 		std::vector<sf::Uint32> _oppoBoardCards;
 		unsigned _selfDeckSize;
 		unsigned _oppoHandSize;
-		
-	
+
+
 		unsigned _selfHealth, _oppoHealth;
 		unsigned _selfEnergy;
-		
+
 		// allow to update these values without interfering during a turn
 		std::mutex _accessHealth;
 		std::mutex _accessEnergy;
@@ -54,6 +56,10 @@ class GameState : public AbstractState
 		std::thread _listeningThread;
 
 		//////////////// private methods
+
+		// called by the constructor to init the object
+		void init();
+		void chooseDeck();
 
 		// Requests user for additional input
 		int askIndex(int maxIndex, std::string inputMessage);
@@ -68,7 +74,7 @@ class GameState : public AbstractState
 		void attackWithCreature();
 		void endTurn();
 		void quit();
-		
+
 		// Game display
 		void displayGame();
 		void displayCardVector(std::vector<sf::Uint32> cardVector);
@@ -77,7 +83,7 @@ class GameState : public AbstractState
 		void initListening();
 		/// Called by the game listening thread: waits for server game thread special data
 		void inputListening();
-		
+
 		// Not needed ?
 		///Those methods can be used for effects
 		//void changeHealth(int);
