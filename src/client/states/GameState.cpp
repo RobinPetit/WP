@@ -225,6 +225,9 @@ void GameState::endTurn()
 	}
 	else
 	{
+		sf::Packet packet;
+		packet << TransferType::GAME_PLAYER_LEAVE_TURN;
+		_client.getGameSocket().send(packet);
 		_myTurn = false;
 	}
 }

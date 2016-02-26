@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass[12pt]{article}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -69,7 +69,7 @@
 %----------------------------------------------------------------------------------------
 
 \Large \emph{Auteurs :}\\
-Baudoux Nicolas, Berrewaerts Jonathan, Gueniffrey Stanislas,  Muranovic Allan, Petit Robin, Reynouard Alexis et Verhelst Théo
+Baudoux Nicolas, Gueniffey Stanislas,  Muranovic Allan, Petit Robin, Reynouard Alexis et Verhelst Théo
 
 %----------------------------------------------------------------------------------------
 %	DATE SECTION
@@ -126,11 +126,15 @@ Baudoux Nicolas, Berrewaerts Jonathan, Gueniffrey Stanislas,  Muranovic Allan, P
 	\subsection{Historique}
 		\begin{itemize}
 			\item[11/12/2015] Réunion (équipe complète) ;
-			\item[11/12/2015] Squelette du SRD (équipe SRD) ;
-			\item[15/12/2015] Création des diagrammes UML (équipe UML) ;
-			\item[15/12/2015] Rédaction de la version propre du SRD (Robin).
-			\item[31/01/2016 $\rightarrow$ 26/02/2016] Développement du projet (en console uniquement).
-			\item[26/02/2016]  Mise à jour du SRD (Allan et Nicolas).
+			\item[11/12/2015] squelette du SRD (équipe SRD) ;
+			\item[15/12/2015] création des diagrammes UML (équipe UML) ;
+			\item[15/12/2015] rédaction de la version propre du SRD (Robin) ;
+			\item[31/01/2016 $\rightarrow$ 26/02/2016] développement du projet (en console uniquement).
+			\item[07/02/2016] réunion (équipe complète) ;
+			\item[11/02/2016] réunion (équipe complète) ;
+			\item[15/02/2016] réunion (équipe complète) ;
+			\item[22/02/2016] réunion (équipe complète) ;
+			\item[26/02/2016] mise à jour du SRD (Allan et Nicolas).
 		\end{itemize}
 
 \newpage
@@ -182,7 +186,7 @@ Baudoux Nicolas, Berrewaerts Jonathan, Gueniffrey Stanislas,  Muranovic Allan, P
 				\item \textbf{Faire une partie}
 				\begin{description}
 					\item[Description] Un utilisateur peut jouer une partie.
-					\item[Pré-condition] L'utilisateur a un \gls{deck} actif.
+					\item[Pré-condition] Aucune.
 					\item[Post-condition] Si l'utilisateur a gagné la partie, une carte est ajoutée à sa collection.
 					Ses statistiques (parties gagnées / parties perdues) sont mises à jour.\\
 				\end{description}
@@ -331,7 +335,7 @@ Baudoux Nicolas, Berrewaerts Jonathan, Gueniffrey Stanislas,  Muranovic Allan, P
 			\begin{center}\includegraphics[scale=0.5]{stack1.png}\end{center}
 				C'est au moyen de piles que nous avons implémenté un menu fluide, efficace et facile d'utilisation.
 
-				En effet, pour entrer dans un nouveau menu, il suffit de \textit{\gls{push}} le choix choix, et pour un retour au menu précédent, il suffit de faire un \textit{\gls{pop}}. 
+				En effet, pour entrer dans un nouveau menu, il suffit de \textit{\gls{push}} le choix, et pour un retour au menu précédent, il suffit de faire un \textit{\gls{pop}}. 
 
 				Ainsi, pour le menu et toutes ses fonctionnalités, que ce soit au niveau de la gestion des amis jusqu'au menu principal, 
 				nous avons une classe abstraite héritée (\textbf{AbstractState}) ainsi que l'utilisation d'une deuxième classe (\textbf{StateStack}). C'est grâce à ces deux dernière que tout 
