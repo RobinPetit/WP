@@ -87,7 +87,8 @@ void Server::connectUser(sf::Packet& connectionPacket, std::unique_ptr<sf::TcpSo
 			throw std::runtime_error(playerName + " tried to connect to the server but is already connected.");
 		}
 
-		if(not _database.areIdentifiersValid(playerName, password))
+		// FIXME : this method call returns always false _database.areIdentifiersValid(playerName, password))
+		if(not _database.isRegistered(playerName))
 		{
 			connectionPacket << TransferType::GAME_WRONG_IDENTIFIERS;
 			throw std::runtime_error(playerName + " gives wrong identifiers when trying to connect.");
@@ -343,7 +344,7 @@ void Server::startGame(std::size_t idx)
 	_accessRunningGames.lock();
 	GameThread& selfThread{*_runningGames[idx]};
 	_accessRunningGames.unlock();
-	const auto& finderById = [](unsigned playerId)
+	const auto& finderById = [](userId playerId)
 	{
 		return [playerId](const std::pair<const std::string, ClientInformations>& it)
 		{
