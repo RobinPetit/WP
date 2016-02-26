@@ -4,6 +4,7 @@
 // WizardPoker headers
 #include "server/Server.hpp"
 #include "common/constants.hpp"
+#include "common/Identifiers.hpp"
 #include "server/ErrorCode.hpp"
 #include "common/sockets/TransferType.hpp"
 #include "common/sockets/PacketOverload.hpp"
@@ -410,8 +411,8 @@ void Server::handleFriendshipRequest(const _iterator& it, sf::Packet& transmissi
 	transmission >> friendName;
 	try
 	{
-		const Database::userId thisId{_database.getUserId(it->first)};
-		const Database::userId friendId{_database.getUserId(friendName)};
+		const userId thisId{_database.getUserId(it->first)};
+		const userId friendId{_database.getUserId(friendName)};
 
 		// Add the request into the database
 		_database.addFriendshipRequest(thisId, friendId);
@@ -466,7 +467,7 @@ void Server::sendFriendshipRequests(const _iterator& it)
 	sf::Packet response;
 	try
 	{
-		const Database::userId id{_database.getUserId(it->first)};
+		const userId id{_database.getUserId(it->first)};
 		// The follwing two lines could be gathered, but by splitting them
 		// we avoid that the packet is garbaged if ServerDatabase::getFriendshipRequests
 		// throw an exception (although I don't think this is really risky,
@@ -487,7 +488,7 @@ void Server::sendFriends(const _iterator& it)
 	sf::Packet response;
 	try
 	{
-		const Database::userId id{_database.getUserId(it->first)};
+		const userId id{_database.getUserId(it->first)};
 		// Same as sendFriendshipRequests for the two folling lines
 		FriendsList friends{_database.getFriendsList(id)};
 		response << TransferType::ACKNOWLEDGE << friends;
@@ -507,8 +508,8 @@ void Server::handleRemoveFriend(const _iterator& it, sf::Packet& transmission)
 	transmission.clear();
 	try
 	{
-		const Database::userId unfriendlyUserId{_database.getUserId(it->first)};
-		const Database::userId removedFriendId{_database.getUserId(removedFriend)};
+		const userId unfriendlyUserId{_database.getUserId(it->first)};
+		const userId removedFriendId{_database.getUserId(removedFriend)};
 		_database.removeFriend(unfriendlyUserId, removedFriendId);
 
 		// acknowledge to client
@@ -529,7 +530,7 @@ void Server::sendDecks(const _iterator& it)
 	sf::Packet response;
 	try
 	{
-		const Database::userId id{_database.getUserId(it->first)};
+		const userId id{_database.getUserId(it->first)};
 		// Same as sendFriendshipRequests for the two folling lines
 		std::vector<Deck> decks{_database.getDecks(id)};
 		response << TransferType::ACKNOWLEDGE << decks;
@@ -549,7 +550,7 @@ void Server::handleDeckEditing(const _iterator& it, sf::Packet& transmission)
 	transmission.clear();
 	try
 	{
-		const Database::userId id{_database.getUserId(it->first)};
+		const userId id{_database.getUserId(it->first)};
 		// UNCOMMENT _database.editDeck(id, editedDeck);
 		transmission << TransferType::ACKNOWLEDGE;
 	}
@@ -568,7 +569,7 @@ void Server::handleDeckCreation(const _iterator& it, sf::Packet& transmission)
 	transmission.clear();
 	try
 	{
-		const Database::userId id{_database.getUserId(it->first)};
+		const userId id{_database.getUserId(it->first)};
 		// UNCOMMENT _database.createDeck(id, newDeck);
 		transmission << TransferType::ACKNOWLEDGE;
 	}
@@ -587,7 +588,7 @@ void Server::handleDeckDeletion(const _iterator& it, sf::Packet& transmission)
 	transmission.clear();
 	try
 	{
-		const Database::userId id{_database.getUserId(it->first)};
+		const userId id{_database.getUserId(it->first)};
 		// UNCOMMENT _database.deleteDeck(id, deletedDeckName);
 		transmission << TransferType::ACKNOWLEDGE;
 	}
@@ -604,7 +605,7 @@ void Server::sendCardsCollection(const _iterator& it)
 	sf::Packet response;
 	try
 	{
-		const Database::userId id{_database.getUserId(it->first)};
+		const userId id{_database.getUserId(it->first)};
 		// Same as sendFriendshipRequests for the two folling lines
 		CardsCollection cards{_database.getCardsCollection(id)};
 		response << TransferType::ACKNOWLEDGE << cards;

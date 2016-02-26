@@ -4,25 +4,25 @@
 CardsCollection::CardsCollection()
 {
 	for(std::size_t i{1}; i <= Deck::size; ++i)
-		_cards.insert(static_cast<ClientCard::ID>(i));
+		_cards.insert(static_cast<cardId>(i));
 }
 
-CardsCollection::CardsCollection(const std::multiset<ClientCard::ID>& cards):
+CardsCollection::CardsCollection(const std::multiset<cardId>& cards):
 	_cards{cards}
 {
 }
 
-void CardsCollection::addCard(ClientCard::ID card)
+void CardsCollection::addCard(cardId card)
 {
 	_cards.insert(card);
 }
 
-std::size_t CardsCollection::count(ClientCard::ID card)
+std::size_t CardsCollection::count(cardId card)
 {
 	return _cards.count(card);
 }
 
-bool CardsCollection::contains(ClientCard::ID card)
+bool CardsCollection::contains(cardId card)
 {
 	return count(card) > 0;
 }

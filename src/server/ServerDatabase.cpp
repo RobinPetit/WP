@@ -1,4 +1,5 @@
 #include "server/ServerDatabase.hpp"
+#include "common/Identifiers.hpp"
 
 #ifndef NDEBUG
 #include <cassert>
@@ -47,7 +48,7 @@ std::vector<Deck> ServerDatabase::getDecks(const int userId)
 		decks.emplace_back(Deck(reinterpret_cast<const char *>(sqlite3_column_text(_decksStmt, 0))));
 
 		for(size_t i {0}; i < Deck::size; ++i)
-			decks.back().changeCard(i, static_cast<ClientCard::ID>(sqlite3_column_int(_decksStmt, i + 1)));
+			decks.back().changeCard(i, static_cast<cardId>(sqlite3_column_int(_decksStmt, i + 1)));
 	}
 
 	return decks;

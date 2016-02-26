@@ -9,9 +9,18 @@
 // WizardPoker headers
 #include "client/AbstractState.hpp"
 #include "client/NonBlockingInput.hpp"
+#include "common/CardData.hpp"
 
 // Forward declarations
 class StateStack;
+
+/// General card data
+struct CardData
+{
+	std::string name;
+	CostValue cost;
+	std::string description;
+};
 
 /// Cannot be more explicit.
 class GameState : public AbstractState
@@ -78,6 +87,8 @@ class GameState : public AbstractState
 		// Game display
 		void displayGame();
 		void displayCardVector(std::vector<sf::Uint32> cardVector);
+		void displayBoardVector(std::vector<sf::Uint32> cardVector);
+		CardData getCardData(int cardID);
 
 		/// Start the new thread waiting for special data
 		void initListening();

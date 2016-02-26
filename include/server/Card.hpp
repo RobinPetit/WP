@@ -5,7 +5,7 @@
 #include <string>
 // WizardPoker headers
 #include "server/Constraints.hpp"
-#include "server/CardData.hpp"
+#include "common/CardData.hpp"
 
 class Card
 {
@@ -16,7 +16,7 @@ private:
 
 public:
 	/// Constructor
-	Card(int cost=0, std::vector<EffectParamsCollection> effects = {{}});
+	Card(int cardID, int cost, std::vector<EffectParamsCollection> effects);
 
 	/// Getters
 	int getEnergyCost();
