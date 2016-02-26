@@ -9,6 +9,7 @@
 #include "common/Database.hpp"
 #include "common/Deck.hpp"
 #include "common/CardsCollection.hpp"
+#include "common/GameData.hpp"
 
 template <typename T>
 sf::Packet& operator <<(sf::Packet& packet, const std::vector<T>& vec);
@@ -38,6 +39,11 @@ sf::Packet& operator <<(sf::Packet& packet, const CardsCollection& deck);
 
 sf::Packet& operator >>(sf::Packet& packet, CardsCollection& deck);
 
+/// Allow a packet to transmit a BoardCreatureData instance.
+sf::Packet& operator <<(sf::Packet& packet, const BoardCreatureData& data);
+
+/// Allow a packet to transmit a BoardCreatureData instance.
+sf::Packet& operator >>(sf::Packet& packet, BoardCreatureData& data);
 
 // implementation
 

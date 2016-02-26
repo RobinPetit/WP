@@ -72,6 +72,7 @@ void GameState::chooseDeck()
 		}
 	}
 	while(loop);
+	std::cout << "sending your deck...\n";
 	// send the deck ID to the server
 	sf::Packet deckId;
 	deckId << TransferType::GAME_PLAYER_GIVE_DECK_ID << chosenDeck;
@@ -107,11 +108,12 @@ void GameState::startTurn()
 	std::cout << "It is now your turn, type something\n";
 	while(_myTurn.load())
 	{
-		if(_nonBlockingInput.waitForData(0.1))
-		{
-			std::string command{_nonBlockingInput.receiveStdinData()};
-			handleInput(command);
-		}
+		if(not _nonBlockingInput.waitForData(0.1))
+			continue;
+		std::string command{_nonBlockingInput.receiveStdinData()};
+		std::cout << "handling command '" << command << "'\n";
+		handleInput(command);
+		std::cout << "handled\n";
 	}
 	/**/
 }

@@ -478,21 +478,24 @@ void Player::loadCardDeck(int chosenDeck)
 {
 	//DATABASE: request chosen deck for Card Creation
 	std::vector<Card* > loadedCards;
-    for (int i=0; i<10; i++)
-    {
+	for (int i=0; i<10; i++)
+	{
 		CreatureData creat = ALL_CREATURES[i];
-        loadedCards.push_back(new Creature(i, creat.cost, creat.attack, creat.health, creat.shield, creat.shieldType, creat.effects));
-    }
-    for (int i=0; i<10; i++)
-    {
-        SpellData spell = ALL_SPELLS[i];
-        loadedCards.push_back(new Spell(i+10, spell.cost, spell.effects));
-    }
-    std::shuffle(loadedCards.begin(), loadedCards.end(), _engine);
-    for (int i=0; i<20; i++)
-    {
-        _cardDeck.push(loadedCards.at(i));
-    }
+		loadedCards.push_back(new Creature(i, creat.cost, creat.attack, creat.health, creat.shield, creat.shieldType, creat.effects));
+	}
+	for (int i=0; i<5; i++)
+	{
+		SpellData spell = ALL_SPELLS[i];
+		loadedCards.push_back(new Spell(i+10, spell.cost, spell.effects));
+	}
+	for (int i=0; i<5; i++)
+	{
+		SpellData spell = ALL_SPELLS[i];
+		loadedCards.push_back(new Spell(i+15, spell.cost, spell.effects));
+	}
+	std::shuffle(loadedCards.begin(), loadedCards.end(), _engine);
+	for (int i=0; i<20; i++)
+		_cardDeck.push(loadedCards.at(i));
 }
 
 void Player::exploitCardEffects(Card* usedCard)
@@ -653,8 +656,7 @@ void Player::sendIDsFromVector(TransferType type, const std::vector<CardType *>&
 
 void Player::sendCreatureDataFromVector(TransferType type, const std::vector<Creature*>& vect)
 {
-    //sf::Packet packet;
-    //packet << static_cast<sf::Uint32>(vect.size()); //useful ?
+    sf::Packet packet;
 	std::vector<BoardCreatureData> boardCreatures;
 	BoardCreatureData data;
 	for (int i=0; i<vect.size(); i++)
@@ -681,8 +683,9 @@ void Player::sendCreatureDataFromVector(TransferType type, const std::vector<Cre
 		}
         boardCreatures.push_back(data);
 	}
-	//packet << boardCreatures;
-	//_specialSocketToClient.send(packet);
+	// std::vector transmission in packet is defined in common/sockets/PacketOverload.hpp
+	packet << boardCreatures;
+	_specialSocketToClient.send(packet);
 }
 
 //////////

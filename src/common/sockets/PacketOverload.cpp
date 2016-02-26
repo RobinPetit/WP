@@ -94,3 +94,23 @@ sf::Packet& operator >>(sf::Packet& packet, CardsCollection& cardCollection)
 	}
 	return packet;
 }
+
+sf::Packet& operator <<(sf::Packet& packet, const BoardCreatureData& data)
+{
+	return packet << static_cast<sf::Int64>(data.id)
+	              << static_cast<sf::Int64>(data.health)
+	              << static_cast<sf::Int64>(data.attack)
+	              << static_cast<sf::Int64>(data.shield)
+	              << data.shieldType;
+}
+
+sf::Packet& operator >>(sf::Packet& packet, BoardCreatureData& data)
+{
+	sf::Int64 id, health, attack, shield;
+	packet >> id >> health >> attack >> shield >> data.shieldType;
+	data.id = static_cast<cardId>(id);
+	data.health = static_cast<int>(health);
+	data.attack = static_cast<int>(attack);
+	data.shield = static_cast<int>(shield);
+	return packet;
+}
