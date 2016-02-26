@@ -56,7 +56,8 @@ void Player::beginGame(bool isActivePlayer)
 	//else
 		//NETWORK: GAME_STARTED_INACTIVE
 
-	//TODO: request Deck selection
+	//NETWORK: request Deck selection from client
+	loadCardDeck(0);
 }
 
 void Player::enterTurn(int turn)
@@ -108,21 +109,22 @@ void Player::useCard(int handIndex)
 		return;
 	}
 
-	if (_constraints.getConstraint(PC_TEMP_CARD_USE_LIMIT) == _turnData.cardsUsed)
-	{
-		sendValueToClient(_socketToClient, TransferType::GAME_CARD_LIMIT_TURN_REACHED);
-		return;
-	}
 	Card* usedCard = _cardHand.at(handIndex);
+	//Check if we have enough energy to use this card
 	if (usedCard->getEnergyCost() > _energy)
 	{
 		sendValueToClient(_socketToClient, TransferType::GAME_NOT_ENOUGH_ENERGY);
 		return;
 	}
 
-	_energy -= usedCard->getEnergyCost();
+	//Check if we have the right to put more cards (constraint)
+	if (_constraints.getConstraint(PC_TEMP_CARD_USE_LIMIT) == _turnData.cardsUsed)
+	{
+		sendValueToClient(_socketToClient, TransferType::GAME_CARD_LIMIT_TURN_REACHED);
+		return;
+	}
 
-	//TODO: use typeinfo ?
+	_energy -= usedCard->getEnergyCost();
 	(*this.*(usedCard->isCreature() ? &Player::useCreature : &Player::useSpell))(handIndex, usedCard);
 }
 
@@ -175,11 +177,19 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 		return;
 	}
 
+	//Check if we have enough energy to use this card
+	Creature* attacker = _cardBoard.at(attackerIndex);
+	if (attacker->getEnergyCost() > _energy)
+	{
+		sendValueToClient(_socketToClient, TransferType::GAME_NOT_ENOUGH_ENERGY);
+		return;
+	}
+	_energy -= attacker->getEnergyCost();
+
 	if (_constraints.getConstraint(PC_TEMP_CREATURE_ATTACK_LIMIT) == _turnData.creatureAttacks)
 		response << TransferType::FAILURE;
 	else
 	{
-		Creature* attacker = _cardBoard.at(attackerIndex);
 		if (victimIndex<0)
 			_opponent->applyEffect(attacker, {PE_CHANGE_HEALTH, -attacker->getAttack()}); //no forced attacks on opponent
 		else
@@ -464,6 +474,27 @@ void Player::sendCurrentHealth()
 }
 
 /*--------------------------- PRIVATE */
+void Player::loadCardDeck(int chosenDeck)
+{
+	//DATABASE: request chosen deck for Card Creation
+	std::vector<Card* > loadedCards;
+    for (int i=0; i<10; i++)
+    {
+		CreatureData creat = ALL_CREATURES[i];
+        loadedCards.push_back(new Creature(i, creat.cost, creat.attack, creat.health, creat.shield, creat.shieldType, creat.effects));
+    }
+    for (int i=0; i<10; i++)
+    {
+        SpellData spell = ALL_SPELLS[i];
+        loadedCards.push_back(new Spell(i+10, spell.cost, spell.effects));
+    }
+    std::shuffle(loadedCards.begin(), loadedCards.end(), _engine);
+    for (int i=0; i<20; i++)
+    {
+        _cardDeck.push(loadedCards.at(i));
+    }
+}
+
 void Player::exploitCardEffects(Card* usedCard)
 {
 	std::vector<EffectParamsCollection> effects = usedCard->getEffects();
@@ -618,6 +649,26 @@ void Player::sendIDsFromVector(TransferType type, const std::vector<CardType *>&
 		cardIds[i] = vect[i]->getID();
 	packet << cardIds;
 	_specialSocketToClient.send(packet);
+}
+
+void Player::sendCreatureDataFromVector(TransferType type, const std::vector<Creature*>& vect)
+{
+    //sf::Packet packet;
+    //packet << static_cast<sf::Uint32>(vect.size()); //useful ?
+	std::vector<BoardCreatureData> boardCreatures;
+	BoardCreatureData data;
+	for (int i=0; i<vect.size(); i++)
+	{
+        Creature& creat = *vect.at(i);
+        data.id 	= creat.getID();
+		data.attack = creat.getAttack();
+		data.health = creat.getHealth();
+		data.shield = creat.getShield();
+		data.shieldType = creat.getShieldType();
+        boardCreatures.push_back(data);
+	}
+	//packet << boardCreatures;
+	//_specialSocketToClient.send(packet);
 }
 
 //////////

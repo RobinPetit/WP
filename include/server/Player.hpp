@@ -11,7 +11,8 @@
 #include "server/Card.hpp"
 #include "server/Spell.hpp"
 #include "server/Constraints.hpp"
-#include "server/CardData.hpp"
+#include "common/CardData.hpp"
+#include "common/GameData.hpp"
 #include "common/sockets/TransferType.hpp"
 // SFML headers
 #include <SFML/Network/TcpSocket.hpp>
@@ -112,6 +113,7 @@ private:
 	void changeHealth(const EffectParamsCollection& args);
 
 	/// Other private methods
+	void loadCardDeck(int chosenDeck);
 	void exploitCardEffects(Card* usedCard);
 	void setTeamConstraint(const Card* usedCard, const EffectParamsCollection& effectArgs);
 
@@ -138,7 +140,7 @@ private:
 
 	template <typename CardType>
 	void sendIDsFromVector(TransferType type, const std::vector<CardType *>& vect);
-
+	void sendCreatureDataFromVector(TransferType type, const std::vector<Creature*>& vect);
 	void sendValueToClient(sf::TcpSocket& socket, TransferType value);
 };
 

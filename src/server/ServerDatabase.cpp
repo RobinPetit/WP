@@ -1,6 +1,8 @@
 #include "server/ServerDatabase.hpp"
+#include "common/Identifiers.hpp"
 
 #include <cassert>
+#include <cstring>
 
 #define AUTO_QUERY_LENGTH -1
 
@@ -34,6 +36,39 @@ std::string ServerDatabase::getLogin(const int userId)
 		throw std::runtime_error("ERROR userId not found");
 
 	return reinterpret_cast<const char *>(sqlite3_column_text(_loginStmt, 0));
+}
+
+std::vector<Deck> ServerDatabase::getDecks(const int userId)
+{
+	sqlite3_reset(_decksStmt);
+	sqliteThrowExcept(sqlite3_bind_int(_decksStmt, 1, userId));
+
+	std::vector<Deck> decks;
+
+	while(sqliteThrowExcept(sqlite3_step(_decksStmt)) == SQLITE_ROW)
+	{
+		decks.emplace_back(Deck(reinterpret_cast<const char *>(sqlite3_column_text(_decksStmt, 0))));
+
+		for(size_t i {0}; i < Deck::size; ++i)
+			decks.back().changeCard(i, static_cast<cardId>(sqlite3_column_int(_decksStmt, i + 1)));
+	}
+
+	return decks;
+}
+
+CardsCollection ServerDatabase::getCardsCollection(const int userId)
+{
+	sqlite3_reset(_cardsCollectionStmt);
+	sqliteThrowExcept(sqlite3_bind_int(_cardsCollectionStmt, 1, userId));
+
+	CardsCollection cards;
+
+	while(sqliteThrowExcept(sqlite3_step(_cardsCollectionStmt)) == SQLITE_ROW)
+	{
+		cards.addCard(sqlite3_column_int(_cardsCollectionStmt, 0));
+	}
+
+	return cards;
 }
 
 Ladder ServerDatabase::getLadder()
@@ -108,39 +143,6 @@ bool ServerDatabase::isFriendshipRequestSent(const int from, const int to)
 	return sqliteThrowExcept(sqlite3_step(_isFriendshipRequestSentStmt)) == SQLITE_ROW;
 }
 
-CardsCollection ServerDatabase::getCardsCollection(const int userId)
-{
-	sqlite3_reset(_cardsCollectionStmt);
-	sqliteThrowExcept(sqlite3_bind_int(_cardsCollectionStmt, 1, userId));
-
-	CardsCollection cards;
-
-	while(sqliteThrowExcept(sqlite3_step(_cardsCollectionStmt)) == SQLITE_ROW)
-	{
-		cards.addCard(sqlite3_column_int(_cardsCollectionStmt, 0));
-	}
-
-	return cards;
-}
-
-std::vector<Deck> ServerDatabase::getDecks(const int userId)
-{
-	sqlite3_reset(_decksStmt);
-	sqliteThrowExcept(sqlite3_bind_int(_decksStmt, 1, userId));
-
-	std::vector<Deck> decks;
-
-	while(sqliteThrowExcept(sqlite3_step(_decksStmt)) == SQLITE_ROW)
-	{
-		decks.emplace_back(Deck(reinterpret_cast<const char *>(sqlite3_column_text(_decksStmt, 0))));
-
-		for(size_t i {0}; i < Deck::size; ++i)
-			decks.back().changeCard(i, static_cast<ClientCard::ID>(sqlite3_column_int(_decksStmt, i + 1)));
-	}
-
-	return decks;
-}
-
 void ServerDatabase::createDeck(const int userId, const Deck& deck)
 {
 	sqlite3_reset(_createDeckStmt);
@@ -184,7 +186,7 @@ bool ServerDatabase::areIdentifiersValid(const std::string& login, const std::st
 	sqlite3_reset(_areIdentifiersValidStmt);
 	sqliteThrowExcept(sqlite3_bind_text(_areIdentifiersValidStmt, 1, login.c_str(), AUTO_QUERY_LENGTH,
 	                                    SQLITE_TRANSIENT));
-	sqliteThrowExcept(sqlite3_bind_blob(_areIdentifiersValidStmt, 2, password.c_str(), sizeof(password.c_str()),
+	sqliteThrowExcept(sqlite3_bind_blob(_areIdentifiersValidStmt, 2, password.c_str(), std::strlen(password.c_str()),
 	                                    SQLITE_TRANSIENT));
 
 	return sqliteThrowExcept(sqlite3_step(_areIdentifiersValidStmt)) == SQLITE_ROW;
@@ -202,7 +204,7 @@ void ServerDatabase::registerUser(const std::string& login, const std::string& p
 {
 	sqlite3_reset(_registerUserStmt);
 	sqliteThrowExcept(sqlite3_bind_text(_registerUserStmt, 1, login.c_str(), AUTO_QUERY_LENGTH, SQLITE_TRANSIENT));
-	sqliteThrowExcept(sqlite3_bind_blob(_registerUserStmt, 2, password.c_str(), sizeof(password.c_str()),
+	sqliteThrowExcept(sqlite3_bind_blob(_registerUserStmt, 2, password.c_str(), std::strlen(password.c_str()),
 	                                    SQLITE_TRANSIENT));
 
 	assert(sqliteThrowExcept(sqlite3_step(_registerUserStmt)) == SQLITE_DONE);

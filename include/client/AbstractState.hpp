@@ -36,6 +36,8 @@ class AbstractState
 		/// \param input The characters that the user typed (an entire line).
 		virtual void handleInput(const std::string& input);
 
+		static std::size_t askForNumber(std::size_t from, std::size_t to);
+
 	protected:
 		/// Add a new state to the stack.
 		/// \tparam The type of state to create.
@@ -61,7 +63,7 @@ class AbstractState
 		/// something just before the call to clear, so that the user has not to
 		/// scroll up in order to see what's just displayed.
 		static void waitForEnter();
-		
+
 		Client& _client;
 
 	private:

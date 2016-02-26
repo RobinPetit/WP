@@ -109,14 +109,14 @@ std::size_t DecksManagementState::askForReplacedCard(std::size_t deckIndex)
 	return askForNumber(0, Deck::size + 1);
 }
 
-ClientCard::ID DecksManagementState::askForReplacingCard(std::size_t deckIndex)
+cardId DecksManagementState::askForReplacingCard(std::size_t deckIndex)
 {
 	std::cout << "Content of your card collection:\n";
 	for(const auto& card : _cardsCollection)
 		std::cout << static_cast<std::size_t>(card) << ". " << card << "\n";
 	std::cout << "Which card do you want to put in you deck? ";
 	// \TODO Replace 666 by the number of different cards in the game
-	ClientCard::ID replacingCard{static_cast<ClientCard::ID>(askForNumber(0, 666))};
+	cardId replacingCard{static_cast<cardId>(askForNumber(0, 666))};
 
 	// Check if the given card is valid
 	if(not _cardsCollection.contains(replacingCard))
@@ -172,13 +172,4 @@ void DecksManagementState::backMainMenu()
 	stackPop();
 }
 
-std::size_t DecksManagementState::askForNumber(std::size_t from, std::size_t to)
-{
-	std::string input;
-	std::getline(std::cin, input);
-	// Get a number from the user input
-	const std::size_t intInput{std::stoul(input)};
-	if(intInput < from or intInput >= to)
-		throw std::out_of_range("Index out of range.");
-	return intInput;
-}
+

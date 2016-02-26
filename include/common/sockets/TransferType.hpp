@@ -47,6 +47,9 @@ enum class TransferType : sf::Uint32
 	/// Used when the server tells the player the game is setup correctly and can begin
 	GAME_STARTING,
 
+	/// Used when the game starts and the client gives to the server the ID of the deck he is going to use
+	GAME_PLAYER_GIVE_DECK_ID,
+
 	/// Used when the server tells the client its turn begins
 	GAME_PLAYER_ENTER_TURN,
 

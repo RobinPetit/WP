@@ -11,9 +11,9 @@ std::function<void(Creature&, const EffectParamsCollection&)> Creature::_effectM
 	&Creature::changeShield
 };
 
-Creature::Creature(int cost, int attack, int health, int shield, int shieldType,
+Creature::Creature(cardId cardIdentifier, int cost, int attack, int health, int shield, int shieldType,
 					std::vector<EffectParamsCollection> effects):
-	Card(cost, effects),
+	Card(cardIdentifier, cost, effects),
 	_attack(attack),
 	_health(health),
 	_shield(shield),
@@ -113,6 +113,21 @@ void Creature::applyEffect(EffectParamsCollection effectArgs)
 int Creature::getAttack()
 {
 	return _attack;
+}
+
+int Creature::getHealth()
+{
+	return _health;
+}
+
+int Creature::getShield()
+{
+	return _shield;
+}
+
+int Creature::getShieldType()
+{
+	return _shieldType;
 }
 
 int Creature::getPersonalConstraint(int constraintID) const

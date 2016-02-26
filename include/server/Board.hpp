@@ -6,7 +6,7 @@
 #include "server/Card.hpp"
 #include "server/Creature.hpp"
 #include "server/Constraints.hpp"
-#include "server/CardData.hpp"
+#include "common/CardData.hpp"
 // SFML headers
 #include <SFML/Network/TcpSocket.hpp>
 
