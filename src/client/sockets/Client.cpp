@@ -144,17 +144,22 @@ void Client::initListener()
 
 void Client::quit()
 {
-	if(!_isConnected)
-		return;
-	// tell the server that the player leaves
-	sf::Packet packet;
-	packet << TransferType::PLAYER_DISCONNECTION;
-	_socket.send(packet);
+	// If the connection is well established with the server
+	if(_isConnected)
+	{
+		// tell the server that the player leaves
+		sf::Packet packet;
+		packet << TransferType::PLAYER_DISCONNECTION;
+		_socket.send(packet);
+	}
+	// If a connection failed, the socket is connected but the server
+	// no longer listen to it, so quit must be called even if _isConnected is false
 	_socket.disconnect();
 	// internal part
 	_inGame.store(false);
 	_threadLoop.store(false);
-	_listenerThread.join();
+	if(_listenerThread.joinable())
+		_listenerThread.join();
 	_isConnected = false;
 }
 

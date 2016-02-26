@@ -73,8 +73,9 @@ sf::Packet& operator <<(sf::Packet& packet, const CardsCollection& cardCollectio
 	{
 		const cardId card{*it};
 		// If this is a base card not already processed
-		if(card > 0 and static_cast<std::size_t>(card) < baseCardsAlreadyProcessed.size() and not baseCardsAlreadyProcessed[card])
-			baseCardsAlreadyProcessed[card] = true;
+		if(card > 0 and static_cast<std::size_t>(card) < baseCardsAlreadyProcessed.size()
+		   and not baseCardsAlreadyProcessed[static_cast<std::array<bool, Deck::size+1>::size_type>(card)])
+			baseCardsAlreadyProcessed[static_cast<std::array<bool, Deck::size+1>::size_type>(card)] = true;
 		// else we can safely add it to the packet;
 		else
 			packet << static_cast<sf::Int64>(card);
@@ -92,5 +93,52 @@ sf::Packet& operator >>(sf::Packet& packet, CardsCollection& cardCollection)
 		packet >> card;
 		cardCollection.addCard(static_cast<cardId>(card));
 	}
+	return packet;
+}
+
+sf::Packet& operator <<(sf::Packet& packet, const BoardCreatureData& data)
+{
+	return packet << static_cast<sf::Int64>(data.id)
+	              << static_cast<sf::Int64>(data.health)
+	              << static_cast<sf::Int64>(data.attack)
+	              << static_cast<sf::Int64>(data.shield)
+	              << data.shieldType;
+}
+
+sf::Packet& operator >>(sf::Packet& packet, BoardCreatureData& data)
+{
+	sf::Int64 id, health, attack, shield;
+	packet >> id >> health >> attack >> shield >> data.shieldType;
+	data.id = static_cast<cardId>(id);
+	data.health = static_cast<int>(health);
+	data.attack = static_cast<int>(attack);
+	data.shield = static_cast<int>(shield);
+	return packet;
+}
+
+sf::Packet& operator <<(sf::Packet& packet, const CardToSelect& card)
+{
+	packet << static_cast<sf::Uint32>(card);
+	return packet;
+}
+
+sf::Packet& operator >>(sf::Packet& packet, CardToSelect& card)
+{
+	sf::Uint32 card32;
+	packet >> card32;
+	card = static_cast<CardToSelect>(card32);
+	return packet;
+}
+
+sf::Packet& operator <<(sf::Packet& packet, const CardData& data)
+{
+	return packet << static_cast<sf::Int64>(data.id);
+}
+
+sf::Packet& operator >>(sf::Packet& packet, CardData& data)
+{
+	sf::Int64 id;
+	packet >> id;
+	data.id = static_cast<cardId>(id);
 	return packet;
 }

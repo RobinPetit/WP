@@ -12,12 +12,12 @@
 
 constexpr std::chrono::seconds GameThread::_turnTime;
 
-GameThread::GameThread(Player::ID player1ID, Player::ID player2ID):
+GameThread::GameThread(ServerDatabase& database, userId player1ID, userId player2ID):
 	std::thread(),
 	_player1ID(player1ID),
 	_player2ID(player2ID),
 	_running(false),
-	_gameBoard({player1ID, _socketPlayer1, _specialOutputSocketPlayer1}, {player2ID, _socketPlayer2, _specialOutputSocketPlayer2}),
+	_gameBoard(database, {player1ID, _socketPlayer1, _specialOutputSocketPlayer1}, {player2ID, _socketPlayer2, _specialOutputSocketPlayer2}),
 	_isSynchroWithBoard(_player1ID == _gameBoard.getCurrentPlayerID())
 {
 
@@ -54,7 +54,7 @@ void GameThread::setSocket(sf::TcpSocket& socket, sf::TcpSocket& specialSocket, 
 
 /////////// ease of implementation
 
-GameThread::PlayerNumber GameThread::PlayerFromID(const Player::ID ID)
+GameThread::PlayerNumber GameThread::PlayerFromID(const userId ID)
 {
 	return ((ID == _player1ID && _isSynchroWithBoard) ||
 	        (ID == _player2ID && !_isSynchroWithBoard))
@@ -62,12 +62,12 @@ GameThread::PlayerNumber GameThread::PlayerFromID(const Player::ID ID)
 	         : PlayerNumber::PLAYER2;
 }
 
-sf::TcpSocket& GameThread::getSocketFromID(const Player::ID ID)
+sf::TcpSocket& GameThread::getSocketFromID(const userId ID)
 {
 	return PlayerFromID(ID) == PlayerNumber::PLAYER1 ? _socketPlayer1 : _socketPlayer2;
 }
 
-sf::TcpSocket& GameThread::getSpecialSocketFromID(const Player::ID ID)
+sf::TcpSocket& GameThread::getSpecialSocketFromID(const userId ID)
 {
 	return PlayerFromID(ID) == PlayerNumber::PLAYER1 ? _specialOutputSocketPlayer1 : _specialOutputSocketPlayer2;
 }
@@ -77,18 +77,23 @@ void GameThread::receiveDecks()
 	std::cout << "waiting for decks\n";
 	sf::Packet deckPacket;
 	TransferType type;
+
 	_socketPlayer1.receive(deckPacket);
 	deckPacket >> type;
-	if(type != TransferType::GAME_PLAYER_GIVE_DECK_ID){
-		std::cout << '\t' << static_cast<sf::Uint32>(type) << '\n';
-		throw std::runtime_error("Unable to get player 1's deck");}
-	deckPacket >> _player1DeckIdx;
+	if(type != TransferType::GAME_PLAYER_GIVE_DECK_NAMES)
+		throw std::runtime_error("Unable to get player 1's deck");
+	deckPacket >> _player1DeckName;
+
 	_socketPlayer2.receive(deckPacket);
 	deckPacket >> type;
-	if(type != TransferType::GAME_PLAYER_GIVE_DECK_ID)
+	if(type != TransferType::GAME_PLAYER_GIVE_DECK_NAMES)
 		throw std::runtime_error("Unable to get player 2's deck");
-	deckPacket >> _player2DeckIdx;
-	// TODO: have the content of the deck from the index
+	deckPacket >> _player2DeckName;
+
+	if(_isSynchroWithBoard)
+		_gameBoard.givePlayersDecksNames(_player1DeckName, _player2DeckName);
+	else
+		_gameBoard.givePlayersDecksNames(_player2DeckName, _player1DeckName);
 }
 
 void GameThread::startGame(const ClientInformations& player1, const ClientInformations& player2)
@@ -164,4 +169,3 @@ GameThread::~GameThread()
 	interruptGame();
 	_timerThread.join();
 }
-

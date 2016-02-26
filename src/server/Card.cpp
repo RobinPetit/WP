@@ -1,8 +1,8 @@
 #include "server/Card.hpp"
 
 Card::Card(cardId cardIdentifier, int cost, std::vector<EffectParamsCollection> effects):
-	_cardID(cardIdentifier),
 	_cost(cost),
+	_cardID(cardIdentifier),
 	_effects(effects)
 {
 

@@ -2,8 +2,10 @@
 #include "server/Board.hpp"
 // std-C++ headers
 #include <random>
+#include <array>
 
-Board::Board(const PlayerInformations& player1, const PlayerInformations& player2)
+Board::Board(ServerDatabase& database, const PlayerInformations& player1, const PlayerInformations& player2):
+	_database(database)
 {
 	_activePlayer = new Player(player1.id, player1.socket, player1.specialSocket);
 	_passivePlayer = new Player(player2.id, player2.socket, player2.specialSocket);
@@ -15,7 +17,7 @@ Board::Board(const PlayerInformations& player1, const PlayerInformations& player
 	if(std::bernoulli_distribution(0.5)(engine))
 		std::swap(_activePlayer, _passivePlayer);
 
-	_activePlayer->beginGame(true); //TODO: these have to request deck selection from player
+	_activePlayer->beginGame(true);
 	_passivePlayer->beginGame(false);
 }
 
@@ -46,14 +48,20 @@ void Board::quitGame()
 	//NETWORK: PLAYER_QUIT_GAME
 }
 
-Player::ID Board::getCurrentPlayerID()
+userId Board::getCurrentPlayerID()
 {
 	return _activePlayer->getID();
 }
 
-Player::ID Board::getWaitingPlayerID()
+userId Board::getWaitingPlayerID()
 {
 	return _passivePlayer->getID();
+}
+
+void Board::givePlayersDecksNames(const std::string& player1DeckName, const std::string& player2DeckName)
+{
+	_activePlayer->setDeck(_database.getDeckByName(_activePlayer->getID(), player1DeckName));
+	_passivePlayer->setDeck(_database.getDeckByName(_passivePlayer->getID(), player2DeckName));
 }
 
 /*------------------------------ PLAYER AND CARD INTERFACE */
@@ -67,51 +75,55 @@ void Board::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 	}
 	catch (std::out_of_range)
 	{
-		//NETWORK: INPUT_ERROR
+		//SERVER: CARD ERROR
 		return;
 	}
 
 	switch (subject)
 	{
 		case PLAYER_SELF:	//passive player
+			_activePlayer->askUserToSelectCards({});
 			_activePlayer->applyEffect(usedCard, effectArgs);
 			break;
 
 		case PLAYER_OPPO:	//active player
+			_activePlayer->askUserToSelectCards({});
 			_passivePlayer->applyEffect(usedCard, effectArgs);
 			break;
 		case CREATURE_SELF_THIS:	//active player's creature that was used
-			{
-				Creature* usedCreature = dynamic_cast<Creature*>(usedCard);
-				_activePlayer->applyEffectToCreature(usedCreature, effectArgs);
-			}
+		{
+			_activePlayer->askUserToSelectCards({});
+			Creature* usedCreature = dynamic_cast<Creature*>(usedCard);
+			_activePlayer->applyEffectToCreature(usedCreature, effectArgs);
+		}
 			break;
 		case CREATURE_SELF_INDX:	//active player's creature at given index
-			//TODO: NETWORK : ASK_FOR_INDEX (_activePlayer)
-			_activePlayer->applyEffectToCreature(usedCard, effectArgs, _activePlayer->requestSelfBoardIndex());
+			_activePlayer->applyEffectToCreature(usedCard, effectArgs, _activePlayer->askUserToSelectCards({CardToSelect::SELF_BOARD}));
 			break;
 
 		case CREATURE_SELF_RAND:	//active player's creature at random index
-			_activePlayer->applyEffectToCreature(usedCard, effectArgs, _activePlayer->getRandomBoardIndex());
+			_activePlayer->askUserToSelectCards({});
+			_activePlayer->applyEffectToCreature(usedCard, effectArgs, _activePlayer->getRandomBoardIndexes({CardToSelect::SELF_BOARD}));
 			break;
 
 		case CREATURE_SELF_TEAM:	//active player's team of creatures
+			_activePlayer->askUserToSelectCards({});
 			_activePlayer->applyEffectToCreatureTeam(usedCard, effectArgs);
 			break;
 
 		case CREATURE_OPPO_INDX:	//passive player's creature at given index
-			//TODO: NETWORK : ASK_FOR_INDEX (_activePlayer)
-			_passivePlayer->applyEffectToCreature(usedCard, effectArgs, _activePlayer->requestOppoBoardIndex());
+			_passivePlayer->applyEffectToCreature(usedCard, effectArgs, _activePlayer->askUserToSelectCards({CardToSelect::OPPO_BOARD}));
 			break;
 
 		case CREATURE_OPPO_RAND:	//passive player's creature at random index
-			_passivePlayer->applyEffectToCreature(usedCard, effectArgs, _activePlayer->getRandomBoardIndex());
+			_activePlayer->askUserToSelectCards({});
+			_passivePlayer->applyEffectToCreature(usedCard, effectArgs, _activePlayer->getRandomBoardIndexes({CardToSelect::OPPO_BOARD}));
 			break;
 
 		case CREATURE_OPPO_TEAM:	//passive player's team of creatures
+			_activePlayer->askUserToSelectCards({});
 			_passivePlayer->applyEffectToCreatureTeam(usedCard, effectArgs);
 			break;
 	}
 	throw std::runtime_error("Effect subject not valid");
 }
-

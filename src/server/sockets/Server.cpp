@@ -22,8 +22,7 @@ Server::Server():
 	_waitingPlayer(),
 	_isAPlayerWaiting(false),
 	_quitPrompt(":QUIT"),
-	_database(),
-	_last_id(0)
+	_database()
 {
 }
 
@@ -88,20 +87,24 @@ void Server::connectUser(sf::Packet& connectionPacket, std::unique_ptr<sf::TcpSo
 			throw std::runtime_error(playerName + " tried to connect to the server but is already connected.");
 		}
 
-		if(not _database.areIdentifiersValid(playerName, password))
+		// FIXME : this method call returns always false _database.areIdentifiersValid(playerName, password))
+		if(not _database.isRegistered(playerName))
 		{
 			connectionPacket << TransferType::GAME_WRONG_IDENTIFIERS;
 			throw std::runtime_error(playerName + " gives wrong identifiers when trying to connect.");
 		}
 		std::cout << "New player connected: " << playerName << std::endl;
 		connectionPacket << TransferType::ACKNOWLEDGE;
-		// Send a response
+		// Send a response,
 		client->send(connectionPacket);
 		// add this client to the selector so that its receivals are handled properly
-		// (be sure that this line is before the next, otherwise we get a segfault)
+		// (be sure that this line is before the next, otherwise we get a segfault),
 		_socketSelector.add(*client);
+		// ask the database for the ID of the user (may throw, so keep it in
+		// a separate line from the insertion in the map),
+		const userId id{_database.getUserId(playerName)};
 		// and add the new socket to the clients
-		_clients[playerName] = {std::move(client), clientPort, ++_last_id};
+		_clients[playerName] = {std::move(client), clientPort, id};
 	}
 	catch(const std::runtime_error& e)
 	{
@@ -341,7 +344,7 @@ void Server::startGame(std::size_t idx)
 	_accessRunningGames.lock();
 	GameThread& selfThread{*_runningGames[idx]};
 	_accessRunningGames.unlock();
-	const auto& finderById = [](unsigned playerId)
+	const auto& finderById = [](userId playerId)
 	{
 		return [playerId](const std::pair<const std::string, ClientInformations>& it)
 		{
@@ -354,10 +357,10 @@ void Server::startGame(std::size_t idx)
 	selfThread.startGame(player1->second, player2->second);
 }
 
-void Server::createGame(unsigned ID1, unsigned ID2)
+void Server::createGame(userId ID1, userId ID2)
 {
 	_accessRunningGames.lock();
-	_runningGames.emplace_back(new GameThread(ID1, ID2, &Server::startGame, this, _runningGames.size()));
+	_runningGames.emplace_back(new GameThread(_database, ID1, ID2, &Server::startGame, this, _runningGames.size()));
 	_accessRunningGames.unlock();
 }
 
@@ -437,8 +440,8 @@ void Server::handleFriendshipRequestResponse(const _iterator& it, sf::Packet& tr
 	transmission.clear();
 	try
 	{
-		const Database::userId askerId{_database.getUserId(askerName)};
-		const Database::userId askedId{_database.getUserId(it->first)};
+		const userId askerId{_database.getUserId(askerName)};
+		const userId askedId{_database.getUserId(it->first)};
 		if(not _database.isFriendshipRequestSent(askerId, askedId))
 		{
 			transmission << TransferType::NOT_EXISTING_FRIEND;
@@ -550,7 +553,7 @@ void Server::handleDeckEditing(const _iterator& it, sf::Packet& transmission)
 	transmission.clear();
 	try
 	{
-		const Database::userId id{_database.getUserId(it->first)};
+		const userId id{_database.getUserId(it->first)};
 		_database.editDeck(id, editedDeck);
 		transmission << TransferType::ACKNOWLEDGE;
 	}
@@ -569,7 +572,7 @@ void Server::handleDeckCreation(const _iterator& it, sf::Packet& transmission)
 	transmission.clear();
 	try
 	{
-		const Database::userId id{_database.getUserId(it->first)};
+		const userId id{_database.getUserId(it->first)};
 		_database.createDeck(id, newDeck);
 		transmission << TransferType::ACKNOWLEDGE;
 	}
@@ -588,7 +591,7 @@ void Server::handleDeckDeletion(const _iterator& it, sf::Packet& transmission)
 	transmission.clear();
 	try
 	{
-		const Database::userId id{_database.getUserId(it->first)};
+		const userId id{_database.getUserId(it->first)};
 		_database.deleteDeckByName(id, deletedDeckName);
 		transmission << TransferType::ACKNOWLEDGE;
 	}
