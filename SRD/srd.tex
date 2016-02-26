@@ -302,21 +302,37 @@ Baudoux Nicolas, Berrewaerts Jonathan, Gueniffrey Stanislas,  Muranovic Allan, P
 			Un effet plus complexe est également un effet direct, seulement, il va modifier la liste de contraintes de la partie et c'est cette liste qui va permettre d'appliquer des effets sur la durée, ou des effets qui respectent certaines conditions (applique tel effet tant que tel créature est en vie par exemple).
 
 		\newpage
-		\subsubsection{Diagramme de classe du serveur et de sa base de donnée}
-		\begin{center}\includegraphics[scale=0.5]{Server.png}\end{center}
-			Ici, la structure est un peu plus complexe : Le serveur est composé d'une base de donnée en SQL qui est héritée par une base de donnée utilisable par l'application serveur (en c++ cette fois).
-
-			C'est ce serveur qui va naturellement tout gérer, des parties, jusqu'aux requêtes d'amis en passant
-			par la gestion/modification des decks/de compte. Tout sera stocké de son côté dans la base de données.
-			Le client ne possedera aucune information, il est obligé de passer par les serveur quel que soit son intention.
-
-		\newpage
-		\subsubsection{Diagramme des classes intervenant dans une partie (simplifié)}
+		\subsection{Diagramme des classes intervenant dans une partie (simplifié)}
 		\begin{center}\includegraphics[scale=0.5]{Game.png}\end{center}
 			Il est à noter que c'est un diagramme de classe, et non d'activités, il regroupe juste les plus grosses classes intervenant dans la partie,
 			et non pas leur lien/fonctionnement entre elles.
-			Pour qu'une partie puisse avoir lieu, il nous faut 2 joueurs connectés au serveur qui sera chargé de réguler le bon fonctionnement de la partie.
+			Pour qu'une partie puisse avoir lieu, il nous faut 2 joueurs connecté au serveur qui s'occupera lui-même de modifier le plateau de jeu.
 
+		\newpage
+		\subsubsection{Diagramme des classes nécessaires au menu en console}
+			Toutes les méthodes servant à une expérience de jeu optimal sont implémentées, mais en console.
+			L'interface graphique arrive à la prochaine étape du développement de ce projet, tout ce qui gère le fonctionnement du jeu est néanmoins présent.
+
+			Enfin, voici les différentes classes représentant le menu, le tout est divisé en 2 parties pour plus de clarté.
+
+			\subsubsection{Première moitié : Menu et fonctionnalités principales}
+			\begin{center}\includegraphics[scale=0.5]{stack1.png}\end{center}
+				C'est au moyen de stack que nous avons implémenté un menu fluide, efficace et facile d'utilisation.
+
+				En effet, pour aller plus loin dans le menu, il suffit de "push" notre choix, et pour un retour en arrière il suffit de faire un "pop", et le tour est joué. 
+
+				Ainsi, pour le menu et toutes ses fonctionnalités, que ce soit au niveau de la gestion des amis jusqu'au menu principal, 
+				nous avons une classe abstraite héritée (\textbf{AbstractState}) ainsi qu'une utilisation d'une deuxième classe (\textbf{StateStack}). C'est grâce à ces deux dernière que tout 
+				implémentation supplémentaire dans le menu ou autre est possible.
+
+			\newpage
+			\subsubsection{Deuxième moitié: fonctionnalités plus avancées}
+			\begin{center}\includegraphics[scale=0.5]{stack2.png}\end{center}
+				Ici, nous nous occupons un peu plus de l'expérience de jeu. Nous avons un gestionnaire de cartes, un gestionnaire de deck ainsi qu'un classement des joueurs et tout ce qui est nécessaire au bon fonctionnement d'une partie.
+
+				La seule particularité de cette partie réside dans la classe \textbf{GameState} qui comporte des mutex, des valeurs atomiques ainsi que des entrées non bloquantes.
+				Etant données qu'il y aura de nombreuses entrées/sorties au niveau de cette classe-là, ces différents éléments permettront de ne pas se marcher sur les pieds lors des accès en mémoire de ses attributs.
+				
 \newpage
 
 \section{Index}
