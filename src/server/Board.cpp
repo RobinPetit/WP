@@ -4,10 +4,11 @@
 #include <random>
 #include <array>
 
-Board::Board(const PlayerInformations& player1, const PlayerInformations& player2)
+Board::Board(ServerDatabase& database, const PlayerInformations& player1, const PlayerInformations& player2):
+	_database(database)
 {
-	_activePlayer = new Player(player1.id, player1.socket, player1.specialSocket);
-	_passivePlayer = new Player(player2.id, player2.socket, player2.specialSocket);
+	_activePlayer = new Player(_database, player1.id, player1.socket, player1.specialSocket);
+	_passivePlayer = new Player(_database, player2.id, player2.socket, player2.specialSocket);
 	// We make sure players know their opponents
 	_activePlayer->setOpponent(_passivePlayer);
 	_passivePlayer->setOpponent(_activePlayer);

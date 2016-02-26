@@ -8,6 +8,7 @@
 #include "server/Board.hpp"
 #include "server/ClientInformations.hpp"
 #include "common/Identifiers.hpp"  // userId
+#include "server/ServerDatabase.hpp"
 // SFML headers
 #include <SFML/Network/TcpSocket.hpp>
 
@@ -15,11 +16,11 @@ class GameThread final : public std::thread
 {
 public:
 	/// Constructor
-	GameThread(userId player1ID, userId player2ID);
+	GameThread(ServerDatabase& database, userId player1ID, userId player2ID);
 
 	/// Constructor starting a thread
 	template <class F, class ...Args>
-	explicit GameThread(userId player1ID, userId player2ID, F&& f, Args&&... args);
+	explicit GameThread(ServerDatabase& database, userId player1ID, userId player2ID, F&& f, Args&&... args);
 
 	/// Functions which stops the running thread (abortion)
 	void interruptGame();
@@ -73,12 +74,12 @@ private:
 ///////// template code
 
 template <typename Function, class... Args>
-GameThread::GameThread(userId player1ID, userId player2ID, Function&& function, Args&&... args):
+GameThread::GameThread(ServerDatabase& database, userId player1ID, userId player2ID, Function&& function, Args&&... args):
 	std::thread(function, args...),
 	_player1ID(player1ID),
 	_player2ID(player2ID),
 	_running(true),
-	_gameBoard({player1ID, _socketPlayer1, _specialOutputSocketPlayer1}, {player2ID, _socketPlayer2, _specialOutputSocketPlayer2}),
+	_gameBoard(database, {player1ID, _socketPlayer1, _specialOutputSocketPlayer1}, {player2ID, _socketPlayer2, _specialOutputSocketPlayer2}),
 	_isSynchroWithBoard(_player1ID == _gameBoard.getCurrentPlayerID())
 {
 

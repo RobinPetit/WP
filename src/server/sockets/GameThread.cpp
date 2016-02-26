@@ -12,12 +12,12 @@
 
 constexpr std::chrono::seconds GameThread::_turnTime;
 
-GameThread::GameThread(userId player1ID, userId player2ID):
+GameThread::GameThread(ServerDatabase& database, userId player1ID, userId player2ID):
 	std::thread(),
 	_player1ID(player1ID),
 	_player2ID(player2ID),
 	_running(false),
-	_gameBoard({player1ID, _socketPlayer1, _specialOutputSocketPlayer1}, {player2ID, _socketPlayer2, _specialOutputSocketPlayer2}),
+	_gameBoard(database, {player1ID, _socketPlayer1, _specialOutputSocketPlayer1}, {player2ID, _socketPlayer2, _specialOutputSocketPlayer2}),
 	_isSynchroWithBoard(_player1ID == _gameBoard.getCurrentPlayerID())
 {
 

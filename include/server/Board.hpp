@@ -7,6 +7,7 @@
 #include "server/Creature.hpp"
 #include "server/Constraints.hpp"
 #include "common/CardData.hpp"
+#include "server/ServerDatabase.hpp"
 // SFML headers
 #include <SFML/Network/TcpSocket.hpp>
 
@@ -22,7 +23,7 @@ class Board
 {
 public:
 	/// Constructor
-	Board(const PlayerInformations& player1, const PlayerInformations& player2);
+	Board(ServerDatabase& database, const PlayerInformations& player1, const PlayerInformations& player2);
 
 	/// Destructor
 	~Board() = default;
@@ -40,6 +41,7 @@ public:
 	void applyEffect(Card* usedCard, EffectParamsCollection effect);
 
 private:
+	ServerDatabase& _database;
 	int _turn = 0;
 	Player *_activePlayer, *_passivePlayer;
 	bool turnCanEnd=false;
