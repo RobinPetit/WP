@@ -40,6 +40,7 @@ public:
 	std::vector<Deck> getDecks(const int userId);
 	void createDeck(const int userId, const Deck& deck);
 	void deleteDeckByName(const int userId, const std::string& deckName);
+	void editDeck(const int userId, const Deck& deck); // Deck should contains the deckId
 
 	bool areIdentifersValid(const std::string& login, const std::string& password);
 	bool isRegistered(const std::string& login);
@@ -70,11 +71,12 @@ private:
 	sqlite3_stmt * _areIdentifersValidStmt;
 	sqlite3_stmt * _createDeckStmt;
 	sqlite3_stmt * _deleteDeckByNameStmt;
+	sqlite3_stmt * _editDeckByNameStmt;
 
 	// `constexpr std::array::size_type size() const;`
 	// -> I consider this 15 as the definition of the variable, so it is not a magic number
 	// -> future uses have to be _statements.size() -> 15 is writed only one time
-	StatementsList<17> _statements
+	StatementsList<18> _statements
 	{
 		{
 			Statement {
@@ -170,6 +172,14 @@ private:
 				&_deleteDeckByNameStmt,
 				"DELETE FROM Deck "
 				"	WHERE owner == ?1 and name == ?2;"
+			},
+			Statement {
+				&_editDeckByNameStmt,
+				"UPDATE Deck "
+				"	SET card0 = ?2, card1 = ?3, card2 = ?4, card3 = ?5, card4 = ?6, card5 = ?7, card6 = ?8, "
+				"		card7 = ?9, card8 = ?10, card9 = ?11, card10 = ?12, card11 = ?13, card12 = ?14, card13 = ?15, "
+				"		card14 = ?16, card15 = ?17, card16 = ?18, card17 = ?19, card18 = ?20, card19 = ?21 "
+				"	WHERE owner == ?22 AND name == ?1;" // name <- ?1 because complete query should be `...SET name = ?1...`
 			}
 		}
 	};

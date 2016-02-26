@@ -165,6 +165,20 @@ void ServerDatabase::deleteDeckByName(const int userId, const std::string& deckN
 	assert(sqliteThrowExcept(sqlite3_step(_deleteDeckByNameStmt)) == SQLITE_DONE);
 }
 
+void ServerDatabase::editDeck(const int userId, const Deck& deck)
+{
+	sqlite3_reset(_editDeckByNameStmt);
+	sqliteThrowExcept(sqlite3_bind_text(_editDeckByNameStmt, 1, deck.getName().c_str(), AUTO_QUERY_LENGTH, SQLITE_TRANSIENT));
+
+	for(int card = 0; card < Deck::size; ++card)
+	{
+		sqliteThrowExcept(sqlite3_bind_int(_editDeckByNameStmt, card + 2, deck.getCard(card)));
+	}
+	sqliteThrowExcept(sqlite3_bind_int(_editDeckByNameStmt, 22, userId));
+	
+	assert(sqliteThrowExcept(sqlite3_step(_editDeckByNameStmt)) == SQLITE_DONE);
+}
+
 bool ServerDatabase::areIdentifersValid(const std::string& login, const std::string& password)
 {
 	sqlite3_reset(_areIdentifersValidStmt);
