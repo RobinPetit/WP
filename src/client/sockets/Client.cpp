@@ -71,15 +71,15 @@ void Client::sendConnectionToken(const std::string& password)
 	switch(response)
 	{
 	case TransferType::GAME_ALREADY_CONNECTED:
-		//TODO throw an exception rather than cout
 		throw std::runtime_error("you are already connected!");
 
 	case TransferType::GAME_WRONG_IDENTIFIERS:
 		throw std::runtime_error("invalid username or password.");
 
-	case TransferType::GAME_CONNECTION_OR_REGISTERING_OK:
+	case TransferType::ACKNOWLEDGE:
 		_isConnected = true;
 		updateFriends();
+		break;
 
 	default:
 		throw std::runtime_error("unidentified server response.");
@@ -105,7 +105,7 @@ void Client::sendRegisteringToken(const std::string& name, const std::string& pa
 	case TransferType::GAME_FAILED_TO_REGISTER:
 		throw std::runtime_error("the server failed to register your account.");
 
-	case TransferType::GAME_CONNECTION_OR_REGISTERING_OK:
+	case TransferType::ACKNOWLEDGE:
 		return;
 
 	default:
@@ -275,6 +275,10 @@ void Client::updateFriends()
 	packet << TransferType::PLAYER_ASKS_FRIENDS;
 	_socket.send(packet);
 	_socket.receive(packet);
+	TransferType responseHeader;
+	packet >> responseHeader;
+	if(responseHeader != TransferType::ACKNOWLEDGE)
+		throw std::runtime_error("unable to get friends list.");
 	// FriendsList packing has been defined in PacketOverload.hpp
 	_friends.clear();
 	packet >> _friends;
@@ -287,6 +291,10 @@ void Client::updateFriendshipRequests()
 	packet << TransferType::PLAYER_GETTING_FRIEND_REQUESTS;
 	_socket.send(packet);
 	_socket.receive(packet);
+	TransferType responseHeader;
+	packet >> responseHeader;
+	if(responseHeader != TransferType::ACKNOWLEDGE)
+		throw std::runtime_error("unable to get friendship requests list.");
 	_friendshipRequests.clear();
 	packet >> _friendshipRequests;
 }
@@ -304,11 +312,11 @@ void Client::sendFriendshipRequest(const std::string& name)
 	sf::Packet packet;
 	packet << TransferType::PLAYER_NEW_FRIEND << name;
 	_socket.send(packet);
-	// server acknowledges with PLAYER_ACKNOWLEDGE if request was correctly made and by NOT_EXISTING_FRIEND otherwise
+	// server acknowledges with ACKNOWLEDGE if request was correctly made and by NOT_EXISTING_FRIEND otherwise
 	_socket.receive(packet);
-	TransferType type;
-	packet >> type;
-	if(type != TransferType::PLAYER_ACKNOWLEDGE)
+	TransferType responseHeader;
+	packet >> responseHeader;
+	if(responseHeader != TransferType::ACKNOWLEDGE)
 		throw std::runtime_error("failed to send a request to " + name + ".");
 }
 
@@ -333,9 +341,9 @@ void Client::removeFriend(const std::string& name)
 	packet << name;
 	_socket.send(packet);
 	_socket.receive(packet);
-	TransferType type;
-	packet >> type;
-	if(type != TransferType::PLAYER_ACKNOWLEDGE)
+	TransferType responseHeader;
+	packet >> responseHeader;
+	if(responseHeader != TransferType::ACKNOWLEDGE)
 		throw std::runtime_error("failed to remove " + name + " from your friend list.");
 }
 
@@ -345,10 +353,12 @@ void Client::acceptFriendshipRequest(const std::string& name, bool accept)
 	packet << TransferType::PLAYER_RESPONSE_FRIEND_REQUEST << name << accept;
 	_socket.send(packet);
 	_socket.receive(packet);
-	TransferType type;
-	packet >> type;
-	if(type != TransferType::PLAYER_ACKNOWLEDGE)
-		throw std::runtime_error("failed to accept request from " + name + ".");
+	TransferType responseHeader;
+	packet >> responseHeader;
+	if(responseHeader == TransferType::NOT_EXISTING_FRIEND)
+		throw std::runtime_error("it seems that " + name + " does not exists.");
+	else if(responseHeader != TransferType::ACKNOWLEDGE)
+		throw std::runtime_error("failed send response from friendship request to " + name + ".");
 }
 
 void Client::startConversation(const std::string& playerName) const
@@ -456,6 +466,10 @@ std::vector<Deck> Client::getDecks()
 	packet << TransferType::PLAYER_ASKS_DECKS_LIST;
 	_socket.send(packet);
 	_socket.receive(packet);
+	TransferType responseHeader;
+	packet >> responseHeader;
+	if(responseHeader != TransferType::ACKNOWLEDGE)
+		throw std::runtime_error("unable to get the decks list.");
 	std::vector<Deck> deckList;
 	packet >> deckList;
 	return deckList;
@@ -470,9 +484,9 @@ void Client::handleDeckEditing(const Deck& editedDeck)
 	packet << TransferType::PLAYER_EDIT_DECK << editedDeck;
 	_socket.send(packet);
 	_socket.receive(packet);
-	TransferType type;
-	packet >> type;
-	if(type != TransferType::ACKNOWLEDGE)
+	TransferType responseHeader;
+	packet >> responseHeader;
+	if(responseHeader != TransferType::ACKNOWLEDGE)
 		throw std::runtime_error("unable to send deck editing to the server.");
 }
 
@@ -485,9 +499,9 @@ void Client::handleDeckCreation(const Deck& createdDeck)
 	packet << TransferType::PLAYER_CREATE_DECK << createdDeck;
 	_socket.send(packet);
 	_socket.receive(packet);
-	TransferType type;
-	packet >> type;
-	if(type != TransferType::ACKNOWLEDGE)
+	TransferType responseHeader;
+	packet >> responseHeader;
+	if(responseHeader != TransferType::ACKNOWLEDGE)
 		throw std::runtime_error("unable to send deck editing to the server.");
 }
 
@@ -500,9 +514,9 @@ void Client::handleDeckDeletion(const std::string& deletedDeckName)
 	packet << TransferType::PLAYER_DELETE_DECK << deletedDeckName;
 	_socket.send(packet);
 	_socket.receive(packet);
-	TransferType type;
-	packet >> type;
-	if(type != TransferType::ACKNOWLEDGE)
+	TransferType responseHeader;
+	packet >> responseHeader;
+	if(responseHeader != TransferType::ACKNOWLEDGE)
 		throw std::runtime_error("unable to send deck deleting to the server.");
 }
 
@@ -515,6 +529,10 @@ CardsCollection Client::getCardsCollection()
 	packet << TransferType::PLAYER_ASKS_CARDS_COLLECTION;
 	_socket.send(packet);
 	_socket.receive(packet);
+	TransferType responseHeader;
+	packet >> responseHeader;
+	if(responseHeader != TransferType::ACKNOWLEDGE)
+		throw std::runtime_error("unable to get the card collection.");
 	CardsCollection cardCollection;
 	packet >> cardCollection;
 	return cardCollection;
@@ -531,6 +549,10 @@ Ladder Client::getLadder()
 	packet << TransferType::PLAYER_ASKS_LADDER;
 	_socket.send(packet);
 	_socket.receive(packet);
+	TransferType responseHeader;
+	packet >> responseHeader;
+	if(responseHeader != TransferType::ACKNOWLEDGE)
+		throw std::runtime_error("unable to get the ladder.");
 	Ladder ladder;
 	packet >> ladder;
 	return ladder;

@@ -24,7 +24,6 @@ Server::Server():
 	_database(),
 	_last_id(0)
 {
-
 }
 
 int Server::start(const sf::Uint16 listenerPort)
@@ -73,121 +72,78 @@ void Server::takeConnection()
 		std::cout << "Error: wrong code!" << std::endl;
 }
 
-// TODO these methods (connect/register) should be rewritten in many smaller methods
 void Server::connectUser(sf::Packet& connectionPacket, std::unique_ptr<sf::TcpSocket> client)
 {
 	std::string playerName, password;
 	sf::Uint16 clientPort;
-	bool failedToConnect{false};
-	// N + 1/2 loop (the 1/2 is the error handling)
-	do
+	connectionPacket >> playerName >> password >> clientPort;
+	connectionPacket.clear();
+	try
 	{
-		try
+		// Check if the user is not already connected
+		if(_clients.find(playerName) != _clients.end())
 		{
-			connectionPacket >> playerName >> password >> clientPort;
-			connectionPacket.clear();
-
-			// Check if the user is not already connected
-			if(_clients.find(playerName) != _clients.end())
-			{
-				connectionPacket << TransferType::GAME_ALREADY_CONNECTED;
-				throw std::runtime_error(playerName + " tried to connect to the server but is already connected.");
-			}
-
-			if(false /* UNCOMMENT _database.areIdentifiersValid(playerName, password) */)
-			{
-				connectionPacket << TransferType::GAME_WRONG_IDENTIFIERS;
-				throw std::runtime_error(playerName + " gives wrong identifiers when trying to connect.");
-			}
-			failedToConnect = false;
+			connectionPacket << TransferType::GAME_ALREADY_CONNECTED;
+			throw std::runtime_error(playerName + " tried to connect to the server but is already connected.");
 		}
-		catch(const std::runtime_error& e)
+
+		if(_database.areIdentifiersValid(playerName, password))
 		{
-			// Send a response indicating the error
-			client->send(connectionPacket);
-
-			std::cout << "connectUser error: " << e.what() << "\n";
-			failedToConnect = true;
-
-			// Receive the new try of the client
-			client->receive(connectionPacket);
-			TransferType type;
-			connectionPacket >> type;
-			if(type != TransferType::GAME_CONNECTION)
-			{
-				std::cout << "connectUser error: wrong packet transmitted after failed connection (expecting another connection packet).\n";
-				// The socket will automatically be closed, thanks to smart pointers
-				return;
-			}
+			connectionPacket << TransferType::GAME_WRONG_IDENTIFIERS;
+			throw std::runtime_error(playerName + " gives wrong identifiers when trying to connect.");
 		}
-	} while(failedToConnect);
-
-	std::cout << "New player connected: " << playerName << std::endl;
-	sendAcknowledgement(*client);
-	// add this client to the selector so that its receivals are handled properly
-	// (be sure that this line is before the next, otherwise we get a segfault)
-	_socketSelector.add(*client);
-	// and add the new socket to the clients
-	_clients[playerName] = {std::move(client), clientPort, ++_last_id};
+		std::cout << "New player connected: " << playerName << std::endl;
+		connectionPacket << TransferType::ACKNOWLEDGE;
+		// Send a response
+		client->send(connectionPacket);
+		// add this client to the selector so that its receivals are handled properly
+		// (be sure that this line is before the next, otherwise we get a segfault)
+		_socketSelector.add(*client);
+		// and add the new socket to the clients
+		_clients[playerName] = {std::move(client), clientPort, ++_last_id};
+	}
+	catch(const std::runtime_error& e)
+	{
+		std::cout << "connectUser error: " << e.what() << "\n";
+		// Send a response
+		client->send(connectionPacket);
+	}
+	// The line client->send(connectionPacket); cannot be placed here to factorize it
+	// because if everything goes well, the sokect is moved into _clients,
+	// so the unique_ptr client become invalid.
 }
 
 void Server::registerUser(sf::Packet& registeringPacket, std::unique_ptr<sf::TcpSocket> client)
 {
 	std::string playerName, password;
-	bool failedToRegister;
-	// N + 1/2 loop (the 1/2 is the error handling)
-	do
+	registeringPacket >> playerName >> password;
+	registeringPacket.clear();
+	try
 	{
-		try
+
+		if(_database.isRegistered(playerName))
 		{
-			registeringPacket >> playerName >> password;
-			registeringPacket.clear();
-
-			if(false /* UNCOMMENT _database.isRegistered(playerName) */)
-			{
-				registeringPacket << TransferType::GAME_USERNAME_NOT_AVAILABLE;
-				throw std::runtime_error(playerName + " tried to register to the server but the name is not available.");
-			}
-			// UNCOMMENT _database.registerUser(playerName, password);
-			failedToRegister = false;
+			registeringPacket << TransferType::GAME_USERNAME_NOT_AVAILABLE;
+			throw std::runtime_error(playerName + " tried to register to the server but the name is not available.");
 		}
-		catch(const std::runtime_error& e)
-		{
-			// If Database::registerUser threw an exception, the packet is empty
-			if(registeringPacket.getDataSize() == 0)
-				registeringPacket << TransferType::GAME_FAILED_TO_REGISTER;
+		_database.registerUser(playerName, password);
+		registeringPacket << TransferType::ACKNOWLEDGE;
+		std::cout << "New player registered: " << playerName << std::endl;
+	}
+	catch(const std::runtime_error& e)
+	{
+		// If Database::registerUser threw an exception, the packet is empty
+		if(registeringPacket.getDataSize() == 0)
+			registeringPacket << TransferType::GAME_FAILED_TO_REGISTER;
 
-			std::cout << "registerUser error: " << e.what() << "\n";
-			failedToRegister = true;
-
-			// Send a response indicating the error
-			client->send(registeringPacket);
-
-			// Receive the new try of the client
-			client->receive(registeringPacket);
-			TransferType type;
-			registeringPacket >> type;
-			if(type != TransferType::GAME_REGISTERING)
-			{
-				std::cout << "registerUser error: wrong packet transmitted after failed registering (expecting another registering packet).\n";
-				return;
-			}
-		}
-	} while(failedToRegister);
-
-	sendAcknowledgement(*client);
-	std::cout << "New player registered: " << playerName << std::endl;
-}
-void Server::sendAcknowledgement(sf::TcpSocket& client)
-{
-	sf::Packet packet;
-	packet << TransferType::GAME_CONNECTION_OR_REGISTERING_OK;
-	client.send(packet);
+		std::cout << "registerUser error: " << e.what() << "\n";
+	}
+	// Send a response
+	client->send(registeringPacket);
 }
 
 void Server::receiveData()
 {
-	std::cout << "Data received.\n";
 	// first find which socket it is
 	auto it = std::find_if(_clients.begin(), _clients.end(), [this](const auto& pair)
 	{
@@ -202,6 +158,8 @@ void Server::receiveData()
 	sf::Packet packet;
 	sf::TcpSocket& client(*(it->second.socket));
 	sf::Socket::Status receivalStatus = client.receive(packet);
+	std::cout << "Data received from " + userToString(it) + "\n";
+
 	if(receivalStatus == sf::Socket::Done)
 	{
 		TransferType type;
@@ -209,7 +167,7 @@ void Server::receiveData()
 		switch(type)
 		{
 		case TransferType::PLAYER_DISCONNECTION:
-			std::cout << "Player " << it->first << " quits the game!" << std::endl;
+			std::cout << "Player " + userToString(it) + " quits the game!" << std::endl;
 			removeClient(it);
 			break;
 		// Friendship management
@@ -265,11 +223,11 @@ void Server::receiveData()
 	}
 	else if(receivalStatus == sf::Socket::Disconnected)
 	{
-		std::cerr << "Connection with player " << it->first << " is lost: forced disconnection from server." << std::endl;
+		std::cerr << "Connection with player " + userToString(it) + " is lost: forced disconnection from server.\n";
 		removeClient(it);
 	}
 	else
-		std::cerr << "data not well received." << std::endl;
+		std::cerr << "Data not well received.\n";
 }
 
 void Server::removeClient(const _iterator& it)
@@ -326,6 +284,11 @@ void Server::waitQuit()
 	}
 	_threadRunning.store(false);
 	std::cout << "ending server..." << std::endl;
+}
+
+std::string Server::userToString(const _iterator& it)
+{
+	return it->first + " (" + it->second.socket->getRemoteAddress().toString() + ")";
 }
 
 //////////////// Game management
@@ -386,7 +349,7 @@ void Server::startGame(std::size_t idx)
 	};
 	const auto& player1 = std::find_if(_clients.begin(), _clients.end(), finderById(selfThread._player1ID));
 	const auto& player2 = std::find_if(_clients.begin(), _clients.end(), finderById(selfThread._player2ID));
-	std::cout << "Game " << idx << " is starting: " << player1->first << " vs. " << player2->first << "\n";
+	std::cout << "Game " << idx << " is starting: " + userToString(player1) + " vs. " + userToString(player2) + "\n";
 	selfThread.startGame(player1->second, player2->second);
 }
 
@@ -451,10 +414,10 @@ void Server::handleFriendshipRequest(const _iterator& it, sf::Packet& transmissi
 		const Database::userId friendId{_database.getUserId(friendName)};
 
 		// Add the request into the database
-		// UNCOMMENT _database.addFriendRequest(thisId, friendId);
+		_database.addFriendshipRequest(thisId, friendId);
 
 		// Send an acknowledgement to the user
-		response << TransferType::PLAYER_ACKNOWLEDGE;
+		response << TransferType::ACKNOWLEDGE;
 	}
 	catch(const std::runtime_error& e)
 	{
@@ -475,26 +438,24 @@ void Server::handleFriendshipRequestResponse(const _iterator& it, sf::Packet& tr
 	{
 		const Database::userId askerId{_database.getUserId(askerName)};
 		const Database::userId askedId{_database.getUserId(it->first)};
-		if(not true /* UNCOMMENT _database.hasSentRequest(askerId, askedId) */)
+		if(not _database.isFriendshipRequestSent(askerId, askedId))
 		{
 			transmission << TransferType::NOT_EXISTING_FRIEND;
-			throw std::runtime_error(it->first + " responded to a friend request of an unexisting player.");
+			throw std::runtime_error(userToString(it) + " responded to a friend request of an unexisting player.");
 		}
 		if(accepted)
 			_database.addFriend(askerId, askedId);
 		else
-		{
-			/* _database.removeFriendshipRequest(askerId, askedId) */;
-		}
+			_database.removeFriendshipRequest(askerId, askedId);
 
 		// acknowledge to client
-		transmission << TransferType::PLAYER_ACKNOWLEDGE;
+		transmission << TransferType::ACKNOWLEDGE;
 	}
 	catch(const std::runtime_error& e)
 	{
-		// If the packet is empty, then ServerDatabase::getUserId threw
+		// If the packet is empty, then _database threw
 		if(transmission.getDataSize() == 0)
-			transmission << TransferType::NOT_EXISTING_FRIEND;
+			transmission << TransferType::FAILURE;
 		std::cout << "handleFriendshipRequestResponse error: " << e.what() << "\n";
 	}
 	it->second.socket->send(transmission);
@@ -511,12 +472,12 @@ void Server::sendFriendshipRequests(const _iterator& it)
 		// throw an exception (although I don't think this is really risky,
 		// it's better to be sure).
 		FriendsList requests{_database.getFriendshipRequests(id)};
-		response << requests;
+		response << TransferType::ACKNOWLEDGE << requests;
 	}
 	catch(const std::runtime_error& e)
 	{
 		std::cout << "sendFriendshipRequests error: " << e.what() << "\n";
-		response << FriendsList();
+		response << TransferType::FAILURE;
 	}
 	it->second.socket->send(response);
 }
@@ -529,12 +490,12 @@ void Server::sendFriends(const _iterator& it)
 		const Database::userId id{_database.getUserId(it->first)};
 		// Same as sendFriendshipRequests for the two folling lines
 		FriendsList friends{_database.getFriendsList(id)};
-		response << friends;
+		response << TransferType::ACKNOWLEDGE << friends;
 	}
 	catch(const std::runtime_error& e)
 	{
 		std::cout << "sendFriends error: " << e.what() << "\n";
-		response << FriendsList();
+		response << TransferType::FAILURE;
 	}
 	it->second.socket->send(response);
 }
@@ -551,7 +512,7 @@ void Server::handleRemoveFriend(const _iterator& it, sf::Packet& transmission)
 		_database.removeFriend(unfriendlyUserId, removedFriendId);
 
 		// acknowledge to client
-		transmission << TransferType::PLAYER_ACKNOWLEDGE;
+		transmission << TransferType::ACKNOWLEDGE;
 	}
 	catch(const std::runtime_error& e)
 	{
@@ -571,12 +532,12 @@ void Server::sendDecks(const _iterator& it)
 		const Database::userId id{_database.getUserId(it->first)};
 		// Same as sendFriendshipRequests for the two folling lines
 		std::vector<Deck> decks{_database.getDecks(id)};
-		response << decks;
+		response << TransferType::ACKNOWLEDGE << decks;
 	}
 	catch(const std::runtime_error& e)
 	{
 		std::cout << "sendDecks error: " << e.what() << "\n";
-		response << std::vector<Deck>();
+		response << TransferType::FAILURE;
 	}
 	it->second.socket->send(response);
 }
@@ -608,7 +569,7 @@ void Server::handleDeckCreation(const _iterator& it, sf::Packet& transmission)
 	try
 	{
 		const Database::userId id{_database.getUserId(it->first)};
-		// UNCOMMENT _database.createDeck(id, newDeck);
+		_database.createDeck(id, newDeck);
 		transmission << TransferType::ACKNOWLEDGE;
 	}
 	catch(const std::runtime_error& e)
@@ -627,7 +588,7 @@ void Server::handleDeckDeletion(const _iterator& it, sf::Packet& transmission)
 	try
 	{
 		const Database::userId id{_database.getUserId(it->first)};
-		// UNCOMMENT _database.deleteDeck(id, deletedDeckName);
+		_database.deleteDeckByName(id, deletedDeckName);
 		transmission << TransferType::ACKNOWLEDGE;
 	}
 	catch(const std::runtime_error& e)
@@ -646,12 +607,12 @@ void Server::sendCardsCollection(const _iterator& it)
 		const Database::userId id{_database.getUserId(it->first)};
 		// Same as sendFriendshipRequests for the two folling lines
 		CardsCollection cards{_database.getCardsCollection(id)};
-		response << cards;
+		response << TransferType::ACKNOWLEDGE << cards;
 	}
 	catch(const std::runtime_error& e)
 	{
 		std::cout << "sendCardsCollection error: " << e.what() << "\n";
-		response << CardsCollection();
+		response << TransferType::FAILURE;
 	}
 	it->second.socket->send(response);
 }
@@ -664,12 +625,12 @@ void Server::sendLadder(const _iterator& it)
 	try
 	{
 		Ladder ladder{_database.getLadder()};
-		response << ladder;
+		response << TransferType::PLAYER_ASKS_LADDER << ladder;
 	}
 	catch(const std::runtime_error& e)
 	{
 		std::cout << "sendLadder error: " << e.what() << "\n";
-		response << Ladder();
+		response << TransferType::FAILURE;
 	}
 	it->second.socket->send(response);
 }
