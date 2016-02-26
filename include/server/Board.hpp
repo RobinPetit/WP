@@ -45,5 +45,4 @@ private:
 	bool turnCanEnd=false;
 };
 
-
 #endif// _BOARD_HPP

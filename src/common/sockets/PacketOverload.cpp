@@ -115,6 +115,20 @@ sf::Packet& operator >>(sf::Packet& packet, BoardCreatureData& data)
 	return packet;
 }
 
+sf::Packet& operator <<(sf::Packet& packet, const CardToSelect& card)
+{
+	packet << static_cast<sf::Uint32>(card);
+	return packet;
+}
+
+sf::Packet& operator >>(sf::Packet& packet, CardToSelect& card)
+{
+	sf::Uint32 card32;
+	packet >> card32;
+	card = static_cast<CardToSelect>(card32);
+	return packet;
+}
+
 sf::Packet& operator <<(sf::Packet& packet, const CardData& data)
 {
 	return packet << static_cast<sf::Int64>(data.id);
