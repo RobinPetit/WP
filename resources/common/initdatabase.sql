@@ -144,90 +144,36 @@ SELECT "Decks";
 SELECT "Decks/Table";
 CREATE TABLE Deck (
 -- Do not check "less than 2 times in same deck"
+-- Do not check "card owned by player" (for now)
+    id INTEGER PRIMARY KEY ASC, -- easier access to rowid column
     owner INTEGER NOT NULL REFERENCES Account, -- allows indexing
     name TEXT NOT NULL,
-    card0  INTEGER NOT NULL REFERENCES GivenCard,
-    card1  INTEGER NOT NULL REFERENCES GivenCard,
-    card2  INTEGER NOT NULL REFERENCES GivenCard,
-    card3  INTEGER NOT NULL REFERENCES GivenCard,
-    card4  INTEGER NOT NULL REFERENCES GivenCard,
-    card5  INTEGER NOT NULL REFERENCES GivenCard,
-    card6  INTEGER NOT NULL REFERENCES GivenCard,
-    card7  INTEGER NOT NULL REFERENCES GivenCard,
-    card8  INTEGER NOT NULL REFERENCES GivenCard,
-    card9  INTEGER NOT NULL REFERENCES GivenCard,
-    card10 INTEGER NOT NULL REFERENCES GivenCard,
-    card11 INTEGER NOT NULL REFERENCES GivenCard,
-    card12 INTEGER NOT NULL REFERENCES GivenCard,
-    card13 INTEGER NOT NULL REFERENCES GivenCard,
-    card14 INTEGER NOT NULL REFERENCES GivenCard,
-    card15 INTEGER NOT NULL REFERENCES GivenCard,
-    card16 INTEGER NOT NULL REFERENCES GivenCard,
-    card17 INTEGER NOT NULL REFERENCES GivenCard,
-    card18 INTEGER NOT NULL REFERENCES GivenCard,
-    card19 INTEGER NOT NULL REFERENCES GivenCard,
+    card0  INTEGER NOT NULL REFERENCES Card,
+    card1  INTEGER NOT NULL REFERENCES Card,
+    card2  INTEGER NOT NULL REFERENCES Card,
+    card3  INTEGER NOT NULL REFERENCES Card,
+    card4  INTEGER NOT NULL REFERENCES Card,
+    card5  INTEGER NOT NULL REFERENCES Card,
+    card6  INTEGER NOT NULL REFERENCES Card,
+    card7  INTEGER NOT NULL REFERENCES Card,
+    card8  INTEGER NOT NULL REFERENCES Card,
+    card9  INTEGER NOT NULL REFERENCES Card,
+    card10 INTEGER NOT NULL REFERENCES Card,
+    card11 INTEGER NOT NULL REFERENCES Card,
+    card12 INTEGER NOT NULL REFERENCES Card,
+    card13 INTEGER NOT NULL REFERENCES Card,
+    card14 INTEGER NOT NULL REFERENCES Card,
+    card15 INTEGER NOT NULL REFERENCES Card,
+    card16 INTEGER NOT NULL REFERENCES Card,
+    card17 INTEGER NOT NULL REFERENCES Card,
+    card18 INTEGER NOT NULL REFERENCES Card,
+    card19 INTEGER NOT NULL REFERENCES Card,
 
     UNIQUE (owner, name)
     -- subqueries prohibited in CHECK constraints
-    --CHECK(owner == (SELECT owner FROM GivenCard WHERE id == card0)),
-    -- -> TRIGGER ownCardAddedToDeck
 );
 
 CREATE INDEX deckOwner ON Deck(owner);
-
-SELECT "Decks/Trigger";
-CREATE TRIGGER ownCardAddedToDeck
-    BEFORE INSERT ON Deck
-    FOR EACH ROW
-    WHEN(NEW.owner != (SELECT owner FROM GivenCard WHERE id == NEW.card0)
-        OR NEW.owner != (SELECT owner FROM GivenCard WHERE id == NEW.card1)
-        OR NEW.owner != (SELECT owner FROM GivenCard WHERE id == NEW.card2)
-        OR NEW.owner != (SELECT owner FROM GivenCard WHERE id == NEW.card3)
-        OR NEW.owner != (SELECT owner FROM GivenCard WHERE id == NEW.card4)
-        OR NEW.owner != (SELECT owner FROM GivenCard WHERE id == NEW.card5)
-        OR NEW.owner != (SELECT owner FROM GivenCard WHERE id == NEW.card6)
-        OR NEW.owner != (SELECT owner FROM GivenCard WHERE id == NEW.card7)
-        OR NEW.owner != (SELECT owner FROM GivenCard WHERE id == NEW.card8)
-        OR NEW.owner != (SELECT owner FROM GivenCard WHERE id == NEW.card9)
-        OR NEW.owner != (SELECT owner FROM GivenCard WHERE id == NEW.card10)
-        OR NEW.owner != (SELECT owner FROM GivenCard WHERE id == NEW.card11)
-        OR NEW.owner != (SELECT owner FROM GivenCard WHERE id == NEW.card12)
-        OR NEW.owner != (SELECT owner FROM GivenCard WHERE id == NEW.card13)
-        OR NEW.owner != (SELECT owner FROM GivenCard WHERE id == NEW.card14)
-        OR NEW.owner != (SELECT owner FROM GivenCard WHERE id == NEW.card15)
-        OR NEW.owner != (SELECT owner FROM GivenCard WHERE id == NEW.card16)
-        OR NEW.owner != (SELECT owner FROM GivenCard WHERE id == NEW.card17)
-        OR NEW.owner != (SELECT owner FROM GivenCard WHERE id == NEW.card18)
-        OR NEW.owner != (SELECT owner FROM GivenCard WHERE id == NEW.card19))
-    BEGIN
-        SELECT RAISE (ROLLBACK, "Error: owner of card and owner of deck mismatch");
-    END;
-
---
--- SELECT Deck.name, C0.name, C1.name, C2.name, C3.name, C4.name, C5.name, C6.name, C7.name, C8.name, C9.name,
---     C10.name, C11.name, C12.name, C13.name, C14.name, C15.name, C16.name, C17.name, C18.name, C19.name
---     FROM Deck
---     INNER JOIN Card AS C0 ON Card0 == C0.id
---     INNER JOIN Card AS C1 ON Card1 == C1.id
---     INNER JOIN Card AS C2 ON Card2 == C2.id
---     INNER JOIN Card AS C3 ON Card3 == C3.id
---     INNER JOIN Card AS C4 ON Card4 == C4.id
---     INNER JOIN Card AS C5 ON Card5 == C5.id
---     INNER JOIN Card AS C6 ON Card6 == C6.id
---     INNER JOIN Card AS C7 ON Card7 == C7.id
---     INNER JOIN Card AS C8 ON Card8 == C8.id
---     INNER JOIN Card AS C9 ON Card9 == C9.id
---     INNER JOIN Card AS C10 ON Card10 == C10.id
---     INNER JOIN Card AS C11 ON Card11 == C11.id
---     INNER JOIN Card AS C12 ON Card12 == C12.id
---     INNER JOIN Card AS C13 ON Card13 == C13.id
---     INNER JOIN Card AS C14 ON Card14 == C14.id
---     INNER JOIN Card AS C15 ON Card15 == C15.id
---     INNER JOIN Card AS C16 ON Card16 == C16.id
---     INNER JOIN Card AS C17 ON Card17 == C17.id
---     INNER JOIN Card AS C18 ON Card18 == C18.id
---     INNER JOIN Card AS C19 ON Card19 == C19.id;
---
 
 ----------------------
 -- Friends
@@ -394,15 +340,16 @@ INSERT INTO GivenCard(card,owner)
     VALUES(15,1), (16,1);
 
 SELECT "Create deck";
-INSERT INTO Deck VALUES
-    (1, 'Test', 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 1, 16, 17, 18, 19, 20); 
+INSERT INTO Deck(owner, name, Card0, Card1, Card2, Card3, Card4, Card5, Card6, Card7, Card8, Card9,
+                 Card10, Card11, Card12, Card13, Card14, Card15, Card16, Card17, Card18, Card19)
+    VALUES (1, 'Test', 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 1, 16, 17, 18, 19, 20); 
 
 SELECT "Update victories/defeats";
 UPDATE Account SET victories = 4 WHERE id == 1 OR id == 3;
 UPDATE Account SET defeats = 4 WHERE id == 1 OR id == 4;
 UPDATE Account SET victories = 3 WHERE id == 2 OR id == 4;
 UPDATE Account SET defeats = 2 WHERE id == 2 OR id == 5;
-UPDATE Account SET defeats = 1 WHERE id == 3;
+UPDATE Account SET defeats = 0 WHERE id == 3;
 UPDATE Account SET victories = 2 WHERE id == 5;
 
 END;
