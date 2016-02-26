@@ -45,8 +45,6 @@ sf::Packet& operator <<(sf::Packet& packet, const BoardCreatureData& data);
 /// Allow a packet to transmit a BoardCreatureData instance.
 sf::Packet& operator >>(sf::Packet& packet, BoardCreatureData& data);
 
-
-
 // implementation
 
 template <typename T>

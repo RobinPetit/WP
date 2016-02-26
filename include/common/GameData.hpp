@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <string>
-#include <SFML/Network/Packet.hpp>
 #include "common/Identifiers.hpp"
 
 /// These struct are used to communicate changes of the game data on the network (server->client).
