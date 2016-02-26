@@ -67,7 +67,7 @@ void Board::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 	}
 	catch (std::out_of_range)
 	{
-		//NETWORK: INPUT_ERROR
+		//SERVER: CARD ERROR
 		return;
 	}
 
@@ -87,7 +87,6 @@ void Board::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 			}
 			break;
 		case CREATURE_SELF_INDX:	//active player's creature at given index
-			//TODO: NETWORK : ASK_FOR_INDEX (_activePlayer)
 			_activePlayer->applyEffectToCreature(usedCard, effectArgs, _activePlayer->requestSelfBoardIndex());
 			break;
 
@@ -100,7 +99,6 @@ void Board::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 			break;
 
 		case CREATURE_OPPO_INDX:	//passive player's creature at given index
-			//TODO: NETWORK : ASK_FOR_INDEX (_activePlayer)
 			_passivePlayer->applyEffectToCreature(usedCard, effectArgs, _activePlayer->requestOppoBoardIndex());
 			break;
 
