@@ -2,8 +2,7 @@
 #define _BOARD_STATE_COMMON_HPP
 
 #include <vector>
-// TODO Card.hpp should be in common/
-#include "server/Card.hpp"
+#include "common/Identifiers.hpp"
 
 /// This struct is used to communicate changes of the board on the network.
 /// Each time a player do an action while it is playing its turn, the server
@@ -15,18 +14,17 @@
 /// obfuscates the code. So we loose a bit of space but save a lot of time.
 struct BoardState
 {
-	// TODO Use ClientCard::ID rather than int
 	bool _thisPlayerCardsInHandChanged;
-	std::vector<int> _thisPlayerCardsInHand;
+	std::vector<cardId> _thisPlayerCardsInHand;
 
 	bool _opponentCardsInHandChanged;
 	std::size_t _opponentCardsInHand;
 
 	bool _thisPlayerCardsOnBoardChanged;
-	std::vector<int> _thisPlayerCardsOnBoard;
+	std::vector<cardId> _thisPlayerCardsOnBoard;
 
 	bool _opponentCardsOnBoardChanged;
-	std::vector<int> _opponentCardsOnBoard;
+	std::vector<cardId> _opponentCardsOnBoard;
 
 	bool _thisPlayerRemainingCardsChanged;
 	std::size_t _thisPlayerRemainingCards;

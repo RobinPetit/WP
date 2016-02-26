@@ -24,7 +24,7 @@ class DecksManagementState : public AbstractState
 		void editDeck();
 		// Edit deck submethods
 		std::size_t askForReplacedCard(std::size_t deckIndex);
-		ClientCard::ID askForReplacingCard(std::size_t deckIndex);
+		cardId askForReplacingCard(std::size_t deckIndex);
 
 
 		void createDeck();
