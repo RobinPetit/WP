@@ -144,7 +144,7 @@ Baudoux Nicolas, Berrewaerts Jonathan, Gueniffrey Stanislas,  Muranovic Allan, P
 		\item consulter, modifier ou supprimer ses informations personnelles ; 
 		\item créer un deck ou en modifier un pré-existant ;
 		\item consulter les cartes dont il dispose ;
-		\item consulter les deck dont il dispose ;
+		\item consulter les decks dont il dispose ;
 		\item ajouter un joueur existant en ami ;
 		\item discuter avec un ami ;
 		\item \textbf{facultatif :} discuter avec plusieurs amis simultanément ;
@@ -162,21 +162,21 @@ Baudoux Nicolas, Berrewaerts Jonathan, Gueniffrey Stanislas,  Muranovic Allan, P
 				\begin{description}
 					\item[Description] Un utilisateur doit créer un compte pour pouvoir accéder à l'application.
 					\item[Pré-condition] Aucune.
-					\item[Post-condition] Un compte est crée, le nom d'utilisateur correspondant est unique.\\
+					\item[Post-condition] Un compte est créé, le nom d'utilisateur correspondant est unique.\\
 				\end{description}
 
 				\item \textbf{Se connecter}
 				\begin{description}
-					\item[Description] Un utilisateur doit se connecter avec un compte pour pouvoir acceder à l'application
-					\item[Pré-condition] L'utilisateur n'est pas déjà connecté, le compte utilisé est existant est n'est pas déjà connecté.
+					\item[Description] Un utilisateur doit se connecter avec un compte pour pouvoir accéder à l'application
+					\item[Pré-condition] L'utilisateur n'est pas déjà connecté, le compte utilisé est existant et n'est pas déjà connecté.
 					\item[Post-condition] L'utilisateur est connecté.\\
 				\end{description}
 
 				\item \textbf{Consulter sa collection}
 				\begin{description}
-					\item[Description] Un utilisateur peut voir la collection de cartes qu'il a acquises.
+					\item[Description] Un utilisateur peut voir la collection de cartes dont il dispose.
 					\item[Pré-condition] L'utilisateur doit être connecté au serveur.
-					\item[Post-condition] L'utilisateur a pris connaissance sa collection de carte.\\
+					\item[Post-condition] L'utilisateur a pris connaissance de sa collection de cartes.\\
 				\end{description}
 
 				\item \textbf{Faire une partie}
@@ -232,14 +232,16 @@ Baudoux Nicolas, Berrewaerts Jonathan, Gueniffrey Stanislas,  Muranovic Allan, P
 				\begin{description}
 					\item[Description] Pour modifier un deck, il faut changer une par une les cartes qui le composent.
 					\item[Pré-condition] La liste des decks n'est pas vide.
-					\item[Post-condition] Un des decks la liste des decks a été modifié.\\
+					\item[Post-condition] Un des decks de la liste a été modifié.\\
 				\end{description}
 			\end{itemize}
 			Le fonctionnement de la création d'un nouveau deck nécessite peut-être quelques explications
-			supplémentaire. Le use case "Créer un deck" commence par ajouter dans la liste des decks
+			supplémentaire. 
+			Le use case "Créer un deck" commence par ajouter dans la liste des decks
 			une copie du deck par défaut (celui donné à la création du compte). Ensuite l'utilisateur
 			est redirigé vers le use case "Changer les cartes d'un deck", qui permet de remplacer
-			une par une les cartes d'un deck. Ainsi, avec une grande modularité et peu de code,
+			une par une les cartes d'un deck. 
+			Ainsi, avec une grande modularité et peu de code,
 			il est donné à l'utilisateur la possibilité de créer un tout nouveau deck sans devoir recoder une partie
 			de l'interface qui modifie un deck.
 
@@ -260,11 +262,11 @@ Baudoux Nicolas, Berrewaerts Jonathan, Gueniffrey Stanislas,  Muranovic Allan, P
 		et serveurs sur des machines séparées).
 
 		De plus, l'utilisateur \textbf{doit} pouvoir discuter par messages à n'importe quel moment de l'exécution de l'application : tant pendant
-		qu'il gère ses amis, ses cartes ou pendant qu'il est en duel. Ces discutions ne peuvent se faire avec un joueur
+		qu'il gère ses amis, ses cartes ou pendant qu'il est en duel. Ces discussions ne peuvent se faire avec un joueur
 		n'étant pas ami de l'utilisateur.
 
 	\subsection{Exigences de domaine}
-		Les exigences implicites au domaine du jeu sont les suivante et sont facultatives :
+		Les exigences implicites au domaine du jeu, voir ci-dessous, sont facultatives :
 
 		\begin{itemize}
 			\item l'application doit être accessible à tout utilisateur potentiel ;
@@ -277,7 +279,8 @@ Baudoux Nicolas, Berrewaerts Jonathan, Gueniffrey Stanislas,  Muranovic Allan, P
 \section{Besoins du système}
 	\subsection{Exigences fonctionnelles}
 		Dans un premier temps, l'application \textbf{doit} tourner en ligne de commande et \textbf{doit}, dans un second temps adopter une interface
-		graphique. De plus, l'application \textbf{doit} être développée en C++.
+		graphique.
+		De plus, l'application \textbf{doit} être développée en C++.
 
 	\subsection{Exigences non-fonctionnelles}
 		Le système \textbf{doit} être maintenable et pensé dans l'optique d'une future adaptation avec interface graphique.
@@ -293,28 +296,26 @@ Baudoux Nicolas, Berrewaerts Jonathan, Gueniffrey Stanislas,  Muranovic Allan, P
 		\begin{center}\includegraphics[scale=0.5]{deck.png}\end{center}
 			Comme indiqué sur ce diagramme, un deck est composé de cartes, 20 pour être précis. Les cartes sont soit des créatures
 			soit des sorts et on ne peut posséder que maximum 2 exemplaire d'une même carte au sein d'un même deck.
-			A savoir également que les decks sont indépendants, il est donc possible de posséder uniquement 2x la même carte,
-			mais avoir plusieurs decks qui possèdent 1 ou 2x cette carte.
+			A savoir également que les decks sont indépendants, il est donc possible de posséder uniquement 2x la même carte, mais avoir plusieurs decks qui possèdent 1 ou 2x cette carte.
 
 			L'application des effets est simple : chaque effet est un effet direct, que ce soit infliger X points de dégats, comme soigner un allié ou encore interdire le joueur adverse de jouer pendant Y tours.
-			Un effet plus complexe est également un effet direct, seulement, il va modifier la liste de contraintes de la partie et c'est cette liste qui va permettre d'appliquer des effets sur la durée, ou en respectant bien certaines conditions (applique tel effet tant que tel créature est en vie par exemple).
+			Un effet plus complexe est également un effet direct, seulement, il va modifier la liste de contraintes de la partie et c'est cette liste qui va permettre d'appliquer des effets sur la durée, ou des effets qui respectent certaines conditions (applique tel effet tant que tel créature est en vie par exemple).
 
 		\newpage
-		\subsubsection{Diagramme de classe du serveur et de sa base de données}
+		\subsubsection{Diagramme de classe du serveur et de sa base de donnée}
 		\begin{center}\includegraphics[scale=0.5]{Server.png}\end{center}
-			Ici, la structure est un peu plus complexe : Le serveur est composé d'une base de donnée en SQL qui est héritée par 
-			une base de donnée utilisable par l'application serveur (en c++ cette fois).
+			Ici, la structure est un peu plus complexe : Le serveur est composé d'une base de donnée en SQL qui est héritée par une base de donnée utilisable par l'application serveur (en c++ cette fois).
 
 			C'est ce serveur qui va naturellement tout gérer, des parties, jusqu'aux requêtes d'amis en passant
 			par la gestion/modification des decks/de compte. Tout sera stocké de son côté dans la base de données.
-			Le client ne possedera aucune donnée, il est obligé de passer par les serveur quel que soit son intention.
+			Le client ne possedera aucune information, il est obligé de passer par les serveur quel que soit son intention.
 
 		\newpage
 		\subsubsection{Diagramme des classes intervenant dans une partie (simplifié)}
 		\begin{center}\includegraphics[scale=0.5]{Game.png}\end{center}
 			Il est à noter que c'est un diagramme de classe, et non d'activités, il regroupe juste les plus grosses classes intervenant dans la partie,
 			et non pas leur lien/fonctionnement entre elles.
-			Pour qu'une partie puisse avoir lieu, il nous faut 2 joueurs connectés au serveur qui s'occupera lui-même de modifier le plateau de jeu.
+			Pour qu'une partie puisse avoir lieu, il nous faut 2 joueurs connectés au serveur qui sera chargé de réguler le bon fonctionnement de la partie.
 
 \newpage
 
