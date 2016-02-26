@@ -88,7 +88,7 @@ void Server::connectUser(sf::Packet& connectionPacket, std::unique_ptr<sf::TcpSo
 			throw std::runtime_error(playerName + " tried to connect to the server but is already connected.");
 		}
 
-		if(_database.areIdentifiersValid(playerName, password))
+		if(not _database.areIdentifiersValid(playerName, password))
 		{
 			connectionPacket << TransferType::GAME_WRONG_IDENTIFIERS;
 			throw std::runtime_error(playerName + " gives wrong identifiers when trying to connect.");
