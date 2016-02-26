@@ -52,26 +52,32 @@ void GameState::init()
 void GameState::chooseDeck()
 {
 	std::vector<Deck> decks = _client.getDecks();
+
 	// ask for the deck to use during the game
-	std::cout << "Choose your deck:\n\t";
-	for(auto deck : decks)
-		std::cout << deck.getName() << std::endl;
-	std::cin.clear();
-	std::string chosenDeckName;
+	for(int i=0; i<decks.size(); i++)
+		std::cout << i << " : " << decks.at(i).getName() << std::endl;
+
+	std::size_t res; //chosen deck
 	do
-		std::getline(std::cin, chosenDeckName);
-	while(std::find_if(decks.begin(), decks.end(), [chosenDeckName](const Deck& d){ return chosenDeckName == d.getName(); }) == decks.end());
-	std::cout << "sending your deck '" << chosenDeckName << "'...\n";
+	{
+		std::cout << "Choose your deck: ";
+		std::cin >> res;
+		std::cout << "you chose" << res << std::endl;
+		if(res > decks.size() or res<0)
+			std::cout << "Your answer should be in the range (" << 0 << ", " << decks.size() <<") !" << std::endl;
+	} while(res > decks.size() or res<0);
+
 	// send the deck ID to the server
+	std::cout << "sending your deck '" << decks.at(res).getName() << "'...\n";
 	sf::Packet deckIdPacket;
-	deckIdPacket << TransferType::GAME_PLAYER_GIVE_DECK_NAMES << chosenDeckName;
+	deckIdPacket << TransferType::GAME_PLAYER_GIVE_DECK_NAMES << decks.at(res).getName();
 	_client.getGameSocket().send(deckIdPacket);
 }
 
 void GameState::play()
 {
-        while(_playing.load())
-        {
+	while(_playing.load())
+	{
 		if(_myTurn.load())
 			startTurn();
 		else
@@ -80,7 +86,7 @@ void GameState::play()
 			while(not _myTurn.load())
 				sf::sleep(sf::milliseconds(100));
 		}
-        }
+	}
 }
 
 void GameState::display()
@@ -238,6 +244,7 @@ GameState::~GameState()
 void GameState::displayGame()
 {
 	_client.getTerminal().clearScreen();
+	std::cout << "***************" << std::endl;
 	std::cout << "-----CARDS-----" << std::endl;
 	std::cout << "You have " << _selfDeckSize << " cards left in your deck." << std::endl;
 	std::cout << "Your opponent has " << _oppoHandSize << " cards in his hand." << std::endl;
@@ -254,6 +261,7 @@ void GameState::displayGame()
 	std::cout << "Your opponent has " << _oppoHealth << " life points left." << std::endl;
 	std::cout << "You have " << _selfHealth << " life points left." << std::endl;
 	std::cout << "You have " << _selfEnergy << " energy points left." << std::endl;
+	std::cout << "***************" << std::endl;
 }
 
 void GameState::displayCardVector(std::vector<CardData> cardVector)
