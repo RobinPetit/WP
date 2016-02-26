@@ -12,6 +12,7 @@
 #include "server/Spell.hpp"
 #include "server/Constraints.hpp"
 #include "common/CardData.hpp"
+#include "common/GameData.hpp"
 #include "common/sockets/TransferType.hpp"
 // SFML headers
 #include <SFML/Network/TcpSocket.hpp>
