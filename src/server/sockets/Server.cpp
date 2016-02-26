@@ -343,7 +343,7 @@ void Server::startGame(std::size_t idx)
 	_accessRunningGames.lock();
 	GameThread& selfThread{*_runningGames[idx]};
 	_accessRunningGames.unlock();
-	const auto& finderById = [](unsigned playerId)
+	const auto& finderById = [](userId playerId)
 	{
 		return [playerId](const std::pair<const std::string, ClientInformations>& it)
 		{

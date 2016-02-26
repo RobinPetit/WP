@@ -29,7 +29,7 @@ userId ServerDatabase::getUserId(const std::string login)
 std::string ServerDatabase::getLogin(userId id)
 {
 	sqlite3_reset(_loginStmt);
-	sqliteThrowExcept(sqlite3_bind_int(_loginStmt, 1, id));
+	sqliteThrowExcept(sqlite3_bind_int(_loginStmt, 1, static_cast<int>(id)));
 
 	if(sqliteThrowExcept(sqlite3_step(_loginStmt)) == SQLITE_DONE)
 		throw std::runtime_error("ERROR userId not found");
@@ -40,7 +40,7 @@ std::string ServerDatabase::getLogin(userId id)
 std::vector<Deck> ServerDatabase::getDecks(userId id)
 {
 	sqlite3_reset(_decksStmt);
-	sqliteThrowExcept(sqlite3_bind_int(_decksStmt, 1, id));
+	sqliteThrowExcept(sqlite3_bind_int(_decksStmt, 1, static_cast<int>(id)));
 
 	std::vector<Deck> decks;
 
@@ -58,7 +58,7 @@ std::vector<Deck> ServerDatabase::getDecks(userId id)
 CardsCollection ServerDatabase::getCardsCollection(userId id)
 {
 	sqlite3_reset(_cardsCollectionStmt);
-	sqliteThrowExcept(sqlite3_bind_int(_cardsCollectionStmt, 1, id));
+	sqliteThrowExcept(sqlite3_bind_int(_cardsCollectionStmt, 1, static_cast<int>(id)));
 
 	CardsCollection cards;
 
@@ -90,8 +90,8 @@ Ladder ServerDatabase::getLadder()
 void ServerDatabase::addFriend(userId userId1, userId userId2)
 {
 	sqlite3_reset(_addFriendStmt);
-	sqliteThrowExcept(sqlite3_bind_int(_addFriendStmt, 1, userId1));
-	sqliteThrowExcept(sqlite3_bind_int(_addFriendStmt, 2, userId2));
+	sqliteThrowExcept(sqlite3_bind_int(_addFriendStmt, 1, static_cast<int>(userId1)));
+	sqliteThrowExcept(sqlite3_bind_int(_addFriendStmt, 2, static_cast<int>(userId2)));
 
 	sqliteThrowExcept(sqlite3_step(_addFriendStmt));
 }
@@ -99,8 +99,8 @@ void ServerDatabase::addFriend(userId userId1, userId userId2)
 void ServerDatabase::removeFriend(userId userId1, userId userId2)
 {
 	sqlite3_reset(_removeFriendStmt);
-	sqliteThrowExcept(sqlite3_bind_int(_removeFriendStmt, 1, userId1 < userId2 ? userId1 : userId2));
-	sqliteThrowExcept(sqlite3_bind_int(_removeFriendStmt, 2, userId1 < userId2 ? userId2 : userId1));
+	sqliteThrowExcept(sqlite3_bind_int(_removeFriendStmt, 1, static_cast<int>(userId1 < userId2 ? userId1 : userId2)));
+	sqliteThrowExcept(sqlite3_bind_int(_removeFriendStmt, 2, static_cast<int>(userId1 < userId2 ? userId2 : userId1)));
 
 	sqliteThrowExcept(sqlite3_step(_removeFriendStmt));
 	assert(sqlite3_step(_removeFriendStmt) == SQLITE_DONE);
@@ -109,8 +109,8 @@ void ServerDatabase::removeFriend(userId userId1, userId userId2)
 bool ServerDatabase::areFriend(userId userId1, userId userId2)
 {
 	sqlite3_reset(_areFriendStmt);
-	sqliteThrowExcept(sqlite3_bind_int(_areFriendStmt, 1, userId1));
-	sqliteThrowExcept(sqlite3_bind_int(_areFriendStmt, 2, userId2));
+	sqliteThrowExcept(sqlite3_bind_int(_areFriendStmt, 1, static_cast<int>(userId1)));
+	sqliteThrowExcept(sqlite3_bind_int(_areFriendStmt, 2, static_cast<int>(userId2)));
 
 	return sqliteThrowExcept(sqlite3_step(_areFriendStmt)) == SQLITE_ROW;
 }
@@ -118,8 +118,8 @@ bool ServerDatabase::areFriend(userId userId1, userId userId2)
 void ServerDatabase::addFriendshipRequest(userId from, userId to)
 {
 	sqlite3_reset(_addFriendshipRequestStmt);
-	sqliteThrowExcept(sqlite3_bind_int(_addFriendshipRequestStmt, 1, from));
-	sqliteThrowExcept(sqlite3_bind_int(_addFriendshipRequestStmt, 2, to));
+	sqliteThrowExcept(sqlite3_bind_int(_addFriendshipRequestStmt, 1, static_cast<int>(from)));
+	sqliteThrowExcept(sqlite3_bind_int(_addFriendshipRequestStmt, 2, static_cast<int>(to)));
 
 	assert(sqliteThrowExcept(sqlite3_step(_addFriendshipRequestStmt)) == SQLITE_DONE);
 }
@@ -127,8 +127,8 @@ void ServerDatabase::addFriendshipRequest(userId from, userId to)
 void ServerDatabase::removeFriendshipRequest(userId from, userId to)
 {
 	sqlite3_reset(_removeFriendshipRequestStmt);
-	sqliteThrowExcept(sqlite3_bind_int(_removeFriendshipRequestStmt, 1, from));
-	sqliteThrowExcept(sqlite3_bind_int(_removeFriendshipRequestStmt, 2, to));
+	sqliteThrowExcept(sqlite3_bind_int(_removeFriendshipRequestStmt, 1, static_cast<int>(from)));
+	sqliteThrowExcept(sqlite3_bind_int(_removeFriendshipRequestStmt, 2, static_cast<int>(to)));
 
 	assert(sqliteThrowExcept(sqlite3_step(_removeFriendshipRequestStmt)) == SQLITE_DONE);
 }
@@ -136,8 +136,8 @@ void ServerDatabase::removeFriendshipRequest(userId from, userId to)
 bool ServerDatabase::isFriendshipRequestSent(userId from, userId to)
 {
 	sqlite3_reset(_isFriendshipRequestSentStmt);
-	sqliteThrowExcept(sqlite3_bind_int(_isFriendshipRequestSentStmt, 1, from));
-	sqliteThrowExcept(sqlite3_bind_int(_isFriendshipRequestSentStmt, 2, to));
+	sqliteThrowExcept(sqlite3_bind_int(_isFriendshipRequestSentStmt, 1, static_cast<int>(from)));
+	sqliteThrowExcept(sqlite3_bind_int(_isFriendshipRequestSentStmt, 2, static_cast<int>(to)));
 
 	return sqliteThrowExcept(sqlite3_step(_isFriendshipRequestSentStmt)) == SQLITE_ROW;
 }
@@ -145,13 +145,13 @@ bool ServerDatabase::isFriendshipRequestSent(userId from, userId to)
 void ServerDatabase::createDeck(userId id, const Deck& deck)
 {
 	sqlite3_reset(_createDeckStmt);
-	sqliteThrowExcept(sqlite3_bind_int(_createDeckStmt, 1, id));
+	sqliteThrowExcept(sqlite3_bind_int(_createDeckStmt, 1, static_cast<int>(id)));
 	sqliteThrowExcept(sqlite3_bind_text(_createDeckStmt, 2, deck.getName().c_str(), AUTO_QUERY_LENGTH,
 	                                    SQLITE_TRANSIENT));
 
-	for(int card = 0; card < Deck::size; ++card)
+	for(auto card = 0U; card < Deck::size; ++card)
 	{
-		sqliteThrowExcept(sqlite3_bind_int(_createDeckStmt, card + 3, deck.getCard(card)));
+		sqliteThrowExcept(sqlite3_bind_int(_createDeckStmt, card + 3, static_cast<int>(deck.getCard(card))));
 	}
 
 	assert(sqliteThrowExcept(sqlite3_step(_createDeckStmt)) == SQLITE_DONE);
@@ -160,7 +160,7 @@ void ServerDatabase::createDeck(userId id, const Deck& deck)
 void ServerDatabase::deleteDeckByName(userId id, const std::string& deckName)
 {
 	sqlite3_reset(_deleteDeckByNameStmt);
-	sqliteThrowExcept(sqlite3_bind_int(_deleteDeckByNameStmt, 1, id));
+	sqliteThrowExcept(sqlite3_bind_int(_deleteDeckByNameStmt, 1, static_cast<int>(id)));
 	sqliteThrowExcept(sqlite3_bind_text(_deleteDeckByNameStmt, 2, deckName.c_str(), AUTO_QUERY_LENGTH, SQLITE_TRANSIENT));
 
 	assert(sqliteThrowExcept(sqlite3_step(_deleteDeckByNameStmt)) == SQLITE_DONE);
@@ -171,11 +171,9 @@ void ServerDatabase::editDeck(userId id, const Deck& deck)
 	sqlite3_reset(_editDeckByNameStmt);
 	sqliteThrowExcept(sqlite3_bind_text(_editDeckByNameStmt, 1, deck.getName().c_str(), AUTO_QUERY_LENGTH, SQLITE_TRANSIENT));
 
-	for(int card = 0; card < Deck::size; ++card)
-	{
-		sqliteThrowExcept(sqlite3_bind_int(_editDeckByNameStmt, card + 2, deck.getCard(card)));
-	}
-	sqliteThrowExcept(sqlite3_bind_int(_editDeckByNameStmt, 22, id));
+	for(auto card = 0U; card < Deck::size; ++card)
+		sqliteThrowExcept(sqlite3_bind_int(_editDeckByNameStmt, card + 2, static_cast<int>(deck.getCard(card))));
+	sqliteThrowExcept(sqlite3_bind_int(_editDeckByNameStmt, 22, static_cast<int>(id)));
 
 	assert(sqliteThrowExcept(sqlite3_step(_editDeckByNameStmt)) == SQLITE_DONE);
 }
@@ -212,7 +210,7 @@ void ServerDatabase::registerUser(const std::string& login, const std::string& p
 FriendsList ServerDatabase::getAnyFriendsList(userId user, sqlite3_stmt * stmt)
 {
 	sqlite3_reset(stmt);
-	sqliteThrowExcept(sqlite3_bind_int(stmt, 1, user));
+	sqliteThrowExcept(sqlite3_bind_int(stmt, 1, static_cast<int>(user)));
 
 	FriendsList friends;
 

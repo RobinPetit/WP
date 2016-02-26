@@ -1,17 +1,19 @@
 #ifndef _DATABASE_COMMON_HPP
 #define _DATABASE_COMMON_HPP
 
+// std-C++ headers
 #include <iostream>
 #include <stdexcept>
 #include <string>
 #include <vector>
 #include <array>
 #include <utility> // std::pair
-
+// SQLite headers
 #include <sqlite3.h>
-
-#include <common/Deck.hpp>
-#include <common/CardsCollection.hpp>
+// WizardPoker headers
+#include "common/Deck.hpp"
+#include "common/CardsCollection.hpp"
+#include "common/Identifiers.hpp"
 
 struct LadderEntry
 {

@@ -54,8 +54,8 @@ void GameState::chooseDeck()
 	std::vector<Deck> decks = _client.getDecks();
 	// ask for the deck to use during the game
 	std::cout << "Choose your deck:\n\t";
-	for(int i{0}; i < decks.size(); ++i)
-		std::cout << ++i << ": " << decks[i].getName() << std::endl;
+	for(auto i{0U}; i < decks.size(); ++i)
+		std::cout << i+1 << ": " << decks[i].getName() << std::endl;
 	std::cin.clear();
 	sf::Uint32 chosenDeck;
 	bool loop{true};
@@ -74,9 +74,9 @@ void GameState::chooseDeck()
 	while(loop);
 	std::cout << "sending your deck...\n";
 	// send the deck ID to the server
-	sf::Packet deckId;
-	deckId << TransferType::GAME_PLAYER_GIVE_DECK_ID << chosenDeck;
-	_client.getGameSocket().send(deckId);
+	sf::Packet deckIdPacket;
+	deckIdPacket << TransferType::GAME_PLAYER_GIVE_DECK_ID << chosenDeck;
+	_client.getGameSocket().send(deckIdPacket);
 }
 
 void GameState::play()
@@ -122,7 +122,7 @@ void GameState::startTurn()
 //PRIVATE METHODS
 
 // Request user for additional input
-int GameState::askIndex(int maxIndex, std::string inputMessage)
+int GameState::askIndex(std::size_t maxIndex, std::string inputMessage)
 {
 	std::size_t res; //result
 	if (maxIndex==0)
@@ -135,11 +135,9 @@ int GameState::askIndex(int maxIndex, std::string inputMessage)
 	{
 		std::cout << inputMessage;
 		std::cin >> res;
-		if(res < 0 or res > maxIndex)
-		{
+		if(res > maxIndex)
 			std::cout << "Your answer should be in the range (" << 0 << ", " << maxIndex <<") !\n";
-		}
-	}while(res < 0 or res>maxIndex);
+	}while(res>maxIndex);
 
 	return res;
 }
@@ -270,7 +268,7 @@ void GameState::displayGame()
 
 void GameState::displayCardVector(std::vector<CardData> cardVector)
 {
-	for (int i=0; i<cardVector.size(); i++)
+	for (auto i=0U; i<cardVector.size(); i++)
 	{
 		cardId id = cardVector.at(i).id;
 		std::cout << i << " : " << getCardName(id) << "(cost:" << getCardCost(id) << ")";
@@ -283,16 +281,16 @@ void GameState::displayCardVector(std::vector<CardData> cardVector)
 
 void GameState::displayBoardCreatureVector(std::vector<BoardCreatureData> cardVector)
 {
-	//THE BOARD VECTOR ALSO CONTAINS REAL_TIME INFORMATION ABOUT THE CARDS (HEALTH, ATTACK, SHIELD, SHIELD TYPE)
-	//THIS METHOD SHOULD DISPLAY THESE INFORMATiONS AND BE CALLED ONLY FOR DISPLAYING THE BOARD
-	for (int i=0; i<cardVector.size(); i++)
+	// The board vector also contains real time informations about the cards (health, attack, shield, shield type)
+	// This method should display these informations and be called only for displaying the board
+	for (auto i=0U; i<cardVector.size(); i++)
 	{
 		BoardCreatureData thisCreature = cardVector.at(i);
 		cardId id = cardVector.at(i).id;
 		std::cout << i << " : " << getCardName(id) << "(cost:" << getCardCost(id) <<
-													", attack:" << thisCreature.attack <<
-													", health:" << thisCreature.health <<
-													", shield:" << thisCreature.shield << "-" << thisCreature.shieldType << ")";
+		          ", attack:" << thisCreature.attack <<
+		          ", health:" << thisCreature.health <<
+		          ", shield:" << thisCreature.shield << "-" << thisCreature.shieldType << ")";
 		//TODO use card names instead of card IDs ?
 		if (i!=cardVector.size()-1)
 			std::cout << ", ";
