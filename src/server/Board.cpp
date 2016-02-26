@@ -60,7 +60,6 @@ userId Board::getWaitingPlayerID()
 
 void Board::givePlayersDecksNames(const std::string& player1DeckName, const std::string& player2DeckName)
 {
-	// TODO This have 1/2 probability to assign the wrong deck to the wrong player
 	_activePlayer->setDeck(_database.getDeckByName(_activePlayer->getID(), player1DeckName));
 	_passivePlayer->setDeck(_database.getDeckByName(_passivePlayer->getID(), player2DeckName));
 }

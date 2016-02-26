@@ -58,20 +58,9 @@ void GameState::chooseDeck()
 		std::cout << deck.getName() << std::endl;
 	std::cin.clear();
 	std::string chosenDeckName;
-	bool loop{true};
 	do
-	{
-		try
-		{
-			std::getline(std::cin, chosenDeckName);
-			loop = false;
-		}
-		catch(std::exception& e)
-		{
-			std::cout << "exception: " << e.what();
-		}
-	}
-	while(loop);
+		std::getline(std::cin, chosenDeckName);
+	while(std::find_if(decks.begin(), decks.end(), [chosenDeckName](const Deck& d){ return chosenDeckName == d.getName(); }) == decks.end());
 	std::cout << "sending your deck...\n";
 	// send the deck ID to the server
 	sf::Packet deckIdPacket;
