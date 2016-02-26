@@ -550,7 +550,7 @@ void Server::handleDeckEditing(const _iterator& it, sf::Packet& transmission)
 	try
 	{
 		const Database::userId id{_database.getUserId(it->first)};
-		// UNCOMMENT _database.editDeck(id, editedDeck);
+		_database.editDeck(id, editedDeck);
 		transmission << TransferType::ACKNOWLEDGE;
 	}
 	catch(const std::runtime_error& e)

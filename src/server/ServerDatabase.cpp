@@ -175,19 +175,19 @@ void ServerDatabase::editDeck(const int userId, const Deck& deck)
 		sqliteThrowExcept(sqlite3_bind_int(_editDeckByNameStmt, card + 2, deck.getCard(card)));
 	}
 	sqliteThrowExcept(sqlite3_bind_int(_editDeckByNameStmt, 22, userId));
-	
+
 	assert(sqliteThrowExcept(sqlite3_step(_editDeckByNameStmt)) == SQLITE_DONE);
 }
 
-bool ServerDatabase::areIdentifersValid(const std::string& login, const std::string& password)
+bool ServerDatabase::areIdentifiersValid(const std::string& login, const std::string& password)
 {
-	sqlite3_reset(_areIdentifersValidStmt);
-	sqliteThrowExcept(sqlite3_bind_text(_areIdentifersValidStmt, 1, login.c_str(), AUTO_QUERY_LENGTH,
+	sqlite3_reset(_areIdentifiersValidStmt);
+	sqliteThrowExcept(sqlite3_bind_text(_areIdentifiersValidStmt, 1, login.c_str(), AUTO_QUERY_LENGTH,
 	                                    SQLITE_TRANSIENT));
-	sqliteThrowExcept(sqlite3_bind_blob(_areIdentifersValidStmt, 2, password.c_str(), sizeof(password.c_str()),
+	sqliteThrowExcept(sqlite3_bind_blob(_areIdentifiersValidStmt, 2, password.c_str(), sizeof(password.c_str()),
 	                                    SQLITE_TRANSIENT));
 
-	return sqliteThrowExcept(sqlite3_step(_areIdentifersValidStmt)) == SQLITE_ROW;
+	return sqliteThrowExcept(sqlite3_step(_areIdentifiersValidStmt)) == SQLITE_ROW;
 }
 
 bool ServerDatabase::isRegistered(const std::string& login)

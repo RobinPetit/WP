@@ -42,7 +42,7 @@ public:
 	void deleteDeckByName(const int userId, const std::string& deckName);
 	void editDeck(const int userId, const Deck& deck); // Deck should contains the deckId
 
-	bool areIdentifersValid(const std::string& login, const std::string& password);
+	bool areIdentifiersValid(const std::string& login, const std::string& password);
 	bool isRegistered(const std::string& login);
 	void registerUser(const std::string& login, const std::string& password);
 
@@ -68,7 +68,7 @@ private:
 	sqlite3_stmt * _removeFriendshipRequestStmt;
 	sqlite3_stmt * _isFriendshipRequestSentStmt;
 	sqlite3_stmt * _registerUserStmt;
-	sqlite3_stmt * _areIdentifersValidStmt;
+	sqlite3_stmt * _areIdentifiersValidStmt;
 	sqlite3_stmt * _createDeckStmt;
 	sqlite3_stmt * _deleteDeckByNameStmt;
 	sqlite3_stmt * _editDeckByNameStmt;
@@ -157,7 +157,7 @@ private:
 				"	VALUES(?1,?2);"
 			},
 			Statement {
-				&_areIdentifersValidStmt,
+				&_areIdentifiersValidStmt,
 				"SELECT 1 FROM Account "
 				"	WHERE(login == ?1 and password == ?2);"
 			},
