@@ -10,17 +10,11 @@
 #include "client/AbstractState.hpp"
 #include "client/NonBlockingInput.hpp"
 #include "common/CardData.hpp"
+#include "common/GameData.hpp"
+#include "common/Identifiers.hpp"
 
 // Forward declarations
 class StateStack;
-
-/// General card data
-struct CardData
-{
-	std::string name;
-	CostValue cost;
-	std::string description;
-};
 
 /// Cannot be more explicit.
 class GameState : public AbstractState
@@ -43,9 +37,11 @@ class GameState : public AbstractState
 		///////////////// attributes
 
 		std::vector<sf::Uint32> _selfHandCards;
-		std::vector<sf::Uint32> _selfBoardCards;
 		std::vector<sf::Uint32> _selfGraveCards; //needed for reviving spells
-		std::vector<sf::Uint32> _oppoBoardCards;
+
+		std::vector<BoardCreatureData> _selfBoardCreatures;
+		std::vector<BoardCreatureData> _oppoBoardCreatures;
+
 		unsigned _selfDeckSize;
 		unsigned _oppoHandSize;
 
@@ -86,8 +82,11 @@ class GameState : public AbstractState
 		// Game display
 		void displayGame();
 		void displayCardVector(std::vector<sf::Uint32> cardVector);
-		void displayBoardVector(std::vector<sf::Uint32> cardVector);
-		CardData getCardData(int cardID);
+		void displayBoardCreatureVector(std::vector<BoardCreatureData> cardVector);
+
+		std::string getCardName(cardId id);
+		CostValue getCardCost(cardId id);
+		std::string getCardDescription(cardId id);
 
 		/// Start the new thread waiting for special data
 		void initListening();
