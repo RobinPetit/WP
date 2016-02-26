@@ -172,13 +172,4 @@ void DecksManagementState::backMainMenu()
 	stackPop();
 }
 
-std::size_t DecksManagementState::askForNumber(std::size_t from, std::size_t to)
-{
-	std::string input;
-	std::getline(std::cin, input);
-	// Get a number from the user input
-	const std::size_t intInput{std::stoul(input)};
-	if(intInput < from or intInput >= to)
-		throw std::out_of_range("Index out of range.");
-	return intInput;
-}
+

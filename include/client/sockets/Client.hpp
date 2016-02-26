@@ -127,6 +127,8 @@ public:
 	/// Used to wait sleeping until the atomic boolean readyToPlay is set to true
 	void waitTillReadyToPlay();
 
+	const Terminal& getTerminal();
+
 private:
 	///////// Client/Server related attributes
 	/// The socket that's connected to the server

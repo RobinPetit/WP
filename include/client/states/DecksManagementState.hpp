@@ -30,7 +30,6 @@ class DecksManagementState : public AbstractState
 		void createDeck();
 		void deleteDeck();
 		void backMainMenu();
-		static std::size_t askForNumber(std::size_t from, std::size_t to);
 
 		std::vector<Deck> _decks;
 		CardsCollection _cardsCollection;

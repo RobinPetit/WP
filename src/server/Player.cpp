@@ -105,7 +105,7 @@ void Player::useCard(int handIndex)
 	}
 	catch (std::out_of_range)
 	{
-		sendValueToClient(_socketToClient, TransferType::SERVER_UNABLE_TO_PERFORM);
+		sendValueToClient(_socketToClient, TransferType::FAILURE);
 		return;
 	}
 
@@ -134,14 +134,14 @@ void Player::useCreature(int handIndex, Card *& usedCard)
 {
 	sf::Packet response;
 	if (_constraints.getConstraint(PC_TEMP_CREATURE_PLACING_LIMIT) == _turnData.creaturesPlaced)
-		response << TransferType::SERVER_UNABLE_TO_PERFORM;
+		response << TransferType::FAILURE;
 	else
 	{
 		_turnData.cardsUsed++;
 		_turnData.creaturesPlaced++;
 		cardHandToBoard(handIndex);
 		exploitCardEffects(usedCard);
-		response << TransferType::SERVER_ACKNOWLEDGEMENT;
+		response << TransferType::ACKNOWLEDGE;
 	}
 	_socketToClient.send(response);
 }
@@ -150,14 +150,14 @@ void Player::useSpell(int handIndex, Card *& usedCard)
 {
 	sf::Packet response;
 	if (_constraints.getConstraint(PC_TEMP_SPELL_CALL_LIMIT) == _turnData.spellCalls)
-		response << TransferType::SERVER_UNABLE_TO_PERFORM;
+		response << TransferType::FAILURE;
 	else
 	{
 		_turnData.cardsUsed++;
 		_turnData.spellCalls++;
 		cardHandToBin(handIndex);
 		exploitCardEffects(usedCard);
-		response << TransferType::SERVER_ACKNOWLEDGEMENT;
+		response << TransferType::ACKNOWLEDGE;
 	}
 	_socketToClient.send(response);
 }
@@ -173,7 +173,7 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 	}
 	catch (std::out_of_range)
 	{
-		sendValueToClient(_socketToClient, TransferType::SERVER_UNABLE_TO_PERFORM);
+		sendValueToClient(_socketToClient, TransferType::FAILURE);
 		return;
 	}
 
@@ -187,14 +187,14 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 	_energy -= attacker->getEnergyCost();
 
 	if (_constraints.getConstraint(PC_TEMP_CREATURE_ATTACK_LIMIT) == _turnData.creatureAttacks)
-		response << TransferType::SERVER_UNABLE_TO_PERFORM;
+		response << TransferType::FAILURE;
 	else
 	{
 		if (victimIndex<0)
 			_opponent->applyEffect(attacker, {PE_CHANGE_HEALTH, -attacker->getAttack()}); //no forced attacks on opponent
 		else
 			attacker->makeAttack(*_opponent->_cardBoard.at(victimIndex));
-		response << TransferType::SERVER_ACKNOWLEDGEMENT;
+		response << TransferType::ACKNOWLEDGE;
 	}
 	_socketToClient.send(response);
 }
@@ -378,11 +378,11 @@ void Player::exchgHandCard(const EffectParamsCollection& args)
 	Card* hisCard =  _opponent->cardExchangeFromHand(myCard);
 
 	if (hisCard == nullptr)
-		packet << TransferType::SERVER_UNABLE_TO_PERFORM;
+		packet << TransferType::FAILURE;
 	else
 	{
 		cardExchangeFromHand(hisCard, myCardIndex);
-		packet << TransferType::SERVER_ACKNOWLEDGEMENT;
+		packet << TransferType::ACKNOWLEDGE;
 	}
 	_socketToClient.send(packet); //Shouldn't this be called before cardExchangeFromHand ?
 }

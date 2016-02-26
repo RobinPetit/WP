@@ -88,3 +88,12 @@ std::string Terminal::startProgram(const std::string& name, const std::initializ
 		command += " \"" + arg + "\"";
 	return command;
 }
+
+void Terminal::clearScreen() const
+{
+#ifdef __linux__
+	system("clear");
+#else
+	system("cls");
+#endif
+}

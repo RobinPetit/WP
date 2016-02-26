@@ -21,9 +21,19 @@ GameState::GameState(StateStack& stateStack, Client& client):
 	_playing(true)
 {
 	addAction("Quit", &GameState::quit);
+	addAction("Use a card from hand", &GameState::useCard);
+	addAction("Attack with a creature", &GameState::attackWithCreature);
+	addAction("End your turn", &GameState::endTurn);
 	std::cout << "Your game is about to start!\n";
 	_client.waitTillReadyToPlay();
+	init();
+	play();
+}
+
+void GameState::init()
+{
 	initListening();
+	chooseDeck();
 	sf::Packet packet;
 	_client.getGameSocket().receive(packet);
 	TransferType type;
@@ -31,14 +41,41 @@ GameState::GameState(StateStack& stateStack, Client& client):
 	if(type != TransferType::GAME_STARTING)
 		throw std::runtime_error("Wrong signal received: " + std::to_string(static_cast<sf::Uint32>(type)));
 	packet >> type;
-	begin();
 	if(type == TransferType::GAME_PLAYER_ENTER_TURN)
 		_myTurn.store(true);
 	else if(type == TransferType::GAME_PLAYER_LEAVE_TURN)
 		_myTurn.store(false);
 	else
 		throw std::runtime_error("Wrong turn information: " + std::to_string(static_cast<sf::Uint32>(type)));
-	play();
+}
+
+void GameState::chooseDeck()
+{
+	std::vector<Deck> decks = _client.getDecks();
+	// ask for the deck to use during the game
+	std::cout << "Choose your deck:\n\t";
+	for(int i{0}; i < decks.size(); ++i)
+		std::cout << ++i << ": " << decks[i].getName() << std::endl;
+	std::cin.clear();
+	sf::Uint32 chosenDeck;
+	bool loop{true};
+	do
+	{
+		try
+		{
+			chosenDeck = askForNumber(1, decks.size()+1)-1;
+			loop = false;
+		}
+		catch(std::exception& e)
+		{
+			std::cout << "exception: " << e.what();
+		}
+	}
+	while(loop);
+	// send the deck ID to the server
+	sf::Packet deckId;
+	deckId << TransferType::GAME_PLAYER_GIVE_DECK_ID << chosenDeck;
+	_client.getGameSocket().send(deckId);
 }
 
 void GameState::play()
@@ -63,14 +100,6 @@ void GameState::display()
 	AbstractState::display();
 }
 
-void GameState::begin()
-{
-	addAction("Use a card from hand", &GameState::useCard);
-	addAction("Attack with a creature", &GameState::attackWithCreature);
-	addAction("End your turn", &GameState::endTurn);
-	/**/
-}
-
 void GameState::startTurn()
 {
 	_myTurn.store(true);
@@ -81,8 +110,7 @@ void GameState::startTurn()
 		if(_nonBlockingInput.waitForData(0.1))
 		{
 			std::string command{_nonBlockingInput.receiveStdinData()};
-			std::cout << "input is: '" + command + "'" << std::endl;
-			// handleInput(command);
+			handleInput(command);
 		}
 	}
 	/**/
@@ -166,6 +194,7 @@ void GameState::useCard()
 	else
 	{
 		int cardIndex = askSelfHandIndex();
+		std::cout << "You want to use card" << cardIndex << "\n";
 		//NETWORK: USE_CARD
 	}
 }
@@ -218,8 +247,14 @@ void GameState::quit()
 	stackPop();
 }
 
+GameState::~GameState()
+{
+	quit();
+}
+
 void GameState::displayGame()
 {
+	_client.getTerminal().clearScreen();
 	std::cout << "-----CARDS-----" << std::endl;
 	std::cout << "You have " << _selfDeckSize << " cards left in your deck." << std::endl;
 	std::cout << "Your opponent has " << _oppoHandSize << " cards in his hand." << std::endl;
@@ -354,6 +389,7 @@ void GameState::inputListening()
 		else
 			std::cerr << "Unknown message received: " << static_cast<sf::Uint32>(type) << "; ignore." << std::endl;
 	}
+	std::cout << "GAME OVER\n";
 }
 
 //Not needed ?

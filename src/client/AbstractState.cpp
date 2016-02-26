@@ -32,6 +32,7 @@ void AbstractState::handleInput(const std::string& input)
 	catch(const std::logic_error& e)
 	{
 		std::cout << "Wrong input!\n";
+		waitForEnter();
 	}
 }
 
@@ -50,4 +51,18 @@ void AbstractState::waitForEnter()
 	std::cout << "Press Enter to continue...";
 	std::string tmp;
 	std::getline(std::cin, tmp);
+}
+
+std::size_t AbstractState::askForNumber(std::size_t from, std::size_t to)
+{
+	std::string input;
+	do
+	{
+		std::getline(std::cin, input);
+	} while(input == "");
+	// Get a number from the user input
+	const std::size_t intInput{std::stoul(input)};
+	if(intInput < from or intInput >= to)
+		throw std::out_of_range("Index out of range.");
+	return intInput;
 }

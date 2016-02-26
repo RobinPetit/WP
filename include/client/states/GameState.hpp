@@ -33,10 +33,11 @@ class GameState : public AbstractState
 		/// It must do all things related to drawing or printing stuff on the screen.
 		virtual void display() override;
 
-		void begin();
 		void play();
 		void startTurn();
 		void updateData(std::array<unsigned, 5>);
+
+		~GameState();
 
 	private:
 		///////////////// attributes
@@ -63,6 +64,10 @@ class GameState : public AbstractState
 		std::thread _listeningThread;
 
 		//////////////// private methods
+
+		// called by the constructor to init the object
+		void init();
+		void chooseDeck();
 
 		// Requests user for additional input
 		int askIndex(int maxIndex, std::string inputMessage);

@@ -54,7 +54,13 @@ sf::Packet& operator >>(sf::Packet& packet, Deck& deck)
 
 sf::Packet& operator <<(sf::Packet& packet, const CardsCollection& cardCollection)
 {
-	packet << static_cast<sf::Uint32>(cardCollection.getSize());
+	// If the card collection have less than 20 cards (strange, bu we never know)
+	// then send 0 card
+	if(cardCollection.getSize() < Deck::size)
+		return packet << static_cast<sf::Uint32>(0);
+
+	// We don't send the 20 base cards, so substract size by 20
+	packet << static_cast<sf::Uint32>(cardCollection.getSize() - Deck::size);
 
 	// This array is used to ensure that the 20 first cards are added into
 	// the packet one less time than their actual number in the collection.
@@ -67,7 +73,7 @@ sf::Packet& operator <<(sf::Packet& packet, const CardsCollection& cardCollectio
 	{
 		const cardId card{*it};
 		// If this is a base card not already processed
-		if(card > 0 and card < baseCardsAlreadyProcessed.size() and not baseCardsAlreadyProcessed[card])
+		if(card > 0 and static_cast<std::size_t>(card) < baseCardsAlreadyProcessed.size() and not baseCardsAlreadyProcessed[card])
 			baseCardsAlreadyProcessed[card] = true;
 		// else we can safely add it to the packet;
 		else

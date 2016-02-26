@@ -32,6 +32,9 @@ public:
 	/// \param name A string containing the name of the program to be started
 	/// \param args A list representing the parameters given to the called program
 	std::string startProgram(const std::string& name, const std::initializer_list<const std::string>& args) const;
+
+	/// This function clears the content of the terminal
+	void clearScreen() const;
 private:
 	static const std::string _terminalNames[];
 	int _idx;
