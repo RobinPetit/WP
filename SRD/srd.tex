@@ -108,15 +108,15 @@ Baudoux Nicolas, Berrewaerts Jonathan, Gueniffrey Stanislas,  Muranovic Allan, P
 		\end{itemize}
 
 		\subsubsection{Description du Wizard Poker}
-			Le Wizard Poker est un jeu de cartes dans lequel deux joueurs s'affrontent en duel au tour par tour.
+			Le Wizard Poker est un jeu de cartes dans lequel deux joueurs s'affrontent en \gls{duel} au tour par tour.
 			
-			Chaque joueur a son propre deck choisi parmi sa collection de cartes. Au début de chaque duel, les deux joueurs ont le même nombre de points de vie (à savoir 20) et piochent 5 cartes de leur deck.
-			Le premier joueur sera choisi aléatoirement par le serveur. Ensuite, tout à tour, les joueurs pourront utiliser leurs cartes, qu'elles soient un sort ou une creature tant que leur coût d'utilisation/d'invocation/, ne dépasse pas l'énergie disponible du joueur. ( Le joueur gagne un point d'énergie supplémentaire par tour jusqu'à atteindre son maximum de 10.)
+			Chaque joueur a son propre \gls{deck} choisi parmi sa collection de cartes. Au début de chaque \gls{duel}, les deux joueurs ont le même nombre de points de vie (à savoir 20) et piochent 5 cartes de leur \gls{deck}.
+			Le premier joueur sera choisi aléatoirement par le serveur. Ensuite, tout à tour, les joueurs pourront utiliser leurs cartes, qu'elles soient un \gls{sort} ou une \gls{creature} tant que leur coût d'utilisation/d'invocation/, ne dépasse pas l'énergie disponible du joueur. ( Le joueur gagne un point d'énergie supplémentaire par tour jusqu'à atteindre son maximum de 10.)
 			
-			Les cartes peuvent attaquer soit l'adversaire directmeent, soit une , soit une creature adverse. Ou encore avoir un ou plusieurs effets \textit{spéciaux}\footnote{Par exemple : invoquer une carte au hasard, redonner de la vie, augmenter l'attaque, etc.}. 
-			Lorsqu'une carte arrive à la fin de sa période d'existence (points de vie de la carte arrivés à 0, sort détruisant ladite carte, effet terminé, etc.), elle est défaussée, c'est-à-dire qu'elle est envoyée dans la fosse.
+			Les cartes peuvent attaquer soit l'adversaire directmeent, soit une , soit une \gls{creature} adverse. Ou encore avoir un ou plusieurs effets \textit{spéciaux}\footnote{Par exemple : \gls{invoquer} une carte au hasard, redonner de la vie, augmenter l'attaque, etc.}. 
+			Lorsqu'une carte arrive à la fin de sa période d'existence (points de vie de la carte arrivés à 0, \gls{sort} détruisant ladite carte, effet terminé, etc.), elle est défaussée, c'est-à-dire qu'elle est envoyée dans la \gls{fosse}.
 			
-			Lorsqu'une carte est dans la fosse (également appelé cimetière), elle peut éventuellement être réutilisée à l'aide de sorts particuliers par exemple. Une carte défaussée n'est pas perdue, elle reste propriété du joueur : à la fin de la partie, les joueurs ont les mêmes cartes qu'au début de la partie si ce n'est que le gagnant a reçu une carte supplémentaire suite à sa victoire. La partie s'arrête lorsqu'un des deux joueurs a un nombre inférieur ou égal à 0 points de vie ou a passé 10 tours sans carte en main.
+			Lorsqu'une carte est dans la \gls{fosse} (également appelé cimetière), elle peut éventuellement être réutilisée à l'aide de \glspl{sort} particuliers par exemple. Une carte défaussée n'est pas perdue, elle reste propriété du joueur : à la fin de la partie, les joueurs ont les mêmes cartes qu'au début de la partie si ce n'est que le gagnant a reçu une carte supplémentaire suite à sa victoire. La partie s'arrête lorsqu'un des deux joueurs a un nombre inférieur ou égal à 0 points de vie ou a passé 10 tours sans carte en main.
 
 			\begin{center}\includegraphics[scale=0.45]{Activity1_Gameplay.png}\end{center}
 
@@ -142,12 +142,12 @@ Baudoux Nicolas, Berrewaerts Jonathan, Gueniffrey Stanislas,  Muranovic Allan, P
 	\begin{itemize}
 		\item créer un compte utilisateur ;
 		\item consulter, modifier ou supprimer ses informations personnelles ; 
-		\item créer un deck ou en modifier un pré-existant ;
+		\item créer un \gls{deck} ou en modifier un pré-existant ;
 		\item consulter les cartes dont il dispose ;
-		\item consulter les decks dont il dispose ;
+		\item consulter les \glspl{deck} dont il dispose ;
 		\item ajouter un joueur existant en ami ;
 		\item discuter avec un ami ;
-		\item \textbf{facultatif :} discuter avec plusieurs amis simultanément ;
+		\item \textbf{\gls{facultatif} :} discuter avec plusieurs amis simultanément ;
 		\item affronter un adversaire aléatoire ;
 		\item défier un joueur de sa liste d'amis ;
 		\item consulter le classement des joueurs.
@@ -182,7 +182,7 @@ Baudoux Nicolas, Berrewaerts Jonathan, Gueniffrey Stanislas,  Muranovic Allan, P
 				\item \textbf{Faire une partie}
 				\begin{description}
 					\item[Description] Un utilisateur peut jouer une partie.
-					\item[Pré-condition] L'utilisateur a un deck actif.
+					\item[Pré-condition] L'utilisateur a un \gls{deck} actif.
 					\item[Post-condition] Si l'utilisateur a gagné la partie, une carte est ajoutée à sa collection.
 					Ses statistiques (parties gagnées / parties perdues) sont mises à jour.\\
 				\end{description}
@@ -204,54 +204,54 @@ Baudoux Nicolas, Berrewaerts Jonathan, Gueniffrey Stanislas,  Muranovic Allan, P
 				\item[Post-condition] Soit la demande est acceptée (identifiant admissible), soit la demande est rejetée (identifiant non-admissible ou déjà utilisé).
 			\end{description}
 
-		\subsubsection{Gestion des decks}
+		\subsubsection{Gestion des \glspl{deck}}
 			\begin{center}\includegraphics[scale=0.5]{Model1_DecksManagement.png}\end{center}
 			\begin{itemize}
-				\item \textbf{Supprimer un deck}
+				\item \textbf{Supprimer un \gls{deck}}
 				\begin{description}
-					\item[Description] Suppression d'un deck.
-					\item[Pré-condition] La liste des decks n'est pas vide.
-					\item[Post-condition] Il y a un deck en moins dans la liste des decks.\\
+					\item[Description] Suppression d'un \gls{deck}.
+					\item[Pré-condition] La liste des \glspl{deck} n'est pas vide.
+					\item[Post-condition] Il y a un \gls{deck} en moins dans la liste des \glspl{deck}.\\
 				\end{description}
 
-				\item \textbf{Afficher un deck}
+				\item \textbf{Afficher un \gls{deck}}
 				\begin{description}
-					\item[Description] Affichage d'un deck.
-					\item[Pré-condition] La liste des decks n'est pas vide.
-					\item[Post-condition] L'utilisateur a pris connaissance du contenu d'un deck.\\
+					\item[Description] Affichage d'un \gls{deck}.
+					\item[Pré-condition] La liste des \glspl{deck} n'est pas vide.
+					\item[Post-condition] L'utilisateur a pris connaissance du contenu d'un \gls{deck}.\\
 				\end{description}
 
-				\item \textbf{Créer un deck par défaut}
+				\item \textbf{Créer un \gls{deck} par défaut}
 				\begin{description}
-					\item[Description] Pour créer un nouveau deck, le deck par défaut est ajouté.
+					\item[Description] Pour créer un nouveau \gls{deck}, le \gls{deck} par défaut est ajouté.
 					\item[Pré-condition] Aucune.
-					\item[Post-condition] Il y a un deck en plus dans la liste des decks.\\
+					\item[Post-condition] Il y a un \gls{deck} en plus dans la liste des \gls{deck}.\\
 				\end{description}
 
-				\item \textbf{Changer les cartes d'un deck}
+				\item \textbf{Changer les cartes d'un \gls{deck}}
 				\begin{description}
-					\item[Description] Pour modifier un deck, il faut changer une par une les cartes qui le composent.
-					\item[Pré-condition] La liste des decks n'est pas vide.
-					\item[Post-condition] Un des decks de la liste a été modifié.\\
+					\item[Description] Pour modifier un \gls{deck}, il faut changer une par une les cartes qui le composent.
+					\item[Pré-condition] La liste des\glspl{deck} n'est pas vide.
+					\item[Post-condition] Un des\glspl{deck} de la liste a été modifié.\\
 				\end{description}
 			\end{itemize}
-			Le fonctionnement de la création d'un nouveau deck nécessite peut-être quelques explications
+			Le fonctionnement de la création d'un nouveau \gls{deck} nécessite peut-être quelques explications
 			supplémentaire. 
-			Le use case "Créer un deck" commence par ajouter dans la liste des decks
-			une copie du deck par défaut (celui donné à la création du compte). Ensuite l'utilisateur
-			est redirigé vers le use case "Changer les cartes d'un deck", qui permet de remplacer
-			une par une les cartes d'un deck. 
+			Le use case "Créer un \gls{deck}" commence par ajouter dans la liste des\glspl{deck}
+			une copie du \gls{deck} par défaut (celui donné à la création du compte). Ensuite l'utilisateur
+			est redirigé vers le use case "Changer les cartes d'un \gls{deck}", qui permet de remplacer
+			une par une les cartes d'un \gls{deck}. 
 			Ainsi, avec une grande modularité et peu de code,
-			il est donné à l'utilisateur la possibilité de créer un tout nouveau deck sans devoir recoder une partie
-			de l'interface qui modifie un deck.
+			il est donné à l'utilisateur la possibilité de créer un tout nouveau \gls{deck} sans devoir recoder une partie
+			de l'interface qui modifie un \gls{deck}.
 
 		\subsubsection{Début de partie}
 			\begin{center}\includegraphics[scale=0.45]{Collaboration2_StartDuel.png}\end{center}
 
 			\begin{description}
-				\item[Description] Un joueur connecté peut défier un ami ou demander un duel contre un adversaire aléatoire.
+				\item[Description] Un joueur connecté peut défier un ami ou demander un \gls{duel} contre un adversaire aléatoire.
 				\item[Pré-condition] Chaque utilisateur doit être identifié et connecté à son compte.
-				\item[Post-condition] Un joueur aura perdu, l'autre aura gagné\footnote{Le gagnant reçoit une carte aléatoire à ajouter à son deck.}
+				\item[Post-condition] Un joueur aura perdu, l'autre aura gagné\footnote{Le gagnant reçoit une carte aléatoire à ajouter à son \gls{deck}.}
 			\end{description}
 
 		\subsubsection{Détail d'un tour}
@@ -262,7 +262,7 @@ Baudoux Nicolas, Berrewaerts Jonathan, Gueniffrey Stanislas,  Muranovic Allan, P
 		et serveurs sur des machines séparées).
 
 		De plus, l'utilisateur \textbf{doit} pouvoir discuter par messages à n'importe quel moment de l'exécution de l'application : tant pendant
-		qu'il gère ses amis, ses cartes ou pendant qu'il est en duel. Ces discussions ne peuvent se faire avec un joueur
+		qu'il gère ses amis, ses cartes ou pendant qu'il est en \gls{duel}. Ces discussions ne peuvent se faire avec un joueur
 		n'étant pas ami de l'utilisateur.
 
 	\subsection{Exigences de domaine}
@@ -292,11 +292,11 @@ Baudoux Nicolas, Berrewaerts Jonathan, Gueniffrey Stanislas,  Muranovic Allan, P
 		Nous pouvons constater que le client (Player) se connecte au serveur qui, lui, gère les parties (le tableau de jeu) ainsi que la base de donnée et tout ce dont cette dernière comprend.
 
 		\newpage
-		\subsubsection{Diagramme de classe du deck et des cartes}
+		\subsubsection{Diagramme de classe du \gls{deck} et des cartes}
 		\begin{center}\includegraphics[scale=0.5]{deck.png}\end{center}
-			Comme indiqué sur ce diagramme, un deck est composé de cartes, 20 pour être précis. Les cartes sont soit des créatures
-			soit des sorts et on ne peut posséder que maximum 2 exemplaire d'une même carte au sein d'un même deck.
-			A savoir également que les decks sont indépendants, il est donc possible de posséder uniquement 2x la même carte, mais avoir plusieurs decks qui possèdent 1 ou 2x cette carte.
+			Comme indiqué sur ce diagramme, un \gls{deck} est composé de cartes, 20 pour être précis. Les cartes sont soit des créatures
+			soit des \glspl{sort} et on ne peut posséder que maximum 2 exemplaire d'une même carte au sein d'un même \gls{deck}.
+			A savoir également que les\glspl{deck} sont indépendants, il est donc possible de posséder uniquement 2x la même carte, mais avoir plusieurs\glspl{deck} qui possèdent 1 ou 2x cette carte.
 
 			L'application des effets est simple : chaque effet est un effet direct, que ce soit infliger X points de dégats, comme soigner un allié ou encore interdire le joueur adverse de jouer pendant Y tours.
 			Un effet plus complexe est également un effet direct, seulement, il va modifier la liste de contraintes de la partie et c'est cette liste qui va permettre d'appliquer des effets sur la durée, ou des effets qui respectent certaines conditions (applique tel effet tant que tel créature est en vie par exemple).
@@ -307,7 +307,7 @@ Baudoux Nicolas, Berrewaerts Jonathan, Gueniffrey Stanislas,  Muranovic Allan, P
 			Ici, la structure est un peu plus complexe : Le serveur est composé d'une base de donnée en SQL qui est héritée par une base de donnée utilisable par l'application serveur (en c++ cette fois).
 
 			C'est ce serveur qui va naturellement tout gérer, des parties, jusqu'aux requêtes d'amis en passant
-			par la gestion/modification des deck/de compte. Tout sera stocké de son côté dans la base de données.
+			par la gestion/modification des \gls{deck}/de compte. Tout sera stocké de son côté dans la base de données.
 			Le client ne possédera aucune donnée, il est obligé de passer par les serveur quel que soit son intention.
 
 
@@ -329,7 +329,7 @@ Baudoux Nicolas, Berrewaerts Jonathan, Gueniffrey Stanislas,  Muranovic Allan, P
 			\begin{center}\includegraphics[scale=0.5]{stack1.png}\end{center}
 				C'est au moyen de piles que nous avons implémenté un menu fluide, efficace et facile d'utilisation.
 
-				En effet, pour aller plus loin dans le menu, il suffit de "push" notre choix, et pour un retour en arrière il suffit de faire un "pop", et le tour est joué. 
+				En effet, pour aller plus loin dans le menu, il suffit de "\gls{push}" notre choix, et pour un retour en arrière il suffit de faire un "\gls{pop}", et le tour est joué. 
 
 				Ainsi, pour le menu et toutes ses fonctionnalités, que ce soit au niveau de la gestion des amis jusqu'au menu principal, 
 				nous avons une classe abstraite héritée (\textbf{AbstractState}) ainsi qu'une utilisation d'une deuxième classe (\textbf{StateStack}). C'est grâce à ces deux dernière que tout 
@@ -338,9 +338,9 @@ Baudoux Nicolas, Berrewaerts Jonathan, Gueniffrey Stanislas,  Muranovic Allan, P
 			\newpage
 			\subsubsection{Deuxième moitié: fonctionnalités plus avancées}
 			\begin{center}\includegraphics[scale=0.5]{stack2.png}\end{center}
-				Ici, nous nous occupons un peu plus de l'expérience de jeu. Nous avons un gestionnaire de cartes, un gestionnaire de deck ainsi qu'un classement des joueurs et tout ce qui est nécessaire au bon fonctionnement d'une partie.
+				Ici, nous nous occupons un peu plus de l'expérience de jeu. Nous avons un gestionnaire de cartes, un gestionnaire de \gls{deck} ainsi qu'un classement des joueurs et tout ce qui est nécessaire au bon fonctionnement d'une partie.
 
-				La seule particularité de cette partie réside dans la classe \textbf{GameState} qui comporte des mutex, des valeurs atomiques ainsi que des entrées non bloquantes.
+				La seule particularité de cette partie réside dans la classe \textbf{GameState} qui comporte des \gls{mutex}, des valeurs atomiques ainsi que des entrées non bloquantes.
 				Etant données qu'il y aura de nombreuses entrées/sorties au niveau de cette classe-là, ces différents éléments permettront de ne pas se marcher sur les pieds lors des accès en mémoire de ses attributs.
 				
 \newpage
