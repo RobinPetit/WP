@@ -51,7 +51,6 @@ private:
 	ServerDatabase _database;
 	std::vector<GameThread *> _runningGames;
 	std::mutex _accessRunningGames;
-	std::size_t _last_id;
 
 	// private methods
 	/// Used to handle a newconnection request (when the listener gets a packet)
@@ -119,7 +118,7 @@ private:
 	void startGame(std::size_t idx);
 
 	/// Starts the new thread for the new game
-	void createGame(unsigned ID1, unsigned ID2);
+	void createGame(userId ID1, userId ID2);
 
 	//////////// Cards management
 

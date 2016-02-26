@@ -42,7 +42,6 @@ using StatementsList = std::array<Statement, N>;
 class Database
 {
 public:
-	typedef int64_t userId; // TODO: use
 	/// Constructor
 	/// \param filename: relative path to sqlite3 file
 	explicit Database(std::string filename);
@@ -62,7 +61,7 @@ protected:
 
 struct Friend
 {
-	Database::userId id;
+	userId id;
 	std::string name;
 };
 typedef std::vector<Friend> FriendsList;
