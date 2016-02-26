@@ -36,7 +36,7 @@ private:
 
 public:
 	/// Constructors
-	Creature(int cardID, int cost, int attack, int health, int shield, int shieldType,
+	Creature(cardId cardIdentifier, int cost, int attack, int health, int shield, int shieldType,
 			std::vector<EffectParamsCollection> effects);
 
 	/// Player interface

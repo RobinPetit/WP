@@ -1,7 +1,7 @@
 #include "server/Card.hpp"
 
-Card::Card(int cardID, int cost, std::vector<EffectParamsCollection> effects):
-	_cardID(cardID),
+Card::Card(cardId cardIdentifier, int cost, std::vector<EffectParamsCollection> effects):
+	_cardID(cardIdentifier),
 	_cost(cost),
 	_effects(effects)
 {
@@ -18,7 +18,7 @@ int Card::getEnergyCost()
 	return _cost;
 }
 
-int Card::getID()
+cardId Card::getID()
 {
 	return _cardID;
 }
