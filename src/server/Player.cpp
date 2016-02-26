@@ -109,21 +109,22 @@ void Player::useCard(int handIndex)
 		return;
 	}
 
-	if (_constraints.getConstraint(PC_TEMP_CARD_USE_LIMIT) == _turnData.cardsUsed)
-	{
-		sendValueToClient(_socketToClient, TransferType::GAME_CARD_LIMIT_TURN_REACHED);
-		return;
-	}
 	Card* usedCard = _cardHand.at(handIndex);
+	//Check if we have enough energy to use this card
 	if (usedCard->getEnergyCost() > _energy)
 	{
 		sendValueToClient(_socketToClient, TransferType::GAME_NOT_ENOUGH_ENERGY);
 		return;
 	}
 
-	_energy -= usedCard->getEnergyCost();
+	//Check if we have the right to put more cards (constraint)
+	if (_constraints.getConstraint(PC_TEMP_CARD_USE_LIMIT) == _turnData.cardsUsed)
+	{
+		sendValueToClient(_socketToClient, TransferType::GAME_CARD_LIMIT_TURN_REACHED);
+		return;
+	}
 
-	//TODO: use typeinfo ?
+	_energy -= usedCard->getEnergyCost();
 	(*this.*(usedCard->isCreature() ? &Player::useCreature : &Player::useSpell))(handIndex, usedCard);
 }
 
@@ -176,11 +177,19 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 		return;
 	}
 
+	//Check if we have enough energy to use this card
+	Creature* attacker = _cardBoard.at(attackerIndex);
+	if (attacker->getEnergyCost() > _energy)
+	{
+		sendValueToClient(_socketToClient, TransferType::GAME_NOT_ENOUGH_ENERGY);
+		return;
+	}
+	_energy -= attacker->getEnergyCost();
+
 	if (_constraints.getConstraint(PC_TEMP_CREATURE_ATTACK_LIMIT) == _turnData.creatureAttacks)
 		response << TransferType::SERVER_UNABLE_TO_PERFORM;
 	else
 	{
-		Creature* attacker = _cardBoard.at(attackerIndex);
 		if (victimIndex<0)
 			_opponent->applyEffect(attacker, {PE_CHANGE_HEALTH, -attacker->getAttack()}); //no forced attacks on opponent
 		else
