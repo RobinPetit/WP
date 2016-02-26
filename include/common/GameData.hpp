@@ -5,6 +5,14 @@
 #include "common/CardData.hpp"
 
 /// These struct are used to communicate changes of the game data on the network (server->client).
+enum CardToSelect : int32_t
+{
+	SELF_BOARD,
+	OPPO_BOARD,
+	SELF_HAND,
+	OPPO_HAND
+};
+
 struct BoardCreatureData
 {
 	cardId id;
@@ -15,12 +23,12 @@ struct BoardCreatureData
 	//bool isParalyzed;
 };
 
-//TODO: use in transmission ?!
 struct CardData
 {
 	cardId id;
 };
 
+//TODO: use in transmission ?!
 struct PlayerData
 {
     int health;
