@@ -143,4 +143,10 @@ enum class TransferType : sf::Uint32
 sf::Packet& operator<<(sf::Packet& packet, const TransferType& type);
 sf::Packet& operator>>(sf::Packet& packet, TransferType& type);
 
+enum class CardToSelect : sf::Uint32
+{
+	SELF=0,
+	OPPONENT=1,
+};
+
 #endif  // _TRANSFER_TYPE_HPP_

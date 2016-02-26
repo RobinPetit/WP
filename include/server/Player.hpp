@@ -57,6 +57,11 @@ public:
 	int requestSelfBoardIndex();
 	int requestOppoBoardIndex();
 
+	///
+	/// \return a vector of indices selected
+	/// \param selection a vector of values telling whether the choice must be in player's cards or opponent's cards
+	std::vector<int>&& askUserToSelectCards(const std::vector<CardToSelect>& selection);
+
 private:
 	/// Types
 	struct TurnData
