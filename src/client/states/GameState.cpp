@@ -85,10 +85,10 @@ void GameState::play()
 
 void GameState::display()
 {
+	displayGame();
 	std::cout << "Here are your options:\n";
 	// Display the actions
 	AbstractState::display();
-	displayGame();
 }
 
 void GameState::startTurn()
