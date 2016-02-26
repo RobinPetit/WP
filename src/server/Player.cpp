@@ -53,7 +53,7 @@ void Player::setDeck(const Deck& newDeck)
 	std::vector<Card* > loadedCards;
 	for(std::size_t i{0}; i < Deck::size; ++i)
 	{
-		const cardId card{newDeck.getCard(i)-1};
+		const cardId card{newDeck.getCard(i)};
 		// FIXME For now, we consider that cardId <= 10 are creatures,
 		// and higher cardId are spells. THIS SHOULD BE FIXED.
 		if(card <= 10)
