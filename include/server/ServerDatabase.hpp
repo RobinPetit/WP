@@ -39,6 +39,7 @@ public:
 	CardsCollection getCardsCollection(userId id);
 
 	std::vector<Deck> getDecks(userId id);
+	Deck getDeckByName(userId id, const std::string& deckName);
 	void createDeck(userId id, const Deck& deck);
 	void deleteDeckByName(userId id, const std::string& deckName);
 	void editDeck(userId id, const Deck& deck); // Deck should contains the deckId

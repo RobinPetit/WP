@@ -142,6 +142,15 @@ bool ServerDatabase::isFriendshipRequestSent(userId from, userId to)
 	return sqliteThrowExcept(sqlite3_step(_isFriendshipRequestSentStmt)) == SQLITE_ROW;
 }
 
+Deck ServerDatabase::getDeckByName(userId id, const std::string& deckName)
+{
+	// TODO this is certainly not the best way to get an unique deck from the DB
+	for(auto& deck : getDecks(id))
+		if(deck.getName() == deckName)
+			return deck;
+	return Deck();
+}
+
 void ServerDatabase::createDeck(userId id, const Deck& deck)
 {
 	sqlite3_reset(_createDeckStmt);
