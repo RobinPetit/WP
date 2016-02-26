@@ -1,7 +1,7 @@
 #include "server/Spell.hpp"
 
-Spell::Spell(int cost, std::vector<EffectParamsCollection> effects):
-	Card(cost, effects)
+Spell::Spell(int cardID, int cost, std::vector<EffectParamsCollection> effects):
+	Card(cardID, cost, effects)
 {
 
 }

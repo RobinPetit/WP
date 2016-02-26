@@ -171,5 +171,4 @@ extern const CreatureData ALL_CREATURES[];
 
 extern const SpellData ALL_SPELLS[];
 
-
 #endif  // _CARD_DATA_HPP

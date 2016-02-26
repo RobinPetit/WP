@@ -16,7 +16,7 @@ private:
 
 public:
 	/// Constructor
-	Card(int cost, std::vector<EffectParamsCollection> effects);
+	Card(int cardID, int cost, std::vector<EffectParamsCollection> effects);
 
 	/// Getters
 	int getEnergyCost();

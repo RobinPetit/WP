@@ -472,12 +472,12 @@ void Player::loadCardDeck(int chosenDeck)
     for (int i=0; i<10; i++)
     {
 		CreatureData creat = ALL_CREATURES[i];
-        loadedCards.push_back(new Creature(creat.cost, creat.attack, creat.health, creat.shield, creat.shieldType, creat.effects));
+        loadedCards.push_back(new Creature(i, creat.cost, creat.attack, creat.health, creat.shield, creat.shieldType, creat.effects));
     }
     for (int i=0; i<10; i++)
     {
         SpellData spell = ALL_SPELLS[i];
-        loadedCards.push_back(new Spell(spell.cost, spell.effects));
+        loadedCards.push_back(new Spell(i+10, spell.cost, spell.effects));
     }
     std::shuffle(loadedCards.begin(), loadedCards.end(), _engine);
     for (int i=0; i<20; i++)

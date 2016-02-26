@@ -1,6 +1,7 @@
 #include "server/Card.hpp"
 
-Card::Card(int cost, std::vector<EffectParamsCollection> effects):
+Card::Card(int cardID, int cost, std::vector<EffectParamsCollection> effects):
+	_cardID(cardID),
 	_cost(cost),
 	_effects(effects)
 {

@@ -90,6 +90,13 @@ void GameState::startTurn()
 
 
 //PRIVATE METHODS
+CardData GameState::getCardData(int cardID)
+{
+    if (cardID < 10)
+		return {ALL_CREATURES[cardID].name, ALL_CREATURES[cardID].cost, ALL_CREATURES[cardID].description};
+	else
+		return {ALL_SPELLS[cardID-10].name, ALL_SPELLS[cardID-10].cost, ALL_SPELLS[cardID-10].description};
+}
 
 // Request user for additional input
 int GameState::askIndex(int maxIndex, std::string inputMessage)
@@ -235,7 +242,8 @@ void GameState::displayCardVector(std::vector<sf::Uint32> cardVector)
 {
 	for (int i=0; i<cardVector.size(); i++)
 	{
-		std::cout << i << " : " << cardVector.at(i);
+		CardData thisCard = getCardData(cardVector.at(i));
+		std::cout << i << " : " << thisCard.name << "(" << thisCard.cost << ")";
 		//TODO use card names instead of card IDs ?
 		if (i!=cardVector.size()-1)
 			std::cout << ", ";

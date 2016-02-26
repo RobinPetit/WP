@@ -9,9 +9,18 @@
 // WizardPoker headers
 #include "client/AbstractState.hpp"
 #include "client/NonBlockingInput.hpp"
+#include "common/CardData.hpp"
 
 // Forward declarations
 class StateStack;
+
+/// General card data
+struct CardData
+{
+	std::string name;
+	CostValue cost;
+	std::string description;
+};
 
 /// Cannot be more explicit.
 class GameState : public AbstractState
@@ -38,11 +47,11 @@ class GameState : public AbstractState
 		std::vector<sf::Uint32> _oppoBoardCards;
 		unsigned _selfDeckSize;
 		unsigned _oppoHandSize;
-		
-	
+
+
 		unsigned _selfHealth, _oppoHealth;
 		unsigned _selfEnergy;
-		
+
 		// allow to update these values without interfering during a turn
 		std::mutex _accessHealth;
 		std::mutex _accessEnergy;
@@ -68,16 +77,17 @@ class GameState : public AbstractState
 		void attackWithCreature();
 		void endTurn();
 		void quit();
-		
+
 		// Game display
 		void displayGame();
 		void displayCardVector(std::vector<sf::Uint32> cardVector);
+		CardData getCardData(int cardID);
 
 		/// Start the new thread waiting for special data
 		void initListening();
 		/// Called by the game listening thread: waits for server game thread special data
 		void inputListening();
-		
+
 		// Not needed ?
 		///Those methods can be used for effects
 		//void changeHealth(int);
