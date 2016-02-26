@@ -39,6 +39,7 @@ public:
 
 	std::vector<Deck> getDecks(const int userId);
 	void createDeck(const int userId, const Deck& deck);
+	void deleteDeckByName(const int userId, const std::string& deckName);
 
 	bool areIdentifersValid(const std::string& login, const std::string& password);
 	bool isRegistered(const std::string& login);
@@ -68,11 +69,12 @@ private:
 	sqlite3_stmt * _registerUserStmt;
 	sqlite3_stmt * _areIdentifersValidStmt;
 	sqlite3_stmt * _createDeckStmt;
+	sqlite3_stmt * _deleteDeckByNameStmt;
 
 	// `constexpr std::array::size_type size() const;`
 	// -> I consider this 15 as the definition of the variable, so it is not a magic number
 	// -> future uses have to be _statements.size() -> 15 is writed only one time
-	StatementsList<16> _statements
+	StatementsList<17> _statements
 	{
 		{
 			Statement {
@@ -163,6 +165,11 @@ private:
 				"		Card10, Card11, Card12, Card13, Card14, Card15, Card16, Card17, Card18, Card19) "
 				"	VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, "
 				"		?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22);"
+			},
+			Statement { // 16
+				&_deleteDeckByNameStmt,
+				"DELETE FROM Deck "
+				"	WHERE owner == ?1 and name == ?2;"
 			}
 		}
 	};

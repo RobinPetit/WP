@@ -1,8 +1,6 @@
 #include "server/ServerDatabase.hpp"
 
-#ifndef NDEBUG
 #include <cassert>
-#endif
 
 #define AUTO_QUERY_LENGTH -1
 
@@ -156,6 +154,15 @@ void ServerDatabase::createDeck(const int userId, const Deck& deck)
 	}
 
 	assert(sqliteThrowExcept(sqlite3_step(_createDeckStmt)) == SQLITE_DONE);
+}
+
+void ServerDatabase::deleteDeckByName(const int userId, const std::string& deckName)
+{
+	sqlite3_reset(_deleteDeckByNameStmt);
+	sqliteThrowExcept(sqlite3_bind_int(_deleteDeckByNameStmt, 1, userId));
+	sqliteThrowExcept(sqlite3_bind_text(_deleteDeckByNameStmt, 2, deckName, AUTO_QUERY_LENGTH, SQLITE_TRANSIENT));
+
+	assert(sqliteThrowExcept(sqlite3_step(_deleteDeckByNameStmt)) == SQLITE_DONE);
 }
 
 bool ServerDatabase::areIdentifersValid(const std::string& login, const std::string& password)
