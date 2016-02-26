@@ -21,23 +21,12 @@ GameState::GameState(StateStack& stateStack, Client& client):
 	_playing(true)
 {
 	addAction("Quit", &GameState::quit);
+	addAction("Use a card from hand", &GameState::useCard);
+	addAction("Attack with a creature", &GameState::attackWithCreature);
+	addAction("End your turn", &GameState::endTurn);
 	std::cout << "Your game is about to start!\n";
 	_client.waitTillReadyToPlay();
 	init();
-	sf::Packet packet;
-	_client.getGameSocket().receive(packet);
-	TransferType type;
-	packet >> type;
-	if(type != TransferType::GAME_STARTING)
-		throw std::runtime_error("Wrong signal received: " + std::to_string(static_cast<sf::Uint32>(type)));
-	packet >> type;
-	begin();
-	if(type == TransferType::GAME_PLAYER_ENTER_TURN)
-		_myTurn.store(true);
-	else if(type == TransferType::GAME_PLAYER_LEAVE_TURN)
-		_myTurn.store(false);
-	else
-		throw std::runtime_error("Wrong turn information: " + std::to_string(static_cast<sf::Uint32>(type)));
 	play();
 }
 
@@ -45,6 +34,19 @@ void GameState::init()
 {
 	initListening();
 	chooseDeck();
+	sf::Packet packet;
+	_client.getGameSocket().receive(packet);
+	TransferType type;
+	packet >> type;
+	if(type != TransferType::GAME_STARTING)
+		throw std::runtime_error("Wrong signal received: " + std::to_string(static_cast<sf::Uint32>(type)));
+	packet >> type;
+	if(type == TransferType::GAME_PLAYER_ENTER_TURN)
+		_myTurn.store(true);
+	else if(type == TransferType::GAME_PLAYER_LEAVE_TURN)
+		_myTurn.store(false);
+	else
+		throw std::runtime_error("Wrong turn information: " + std::to_string(static_cast<sf::Uint32>(type)));
 }
 
 void GameState::chooseDeck()
@@ -96,14 +98,6 @@ void GameState::display()
 	std::cout << "Here are your options:\n";
 	// Display the actions
 	AbstractState::display();
-}
-
-void GameState::begin()
-{
-	addAction("Use a card from hand", &GameState::useCard);
-	addAction("Attack with a creature", &GameState::attackWithCreature);
-	addAction("End your turn", &GameState::endTurn);
-	/**/
 }
 
 void GameState::startTurn()
