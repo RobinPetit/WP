@@ -25,7 +25,8 @@ std::function<void(Player&, const EffectParamsCollection&)> Player::_effectMetho
 	&Player::changeHealth,
 };
 
-Player::Player(userId id, sf::TcpSocket& socket, sf::TcpSocket& specialSocket):
+Player::Player(ServerDatabase& database, userId id, sf::TcpSocket& socket, sf::TcpSocket& specialSocket):
+	_database(database),
 	_id(id),
 	_socketToClient(socket),
 	_specialSocketToClient(specialSocket)
@@ -57,7 +58,8 @@ void Player::beginGame(bool isActivePlayer)
 		//NETWORK: GAME_STARTED_INACTIVE
 
 	//NETWORK: request Deck selection from client
-	loadCardDeck(0);
+	std::string name = "Deck1";
+	loadCardDeck(name);
 }
 
 void Player::enterTurn(int turn)
@@ -474,24 +476,24 @@ void Player::sendCurrentHealth()
 }
 
 /*--------------------------- PRIVATE */
-void Player::loadCardDeck(int chosenDeck)
+void Player::loadCardDeck(const std::string& chosenDeckName)
 {
-	//DATABASE: request chosen deck for Card Creation
+	Deck chosenDeckInstance(_database.getDeckByName(getID(), chosenDeckName));
 	std::vector<Card* > loadedCards;
-	for (int i=0; i<10; i++)
+	for(const auto& card : chosenDeckInstance)
 	{
-		CreatureData creat = ALL_CREATURES[i];
-		loadedCards.push_back(new Creature(i, creat.cost, creat.attack, creat.health, creat.shield, creat.shieldType, creat.effects));
-	}
-	for (int i=0; i<5; i++)
-	{
-		SpellData spell = ALL_SPELLS[i];
-		loadedCards.push_back(new Spell(i+10, spell.cost, spell.effects));
-	}
-	for (int i=0; i<5; i++)
-	{
-		SpellData spell = ALL_SPELLS[i];
-		loadedCards.push_back(new Spell(i+15, spell.cost, spell.effects));
+		// FIXME For now, we consider that cardId <= 10 are creatures,
+		// and higher cardId are spells. THIS SHOULD BE FIXED.
+		if(card <= 10)
+		{
+			CreatureData creat = ALL_CREATURES[card];
+			loadedCards.push_back(new Creature(card, creat.cost, creat.attack, creat.health, creat.shield, creat.shieldType, creat.effects));
+		}
+		else
+		{
+			SpellData spell = ALL_SPELLS[card - 10];
+			loadedCards.push_back(new Spell(card, spell.cost, spell.effects));
+		}
 	}
 	std::shuffle(loadedCards.begin(), loadedCards.end(), _engine);
 	for (int i=0; i<20; i++)
@@ -722,4 +724,3 @@ std::vector<int>&& Player::askUserToSelectCards(const std::vector<CardToSelect>&
 	packet >> indices;
 	return std::move(indices);
 }
-

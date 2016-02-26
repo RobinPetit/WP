@@ -360,7 +360,7 @@ void Server::startGame(std::size_t idx)
 void Server::createGame(userId ID1, userId ID2)
 {
 	_accessRunningGames.lock();
-	_runningGames.emplace_back(new GameThread(ID1, ID2, &Server::startGame, this, _runningGames.size()));
+	_runningGames.emplace_back(new GameThread(_database, ID1, ID2, &Server::startGame, this, _runningGames.size()));
 	_accessRunningGames.unlock();
 }
 

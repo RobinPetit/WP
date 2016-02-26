@@ -15,6 +15,7 @@
 #include "common/GameData.hpp"
 #include "common/Identifiers.hpp"  // userId
 #include "common/sockets/TransferType.hpp"
+#include "server/ServerDatabase.hpp"
 // SFML headers
 #include <SFML/Network/TcpSocket.hpp>
 
@@ -26,7 +27,7 @@ class Player
 {
 public:
 	/// Constructor
-	Player(userId id, sf::TcpSocket& socket, sf::TcpSocket& specialSocket);
+	Player(ServerDatabase& database, userId id, sf::TcpSocket& socket, sf::TcpSocket& specialSocket);
 	void setOpponent(Player* opponent);  // Complementary
 
 	/// Destructor.
@@ -74,6 +75,7 @@ private:
 	constexpr static TurnData _emptyTurnData = {0, 0, 0, 0};
 
 	/// Attributes
+	ServerDatabase& _database;
 	Board* _board;
 	Player* _opponent = nullptr;
 	userId _id;
@@ -116,7 +118,7 @@ private:
 	void changeHealth(const EffectParamsCollection& args);
 
 	/// Other private methods
-	void loadCardDeck(int chosenDeck);
+	void loadCardDeck(const std::string& chosenDeckName);
 	void exploitCardEffects(Card* usedCard);
 	void setTeamConstraint(const Card* usedCard, const EffectParamsCollection& effectArgs);
 
