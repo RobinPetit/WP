@@ -202,6 +202,34 @@ void GameState::quit()
 	stackPop();
 }
 
+void GameState::displayGame()
+{
+	std::cout << "-----CARDS-----" << std::endl;
+	std::cout << "You have " << _selfDeckSize << " cards left in your deck." << std::endl;
+	std::cout << "Your opponent has " << _oppoHandSize << " cards in his hand." << std::endl;
+	std::cout << "Cards in your graveyard:" << std::endl;
+	displayCardVector(_selfGraveCards);
+	std::cout << "Cards on your opponent's board:" << std::endl;
+	displayCardVector(_oppoBoardCards);
+	std::cout << "Cards on your board:" << std::endl;
+	displayCardVector(_selfBoardCards);
+
+	std::cout << "-----HEALTH & ENERGY-----" << std::endl;
+	std::cout << "Your opponent has " << _oppoHealth << " life points left." << std::endl;
+	std::cout << "Your have " << _selfHealth << " life points left." << std::endl;
+	std::cout << "Your have " << _selfEnergy << " energy points left." << std::endl;
+}
+
+void GameState::displayCardVector(std::vector<sf::Uint32> cardVector)
+{
+	for (int i=0; i<cardVector.size(); i++)
+	{
+		std::cout << cardVector.at(i);
+		if (i!=cardVector.size()-1)
+			std::cout << ", ";
+	}
+	std::cout << std::endl;
+}
 
 //////////////// special data receival
 

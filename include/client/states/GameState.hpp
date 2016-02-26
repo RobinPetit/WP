@@ -68,6 +68,10 @@ class GameState : public AbstractState
 		void attackWithCreature();
 		void endTurn();
 		void quit();
+		
+		// Game display
+		void displayGame();
+		void displayCardVector(std::vector<sf::Uint32> cardVector);
 
 		/// Start the new thread waiting for special data
 		void initListening();
