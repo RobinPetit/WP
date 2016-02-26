@@ -2,6 +2,7 @@
 #include "common/Identifiers.hpp"
 
 #include <cassert>
+#include <cstring>
 
 #define AUTO_QUERY_LENGTH -1
 
@@ -185,7 +186,7 @@ bool ServerDatabase::areIdentifiersValid(const std::string& login, const std::st
 	sqlite3_reset(_areIdentifiersValidStmt);
 	sqliteThrowExcept(sqlite3_bind_text(_areIdentifiersValidStmt, 1, login.c_str(), AUTO_QUERY_LENGTH,
 	                                    SQLITE_TRANSIENT));
-	sqliteThrowExcept(sqlite3_bind_blob(_areIdentifiersValidStmt, 2, password.c_str(), sizeof(password.c_str()),
+	sqliteThrowExcept(sqlite3_bind_blob(_areIdentifiersValidStmt, 2, password.c_str(), std::strlen(password.c_str()),
 	                                    SQLITE_TRANSIENT));
 
 	return sqliteThrowExcept(sqlite3_step(_areIdentifiersValidStmt)) == SQLITE_ROW;
@@ -203,7 +204,7 @@ void ServerDatabase::registerUser(const std::string& login, const std::string& p
 {
 	sqlite3_reset(_registerUserStmt);
 	sqliteThrowExcept(sqlite3_bind_text(_registerUserStmt, 1, login.c_str(), AUTO_QUERY_LENGTH, SQLITE_TRANSIENT));
-	sqliteThrowExcept(sqlite3_bind_blob(_registerUserStmt, 2, password.c_str(), sizeof(password.c_str()),
+	sqliteThrowExcept(sqlite3_bind_blob(_registerUserStmt, 2, password.c_str(), std::strlen(password.c_str()),
 	                                    SQLITE_TRANSIENT));
 
 	assert(sqliteThrowExcept(sqlite3_step(_registerUserStmt)) == SQLITE_DONE);
