@@ -300,9 +300,19 @@ Baudoux Nicolas, Berrewaerts Jonathan, Gueniffrey Stanislas,  Muranovic Allan, P
 
 			L'application des effets est simple : chaque effet est un effet direct, que ce soit infliger X points de dégats, comme soigner un allié ou encore interdire le joueur adverse de jouer pendant Y tours.
 			Un effet plus complexe est également un effet direct, seulement, il va modifier la liste de contraintes de la partie et c'est cette liste qui va permettre d'appliquer des effets sur la durée, ou des effets qui respectent certaines conditions (applique tel effet tant que tel créature est en vie par exemple).
+	
+		\newpage
+		\subsubsection{Diagramme de classe du serveur et de sa base de donnée}
+		\begin{center}\includegraphics[scale=0.5]{Server.png}\end{center}
+			Ici, la structure est un peu plus complexe : Le serveur est composé d'une base de donnée en SQL qui est héritée par une base de donnée utilisable par l'application serveur (en c++ cette fois).
+
+			C'est ce serveur qui va naturellement tout gérer, des parties, jusqu'aux requêtes d'amis en passant
+			par la gestion/modification des deck/de compte. Tout sera stocké de son côté dans la base de données.
+			Le client ne possédera aucune donnée, il est obligé de passer par les serveur quel que soit son intention.
+
 
 		\newpage
-		\subsection{Diagramme des classes intervenant dans une partie (simplifié)}
+		\subsubsection{Diagramme des classes intervenant dans une partie (simplifié)}
 		\begin{center}\includegraphics[scale=0.5]{Game.png}\end{center}
 			Il est à noter que c'est un diagramme de classe, et non d'activités, il regroupe juste les plus grosses classes intervenant dans la partie,
 			et non pas leur lien/fonctionnement entre elles.
