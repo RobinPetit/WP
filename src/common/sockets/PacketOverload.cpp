@@ -114,3 +114,16 @@ sf::Packet& operator >>(sf::Packet& packet, BoardCreatureData& data)
 	data.shield = static_cast<int>(shield);
 	return packet;
 }
+
+sf::Packet& operator <<(sf::Packet& packet, const CardData& data)
+{
+	return packet << static_cast<sf::Int64>(data.id);
+}
+
+sf::Packet& operator >>(sf::Packet& packet, CardData& data)
+{
+	sf::Int64 id;
+	packet >> id;
+	data.id = static_cast<cardId>(id);
+	return packet;
+}

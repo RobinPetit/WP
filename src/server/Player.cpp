@@ -623,22 +623,22 @@ Card* Player::cardExchangeFromHand(Card* givenCard, int handIndex)
 
 void Player::sendHandState()
 {
-	sendIDsFromVector(TransferType::GAME_HAND_UPDATED, _cardHand);
+	sendCardDataFromVector(TransferType::GAME_HAND_UPDATED, _cardHand);
 }
 
 void Player::sendBoardState()
 {
-	sendIDsFromVector(TransferType::GAME_BOARD_UPDATED, _cardBoard);
+	sendBoardCreatureDataFromVector(TransferType::GAME_BOARD_UPDATED, _cardBoard);
 }
 
 void Player::sendOpponentBoardState()
 {
-	sendIDsFromVector(TransferType::GAME_OPPONENT_BOARD_UPDATED, _opponent->getBoard());
+	sendBoardCreatureDataFromVector(TransferType::GAME_OPPONENT_BOARD_UPDATED, _opponent->getBoard());
 }
 
 void Player::sendGraveyardState()
 {
-	sendIDsFromVector(TransferType::GAME_GRAVEYARD_UPDATED, _cardBin);
+	sendCardDataFromVector(TransferType::GAME_GRAVEYARD_UPDATED, _cardBin);
 }
 
 // use a template to handle both Card and Creature pointers
@@ -654,13 +654,27 @@ void Player::sendIDsFromVector(TransferType type, const std::vector<CardType *>&
 	_specialSocketToClient.send(packet);
 }
 
-void Player::sendCreatureDataFromVector(TransferType type, const std::vector<Creature*>& vect)
+void Player::sendCardDataFromVector(TransferType type, const std::vector<Card*>& vect)
+{
+	sf::Packet packet;
+	std::vector<CardData> cards;
+	for(int i=0; i < vect.size(); ++i)
+	{
+		CardData data;
+		data.id = vect.at(i)->getID();
+		cards.push_back(data);
+	}
+	packet << cards;
+	_specialSocketToClient.send(packet);
+}
+
+void Player::sendBoardCreatureDataFromVector(TransferType type, const std::vector<Creature*>& vect)
 {
     sf::Packet packet;
 	std::vector<BoardCreatureData> boardCreatures;
-	BoardCreatureData data;
 	for (int i=0; i<vect.size(); i++)
 	{
+		BoardCreatureData data;
         Creature& creat = *vect.at(i);
         data.id 	= creat.getID();
 		data.attack = creat.getAttack();
