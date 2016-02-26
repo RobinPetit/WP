@@ -653,8 +653,7 @@ void Player::sendIDsFromVector(TransferType type, const std::vector<CardType *>&
 
 void Player::sendCreatureDataFromVector(TransferType type, const std::vector<Creature*>& vect)
 {
-    //sf::Packet packet;
-    //packet << static_cast<sf::Uint32>(vect.size()); //useful ?
+    sf::Packet packet;
 	std::vector<BoardCreatureData> boardCreatures;
 	BoardCreatureData data;
 	for (int i=0; i<vect.size(); i++)
@@ -667,8 +666,9 @@ void Player::sendCreatureDataFromVector(TransferType type, const std::vector<Cre
 		data.shieldType = creat.getShieldType();
         boardCreatures.push_back(data);
 	}
-	//packet << boardCreatures;
-	//_specialSocketToClient.send(packet);
+	// std::vector transmission in packet is defined in common/sockets/PacketOverload.hpp
+	packet << boardCreatures;
+	_specialSocketToClient.send(packet);
 }
 
 //////////
