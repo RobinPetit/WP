@@ -344,6 +344,10 @@ INSERT INTO Deck(owner, name, Card0, Card1, Card2, Card3, Card4, Card5, Card6, C
                  Card10, Card11, Card12, Card13, Card14, Card15, Card16, Card17, Card18, Card19)
     VALUES (1, 'Test', 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 1, 16, 17, 18, 19, 20); 
 
+INSERT INTO Deck(owner, name, Card0, Card1, Card2, Card3, Card4, Card5, Card6, Card7, Card8, Card9,
+                 Card10, Card11, Card12, Card13, Card14, Card15, Card16, Card17, Card18, Card19)
+    VALUES (2, 'Test', 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 1); 
+
 SELECT "Update victories/defeats";
 UPDATE Account SET victories = 4 WHERE id == 1 OR id == 3;
 UPDATE Account SET defeats = 4 WHERE id == 1 OR id == 4;
