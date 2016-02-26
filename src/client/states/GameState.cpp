@@ -56,7 +56,7 @@ void GameState::chooseDeck()
 	// ask for the deck to use during the game
 	for(int i=0; i<decks.size(); i++)
 		std::cout << i << " : " << decks.at(i).getName() << std::endl;
-
+	std::cin.clear();
 	std::size_t res; //chosen deck
 	do
 	{
@@ -475,24 +475,24 @@ void GameState::applySelfEffect()
 
 std::string GameState::getCardName(cardId id)
 {
-	if (id<10)
-		return ALL_CREATURES[id].name;
+	if (id<=10)
+		return ALL_CREATURES[id-1].name;
 	else
-		return ALL_SPELLS[id-10].name;
+		return ALL_SPELLS[id-11].name;
 }
 
 CostValue GameState::getCardCost(cardId id)
 {
-	if (id<10)
-		return ALL_CREATURES[id].cost;
+	if (id<=10)
+		return ALL_CREATURES[id-1].cost;
 	else
 		return ALL_SPELLS[id-10].cost;
 }
 
 std::string GameState::getCardDescription(cardId id)
 {
-	if (id<10)
-		return ALL_CREATURES[id].description;
+	if (id<=10)
+		return ALL_CREATURES[id-1].description;
 	else
-		return ALL_SPELLS[id-10].description;
+		return ALL_SPELLS[id-11].description;
 }
