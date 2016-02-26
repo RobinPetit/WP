@@ -14,11 +14,9 @@
 /// complicated (although really interesting to write) and just
 /// obfuscates the code. So we loose a bit of space but save a lot of time.
 
-typedef int64_t CardID;
-
 struct BoardCreatureData
 {
-	CardID id;
+	cardId id;
 	int health;
 	int attack;
 	int shield;
@@ -39,8 +37,8 @@ struct GameData
 	bool _isThisPlayerTurn;
 
 	*/
-	std::vector<CardID> _selfHandIDs;
-	std::vector<CardID> _selfGraveIDs;
+	std::vector<cardId> _selfHandIDs;
+	std::vector<cardId> _selfGraveIDs;
 	std::size_t _oppoHandSize;
 	std::size_t _selfDeckSize;
 
