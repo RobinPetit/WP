@@ -251,7 +251,7 @@ Baudoux Nicolas, Berrewaerts Jonathan, Gueniffrey Stanislas,  Muranovic Allan, P
 			\begin{description}
 				\item[Description] Un joueur connecté peut défier un ami ou demander un duel contre un adversaire aléatoire.
 				\item[Pré-condition] Chaque utilisateur doit être identifié et connecté à son compte.
-				\item[Post-condition] Un joueur aura perdu, l'autre aura gagné\footnote{Le gagnant reçoit une carte aléatoire à ajouter à son deck..
+				\item[Post-condition] Un joueur aura perdu, l'autre aura gagné\footnote{Le gagnant reçoit une carte aléatoire à ajouter à son deck.}
 			\end{description}
 
 		\subsubsection{Détail d'un tour}
@@ -266,7 +266,7 @@ Baudoux Nicolas, Berrewaerts Jonathan, Gueniffrey Stanislas,  Muranovic Allan, P
 		n'étant pas ami de l'utilisateur.
 
 	\subsection{Exigences de domaine}
-		Les exigences implicites au domaine du jeu sont les suivante et sont \textbf{\glslink{facultatif}{facultatives}} :
+		Les exigences implicites au domaine du jeu sont les suivante et sont facultatives :
 
 		\begin{itemize}
 			\item l'application doit être accessible à tout utilisateur potentiel ;
@@ -291,7 +291,7 @@ Baudoux Nicolas, Berrewaerts Jonathan, Gueniffrey Stanislas,  Muranovic Allan, P
 		Nous pouvons constater que le client (Player) se connecte au serveur qui, lui, gère les parties (le tableau de jeu) ainsi que la base de donnée et tout ce dont cette dernière comprend.
 
 		\newpage
-		\subsection{Diagramme de classe du deck et des cartes}
+		\subsubsection{Diagramme de classe du deck et des cartes}
 		\begin{center}\includegraphics[scale=0.5]{deck.png}\end{center}
 			Comme indiqué sur ce diagramme, un deck est composé de cartes, 20 pour être précis. Les cartes sont soit des créatures
 			soit des sorts et on ne peut posséder que maximum 2 exemplaire d'une même carte au sein d'un même deck.
@@ -302,7 +302,7 @@ Baudoux Nicolas, Berrewaerts Jonathan, Gueniffrey Stanislas,  Muranovic Allan, P
 			Un effet plus complexe est également un effet direct, seulement, il va modifier la liste de contraintes de la partie et c'est cette liste qui va permettre d'appliquer des effets sur la durée, ou en respectant bien certaines conditions (applique tel effet tant que tel créature est en vie par exemple).
 
 		\newpage
-		\subsection{Diagramme de classe du serveur et de sa base de données}
+		\subsubsection{Diagramme de classe du serveur et de sa base de données}
 		\begin{center}\includegraphics[scale=0.5]{Server.png}\end{center}
 			Ici, la structure est un peu plus complexe : Le serveur est composé d'une base de donnée en SQL qui est héritée par 
 			une base de donnée utilisable par l'application serveur (en c++ cette fois).
@@ -312,7 +312,7 @@ Baudoux Nicolas, Berrewaerts Jonathan, Gueniffrey Stanislas,  Muranovic Allan, P
 			Le client ne possedera aucune donnée, il est obligé de passer par les serveur quel que soit son intention.
 
 		\newpage
-		\subsection{Diagramme des classes intervenant dans une partie (simplifié)}
+		\subsubsection{Diagramme des classes intervenant dans une partie (simplifié)}
 		\begin{center}\includegraphics[scale=0.5]{Game.png}\end{center}
 			Il est à noter que c'est un diagramme de classe, et non d'activités, il regroupe juste les plus grosses classes intervenant dans la partie,
 			et non pas leur lien/fonctionnement entre elles.
