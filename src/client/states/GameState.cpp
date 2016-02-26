@@ -268,11 +268,11 @@ void GameState::displayGame()
 	std::cout << "You have " << _selfEnergy << " energy points left." << std::endl;
 }
 
-void GameState::displayCardVector(std::vector<sf::Uint32> cardVector)
+void GameState::displayCardVector(std::vector<CardData> cardVector)
 {
 	for (int i=0; i<cardVector.size(); i++)
 	{
-		cardId id = cardVector.at(i);
+		cardId id = cardVector.at(i).id;
 		std::cout << i << " : " << getCardName(id) << "(cost:" << getCardCost(id) << ")";
 		//TODO use card names instead of card IDs ?
 		if (i!=cardVector.size()-1)
@@ -364,13 +364,13 @@ void GameState::inputListening()
 		else if(type == TransferType::GAME_BOARD_UPDATED)
 		{
 			std::cout << "Board updated" << std::endl;
-			//receivedPacket >> _selfBoardCreatures;
+			receivedPacket >> _selfBoardCreatures;
 			displayGame();
 		}
 		else if(type == TransferType::GAME_OPPONENT_BOARD_UPDATED)
 		{
 			std::cout << "Opponent's board updated" << std::endl;
-			//receivedPacket >> _oppoBoardCreatures;
+			receivedPacket >> _oppoBoardCreatures;
 			displayGame();
 		}
 		else if(type == TransferType::GAME_GRAVEYARD_UPDATED)

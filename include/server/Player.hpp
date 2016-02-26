@@ -13,6 +13,7 @@
 #include "server/Constraints.hpp"
 #include "common/CardData.hpp"
 #include "common/GameData.hpp"
+#include "common/Identifiers.hpp"  // userId
 #include "common/sockets/TransferType.hpp"
 // SFML headers
 #include <SFML/Network/TcpSocket.hpp>
@@ -24,11 +25,8 @@ class Creature;
 class Player
 {
 public:
-	/// Types
-	typedef std::size_t ID;
-
 	/// Constructor
-	Player(Player::ID id, sf::TcpSocket& socket, sf::TcpSocket& specialSocket);
+	Player(userId id, sf::TcpSocket& socket, sf::TcpSocket& specialSocket);
 	void setOpponent(Player* opponent);  // Complementary
 
 	/// Destructor.
@@ -53,7 +51,7 @@ public:
 	/// Getters
 	int getCreatureConstraint(const Creature& subject, int constraintIDD);
 	const Card* getLastCaster();
-	Player::ID getID();
+	userId getID();
 	const std::vector<Creature *>& getBoard();
 	int getRandomBoardIndex();
 	int requestSelfBoardIndex();
@@ -78,7 +76,7 @@ private:
 	/// Attributes
 	Board* _board;
 	Player* _opponent = nullptr;
-	Player::ID _id;
+	userId _id;
 
 	//Client communication
 	sf::TcpSocket& _socketToClient;
@@ -145,7 +143,8 @@ private:
 
 	template <typename CardType>
 	void sendIDsFromVector(TransferType type, const std::vector<CardType *>& vect);
-	void sendCreatureDataFromVector(TransferType type, const std::vector<Creature*>& vect);
+	void sendCardDataFromVector(TransferType type, const std::vector<Card*>& vect);
+	void sendBoardCreatureDataFromVector(TransferType type, const std::vector<Creature*>& vect);
 	void sendValueToClient(sf::TcpSocket& socket, TransferType value);
 };
 

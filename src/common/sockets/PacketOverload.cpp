@@ -128,3 +128,16 @@ sf::Packet& operator >>(sf::Packet& packet, CardToSelect& card)
 	card = static_cast<CardToSelect>(card32);
 	return packet;
 }
+
+sf::Packet& operator <<(sf::Packet& packet, const CardData& data)
+{
+	return packet << static_cast<sf::Int64>(data.id);
+}
+
+sf::Packet& operator >>(sf::Packet& packet, CardData& data)
+{
+	sf::Int64 id;
+	packet >> id;
+	data.id = static_cast<cardId>(id);
+	return packet;
+}

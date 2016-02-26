@@ -158,19 +158,37 @@ const SpellData ALL_SPELLS[] = {
 	},
 	{
 		"Discard",
-		COST_9,
+		COST_4,
 		{{PLAYER_OPPO, PE_LOSE_HAND_CARDS, 1}},
 		"Your opponent loses a random card"
 	},
 	{
-		"Epidemic",
-		COST_8,
+		"Sickness",
+		COST_3,
 		{{CREATURE_OPPO_TEAM, CE_CHANGE_ATTACK, 1}},
 		"Decrease all your opponent's creatures' attack of 1 point"
 	},
 	{
+		"Epidemic",
+		COST_2,
+		{{CREATURE_OPPO_TEAM, CE_CHANGE_ATTACK, 2}},
+		"Decrease all your opponent's creatures' attack of 2 point"
+	},
+	{
+		"Flash heal",
+		COST_1,
+		{{CREATURE_SELF_INDX, CE_CHANGE_HEALTH, 1}},
+		"Increase a creature's health of 2 points"
+	},
+	{
+		"Robbery",
+		COST_5,
+		{{CREATURE_OPPO_TEAM, CE_CHANGE_ATTACK, 1},{CREATURE_SELF_TEAM, CE_CHANGE_ATTACK, 1}},
+		"Decrease all your opponent's creatures' attack of 1 point and increase yours of 1 point"
+	},
+	{
 		"Exchange",
-		COST_7,
+		COST_4,
 		{{PLAYER_SELF, PE_EXCHG_HAND_CARD, 1}},
 		"You exchange a card of your choice with a random card from the opponent's hand"
 	}/*,

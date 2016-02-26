@@ -36,8 +36,8 @@ class GameState : public AbstractState
 	private:
 		///////////////// attributes
 
-		std::vector<sf::Uint32> _selfHandCards;
-		std::vector<sf::Uint32> _selfGraveCards; //needed for reviving spells
+		std::vector<CardData> _selfHandCards;
+		std::vector<CardData> _selfGraveCards; //needed for reviving spells
 
 		std::vector<BoardCreatureData> _selfBoardCreatures;
 		std::vector<BoardCreatureData> _oppoBoardCreatures;
@@ -81,7 +81,7 @@ class GameState : public AbstractState
 
 		// Game display
 		void displayGame();
-		void displayCardVector(std::vector<sf::Uint32> cardVector);
+		void displayCardVector(std::vector<CardData> cardVector);
 		void displayBoardCreatureVector(std::vector<BoardCreatureData> cardVector);
 
 		std::string getCardName(cardId id);

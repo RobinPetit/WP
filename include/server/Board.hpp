@@ -12,7 +12,7 @@
 
 struct PlayerInformations
 {
-	Player::ID id;
+	userId id;
 	sf::TcpSocket& socket;
 	sf::TcpSocket& specialSocket;
 };
@@ -33,8 +33,8 @@ public:
 	void attackWithCreature(int attackerIndex, int victimIndex);
 	void quitGame(); //TODO: need identifier for player who quit
 
-	Player::ID getCurrentPlayerID();
-	Player::ID getWaitingPlayerID();
+	userId getCurrentPlayerID();
+	userId getWaitingPlayerID();
 
 	/// Interface for Player and Card classes
 	void applyEffect(Card* usedCard, EffectParamsCollection effect);

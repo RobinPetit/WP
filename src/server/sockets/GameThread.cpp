@@ -12,7 +12,7 @@
 
 constexpr std::chrono::seconds GameThread::_turnTime;
 
-GameThread::GameThread(Player::ID player1ID, Player::ID player2ID):
+GameThread::GameThread(userId player1ID, userId player2ID):
 	std::thread(),
 	_player1ID(player1ID),
 	_player2ID(player2ID),
@@ -54,7 +54,7 @@ void GameThread::setSocket(sf::TcpSocket& socket, sf::TcpSocket& specialSocket, 
 
 /////////// ease of implementation
 
-GameThread::PlayerNumber GameThread::PlayerFromID(const Player::ID ID)
+GameThread::PlayerNumber GameThread::PlayerFromID(const userId ID)
 {
 	return ((ID == _player1ID && _isSynchroWithBoard) ||
 	        (ID == _player2ID && !_isSynchroWithBoard))
@@ -62,12 +62,12 @@ GameThread::PlayerNumber GameThread::PlayerFromID(const Player::ID ID)
 	         : PlayerNumber::PLAYER2;
 }
 
-sf::TcpSocket& GameThread::getSocketFromID(const Player::ID ID)
+sf::TcpSocket& GameThread::getSocketFromID(const userId ID)
 {
 	return PlayerFromID(ID) == PlayerNumber::PLAYER1 ? _socketPlayer1 : _socketPlayer2;
 }
 
-sf::TcpSocket& GameThread::getSpecialSocketFromID(const Player::ID ID)
+sf::TcpSocket& GameThread::getSpecialSocketFromID(const userId ID)
 {
 	return PlayerFromID(ID) == PlayerNumber::PLAYER1 ? _specialOutputSocketPlayer1 : _specialOutputSocketPlayer2;
 }
@@ -164,4 +164,3 @@ GameThread::~GameThread()
 	interruptGame();
 	_timerThread.join();
 }
-
