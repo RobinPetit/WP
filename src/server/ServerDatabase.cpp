@@ -1,11 +1,12 @@
 #include "server/ServerDatabase.hpp"
 #include "common/Identifiers.hpp"
 
-#ifndef NDEBUG
 #include <cassert>
-#endif
 
 #define AUTO_QUERY_LENGTH -1
+
+// TODO: this is multi-threaded
+// Rien à voir mais j'y pense maintenant: ajouter aux requirements que l'utilisateur doit pouvoir supprimer toutes ses données personnelles
 
 const char ServerDatabase::FILENAME[] = "../resources/server/database.db";
 ServerDatabase::ServerDatabase(std::string filename) : Database(filename)
@@ -139,6 +140,73 @@ bool ServerDatabase::isFriendshipRequestSent(const int from, const int to)
 	sqliteThrowExcept(sqlite3_bind_int(_isFriendshipRequestSentStmt, 2, to));
 
 	return sqliteThrowExcept(sqlite3_step(_isFriendshipRequestSentStmt)) == SQLITE_ROW;
+}
+
+void ServerDatabase::createDeck(const int userId, const Deck& deck)
+{
+	sqlite3_reset(_createDeckStmt);
+	sqliteThrowExcept(sqlite3_bind_int(_createDeckStmt, 1, userId));
+	sqliteThrowExcept(sqlite3_bind_text(_createDeckStmt, 2, deck.getName().c_str(), AUTO_QUERY_LENGTH,
+	                                    SQLITE_TRANSIENT));
+
+	for(int card = 0; card < Deck::size; ++card)
+	{
+		sqliteThrowExcept(sqlite3_bind_int(_createDeckStmt, card + 3, deck.getCard(card)));
+	}
+
+	assert(sqliteThrowExcept(sqlite3_step(_createDeckStmt)) == SQLITE_DONE);
+}
+
+void ServerDatabase::deleteDeckByName(const int userId, const std::string& deckName)
+{
+	sqlite3_reset(_deleteDeckByNameStmt);
+	sqliteThrowExcept(sqlite3_bind_int(_deleteDeckByNameStmt, 1, userId));
+	sqliteThrowExcept(sqlite3_bind_text(_deleteDeckByNameStmt, 2, deckName.c_str(), AUTO_QUERY_LENGTH, SQLITE_TRANSIENT));
+
+	assert(sqliteThrowExcept(sqlite3_step(_deleteDeckByNameStmt)) == SQLITE_DONE);
+}
+
+void ServerDatabase::editDeck(const int userId, const Deck& deck)
+{
+	sqlite3_reset(_editDeckByNameStmt);
+	sqliteThrowExcept(sqlite3_bind_text(_editDeckByNameStmt, 1, deck.getName().c_str(), AUTO_QUERY_LENGTH, SQLITE_TRANSIENT));
+
+	for(int card = 0; card < Deck::size; ++card)
+	{
+		sqliteThrowExcept(sqlite3_bind_int(_editDeckByNameStmt, card + 2, deck.getCard(card)));
+	}
+	sqliteThrowExcept(sqlite3_bind_int(_editDeckByNameStmt, 22, userId));
+
+	assert(sqliteThrowExcept(sqlite3_step(_editDeckByNameStmt)) == SQLITE_DONE);
+}
+
+bool ServerDatabase::areIdentifiersValid(const std::string& login, const std::string& password)
+{
+	sqlite3_reset(_areIdentifiersValidStmt);
+	sqliteThrowExcept(sqlite3_bind_text(_areIdentifiersValidStmt, 1, login.c_str(), AUTO_QUERY_LENGTH,
+	                                    SQLITE_TRANSIENT));
+	sqliteThrowExcept(sqlite3_bind_blob(_areIdentifiersValidStmt, 2, password.c_str(), sizeof(password.c_str()),
+	                                    SQLITE_TRANSIENT));
+
+	return sqliteThrowExcept(sqlite3_step(_areIdentifiersValidStmt)) == SQLITE_ROW;
+}
+
+bool ServerDatabase::isRegistered(const std::string& login)
+{
+	sqlite3_reset(_userIdStmt);
+	sqliteThrowExcept(sqlite3_bind_text(_userIdStmt, 1, login.c_str(), AUTO_QUERY_LENGTH, SQLITE_TRANSIENT));
+
+	return sqliteThrowExcept(sqlite3_step(_userIdStmt)) == SQLITE_ROW;
+}
+
+void ServerDatabase::registerUser(const std::string& login, const std::string& password)
+{
+	sqlite3_reset(_registerUserStmt);
+	sqliteThrowExcept(sqlite3_bind_text(_registerUserStmt, 1, login.c_str(), AUTO_QUERY_LENGTH, SQLITE_TRANSIENT));
+	sqliteThrowExcept(sqlite3_bind_blob(_registerUserStmt, 2, password.c_str(), sizeof(password.c_str()),
+	                                    SQLITE_TRANSIENT));
+
+	assert(sqliteThrowExcept(sqlite3_step(_registerUserStmt)) == SQLITE_DONE);
 }
 
 FriendsList ServerDatabase::getAnyFriendsList(const int user, sqlite3_stmt * stmt)

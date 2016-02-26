@@ -88,7 +88,7 @@ void Server::connectUser(sf::Packet& connectionPacket, std::unique_ptr<sf::TcpSo
 			throw std::runtime_error(playerName + " tried to connect to the server but is already connected.");
 		}
 
-		if(false /* UNCOMMENT _database.areIdentifiersValid(playerName, password) */)
+		if(_database.areIdentifiersValid(playerName, password))
 		{
 			connectionPacket << TransferType::GAME_WRONG_IDENTIFIERS;
 			throw std::runtime_error(playerName + " gives wrong identifiers when trying to connect.");
@@ -122,12 +122,12 @@ void Server::registerUser(sf::Packet& registeringPacket, std::unique_ptr<sf::Tcp
 	try
 	{
 
-		if(false /* UNCOMMENT _database.isRegistered(playerName) */)
+		if(_database.isRegistered(playerName))
 		{
 			registeringPacket << TransferType::GAME_USERNAME_NOT_AVAILABLE;
 			throw std::runtime_error(playerName + " tried to register to the server but the name is not available.");
 		}
-		// UNCOMMENT _database.registerUser(playerName, password);
+		_database.registerUser(playerName, password);
 		registeringPacket << TransferType::ACKNOWLEDGE;
 		std::cout << "New player registered: " << playerName << std::endl;
 	}
@@ -550,8 +550,8 @@ void Server::handleDeckEditing(const _iterator& it, sf::Packet& transmission)
 	transmission.clear();
 	try
 	{
-		const userId id{_database.getUserId(it->first)};
-		// UNCOMMENT _database.editDeck(id, editedDeck);
+		const Database::userId id{_database.getUserId(it->first)};
+		_database.editDeck(id, editedDeck);
 		transmission << TransferType::ACKNOWLEDGE;
 	}
 	catch(const std::runtime_error& e)
@@ -569,8 +569,8 @@ void Server::handleDeckCreation(const _iterator& it, sf::Packet& transmission)
 	transmission.clear();
 	try
 	{
-		const userId id{_database.getUserId(it->first)};
-		// UNCOMMENT _database.createDeck(id, newDeck);
+		const Database::userId id{_database.getUserId(it->first)};
+		_database.createDeck(id, newDeck);
 		transmission << TransferType::ACKNOWLEDGE;
 	}
 	catch(const std::runtime_error& e)
@@ -588,8 +588,8 @@ void Server::handleDeckDeletion(const _iterator& it, sf::Packet& transmission)
 	transmission.clear();
 	try
 	{
-		const userId id{_database.getUserId(it->first)};
-		// UNCOMMENT _database.deleteDeck(id, deletedDeckName);
+		const Database::userId id{_database.getUserId(it->first)};
+		_database.deleteDeckByName(id, deletedDeckName);
 		transmission << TransferType::ACKNOWLEDGE;
 	}
 	catch(const std::runtime_error& e)
