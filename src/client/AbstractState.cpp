@@ -32,6 +32,7 @@ void AbstractState::handleInput(const std::string& input)
 	catch(const std::logic_error& e)
 	{
 		std::cout << "Wrong input!\n";
+		waitForEnter();
 	}
 }
 
