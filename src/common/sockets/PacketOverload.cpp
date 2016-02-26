@@ -73,8 +73,9 @@ sf::Packet& operator <<(sf::Packet& packet, const CardsCollection& cardCollectio
 	{
 		const cardId card{*it};
 		// If this is a base card not already processed
-		if(card > 0 and static_cast<std::size_t>(card) < baseCardsAlreadyProcessed.size() and not baseCardsAlreadyProcessed[card])
-			baseCardsAlreadyProcessed[card] = true;
+		if(card > 0 and static_cast<std::size_t>(card) < baseCardsAlreadyProcessed.size()
+		   and not baseCardsAlreadyProcessed[static_cast<std::array<bool, Deck::size+1>::size_type>(card)])
+			baseCardsAlreadyProcessed[static_cast<std::array<bool, Deck::size+1>::size_type>(card)] = true;
 		// else we can safely add it to the packet;
 		else
 			packet << static_cast<sf::Int64>(card);
