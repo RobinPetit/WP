@@ -2,6 +2,7 @@
 #include "server/Board.hpp"
 // std-C++ headers
 #include <random>
+#include <array>
 
 Board::Board(const PlayerInformations& player1, const PlayerInformations& player2)
 {
@@ -74,41 +75,52 @@ void Board::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 	switch (subject)
 	{
 		case PLAYER_SELF:	//passive player
+			_activePlayer->askUserToSelectCards({});
 			_activePlayer->applyEffect(usedCard, effectArgs);
 			break;
 
 		case PLAYER_OPPO:	//active player
+			_activePlayer->askUserToSelectCards({});
 			_passivePlayer->applyEffect(usedCard, effectArgs);
 			break;
 		case CREATURE_SELF_THIS:	//active player's creature that was used
-			{
-				Creature* usedCreature = dynamic_cast<Creature*>(usedCard);
-				_activePlayer->applyEffectToCreature(usedCreature, effectArgs);
-			}
+		{
+			_activePlayer->askUserToSelectCards({});
+			Creature* usedCreature = dynamic_cast<Creature*>(usedCard);
+			_activePlayer->applyEffectToCreature(usedCreature, effectArgs);
+		}
 			break;
 		case CREATURE_SELF_INDX:	//active player's creature at given index
-			//TODO: NETWORK : ASK_FOR_INDEX (_activePlayer)
+		{
+			std::vector<int> chosenIndices{_activePlayer->askUserToSelectCards({CardToSelect::SELF})};
 			_activePlayer->applyEffectToCreature(usedCard, effectArgs, _activePlayer->requestSelfBoardIndex());
+		}
 			break;
 
 		case CREATURE_SELF_RAND:	//active player's creature at random index
+			_activePlayer->askUserToSelectCards({});
 			_activePlayer->applyEffectToCreature(usedCard, effectArgs, _activePlayer->getRandomBoardIndex());
 			break;
 
 		case CREATURE_SELF_TEAM:	//active player's team of creatures
+			_activePlayer->askUserToSelectCards({});
 			_activePlayer->applyEffectToCreatureTeam(usedCard, effectArgs);
 			break;
 
 		case CREATURE_OPPO_INDX:	//passive player's creature at given index
-			//TODO: NETWORK : ASK_FOR_INDEX (_activePlayer)
+		{
+			std::vector<int> chosenIndices{_activePlayer->askUserToSelectCards({CardToSelect::OPPONENT})};
 			_passivePlayer->applyEffectToCreature(usedCard, effectArgs, _activePlayer->requestOppoBoardIndex());
+		}
 			break;
 
 		case CREATURE_OPPO_RAND:	//passive player's creature at random index
+			_activePlayer->askUserToSelectCards({});
 			_passivePlayer->applyEffectToCreature(usedCard, effectArgs, _activePlayer->getRandomBoardIndex());
 			break;
 
 		case CREATURE_OPPO_TEAM:	//passive player's team of creatures
+			_activePlayer->askUserToSelectCards({});
 			_passivePlayer->applyEffectToCreatureTeam(usedCard, effectArgs);
 			break;
 	}

@@ -696,3 +696,16 @@ void Player::sendValueToClient(sf::TcpSocket& socket, TransferType value)
 	packet << value;
 	socket.send(packet);
 }
+
+// TODO: handle the case where the user doesn't give and his turn finishes
+std::vector<int>&& Player::askUserToSelectCards(const std::vector<CardToSelect>& selection)
+{
+	sf::Packet packet;
+	packet << selection;
+	_socketToClient.send(packet);
+	std::vector<int> indices(selection.size());
+	_socketToClient.receive(packet);
+	packet >> indices;
+	return std::move(indices);
+}
+

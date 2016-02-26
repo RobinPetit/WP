@@ -114,3 +114,17 @@ sf::Packet& operator >>(sf::Packet& packet, BoardCreatureData& data)
 	data.shield = static_cast<int>(shield);
 	return packet;
 }
+
+sf::Packet& operator <<(sf::Packet& packet, const CardToSelect& card)
+{
+	packet << static_cast<sf::Uint32>(card);
+	return packet;
+}
+
+sf::Packet& operator >>(sf::Packet& packet, CardToSelect& card)
+{
+	sf::Uint32 card32;
+	packet >> card32;
+	card = static_cast<CardToSelect>(card32);
+	return packet;
+}
