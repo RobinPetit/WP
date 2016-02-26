@@ -664,7 +664,21 @@ void Player::sendCreatureDataFromVector(TransferType type, const std::vector<Cre
 		data.attack = creat.getAttack();
 		data.health = creat.getHealth();
 		data.shield = creat.getShield();
-		data.shieldType = creat.getShieldType();
+		int shieldType = creat.getShieldType();
+		switch (shieldType)
+		{
+			case SHIELD_NONE:
+				data.shieldType = "none";
+				break;
+			case SHIELD_BLUE:
+				data.shieldType = "blue";
+				break;
+			case SHIELD_ORANGE:
+				data.shieldType = "orange";
+				break;
+			case SHIELD_LEGENDARY:
+				data.shieldType = "legendary";
+		}
         boardCreatures.push_back(data);
 	}
 	//packet << boardCreatures;

@@ -118,13 +118,6 @@ void GameState::startTurn()
 
 
 //PRIVATE METHODS
-CardData GameState::getCardData(int cardID)
-{
-    if (cardID < 10)
-		return {ALL_CREATURES[cardID].name, ALL_CREATURES[cardID].cost, ALL_CREATURES[cardID].description};
-	else
-		return {ALL_SPELLS[cardID-10].name, ALL_SPELLS[cardID-10].cost, ALL_SPELLS[cardID-10].description};
-}
 
 // Request user for additional input
 int GameState::askIndex(int maxIndex, std::string inputMessage)
@@ -159,8 +152,8 @@ int GameState::askSelfHandIndex()
 int GameState::askSelfBoardIndex()
 {
 	std::cout << "These are the cards on your board:" << std::endl;
-	displayCardVector(_selfBoardCards);
-	return askIndex(_selfBoardCards.size(), "Choose the index for a card on your board :");
+	displayBoardCreatureVector(_selfBoardCreatures);
+	return askIndex(_selfBoardCreatures.size(), "Choose the index for a card on your board :");
 }
 
 int GameState::askSelfGraveyardIndex()
@@ -179,8 +172,8 @@ int GameState::askOppoHandIndex()
 int GameState::askOppoBoardIndex()
 {
 	std::cout << "These are the cards on your opponent's board:" << std::endl;
-	displayCardVector(_selfBoardCards);
-	return askIndex(_oppoBoardCards.size(), "Choose the index for a card on the opponent's board :");
+	displayBoardCreatureVector(_oppoBoardCreatures);
+	return askIndex(_oppoBoardCreatures.size(), "Choose the index for a card on the opponent's board :");
 }
 
 //User actions
@@ -261,9 +254,9 @@ void GameState::displayGame()
 	std::cout << "Cards in your graveyard:" << std::endl;
 	displayCardVector(_selfGraveCards);
 	std::cout << "Cards on your opponent's board:" << std::endl;
-	displayCardVector(_oppoBoardCards);
+	displayBoardCreatureVector(_oppoBoardCreatures);
 	std::cout << "Cards on your board:" << std::endl;
-	displayCardVector(_selfBoardCards);
+	displayBoardCreatureVector(_selfBoardCreatures);
 	std::cout << "Cards in your hand:" << std::endl;
 	displayCardVector(_selfHandCards);
 
@@ -277,8 +270,8 @@ void GameState::displayCardVector(std::vector<sf::Uint32> cardVector)
 {
 	for (int i=0; i<cardVector.size(); i++)
 	{
-		CardData thisCard = getCardData(cardVector.at(i));
-		std::cout << i << " : " << thisCard.name << "(cost:" << thisCard.cost << ")";
+		cardId id = cardVector.at(i);
+		std::cout << i << " : " << getCardName(id) << "(cost:" << getCardCost(id) << ")";
 		//TODO use card names instead of card IDs ?
 		if (i!=cardVector.size()-1)
 			std::cout << ", ";
@@ -286,14 +279,18 @@ void GameState::displayCardVector(std::vector<sf::Uint32> cardVector)
 	std::cout << std::endl;
 }
 
-void GameState::displayBoardVector(std::vector<sf::Uint32> cardVector)
+void GameState::displayBoardCreatureVector(std::vector<BoardCreatureData> cardVector)
 {
 	//THE BOARD VECTOR ALSO CONTAINS REAL_TIME INFORMATION ABOUT THE CARDS (HEALTH, ATTACK, SHIELD, SHIELD TYPE)
 	//THIS METHOD SHOULD DISPLAY THESE INFORMATiONS AND BE CALLED ONLY FOR DISPLAYING THE BOARD
 	for (int i=0; i<cardVector.size(); i++)
 	{
-		CardData thisCard = getCardData(cardVector.at(i));
-		std::cout << i << " : " << thisCard.name << "(cost:" << thisCard.cost << ")";
+		BoardCreatureData thisCreature = cardVector.at(i);
+		cardId id = cardVector.at(i).id;
+		std::cout << i << " : " << getCardName(id) << "(cost:" << getCardCost(id) <<
+													", attack:" << thisCreature.attack <<
+													", health:" << thisCreature.health <<
+													", shield:" << thisCreature.shield << "-" << thisCreature.shieldType << ")";
 		//TODO use card names instead of card IDs ?
 		if (i!=cardVector.size()-1)
 			std::cout << ", ";
@@ -365,13 +362,13 @@ void GameState::inputListening()
 		else if(type == TransferType::GAME_BOARD_UPDATED)
 		{
 			std::cout << "Board updated" << std::endl;
-			receivedPacket >> _selfBoardCards;
+			//receivedPacket >> _selfBoardCreatures;
 			displayGame();
 		}
 		else if(type == TransferType::GAME_OPPONENT_BOARD_UPDATED)
 		{
 			std::cout << "Opponent's board updated" << std::endl;
-			receivedPacket >> _oppoBoardCards;
+			//receivedPacket >> _oppoBoardCreatures;
 			displayGame();
 		}
 		else if(type == TransferType::GAME_GRAVEYARD_UPDATED)
@@ -477,3 +474,27 @@ void GameState::applySelfEffect()
 		}
 	}
 }*/
+
+std::string GameState::getCardName(cardId id)
+{
+	if (id<10)
+		return ALL_CREATURES[id].name;
+	else
+		return ALL_SPELLS[id-10].name;
+}
+
+CostValue GameState::getCardCost(cardId id)
+{
+	if (id<10)
+		return ALL_CREATURES[id].cost;
+	else
+		return ALL_SPELLS[id-10].cost;
+}
+
+std::string GameState::getCardDescription(cardId id)
+{
+	if (id<10)
+		return ALL_CREATURES[id].description;
+	else
+		return ALL_SPELLS[id-10].description;
+}
