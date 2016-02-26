@@ -176,14 +176,7 @@ Baudoux Nicolas, Berrewaerts Jonathan, Gueniffrey Stanislas,  Muranovic Allan, P
 				\item \textbf{Consulter sa collection}
 				\begin{description}
 					\item[Description] Un utilisateur peut voir la collection de cartes qu'il a acquises.
-					\item[Pré-condition] Aucune.
-					\item[Post-condition] L'utilisateur a pris connaissance sa collection de carte.\\
-				\end{description}
-
-				\item \textbf{Consulter sa collection}
-				\begin{description}
-					\item[Description] Un utilisateur peut voir la collection de cartes qu'il a acquises.
-					\item[Pré-condition] Aucune.
+					\item[Pré-condition] L'utilisateur doit être connecté au serveur.
 					\item[Post-condition] L'utilisateur a pris connaissance sa collection de carte.\\
 				\end{description}
 
@@ -199,7 +192,7 @@ Baudoux Nicolas, Berrewaerts Jonathan, Gueniffrey Stanislas,  Muranovic Allan, P
 				\begin{description}
 					\item[Description] Un utilisateur peut entamer une conversation avec d'autres joueurs, s'ils sont dans sa liste d'amis.
 					\item[Pré-condition] L'utilisateur a au moins un ami, et l'ami
-					\item[Post-condition] L'utilisateur\\
+					\item[Post-condition] L'utilisateur est en conversation avec son ami.
 				\end{description}
 			\end{itemize}
 
@@ -248,7 +241,7 @@ Baudoux Nicolas, Berrewaerts Jonathan, Gueniffrey Stanislas,  Muranovic Allan, P
 			une copie du deck par défaut (celui donné à la création du compte). Ensuite l'utilisateur
 			est redirigé vers le use case "Changer les cartes d'un deck", qui permet de remplacer
 			une par une les cartes d'un deck. Ainsi, avec une grande modularité et peu de code,
-			donné la possibilité de créer un tout nouveau deck sans devoir recoder une partie
+			il est donné à l'utilisateur la possibilité de créer un tout nouveau deck sans devoir recoder une partie
 			de l'interface qui modifie un deck.
 
 		\subsubsection{Début de partie}
