@@ -1,4 +1,4 @@
-all: view
+all: srd.pdf
 
 # Faudrait eviter les espaces dans les noms de fichier
 srd.pdf: srd.tex $(wildcard Diagrammes_UML/*)
@@ -22,4 +22,3 @@ mrproper: clean cleanbak
 	rm *.pdf; return 0
 
 .PHONY: all clean mrproper clean-bak view
-
