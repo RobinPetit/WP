@@ -77,6 +77,9 @@ private:
 	/// Handle the input in stdin and quit the server if asked
 	void waitQuit();
 
+	/// Used to have a meaningful string from a socket
+	static std::string userToString(const _iterator& it);
+
 	// Friends management
 
 	/// Used to exchange the correct informations with the clients when a chat request is made.
