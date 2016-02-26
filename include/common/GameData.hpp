@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include "common/Identifiers.hpp"
 
 /// This struct is used to communicate changes of the board on the network.
 /// Each time a player do an action while it is playing its turn, the server
@@ -29,10 +30,6 @@ struct GameData
 {
 	// TODO Use ClientCard::ID rather than int
 	/*
-	bool _thisPlayerCardsInHandChanged;
-	bool _opponentCardsInHandChanged;
-	bool _thisPlayerCardsOnBoardChanged;
-	bool _opponentCardsOnBoardChanged;
 	bool _thisPlayerRemainingCardsChanged;
 	bool _thisPlayerEnergyChanged;
 	bool _opponentEnergyChanged;

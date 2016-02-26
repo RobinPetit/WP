@@ -2,6 +2,7 @@
 #define _SERVER_DATABASE_SERVER_HPP
 
 #include "common/Database.hpp"
+#include "common/Identifiers.hpp"
 
 // for the moment login and name are used for the same string
 
