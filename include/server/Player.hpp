@@ -45,7 +45,7 @@ public:
 	void applyEffect(const Card* usedCard, EffectParamsCollection effectArgs);
 	//to a Creature
 	void applyEffectToCreature(Creature* casterAndSubject, EffectParamsCollection effectArgs); //With ref. to creature
-	void applyEffectToCreature(const Card* usedCard, EffectParamsCollection effectArgs, int boardIndex); //With creature index
+	void applyEffectToCreature(const Card* usedCard, EffectParamsCollection effectArgs, std::vector<int> boardIndexes); //With creature index
 	//to all Creatures
 	void applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollection effectArgs);
 
@@ -54,13 +54,11 @@ public:
 	const Card* getLastCaster();
 	userId getID();
 	const std::vector<Creature *>& getBoard();
-	int getRandomBoardIndex();
-	int requestSelfBoardIndex();
-	int requestOppoBoardIndex();
 
 	///
 	/// \return a vector of indices selected
 	/// \param selection a vector of values telling whether the choice must be in player's cards or opponent's cards
+	std::vector<int>&& getRandomBoardIndexes(const std::vector<CardToSelect>& selection);
 	std::vector<int>&& askUserToSelectCards(const std::vector<CardToSelect>& selection);
 
 private:

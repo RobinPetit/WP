@@ -218,10 +218,10 @@ void Player::applyEffectToCreature(Creature* casterAndSubject, EffectParamsColle
 	casterAndSubject->applyEffect(effectArgs); //call method on effect subject (same as caster)
 }
 
-void Player::applyEffectToCreature(const Card* usedCard, EffectParamsCollection effectArgs, int boardIndex)
+void Player::applyEffectToCreature(const Card* usedCard, EffectParamsCollection effectArgs, std::vector<int> boardIndexes)
 {
 	_lastCasterCard = usedCard; //remember last used card
-	_cardBoard.at(boardIndex)->applyEffect(effectArgs);
+	_cardBoard.at(boardIndexes.at(0))->applyEffect(effectArgs);
 }
 
 void Player::applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollection effectArgs)
@@ -250,21 +250,6 @@ int Player::getCreatureConstraint(const Creature& subject, int constraintID)
 const Card* Player::getLastCaster()
 {
 	return _lastCasterCard;
-}
-
-int Player::getRandomBoardIndex()
-{
-	return std::uniform_int_distribution<int>(0, _cardBoard.size()-1)(_engine);
-}
-
-int Player::requestSelfBoardIndex()
-{
-	return 0; //NETWORK: REQUEST SELF BOARD INDEX
-}
-
-int Player::requestOppoBoardIndex()
-{
-	return 0; //NETWORK: REQUEST OPPO BOARD INDEX
 }
 
 /*------------------------------ EFFECTS (PRIVATE) */
@@ -722,5 +707,29 @@ std::vector<int>&& Player::askUserToSelectCards(const std::vector<CardToSelect>&
 	std::vector<int> indices(selection.size());
 	_socketToClient.receive(packet);
 	packet >> indices;
+	return std::move(indices);
+}
+
+std::vector<int>&& Player::getRandomBoardIndexes(const std::vector<CardToSelect>& selection)
+{
+	std::vector<int> indices(selection.size());
+	for (int i=0; i<selection.size(); i++)
+	{
+		switch (selection.at(i))
+		{
+			case SELF_BOARD:
+				indices.push_back(std::uniform_int_distribution<int>(0, _cardBoard.size()-1)(_engine));
+				break;
+			case SELF_HAND:
+				indices.push_back(std::uniform_int_distribution<int>(0, _cardHand.size()-1)(_engine));
+				break;
+			case OPPO_BOARD:
+				indices.push_back(std::uniform_int_distribution<int>(0, _opponent->_cardBoard.size()-1)(_engine));
+				break;
+			case OPPO_HAND:
+				indices.push_back(std::uniform_int_distribution<int>(0, _opponent->_cardHand.size()-1)(_engine));
+				break;
+		}
+	}
 	return std::move(indices);
 }

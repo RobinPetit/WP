@@ -92,15 +92,12 @@ void Board::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 		}
 			break;
 		case CREATURE_SELF_INDX:	//active player's creature at given index
-		{
-			std::vector<int> chosenIndices{_activePlayer->askUserToSelectCards({CardToSelect::SELF})};
-			_activePlayer->applyEffectToCreature(usedCard, effectArgs, _activePlayer->requestSelfBoardIndex());
-		}
+			_activePlayer->applyEffectToCreature(usedCard, effectArgs, _activePlayer->askUserToSelectCards({CardToSelect::SELF_BOARD}));
 			break;
 
 		case CREATURE_SELF_RAND:	//active player's creature at random index
 			_activePlayer->askUserToSelectCards({});
-			_activePlayer->applyEffectToCreature(usedCard, effectArgs, _activePlayer->getRandomBoardIndex());
+			_activePlayer->applyEffectToCreature(usedCard, effectArgs, _activePlayer->getRandomBoardIndexes({CardToSelect::SELF_BOARD}));
 			break;
 
 		case CREATURE_SELF_TEAM:	//active player's team of creatures
@@ -109,15 +106,12 @@ void Board::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 			break;
 
 		case CREATURE_OPPO_INDX:	//passive player's creature at given index
-		{
-			std::vector<int> chosenIndices{_activePlayer->askUserToSelectCards({CardToSelect::OPPONENT})};
-			_passivePlayer->applyEffectToCreature(usedCard, effectArgs, _activePlayer->requestOppoBoardIndex());
-		}
+			_passivePlayer->applyEffectToCreature(usedCard, effectArgs, _activePlayer->askUserToSelectCards({CardToSelect::OPPO_BOARD}));
 			break;
 
 		case CREATURE_OPPO_RAND:	//passive player's creature at random index
 			_activePlayer->askUserToSelectCards({});
-			_passivePlayer->applyEffectToCreature(usedCard, effectArgs, _activePlayer->getRandomBoardIndex());
+			_passivePlayer->applyEffectToCreature(usedCard, effectArgs, _activePlayer->getRandomBoardIndexes({CardToSelect::OPPO_BOARD}));
 			break;
 
 		case CREATURE_OPPO_TEAM:	//passive player's team of creatures
