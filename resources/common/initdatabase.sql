@@ -396,6 +396,8 @@ INSERT INTO GivenCard(card,owner)
 SELECT "Create deck";
 INSERT INTO Deck VALUES
     (1, 'Test', 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 1, 16, 17, 18, 19, 20); 
+INSERT INTO Deck VALUES
+    (2, 'Test', 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 1); 
 
 SELECT "Update victories/defeats";
 UPDATE Account SET victories = 4 WHERE id == 1 OR id == 3;
