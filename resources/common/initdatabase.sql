@@ -123,13 +123,21 @@ CREATE TABLE GivenCard ( -- 20 first cards are not stored (everyone own its)
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     card INTEGER NOT NULL REFERENCES Card,
     owner INTEGER NOT NULL REFERENCES Account
-    -- counter INTEGER NOT NULL DEFAULT 1 , -- CHECK(counter > 0) 
+    -- counter INTEGER NOT NULL DEFAULT 1 , -- CHECK(counter > 0)
     -- UNIQUE(card, owner)
 );
 
 CREATE INDEX givenCardOwner ON givenCard(owner);
 
 SELECT "Accounts/Trigger";
+CREATE TRIGGER defaultDeckToNewAccount
+    AFTER INSERT ON Account
+    BEGIN
+        INSERT INTO Deck(owner, name, Card0, Card1, Card2, Card3, Card4, Card5, Card6, Card7, Card8, Card9,
+                         Card10, Card11, Card12, Card13, Card14, Card15, Card16, Card17, Card18, Card19)
+            VALUES (NEW.id, 'Beginner''s Deck', 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20);
+    END;
+
 CREATE TRIGGER removeFromGivenCard
     AFTER UPDATE ON GivenCard
     WHEN(NEW.counter == 0)
@@ -342,11 +350,11 @@ INSERT INTO GivenCard(card,owner)
 SELECT "Create deck";
 INSERT INTO Deck(owner, name, Card0, Card1, Card2, Card3, Card4, Card5, Card6, Card7, Card8, Card9,
                  Card10, Card11, Card12, Card13, Card14, Card15, Card16, Card17, Card18, Card19)
-    VALUES (1, 'Test', 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 1, 16, 17, 18, 19, 20); 
+    VALUES (1, 'Test', 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 1, 16, 17, 18, 19, 20);
 
 INSERT INTO Deck(owner, name, Card0, Card1, Card2, Card3, Card4, Card5, Card6, Card7, Card8, Card9,
                  Card10, Card11, Card12, Card13, Card14, Card15, Card16, Card17, Card18, Card19)
-    VALUES (2, 'Test', 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 1); 
+    VALUES (2, 'Test', 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 1);
 
 SELECT "Update victories/defeats";
 UPDATE Account SET victories = 4 WHERE id == 1 OR id == 3;
