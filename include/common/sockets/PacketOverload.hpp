@@ -41,9 +41,11 @@ sf::Packet& operator >>(sf::Packet& packet, CardsCollection& deck);
 
 /// Allow a packet to transmit a BoardCreatureData instance.
 sf::Packet& operator <<(sf::Packet& packet, const BoardCreatureData& data);
-
-/// Allow a packet to transmit a BoardCreatureData instance.
 sf::Packet& operator >>(sf::Packet& packet, BoardCreatureData& data);
+
+/// Allow a packet to transmit a CardData instance
+sf::Packet& operator <<(sf::Packet& packet, const CardData& data);
+sf::Packet& operator >>(sf::Packet& packet, CardData& data);
 
 // implementation
 

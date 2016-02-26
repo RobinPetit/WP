@@ -140,7 +140,8 @@ private:
 
 	template <typename CardType>
 	void sendIDsFromVector(TransferType type, const std::vector<CardType *>& vect);
-	void sendCreatureDataFromVector(TransferType type, const std::vector<Creature*>& vect);
+	void sendCardDataFromVector(TransferType type, const std::vector<Card*>& vect);
+	void sendBoardCreatureDataFromVector(TransferType type, const std::vector<Creature*>& vect);
 	void sendValueToClient(sf::TcpSocket& socket, TransferType value);
 };
 
