@@ -153,7 +153,7 @@ const SpellData ALL_SPELLS[] = {
 	{
 		"Complete Care",
 		COST_7,
-		{{CREATURE_SELF_THIS, CE_RESET_HEALTH, 0}},
+		{{CREATURE_SELF_INDX, CE_RESET_HEALTH, 0}},
 		"Restore the health point of a creature"
 	},
 	{
@@ -165,13 +165,13 @@ const SpellData ALL_SPELLS[] = {
 	{
 		"Sickness",
 		COST_3,
-		{{CREATURE_OPPO_TEAM, CE_CHANGE_ATTACK, 1}},
+		{{CREATURE_OPPO_TEAM, CE_CHANGE_ATTACK, -1}},
 		"Decrease all your opponent's creatures' attack of 1 point"
 	},
 	{
 		"Epidemic",
 		COST_2,
-		{{CREATURE_OPPO_TEAM, CE_CHANGE_ATTACK, 2}},
+		{{CREATURE_OPPO_TEAM, CE_CHANGE_ATTACK, -2}},
 		"Decrease all your opponent's creatures' attack of 2 point"
 	},
 	{
@@ -183,7 +183,7 @@ const SpellData ALL_SPELLS[] = {
 	{
 		"Robbery",
 		COST_5,
-		{{CREATURE_OPPO_TEAM, CE_CHANGE_ATTACK, 1},{CREATURE_SELF_TEAM, CE_CHANGE_ATTACK, 1}},
+		{{CREATURE_OPPO_TEAM, CE_CHANGE_ATTACK, -1},{CREATURE_SELF_TEAM, CE_CHANGE_ATTACK, 1}},
 		"Decrease all your opponent's creatures' attack of 1 point and increase yours of 1 point"
 	},
 	{
