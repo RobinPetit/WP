@@ -56,6 +56,9 @@ public:
 	void applyEffect(EffectParamsCollection effectArgs);
 
 	int getAttack();
+	int getHealth();
+	int getShield();
+	int getShieldType();
 	int getPersonalConstraint(int constraintID) const;
 	int getConstraint(int constraintID) const;
 };

@@ -6,7 +6,7 @@ project("WizardPoker")
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 # Tell to SFML whether we compile in static mode if we build for the NO4
-# set(SFML_STATIC_LIBRARIES BUILD_NO4)
+# set(SFML_STATIC_LIBRARIES TRUE)
 
 # Find dependencies
 find_package(SFML 2.1 COMPONENTS network system REQUIRED)

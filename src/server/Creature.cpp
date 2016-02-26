@@ -115,6 +115,21 @@ int Creature::getAttack()
 	return _attack;
 }
 
+int Creature::getHealth()
+{
+	return _health;
+}
+
+int Creature::getShield()
+{
+	return _shield;
+}
+
+int Creature::getShieldType()
+{
+	return _shieldType;
+}
+
 int Creature::getPersonalConstraint(int constraintID) const
 {
 	return _constraints.getConstraint(constraintID);
