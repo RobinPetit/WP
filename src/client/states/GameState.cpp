@@ -116,26 +116,35 @@ int GameState::askIndex(int maxIndex, std::string inputMessage)
 
 int GameState::askSelfHandIndex()
 {
+	std::cout << "These are the cards in your hand:" << std::endl;
+	displayCardVector(_selfHandCards);
 	return askIndex(_selfHandCards.size(), "Choose the index for a card in your hand :");
 }
 
 int GameState::askSelfBoardIndex()
 {
-	return askIndex(_selfBoardCards.size(), "Choose the index for a card on the board :");
+	std::cout << "These are the cards on your board:" << std::endl;
+	displayCardVector(_selfBoardCards);
+	return askIndex(_selfBoardCards.size(), "Choose the index for a card on your board :");
 }
 
 int GameState::askSelfGraveyardIndex()
 {
+	std::cout << "These are the cards in your graveyard:" << std::endl;
+	displayCardVector(_selfGraveCards);
 	return askIndex(_selfGraveCards.size(), "Choose the index for a card in the graveyard :");
 }
 
 int GameState::askOppoHandIndex()
 {
-	return askIndex(_oppoHandSize, "Choose the index for a card on the opponent's board :");
+	std::cout << "Your opponent has " << _oppoHandSize << " cards in his hand." << std::endl;
+	return askIndex(_oppoHandSize, "Choose the index for a card in the opponent's hand :");
 }
 
 int GameState::askOppoBoardIndex()
 {
+	std::cout << "These are the cards on your opponent's board:" << std::endl;
+	displayCardVector(_selfBoardCards);
 	return askIndex(_oppoBoardCards.size(), "Choose the index for a card on the opponent's board :");
 }
 
@@ -213,6 +222,8 @@ void GameState::displayGame()
 	displayCardVector(_oppoBoardCards);
 	std::cout << "Cards on your board:" << std::endl;
 	displayCardVector(_selfBoardCards);
+	std::cout << "Cards in your hand:" << std::endl;
+	displayCardVector(_selfHandCards);
 
 	std::cout << "-----HEALTH & ENERGY-----" << std::endl;
 	std::cout << "Your opponent has " << _oppoHealth << " life points left." << std::endl;
@@ -224,7 +235,8 @@ void GameState::displayCardVector(std::vector<sf::Uint32> cardVector)
 {
 	for (int i=0; i<cardVector.size(); i++)
 	{
-		std::cout << cardVector.at(i);
+		std::cout << i << " : " << cardVector.at(i);
+		//TODO use card names instead of card IDs ?
 		if (i!=cardVector.size()-1)
 			std::cout << ", ";
 	}
