@@ -53,10 +53,10 @@ void Player::setDeck(const Deck& newDeck)
 	std::vector<Card* > loadedCards;
 	for(std::size_t i{0}; i < Deck::size; ++i)
 	{
-		const cardId card{newDeck.getCard(i)};
+		const cardId card{newDeck.getCard(i)-1};
 		// FIXME For now, we consider that cardId <= 10 are creatures,
 		// and higher cardId are spells. THIS SHOULD BE FIXED.
-		if(card <= 10)
+		if(card < 10)
 		{
 			CreatureData creat = ALL_CREATURES[card];
 			loadedCards.push_back(new Creature(card, creat.cost, creat.attack, creat.health, creat.shield, creat.shieldType, creat.effects));
@@ -68,7 +68,7 @@ void Player::setDeck(const Deck& newDeck)
 		}
 	}
 	std::shuffle(loadedCards.begin(), loadedCards.end(), _engine);
-	for (int i=0; i<20; i++)
+	for (auto i{0U}; i<Deck::size; i++)
 		_cardDeck.push(loadedCards.at(i));
 }
 

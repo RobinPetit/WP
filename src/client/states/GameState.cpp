@@ -61,7 +61,7 @@ void GameState::chooseDeck()
 	do
 		std::getline(std::cin, chosenDeckName);
 	while(std::find_if(decks.begin(), decks.end(), [chosenDeckName](const Deck& d){ return chosenDeckName == d.getName(); }) == decks.end());
-	std::cout << "sending your deck...\n";
+	std::cout << "sending your deck '" << chosenDeckName << "'...\n";
 	// send the deck ID to the server
 	sf::Packet deckIdPacket;
 	deckIdPacket << TransferType::GAME_PLAYER_GIVE_DECK_NAMES << chosenDeckName;
