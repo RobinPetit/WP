@@ -68,7 +68,7 @@ void Board::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 	}
 	catch (std::out_of_range)
 	{
-		//NETWORK: INPUT_ERROR
+		//SERVER: CARD ERROR
 		return;
 	}
 
