@@ -25,7 +25,7 @@ std::function<void(Player&, const EffectParamsCollection&)> Player::_effectMetho
 	&Player::changeHealth,
 };
 
-Player::Player(Player::ID id, sf::TcpSocket& socket, sf::TcpSocket& specialSocket):
+Player::Player(userId id, sf::TcpSocket& socket, sf::TcpSocket& specialSocket):
 	_id(id),
 	_socketToClient(socket),
 	_specialSocketToClient(specialSocket)
@@ -38,7 +38,7 @@ void Player::setOpponent(Player* opponent)
 	_opponent = opponent;
 }
 
-Player::ID Player::getID()
+userId Player::getID()
 {
 	return _id;
 }

@@ -46,12 +46,12 @@ void Board::quitGame()
 	//NETWORK: PLAYER_QUIT_GAME
 }
 
-Player::ID Board::getCurrentPlayerID()
+userId Board::getCurrentPlayerID()
 {
 	return _activePlayer->getID();
 }
 
-Player::ID Board::getWaitingPlayerID()
+userId Board::getWaitingPlayerID()
 {
 	return _passivePlayer->getID();
 }
@@ -114,4 +114,3 @@ void Board::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 	}
 	throw std::runtime_error("Effect subject not valid");
 }
-

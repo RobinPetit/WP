@@ -7,6 +7,7 @@
 // WizardPoker headers
 #include "server/Board.hpp"
 #include "server/ClientInformations.hpp"
+#include "common/Identifiers.hpp"  // userId
 // SFML headers
 #include <SFML/Network/TcpSocket.hpp>
 
@@ -14,11 +15,11 @@ class GameThread final : public std::thread
 {
 public:
 	/// Constructor
-	GameThread(Player::ID player1ID, Player::ID player2ID);
+	GameThread(userId player1ID, userId player2ID);
 
 	/// Constructor starting a thread
 	template <class F, class ...Args>
-	explicit GameThread(Player::ID player1ID, Player::ID player2ID, F&& f, Args&&... args);
+	explicit GameThread(userId player1ID, userId player2ID, F&& f, Args&&... args);
 
 	/// Functions which stops the running thread (abortion)
 	void interruptGame();
@@ -31,8 +32,8 @@ public:
 	/// Destructor
 	~GameThread();
 
-	const Player::ID _player1ID;
-	const Player::ID _player2ID;
+	const userId _player1ID;
+	const userId _player2ID;
 
 	enum class PlayerNumber { PLAYER1, PLAYER2 };
 
@@ -61,9 +62,9 @@ private:
 	//////////// Private methods
 	void setSocket(sf::TcpSocket& socket, sf::TcpSocket& specialSocket, const ClientInformations& player);
 
-	PlayerNumber PlayerFromID(const Player::ID ID);
-	sf::TcpSocket& getSocketFromID(const Player::ID ID);
-	sf::TcpSocket& getSpecialSocketFromID(const Player::ID ID);
+	PlayerNumber PlayerFromID(const userId ID);
+	sf::TcpSocket& getSocketFromID(const userId ID);
+	sf::TcpSocket& getSpecialSocketFromID(const userId ID);
 
 	void makeTimer();
 	void receiveDecks();
@@ -72,7 +73,7 @@ private:
 ///////// template code
 
 template <typename Function, class... Args>
-GameThread::GameThread(Player::ID player1ID, Player::ID player2ID, Function&& function, Args&&... args):
+GameThread::GameThread(userId player1ID, userId player2ID, Function&& function, Args&&... args):
 	std::thread(function, args...),
 	_player1ID(player1ID),
 	_player2ID(player2ID),
