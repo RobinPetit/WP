@@ -5,7 +5,7 @@
 #include <thread>
 #include <atomic>
 // WizardPoker headers
-#include "server/Board.hpp"
+#include "server/Player.hpp"
 #include "server/ClientInformations.hpp"
 #include "common/Identifiers.hpp"  // userId
 #include "server/ServerDatabase.hpp"
@@ -30,13 +30,18 @@ public:
 	/// \TODO change return value to give the result of the game
 	void startGame(const ClientInformations& player1, const ClientInformations& player2);
 
+	/// Interface for user
+	void useCard(int handIndex);
+	void attackWithCreature(int attackerIndex, int victimIndex);
+
+	/// Interface for Player and Card classes
+	void applyEffect(Card* usedCard, EffectParamsCollection effect);
+
 	/// Destructor
 	~GameThread();
 
 	const userId _player1ID;
 	const userId _player2ID;
-
-	enum class PlayerNumber { PLAYER1, PLAYER2 };
 
 	//~Currently low for tests
 	static constexpr std::chrono::seconds _turnTime{30};  // arbitrary
@@ -48,10 +53,14 @@ private:
 	sf::TcpSocket _socketPlayer2;
 	sf::TcpSocket _specialOutputSocketPlayer1;
 	sf::TcpSocket _specialOutputSocketPlayer2;
-	Board _gameBoard;
-	// The Board class has one chance over two to swap the player (to randomize the first player).
-	// This boolean is set to true if GameThread::player1 is Board::player1 and to false if GameThread::player1 is Board::player2.
-	bool _isSynchroWithBoard;
+	Player _player1;
+	Player _player2;
+
+	ServerDatabase& _database;
+	int _turn;
+	Player *_activePlayer;
+	Player *_passivePlayer;
+	bool _turnCanEnd;
 
 	std::thread _timerThread;
 
@@ -63,12 +72,14 @@ private:
 	//////////// Private methods
 	void setSocket(sf::TcpSocket& socket, sf::TcpSocket& specialSocket, const ClientInformations& player);
 
-	PlayerNumber PlayerFromID(const userId ID);
 	sf::TcpSocket& getSocketFromID(const userId ID);
 	sf::TcpSocket& getSpecialSocketFromID(const userId ID);
 
 	void makeTimer();
 	void receiveDecks();
+
+	void createPlayers();
+	void endTurn();
 };
 
 ///////// template code
@@ -79,10 +90,13 @@ GameThread::GameThread(ServerDatabase& database, userId player1ID, userId player
 	_player1ID(player1ID),
 	_player2ID(player2ID),
 	_running(true),
-	_gameBoard(database, {player1ID, _socketPlayer1, _specialOutputSocketPlayer1}, {player2ID, _socketPlayer2, _specialOutputSocketPlayer2}),
-	_isSynchroWithBoard(_player1ID == _gameBoard.getCurrentPlayerID())
+	_player1(_player1ID, _socketPlayer1, _specialOutputSocketPlayer1),
+	_player2(_player2ID, _socketPlayer2, _specialOutputSocketPlayer2),
+	_database(database),
+	_turn(0),
+	_turnCanEnd(false)
 {
-
+	createPlayers();
 }
 
 #endif  // _GAME_THREAD_HPP_

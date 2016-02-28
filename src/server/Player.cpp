@@ -1,6 +1,6 @@
 // WizardPoker headers
 #include "server/Player.hpp"
-#include "server/Board.hpp"
+#include "server/GameThread.hpp"
 #include "server/Creature.hpp"
 #include "common/sockets/TransferType.hpp"
 #include "common/sockets/PacketOverload.hpp"

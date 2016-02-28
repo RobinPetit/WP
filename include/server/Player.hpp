@@ -19,7 +19,7 @@
 // SFML headers
 #include <SFML/Network/TcpSocket.hpp>
 
-class Board;
+class GameThread;
 class Creature;
 
 /// Represents one of the two players for a given game.
@@ -77,7 +77,7 @@ private:
 	constexpr static TurnData _emptyTurnData = {0, 0, 0, 0};
 
 	/// Attributes
-	Board* _board;
+	GameThread* _board;
 	Player* _opponent = nullptr;
 	userId _id;
 
