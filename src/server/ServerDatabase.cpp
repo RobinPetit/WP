@@ -105,6 +105,7 @@ void ServerDatabase::addFriend(userId userId1, userId userId2)
 	sqlite3_reset(_addFriendStmt);
 	sqliteThrowExcept(sqlite3_bind_int(_addFriendStmt, 1, static_cast<int>(userId1)));
 	sqliteThrowExcept(sqlite3_bind_int(_addFriendStmt, 2, static_cast<int>(userId2)));
+
 	sqliteThrowExcept(sqlite3_step(_addFriendStmt));
 	unlock();
 }

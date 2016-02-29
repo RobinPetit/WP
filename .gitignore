@@ -59,5 +59,9 @@ bin/
 	# CodeLite
 *.workspace
 *.project
+	# vim
+*.swp
 
-Group5/
+# Do not commit the resources changes
+resources/
+

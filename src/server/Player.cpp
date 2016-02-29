@@ -25,7 +25,7 @@ std::function<void(Player&, const EffectParamsCollection&)> Player::_effectMetho
 	&Player::changeHealth,
 };
 
-Player::Player(Player::ID id, sf::TcpSocket& socket, sf::TcpSocket& specialSocket):
+Player::Player(userId id, sf::TcpSocket& socket, sf::TcpSocket& specialSocket):
 	_id(id),
 	_socketToClient(socket),
 	_specialSocketToClient(specialSocket)
@@ -38,7 +38,7 @@ void Player::setOpponent(Player* opponent)
 	_opponent = opponent;
 }
 
-Player::ID Player::getID()
+userId Player::getID()
 {
 	return _id;
 }
@@ -48,6 +48,30 @@ const std::vector<Creature *>& Player::getBoard()
 	return _cardBoard;
 }
 
+void Player::setDeck(const Deck& newDeck)
+{
+	std::vector<Card* > loadedCards;
+	for(std::size_t i{0}; i < Deck::size; ++i)
+	{
+		const cardId card{newDeck.getCard(i)};
+		// FIXME For now, we consider that cardId <= 10 are creatures,
+		// and higher cardId are spells. THIS SHOULD BE FIXED.
+		if(card <= 10)
+		{
+			CreatureData creat = ALL_CREATURES[card-1];
+			loadedCards.push_back(new Creature(card, creat.cost, creat.attack, creat.health, creat.shield, creat.shieldType, creat.effects));
+		}
+		else
+		{
+			SpellData spell = ALL_SPELLS[card - 11];
+			loadedCards.push_back(new Spell(card, spell.cost, spell.effects));
+		}
+	}
+	std::shuffle(loadedCards.begin(), loadedCards.end(), _engine);
+	for (auto i{0U}; i<Deck::size; i++)
+		_cardDeck.push(loadedCards.at(i));
+}
+
 /*------------------------------ BOARD INTERFACE */
 void Player::beginGame(bool isActivePlayer)
 {
@@ -55,14 +79,17 @@ void Player::beginGame(bool isActivePlayer)
 		//NETWORK: GAME_STARTED_ACTIVE
 	//else
 		//NETWORK: GAME_STARTED_INACTIVE
-
-	//NETWORK: request Deck selection from client
-	loadCardDeck(0);
 }
 
 void Player::enterTurn(int turn)
 {
 	_turnData = _emptyTurnData;  // Reset the turn data
+	if (_cardDeck.empty())
+	{
+		_turnsSinceEmptyDeck++;
+		if (_turnsSinceEmptyDeck==10)
+			endGame(); //TODO define arguments here
+	}
 
 	//Player's turn-based constraints
 	cardDeckToHand(_constraints.getConstraint(PC_TURN_CARDS_PICKED));
@@ -199,6 +226,11 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 	_socketToClient.send(response);
 }
 
+void Player::endGame()
+{
+    //I have no idea what to do here.
+}
+
 /*------------------------------ EFFECTS INTERFACE */
 void Player::applyEffect(const Card* usedCard, EffectParamsCollection effectArgs)
 {
@@ -216,10 +248,10 @@ void Player::applyEffectToCreature(Creature* casterAndSubject, EffectParamsColle
 	casterAndSubject->applyEffect(effectArgs); //call method on effect subject (same as caster)
 }
 
-void Player::applyEffectToCreature(const Card* usedCard, EffectParamsCollection effectArgs, int boardIndex)
+void Player::applyEffectToCreature(const Card* usedCard, EffectParamsCollection effectArgs, std::vector<int> boardIndexes)
 {
 	_lastCasterCard = usedCard; //remember last used card
-	_cardBoard.at(boardIndex)->applyEffect(effectArgs);
+	_cardBoard.at(boardIndexes.at(0))->applyEffect(effectArgs);
 }
 
 void Player::applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollection effectArgs)
@@ -248,21 +280,6 @@ int Player::getCreatureConstraint(const Creature& subject, int constraintID)
 const Card* Player::getLastCaster()
 {
 	return _lastCasterCard;
-}
-
-int Player::getRandomBoardIndex()
-{
-	return std::uniform_int_distribution<int>(0, _cardBoard.size()-1)(_engine);
-}
-
-int Player::requestSelfBoardIndex()
-{
-	return 0; //NETWORK: REQUEST SELF BOARD INDEX
-}
-
-int Player::requestOppoBoardIndex()
-{
-	return 0; //NETWORK: REQUEST OPPO BOARD INDEX
 }
 
 /*------------------------------ EFFECTS (PRIVATE) */
@@ -446,6 +463,8 @@ void Player::changeHealth(const EffectParamsCollection& args)
 	if (_health<=0)
 	{
 		_health=0;
+		endGame(); //TODO define arguments here
+		_opponent->endGame();
 		//NETWORK: NO_HEALTH_CHANGED
 		//call die()
 	}
@@ -474,26 +493,6 @@ void Player::sendCurrentHealth()
 }
 
 /*--------------------------- PRIVATE */
-void Player::loadCardDeck(int chosenDeck)
-{
-	//DATABASE: request chosen deck for Card Creation
-	std::vector<Card* > loadedCards;
-    for (int i=0; i<10; i++)
-    {
-		CreatureData creat = ALL_CREATURES[i];
-        loadedCards.push_back(new Creature(i, creat.cost, creat.attack, creat.health, creat.shield, creat.shieldType, creat.effects));
-    }
-    for (int i=0; i<10; i++)
-    {
-        SpellData spell = ALL_SPELLS[i];
-        loadedCards.push_back(new Spell(i+10, spell.cost, spell.effects));
-    }
-    std::shuffle(loadedCards.begin(), loadedCards.end(), _engine);
-    for (int i=0; i<20; i++)
-    {
-        _cardDeck.push(loadedCards.at(i));
-    }
-}
 
 void Player::exploitCardEffects(Card* usedCard)
 {
@@ -620,22 +619,22 @@ Card* Player::cardExchangeFromHand(Card* givenCard, int handIndex)
 
 void Player::sendHandState()
 {
-	sendIDsFromVector(TransferType::GAME_HAND_UPDATED, _cardHand);
+	sendCardDataFromVector(TransferType::GAME_HAND_UPDATED, _cardHand);
 }
 
 void Player::sendBoardState()
 {
-	sendIDsFromVector(TransferType::GAME_BOARD_UPDATED, _cardBoard);
+	sendBoardCreatureDataFromVector(TransferType::GAME_BOARD_UPDATED, _cardBoard);
 }
 
 void Player::sendOpponentBoardState()
 {
-	sendIDsFromVector(TransferType::GAME_OPPONENT_BOARD_UPDATED, _opponent->getBoard());
+	sendBoardCreatureDataFromVector(TransferType::GAME_OPPONENT_BOARD_UPDATED, _opponent->getBoard());
 }
 
 void Player::sendGraveyardState()
 {
-	sendIDsFromVector(TransferType::GAME_GRAVEYARD_UPDATED, _cardBin);
+	sendCardDataFromVector(TransferType::GAME_GRAVEYARD_UPDATED, _cardBin);
 }
 
 // use a template to handle both Card and Creature pointers
@@ -651,24 +650,52 @@ void Player::sendIDsFromVector(TransferType type, const std::vector<CardType *>&
 	_specialSocketToClient.send(packet);
 }
 
-void Player::sendCreatureDataFromVector(TransferType type, const std::vector<Creature*>& vect)
+void Player::sendCardDataFromVector(TransferType type, const std::vector<Card*>& vect)
 {
-    //sf::Packet packet;
-    //packet << static_cast<sf::Uint32>(vect.size()); //useful ?
-	std::vector<BoardCreatureData> boardCreatures;
-	BoardCreatureData data;
-	for (int i=0; i<vect.size(); i++)
+	sf::Packet packet;
+	std::vector<CardData> cards;
+	for(auto i=0U; i < vect.size(); ++i)
 	{
-        Creature& creat = *vect.at(i);
-        data.id 	= creat.getID();
+		CardData data;
+		data.id = vect.at(i)->getID();
+		cards.push_back(data);
+	}
+	packet << cards;
+	_specialSocketToClient.send(packet);
+}
+
+void Player::sendBoardCreatureDataFromVector(TransferType type, const std::vector<Creature*>& vect)
+{
+	sf::Packet packet;
+	std::vector<BoardCreatureData> boardCreatures;
+	for (auto i=0U; i<vect.size(); i++)
+	{
+		BoardCreatureData data;
+		Creature& creat = *vect.at(i);
+		data.id 	= creat.getID();
 		data.attack = creat.getAttack();
 		data.health = creat.getHealth();
 		data.shield = creat.getShield();
-		data.shieldType = creat.getShieldType();
-        boardCreatures.push_back(data);
+		int shieldType = creat.getShieldType();
+		switch (shieldType)
+		{
+			case SHIELD_NONE:
+				data.shieldType = "none";
+				break;
+			case SHIELD_BLUE:
+				data.shieldType = "blue";
+				break;
+			case SHIELD_ORANGE:
+				data.shieldType = "orange";
+				break;
+			case SHIELD_LEGENDARY:
+				data.shieldType = "legendary";
+		}
+		boardCreatures.push_back(data);
 	}
-	//packet << boardCreatures;
-	//_specialSocketToClient.send(packet);
+	// std::vector transmission in packet is defined in common/sockets/PacketOverload.hpp
+	packet << boardCreatures;
+	_specialSocketToClient.send(packet);
 }
 
 //////////
@@ -678,4 +705,40 @@ void Player::sendValueToClient(sf::TcpSocket& socket, TransferType value)
 	sf::Packet packet;
 	packet << value;
 	socket.send(packet);
+}
+
+// TODO: handle the case where the user doesn't give and his turn finishes
+std::vector<int>&& Player::askUserToSelectCards(const std::vector<CardToSelect>& selection)
+{
+	sf::Packet packet;
+	packet << selection;
+	_socketToClient.send(packet);
+	std::vector<int> indices(selection.size());
+	_socketToClient.receive(packet);
+	packet >> indices;
+	return std::move(indices);
+}
+
+std::vector<int>&& Player::getRandomBoardIndexes(const std::vector<CardToSelect>& selection)
+{
+	std::vector<int> indices(selection.size());
+	for (int i=0; i<selection.size(); i++)
+	{
+		switch (selection.at(i))
+		{
+			case SELF_BOARD:
+				indices.push_back(std::uniform_int_distribution<int>(0, _cardBoard.size()-1)(_engine));
+				break;
+			case SELF_HAND:
+				indices.push_back(std::uniform_int_distribution<int>(0, _cardHand.size()-1)(_engine));
+				break;
+			case OPPO_BOARD:
+				indices.push_back(std::uniform_int_distribution<int>(0, _opponent->_cardBoard.size()-1)(_engine));
+				break;
+			case OPPO_HAND:
+				indices.push_back(std::uniform_int_distribution<int>(0, _opponent->_cardHand.size()-1)(_engine));
+				break;
+		}
+	}
+	return std::move(indices);
 }

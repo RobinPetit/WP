@@ -9,6 +9,7 @@
 #include <array>
 #include <utility> // std::pair
 #include <mutex>
+
 // SQLite headers
 #include <sqlite3.h>
 // WizardPoker headers

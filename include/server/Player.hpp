@@ -13,7 +13,9 @@
 #include "server/Constraints.hpp"
 #include "common/CardData.hpp"
 #include "common/GameData.hpp"
+#include "common/Identifiers.hpp"  // userId
 #include "common/sockets/TransferType.hpp"
+#include "server/ServerDatabase.hpp"
 // SFML headers
 #include <SFML/Network/TcpSocket.hpp>
 
@@ -24,11 +26,8 @@ class Creature;
 class Player
 {
 public:
-	/// Types
-	typedef std::size_t ID;
-
 	/// Constructor
-	Player(Player::ID id, sf::TcpSocket& socket, sf::TcpSocket& specialSocket);
+	Player(userId id, sf::TcpSocket& socket, sf::TcpSocket& specialSocket);
 	void setOpponent(Player* opponent);  // Complementary
 
 	/// Destructor.
@@ -40,24 +39,31 @@ public:
 	void leaveTurn();
 	void useCard(int handIndex); 	///< Use a card
 	void attackWithCreature(int boardIndex, int victim);  ///< Attack victim (-1 for opponent) with a card
+	void endGame(); //TODO: define behavior and call for opponent when quitting
 
 	/// Interface for applying effects
 	//to Player
 	void applyEffect(const Card* usedCard, EffectParamsCollection effectArgs);
 	//to a Creature
 	void applyEffectToCreature(Creature* casterAndSubject, EffectParamsCollection effectArgs); //With ref. to creature
-	void applyEffectToCreature(const Card* usedCard, EffectParamsCollection effectArgs, int boardIndex); //With creature index
+	void applyEffectToCreature(const Card* usedCard, EffectParamsCollection effectArgs, std::vector<int> boardIndexes); //With creature index
 	//to all Creatures
 	void applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollection effectArgs);
 
 	/// Getters
 	int getCreatureConstraint(const Creature& subject, int constraintIDD);
 	const Card* getLastCaster();
-	Player::ID getID();
+	userId getID();
 	const std::vector<Creature *>& getBoard();
-	int getRandomBoardIndex();
-	int requestSelfBoardIndex();
-	int requestOppoBoardIndex();
+
+	/// Setters
+	void setDeck(const Deck& newDeck);
+
+	///
+	/// \return a vector of indices selected
+	/// \param selection a vector of values telling whether the choice must be in player's cards or opponent's cards
+	std::vector<int>&& getRandomBoardIndexes(const std::vector<CardToSelect>& selection);
+	std::vector<int>&& askUserToSelectCards(const std::vector<CardToSelect>& selection);
 
 private:
 	/// Types
@@ -73,7 +79,7 @@ private:
 	/// Attributes
 	Board* _board;
 	Player* _opponent = nullptr;
-	Player::ID _id;
+	userId _id;
 
 	//Client communication
 	sf::TcpSocket& _socketToClient;
@@ -81,6 +87,7 @@ private:
 
 	// Gameplay
 	int _energy, _energyInit = 0, _health;
+	int _turnsSinceEmptyDeck;
 	static const int _maxEnergy = 10, _maxHealth = 20;
 	TurnData _turnData;
 
@@ -113,7 +120,6 @@ private:
 	void changeHealth(const EffectParamsCollection& args);
 
 	/// Other private methods
-	void loadCardDeck(int chosenDeck);
 	void exploitCardEffects(Card* usedCard);
 	void setTeamConstraint(const Card* usedCard, const EffectParamsCollection& effectArgs);
 
@@ -140,7 +146,8 @@ private:
 
 	template <typename CardType>
 	void sendIDsFromVector(TransferType type, const std::vector<CardType *>& vect);
-	void sendCreatureDataFromVector(TransferType type, const std::vector<Creature*>& vect);
+	void sendCardDataFromVector(TransferType type, const std::vector<Card*>& vect);
+	void sendBoardCreatureDataFromVector(TransferType type, const std::vector<Creature*>& vect);
 	void sendValueToClient(sf::TcpSocket& socket, TransferType value);
 };
 

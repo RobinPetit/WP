@@ -14,34 +14,35 @@ public:
 	/// \param filename: relative path to sqlite3 file.
 	explicit ServerDatabase(const std::string filename = FILENAME);
 
-	int getUserId(const std::string login);
-	std::string getLogin(const int userId);
+	userId getUserId(const std::string login);
+	std::string getLogin(userId id);
 
-	inline FriendsList getFriendsList(const int userId)
+	inline FriendsList getFriendsList(userId id)
 	{
-		return getAnyFriendsList(userId, _friendListStmt);
+		return getAnyFriendsList(id, _friendListStmt);
 	}
-	inline FriendsList getFriendshipRequests(const int userId)
+	inline FriendsList getFriendshipRequests(userId id)
 	{
-		return getAnyFriendsList(userId, _friendshipRequestsStmt);
+		return getAnyFriendsList(id, _friendshipRequestsStmt);
 	}
 
 	Ladder getLadder();
 
-	void addFriend(const int userId1, const int userId2);
-	void removeFriend(const int userId1, const int userId2);
-	bool areFriend(const int userId1, const int userId2);
+	void addFriend(userId id1, userId id2);
+	void removeFriend(userId id1, userId id2);
+	bool areFriend(userId id1, userId id2);
 
-	void addFriendshipRequest(const int from, const int to);
-	void removeFriendshipRequest(const int from, const int to);
-	bool isFriendshipRequestSent(const int from, const int to);
+	void addFriendshipRequest(userId from, userId to);
+	void removeFriendshipRequest(userId from, userId to);
+	bool isFriendshipRequestSent(userId from, userId to);
 
-	CardsCollection getCardsCollection(const int userId);
+	CardsCollection getCardsCollection(userId id);
 
-	std::vector<Deck> getDecks(const int userId);
-	void createDeck(const int userId, const Deck& deck);
-	void deleteDeckByName(const int userId, const std::string& deckName);
-	void editDeck(const int userId, const Deck& deck); // Deck should contains the deckId
+	std::vector<Deck> getDecks(userId id);
+	Deck getDeckByName(userId id, const std::string& deckName);
+	void createDeck(userId id, const Deck& deck);
+	void deleteDeckByName(userId id, const std::string& deckName);
+	void editDeck(userId id, const Deck& deck); // Deck should contains the deckId
 
 	bool areIdentifiersValid(const std::string& login, const std::string& password);
 	bool isRegistered(const std::string& login);
@@ -53,7 +54,7 @@ private:
 	/// Default relative path to sqlite3 file
 	static const char FILENAME[];
 
-	FriendsList getAnyFriendsList(const int userId, sqlite3_stmt * stmt);
+	FriendsList getAnyFriendsList(userId id, sqlite3_stmt * stmt);
 
 	sqlite3_stmt * _friendListStmt;
 	sqlite3_stmt * _userIdStmt;

@@ -52,36 +52,32 @@ void GameState::init()
 void GameState::chooseDeck()
 {
 	std::vector<Deck> decks = _client.getDecks();
+
 	// ask for the deck to use during the game
-	std::cout << "Choose your deck:\n\t";
-	for(int i{0}; i < decks.size(); ++i)
-		std::cout << ++i << ": " << decks[i].getName() << std::endl;
+	for(int i=0; i<decks.size(); i++)
+		std::cout << i << " : " << decks.at(i).getName() << std::endl;
 	std::cin.clear();
-	sf::Uint32 chosenDeck;
-	bool loop{true};
+	std::size_t res; //chosen deck
 	do
 	{
-		try
-		{
-			chosenDeck = askForNumber(1, decks.size()+1)-1;
-			loop = false;
-		}
-		catch(std::exception& e)
-		{
-			std::cout << "exception: " << e.what();
-		}
-	}
-	while(loop);
+		std::cout << "Choose your deck: ";
+		std::cin >> res;
+		std::cout << "you chose" << res << std::endl;
+		if(res > decks.size() or res<0)
+			std::cout << "Your answer should be in the range (" << 0 << ", " << decks.size() <<") !" << std::endl;
+	} while(res > decks.size() or res<0);
+
 	// send the deck ID to the server
-	sf::Packet deckId;
-	deckId << TransferType::GAME_PLAYER_GIVE_DECK_ID << chosenDeck;
-	_client.getGameSocket().send(deckId);
+	std::cout << "sending your deck '" << decks.at(res).getName() << "'...\n";
+	sf::Packet deckIdPacket;
+	deckIdPacket << TransferType::GAME_PLAYER_GIVE_DECK_NAMES << decks.at(res).getName();
+	_client.getGameSocket().send(deckIdPacket);
 }
 
 void GameState::play()
 {
-        while(_playing.load())
-        {
+	while(_playing.load())
+	{
 		if(_myTurn.load())
 			startTurn();
 		else
@@ -90,11 +86,12 @@ void GameState::play()
 			while(not _myTurn.load())
 				sf::sleep(sf::milliseconds(100));
 		}
-        }
+	}
 }
 
 void GameState::display()
 {
+	displayGame();
 	std::cout << "Here are your options:\n";
 	// Display the actions
 	AbstractState::display();
@@ -107,27 +104,21 @@ void GameState::startTurn()
 	std::cout << "It is now your turn, type something\n";
 	while(_myTurn.load())
 	{
-		if(_nonBlockingInput.waitForData(0.1))
-		{
-			std::string command{_nonBlockingInput.receiveStdinData()};
-			handleInput(command);
-		}
+		if(not _nonBlockingInput.waitForData(0.1))
+			continue;
+		std::string command{_nonBlockingInput.receiveStdinData()};
+		std::cout << "handling command '" << command << "'\n";
+		handleInput(command);
+		std::cout << "handled\n";
 	}
 	/**/
 }
 
 
 //PRIVATE METHODS
-CardData GameState::getCardData(int cardID)
-{
-    if (cardID < 10)
-		return {ALL_CREATURES[cardID].name, ALL_CREATURES[cardID].cost, ALL_CREATURES[cardID].description};
-	else
-		return {ALL_SPELLS[cardID-10].name, ALL_SPELLS[cardID-10].cost, ALL_SPELLS[cardID-10].description};
-}
 
 // Request user for additional input
-int GameState::askIndex(int maxIndex, std::string inputMessage)
+int GameState::askIndex(std::size_t maxIndex, std::string inputMessage)
 {
 	std::size_t res; //result
 	if (maxIndex==0)
@@ -140,11 +131,9 @@ int GameState::askIndex(int maxIndex, std::string inputMessage)
 	{
 		std::cout << inputMessage;
 		std::cin >> res;
-		if(res < 0 or res > maxIndex)
-		{
+		if(res > maxIndex)
 			std::cout << "Your answer should be in the range (" << 0 << ", " << maxIndex <<") !\n";
-		}
-	}while(res < 0 or res>maxIndex);
+	}while(res>maxIndex);
 
 	return res;
 }
@@ -159,8 +148,8 @@ int GameState::askSelfHandIndex()
 int GameState::askSelfBoardIndex()
 {
 	std::cout << "These are the cards on your board:" << std::endl;
-	displayCardVector(_selfBoardCards);
-	return askIndex(_selfBoardCards.size(), "Choose the index for a card on your board :");
+	displayBoardCreatureVector(_selfBoardCreatures);
+	return askIndex(_selfBoardCreatures.size(), "Choose the index for a card on your board :");
 }
 
 int GameState::askSelfGraveyardIndex()
@@ -179,8 +168,8 @@ int GameState::askOppoHandIndex()
 int GameState::askOppoBoardIndex()
 {
 	std::cout << "These are the cards on your opponent's board:" << std::endl;
-	displayCardVector(_selfBoardCards);
-	return askIndex(_oppoBoardCards.size(), "Choose the index for a card on the opponent's board :");
+	displayBoardCreatureVector(_oppoBoardCreatures);
+	return askIndex(_oppoBoardCreatures.size(), "Choose the index for a card on the opponent's board :");
 }
 
 //User actions
@@ -236,6 +225,9 @@ void GameState::endTurn()
 	}
 	else
 	{
+		sf::Packet packet;
+		packet << TransferType::GAME_PLAYER_LEAVE_TURN;
+		_client.getGameSocket().send(packet);
 		_myTurn = false;
 	}
 }
@@ -255,15 +247,16 @@ GameState::~GameState()
 void GameState::displayGame()
 {
 	_client.getTerminal().clearScreen();
+	std::cout << "***************" << std::endl;
 	std::cout << "-----CARDS-----" << std::endl;
 	std::cout << "You have " << _selfDeckSize << " cards left in your deck." << std::endl;
 	std::cout << "Your opponent has " << _oppoHandSize << " cards in his hand." << std::endl;
 	std::cout << "Cards in your graveyard:" << std::endl;
 	displayCardVector(_selfGraveCards);
 	std::cout << "Cards on your opponent's board:" << std::endl;
-	displayCardVector(_oppoBoardCards);
+	displayBoardCreatureVector(_oppoBoardCreatures);
 	std::cout << "Cards on your board:" << std::endl;
-	displayCardVector(_selfBoardCards);
+	displayBoardCreatureVector(_selfBoardCreatures);
 	std::cout << "Cards in your hand:" << std::endl;
 	displayCardVector(_selfHandCards);
 
@@ -271,14 +264,15 @@ void GameState::displayGame()
 	std::cout << "Your opponent has " << _oppoHealth << " life points left." << std::endl;
 	std::cout << "You have " << _selfHealth << " life points left." << std::endl;
 	std::cout << "You have " << _selfEnergy << " energy points left." << std::endl;
+	std::cout << "***************" << std::endl;
 }
 
-void GameState::displayCardVector(std::vector<sf::Uint32> cardVector)
+void GameState::displayCardVector(std::vector<CardData> cardVector)
 {
-	for (int i=0; i<cardVector.size(); i++)
+	for (auto i=0U; i<cardVector.size(); i++)
 	{
-		CardData thisCard = getCardData(cardVector.at(i));
-		std::cout << i << " : " << thisCard.name << "(cost:" << thisCard.cost << ")";
+		cardId id = cardVector.at(i).id;
+		std::cout << i << " : " << getCardName(id) << "(cost:" << getCardCost(id) << ")";
 		//TODO use card names instead of card IDs ?
 		if (i!=cardVector.size()-1)
 			std::cout << ", ";
@@ -286,14 +280,18 @@ void GameState::displayCardVector(std::vector<sf::Uint32> cardVector)
 	std::cout << std::endl;
 }
 
-void GameState::displayBoardVector(std::vector<sf::Uint32> cardVector)
+void GameState::displayBoardCreatureVector(std::vector<BoardCreatureData> cardVector)
 {
-	//THE BOARD VECTOR ALSO CONTAINS REAL_TIME INFORMATION ABOUT THE CARDS (HEALTH, ATTACK, SHIELD, SHIELD TYPE)
-	//THIS METHOD SHOULD DISPLAY THESE INFORMATiONS AND BE CALLED ONLY FOR DISPLAYING THE BOARD
-	for (int i=0; i<cardVector.size(); i++)
+	// The board vector also contains real time informations about the cards (health, attack, shield, shield type)
+	// This method should display these informations and be called only for displaying the board
+	for (auto i=0U; i<cardVector.size(); i++)
 	{
-		CardData thisCard = getCardData(cardVector.at(i));
-		std::cout << i << " : " << thisCard.name << "(cost:" << thisCard.cost << ")";
+		BoardCreatureData thisCreature = cardVector.at(i);
+		cardId id = cardVector.at(i).id;
+		std::cout << i << " : " << getCardName(id) << "(cost:" << getCardCost(id) <<
+		          ", attack:" << thisCreature.attack <<
+		          ", health:" << thisCreature.health <<
+		          ", shield:" << thisCreature.shield << "-" << thisCreature.shieldType << ")";
 		//TODO use card names instead of card IDs ?
 		if (i!=cardVector.size()-1)
 			std::cout << ", ";
@@ -365,13 +363,13 @@ void GameState::inputListening()
 		else if(type == TransferType::GAME_BOARD_UPDATED)
 		{
 			std::cout << "Board updated" << std::endl;
-			receivedPacket >> _selfBoardCards;
+			receivedPacket >> _selfBoardCreatures;
 			displayGame();
 		}
 		else if(type == TransferType::GAME_OPPONENT_BOARD_UPDATED)
 		{
 			std::cout << "Opponent's board updated" << std::endl;
-			receivedPacket >> _oppoBoardCards;
+			receivedPacket >> _oppoBoardCreatures;
 			displayGame();
 		}
 		else if(type == TransferType::GAME_GRAVEYARD_UPDATED)
@@ -477,3 +475,27 @@ void GameState::applySelfEffect()
 		}
 	}
 }*/
+
+std::string GameState::getCardName(cardId id)
+{
+	if (id<=10)
+		return ALL_CREATURES[id-1].name;
+	else
+		return ALL_SPELLS[id-11].name;
+}
+
+CostValue GameState::getCardCost(cardId id)
+{
+	if (id<=10)
+		return ALL_CREATURES[id-1].cost;
+	else
+		return ALL_SPELLS[id-10].cost;
+}
+
+std::string GameState::getCardDescription(cardId id)
+{
+	if (id<=10)
+		return ALL_CREATURES[id-1].description;
+	else
+		return ALL_SPELLS[id-11].description;
+}

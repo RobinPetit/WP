@@ -7,6 +7,8 @@
 // WizardPoker headers
 #include "server/Board.hpp"
 #include "server/ClientInformations.hpp"
+#include "common/Identifiers.hpp"  // userId
+#include "server/ServerDatabase.hpp"
 // SFML headers
 #include <SFML/Network/TcpSocket.hpp>
 
@@ -14,11 +16,11 @@ class GameThread final : public std::thread
 {
 public:
 	/// Constructor
-	GameThread(Player::ID player1ID, Player::ID player2ID);
+	GameThread(ServerDatabase& database, userId player1ID, userId player2ID);
 
 	/// Constructor starting a thread
 	template <class F, class ...Args>
-	explicit GameThread(Player::ID player1ID, Player::ID player2ID, F&& f, Args&&... args);
+	explicit GameThread(ServerDatabase& database, userId player1ID, userId player2ID, F&& f, Args&&... args);
 
 	/// Functions which stops the running thread (abortion)
 	void interruptGame();
@@ -31,8 +33,8 @@ public:
 	/// Destructor
 	~GameThread();
 
-	const Player::ID _player1ID;
-	const Player::ID _player2ID;
+	const userId _player1ID;
+	const userId _player2ID;
 
 	enum class PlayerNumber { PLAYER1, PLAYER2 };
 
@@ -55,15 +57,15 @@ private:
 
 	std::atomic_bool _turnSwap;
 
-	sf::Uint32 _player1DeckIdx;
-	sf::Uint32 _player2DeckIdx;
+	std::string _player1DeckName;
+	std::string _player2DeckName;
 
 	//////////// Private methods
 	void setSocket(sf::TcpSocket& socket, sf::TcpSocket& specialSocket, const ClientInformations& player);
 
-	PlayerNumber PlayerFromID(const Player::ID ID);
-	sf::TcpSocket& getSocketFromID(const Player::ID ID);
-	sf::TcpSocket& getSpecialSocketFromID(const Player::ID ID);
+	PlayerNumber PlayerFromID(const userId ID);
+	sf::TcpSocket& getSocketFromID(const userId ID);
+	sf::TcpSocket& getSpecialSocketFromID(const userId ID);
 
 	void makeTimer();
 	void receiveDecks();
@@ -72,12 +74,12 @@ private:
 ///////// template code
 
 template <typename Function, class... Args>
-GameThread::GameThread(Player::ID player1ID, Player::ID player2ID, Function&& function, Args&&... args):
+GameThread::GameThread(ServerDatabase& database, userId player1ID, userId player2ID, Function&& function, Args&&... args):
 	std::thread(function, args...),
 	_player1ID(player1ID),
 	_player2ID(player2ID),
 	_running(true),
-	_gameBoard({player1ID, _socketPlayer1, _specialOutputSocketPlayer1}, {player2ID, _socketPlayer2, _specialOutputSocketPlayer2}),
+	_gameBoard(database, {player1ID, _socketPlayer1, _specialOutputSocketPlayer1}, {player2ID, _socketPlayer2, _specialOutputSocketPlayer2}),
 	_isSynchroWithBoard(_player1ID == _gameBoard.getCurrentPlayerID())
 {
 

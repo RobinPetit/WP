@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include "common/Identifiers.hpp"
 
 
 /// Subject of the effect
