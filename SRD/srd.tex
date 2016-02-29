@@ -308,7 +308,7 @@ Baudoux Nicolas, Gueniffey Stanislas,  Muranovic Allan, Petit Robin, Reynouard A
 		\newpage
 		\subsubsection{Diagramme de classe du serveur et de sa base de donnée}
 		\begin{center}\includegraphics[scale=0.5]{Server.png}\end{center}
-			Ici, la structure est un peu plus complexe : le serveur est composé d'une base de donnée en SQL qui est interfacée par une base de donnée utilisable directement en C++ pour l'application serveur.
+			Ici, la structure est un peu plus complexe : le serveur est composé d'une base de donnée (SQLite) exploitée par une classe Database utilisable directement en C++ pour l'application serveur.
 
 			C'est donc le serveur qui va naturellement tout gérer : les parties, les requêtes d'amitié en passant,
 			la gestion/modification de \glspl{deck}/de comptes, etc. Tout sera stocké de son côté dans la base de données.
