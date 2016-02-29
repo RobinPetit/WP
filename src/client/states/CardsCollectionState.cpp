@@ -1,4 +1,6 @@
+// std-C++ headers
 #include <iostream>
+// WizardPoker headers
 #include "client/states/CardsCollectionState.hpp"
 
 CardsCollectionState::CardsCollectionState(StateStack& stateStack, Client& client):

@@ -4,7 +4,7 @@
 #include "common/Identifiers.hpp"
 #include "common/CardData.hpp"
 
-/// These struct are used to communicate changes of the game data on the network (server->client).
+/// These struct are used to communicate changes of the game data on the network (server => client).
 enum CardToSelect : int32_t
 {
 	SELF_BOARD,
@@ -31,8 +31,8 @@ struct CardData
 //TODO: use in transmission ?!
 struct PlayerData
 {
-    int health;
-    int energy;
+	int health;
+	int energy;
 };
 
 #endif// _GAME_DATA_COMMON_HPP

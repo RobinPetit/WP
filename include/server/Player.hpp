@@ -15,7 +15,7 @@
 #include "common/GameData.hpp"
 #include "common/Identifiers.hpp"  // userId
 #include "common/sockets/TransferType.hpp"
-#include "server/ServerDatabase.hpp"
+#include "common/Deck.hpp"
 // SFML headers
 #include <SFML/Network/TcpSocket.hpp>
 

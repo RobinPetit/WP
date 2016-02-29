@@ -10,6 +10,7 @@
 #include "common/sockets/TransferType.hpp"
 #include "common/NotConnectedException.hpp"
 #include "common/sockets/PacketOverload.hpp"
+#include "common/Deck.hpp"
 // std-C++ headers
 #include <iostream>
 #include <thread>

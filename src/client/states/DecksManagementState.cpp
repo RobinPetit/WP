@@ -1,4 +1,6 @@
+// std-C++ headers
 #include <iostream>
+// WizardPoker headers
 #include "client/states/DecksManagementState.hpp"
 
 DecksManagementState::DecksManagementState(StateStack& stateStack, Client& client):

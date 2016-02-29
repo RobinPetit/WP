@@ -7,12 +7,9 @@
 #include <SFML/Network/SocketSelector.hpp>
 // WizardPoker headers
 #include "common/constants.hpp"
-#include "client/ErrorCode.hpp"
 #include "client/sockets/Client.hpp"
 #include "common/sockets/TransferType.hpp"
 #include "common/sockets/PacketOverload.hpp"
-#include "common/Terminal.hpp"
-#include "common/ini/IniFile.hpp"
 #include "client/states/GameState.hpp"
 #include "client/NonBlockingInput.hpp"
 
