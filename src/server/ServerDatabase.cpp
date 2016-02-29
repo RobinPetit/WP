@@ -7,7 +7,6 @@
 #define AUTO_QUERY_LENGTH -1
 
 // TODO: this is multi-threaded
-// Rien à voir mais j'y pense maintenant: ajouter aux requirements que l'utilisateur doit pouvoir supprimer toutes ses données personnelles
 
 const char ServerDatabase::FILENAME[] = "../resources/server/database.db";
 ServerDatabase::ServerDatabase(std::string filename) : Database(filename)
@@ -16,32 +15,39 @@ ServerDatabase::ServerDatabase(std::string filename) : Database(filename)
 		prepareStmt(_statements[i]);
 }
 
-int ServerDatabase::getUserId(const std::string login)
+userId ServerDatabase::getUserId(const std::string login)
 {
+	lock();
 	sqlite3_reset(_userIdStmt);
 	sqliteThrowExcept(sqlite3_bind_text(_userIdStmt, 1, login.c_str(), AUTO_QUERY_LENGTH, SQLITE_TRANSIENT));
 
 	if(sqliteThrowExcept(sqlite3_step(_userIdStmt)) == SQLITE_DONE)
 		throw std::runtime_error("ERROR login not found");
 
-	return sqlite3_column_int(_userIdStmt, 0);
+	userId ret{sqlite3_column_int(_userIdStmt, 0)};
+	unlock();
+	return ret;
 }
 
-std::string ServerDatabase::getLogin(const int userId)
+std::string ServerDatabase::getLogin(userId id)
 {
+	lock();
 	sqlite3_reset(_loginStmt);
-	sqliteThrowExcept(sqlite3_bind_int(_loginStmt, 1, userId));
+	sqliteThrowExcept(sqlite3_bind_int(_loginStmt, 1, static_cast<int>(id)));
 
 	if(sqliteThrowExcept(sqlite3_step(_loginStmt)) == SQLITE_DONE)
 		throw std::runtime_error("ERROR userId not found");
 
-	return reinterpret_cast<const char *>(sqlite3_column_text(_loginStmt, 0));
+	std::string ret{reinterpret_cast<const char *>(sqlite3_column_text(_loginStmt, 0))};
+	unlock();
+	return ret;
 }
 
-std::vector<Deck> ServerDatabase::getDecks(const int userId)
+std::vector<Deck> ServerDatabase::getDecks(userId id)
 {
+	lock();
 	sqlite3_reset(_decksStmt);
-	sqliteThrowExcept(sqlite3_bind_int(_decksStmt, 1, userId));
+	sqliteThrowExcept(sqlite3_bind_int(_decksStmt, 1, static_cast<int>(id)));
 
 	std::vector<Deck> decks;
 
@@ -52,14 +58,16 @@ std::vector<Deck> ServerDatabase::getDecks(const int userId)
 		for(size_t i {0}; i < Deck::size; ++i)
 			decks.back().changeCard(i, static_cast<cardId>(sqlite3_column_int(_decksStmt, i + 1)));
 	}
+	unlock();
 
 	return decks;
 }
 
-CardsCollection ServerDatabase::getCardsCollection(const int userId)
+CardsCollection ServerDatabase::getCardsCollection(userId id)
 {
+	lock();
 	sqlite3_reset(_cardsCollectionStmt);
-	sqliteThrowExcept(sqlite3_bind_int(_cardsCollectionStmt, 1, userId));
+	sqliteThrowExcept(sqlite3_bind_int(_cardsCollectionStmt, 1, static_cast<int>(id)));
 
 	CardsCollection cards;
 
@@ -67,12 +75,14 @@ CardsCollection ServerDatabase::getCardsCollection(const int userId)
 	{
 		cards.addCard(sqlite3_column_int(_cardsCollectionStmt, 0));
 	}
+	unlock();
 
 	return cards;
 }
 
 Ladder ServerDatabase::getLadder()
 {
+	lock();
 	sqlite3_reset(_ladderStmt);
 	sqliteThrowExcept(sqlite3_bind_int(_ladderStmt, 1, ladderSize));
 
@@ -84,136 +94,177 @@ Ladder ServerDatabase::getLadder()
 		ladder[i].victories = sqlite3_column_int(_ladderStmt, 1);
 		ladder[i].defeats = sqlite3_column_int(_ladderStmt, 2);
 	}
+	unlock();
 
 	return ladder;
 }
 
-void ServerDatabase::addFriend(const int userId1, const int userId2)
+void ServerDatabase::addFriend(userId userId1, userId userId2)
 {
+	lock();
 	sqlite3_reset(_addFriendStmt);
-	sqliteThrowExcept(sqlite3_bind_int(_addFriendStmt, 1, userId1));
-	sqliteThrowExcept(sqlite3_bind_int(_addFriendStmt, 2, userId2));
-
+	sqliteThrowExcept(sqlite3_bind_int(_addFriendStmt, 1, static_cast<int>(userId1)));
+	sqliteThrowExcept(sqlite3_bind_int(_addFriendStmt, 2, static_cast<int>(userId2)));
 	sqliteThrowExcept(sqlite3_step(_addFriendStmt));
+	unlock();
 }
 
-void ServerDatabase::removeFriend(const int userId1, const int userId2)
+void ServerDatabase::removeFriend(userId userId1, userId userId2)
 {
+	lock();
 	sqlite3_reset(_removeFriendStmt);
-	sqliteThrowExcept(sqlite3_bind_int(_removeFriendStmt, 1, userId1 < userId2 ? userId1 : userId2));
-	sqliteThrowExcept(sqlite3_bind_int(_removeFriendStmt, 2, userId1 < userId2 ? userId2 : userId1));
+	sqliteThrowExcept(sqlite3_bind_int(_removeFriendStmt, 1, static_cast<int>(userId1 < userId2 ? userId1 : userId2)));
+	sqliteThrowExcept(sqlite3_bind_int(_removeFriendStmt, 2, static_cast<int>(userId1 < userId2 ? userId2 : userId1)));
 
 	sqliteThrowExcept(sqlite3_step(_removeFriendStmt));
 	assert(sqlite3_step(_removeFriendStmt) == SQLITE_DONE);
+	unlock();
 }
 
-bool ServerDatabase::areFriend(const int userId1, const int userId2)
+bool ServerDatabase::areFriend(userId userId1, userId userId2)
 {
+	lock();
 	sqlite3_reset(_areFriendStmt);
-	sqliteThrowExcept(sqlite3_bind_int(_areFriendStmt, 1, userId1));
-	sqliteThrowExcept(sqlite3_bind_int(_areFriendStmt, 2, userId2));
+	sqliteThrowExcept(sqlite3_bind_int(_areFriendStmt, 1, static_cast<int>(userId1)));
+	sqliteThrowExcept(sqlite3_bind_int(_areFriendStmt, 2, static_cast<int>(userId2)));
 
-	return sqliteThrowExcept(sqlite3_step(_areFriendStmt)) == SQLITE_ROW;
+	bool ret{sqliteThrowExcept(sqlite3_step(_areFriendStmt)) == SQLITE_ROW};
+	unlock();
+	return ret;
 }
 
-void ServerDatabase::addFriendshipRequest(const int from, const int to)
+void ServerDatabase::addFriendshipRequest(userId from, userId to)
 {
+	lock();
 	sqlite3_reset(_addFriendshipRequestStmt);
-	sqliteThrowExcept(sqlite3_bind_int(_addFriendshipRequestStmt, 1, from));
-	sqliteThrowExcept(sqlite3_bind_int(_addFriendshipRequestStmt, 2, to));
+	sqliteThrowExcept(sqlite3_bind_int(_addFriendshipRequestStmt, 1, static_cast<int>(from)));
+	sqliteThrowExcept(sqlite3_bind_int(_addFriendshipRequestStmt, 2, static_cast<int>(to)));
 
 	assert(sqliteThrowExcept(sqlite3_step(_addFriendshipRequestStmt)) == SQLITE_DONE);
+	unlock();
 }
 
-void ServerDatabase::removeFriendshipRequest(const int from, const int to)
+void ServerDatabase::removeFriendshipRequest(userId from, userId to)
 {
+	lock();
 	sqlite3_reset(_removeFriendshipRequestStmt);
-	sqliteThrowExcept(sqlite3_bind_int(_removeFriendshipRequestStmt, 1, from));
-	sqliteThrowExcept(sqlite3_bind_int(_removeFriendshipRequestStmt, 2, to));
+	sqliteThrowExcept(sqlite3_bind_int(_removeFriendshipRequestStmt, 1, static_cast<int>(from)));
+	sqliteThrowExcept(sqlite3_bind_int(_removeFriendshipRequestStmt, 2, static_cast<int>(to)));
 
 	assert(sqliteThrowExcept(sqlite3_step(_removeFriendshipRequestStmt)) == SQLITE_DONE);
+	unlock();
 }
 
-bool ServerDatabase::isFriendshipRequestSent(const int from, const int to)
+bool ServerDatabase::isFriendshipRequestSent(userId from, userId to)
 {
+	lock();
 	sqlite3_reset(_isFriendshipRequestSentStmt);
-	sqliteThrowExcept(sqlite3_bind_int(_isFriendshipRequestSentStmt, 1, from));
-	sqliteThrowExcept(sqlite3_bind_int(_isFriendshipRequestSentStmt, 2, to));
+	sqliteThrowExcept(sqlite3_bind_int(_isFriendshipRequestSentStmt, 1, static_cast<int>(from)));
+	sqliteThrowExcept(sqlite3_bind_int(_isFriendshipRequestSentStmt, 2, static_cast<int>(to)));
 
-	return sqliteThrowExcept(sqlite3_step(_isFriendshipRequestSentStmt)) == SQLITE_ROW;
+	bool ret{sqliteThrowExcept(sqlite3_step(_isFriendshipRequestSentStmt)) == SQLITE_ROW};
+	unlock();
+	return ret;
 }
 
-void ServerDatabase::createDeck(const int userId, const Deck& deck)
+Deck ServerDatabase::getDeckByName(userId id, const std::string& deckName)
 {
+	lock();
+	// TODO this is certainly not the best way to get an unique deck from the DB
+	for(auto& deck : getDecks(id))
+		if(deck.getName() == deckName)
+		{
+			unlock();
+			return deck;
+		}
+	unlock();
+	return Deck();
+}
+
+void ServerDatabase::createDeck(userId id, const Deck& deck)
+{
+	lock();
 	sqlite3_reset(_createDeckStmt);
-	sqliteThrowExcept(sqlite3_bind_int(_createDeckStmt, 1, userId));
+	sqliteThrowExcept(sqlite3_bind_int(_createDeckStmt, 1, static_cast<int>(id)));
 	sqliteThrowExcept(sqlite3_bind_text(_createDeckStmt, 2, deck.getName().c_str(), AUTO_QUERY_LENGTH,
 	                                    SQLITE_TRANSIENT));
 
-	for(int card = 0; card < Deck::size; ++card)
+	for(auto card = 0U; card < Deck::size; ++card)
 	{
-		sqliteThrowExcept(sqlite3_bind_int(_createDeckStmt, card + 3, deck.getCard(card)));
+		sqliteThrowExcept(sqlite3_bind_int(_createDeckStmt, card + 3, static_cast<int>(deck.getCard(card))));
 	}
 
 	assert(sqliteThrowExcept(sqlite3_step(_createDeckStmt)) == SQLITE_DONE);
+	unlock();
 }
 
-void ServerDatabase::deleteDeckByName(const int userId, const std::string& deckName)
+void ServerDatabase::deleteDeckByName(userId id, const std::string& deckName)
 {
+	lock();
 	sqlite3_reset(_deleteDeckByNameStmt);
-	sqliteThrowExcept(sqlite3_bind_int(_deleteDeckByNameStmt, 1, userId));
+	sqliteThrowExcept(sqlite3_bind_int(_deleteDeckByNameStmt, 1, static_cast<int>(id)));
 	sqliteThrowExcept(sqlite3_bind_text(_deleteDeckByNameStmt, 2, deckName.c_str(), AUTO_QUERY_LENGTH, SQLITE_TRANSIENT));
 
 	assert(sqliteThrowExcept(sqlite3_step(_deleteDeckByNameStmt)) == SQLITE_DONE);
+	unlock();
 }
 
-void ServerDatabase::editDeck(const int userId, const Deck& deck)
+void ServerDatabase::editDeck(userId id, const Deck& deck)
 {
+	lock();
 	sqlite3_reset(_editDeckByNameStmt);
 	sqliteThrowExcept(sqlite3_bind_text(_editDeckByNameStmt, 1, deck.getName().c_str(), AUTO_QUERY_LENGTH, SQLITE_TRANSIENT));
 
-	for(int card = 0; card < Deck::size; ++card)
-	{
-		sqliteThrowExcept(sqlite3_bind_int(_editDeckByNameStmt, card + 2, deck.getCard(card)));
-	}
-	sqliteThrowExcept(sqlite3_bind_int(_editDeckByNameStmt, 22, userId));
+	for(auto card = 0U; card < Deck::size; ++card)
+		sqliteThrowExcept(sqlite3_bind_int(_editDeckByNameStmt, card + 2, static_cast<int>(deck.getCard(card))));
+	sqliteThrowExcept(sqlite3_bind_int(_editDeckByNameStmt, 22, static_cast<int>(id)));
 
 	assert(sqliteThrowExcept(sqlite3_step(_editDeckByNameStmt)) == SQLITE_DONE);
+	unlock();
 }
 
 bool ServerDatabase::areIdentifiersValid(const std::string& login, const std::string& password)
 {
+	lock();
 	sqlite3_reset(_areIdentifiersValidStmt);
 	sqliteThrowExcept(sqlite3_bind_text(_areIdentifiersValidStmt, 1, login.c_str(), AUTO_QUERY_LENGTH,
 	                                    SQLITE_TRANSIENT));
 	sqliteThrowExcept(sqlite3_bind_blob(_areIdentifiersValidStmt, 2, password.c_str(), std::strlen(password.c_str()),
 	                                    SQLITE_TRANSIENT));
 
-	return sqliteThrowExcept(sqlite3_step(_areIdentifiersValidStmt)) == SQLITE_ROW;
+	bool ret{sqliteThrowExcept(sqlite3_step(_areIdentifiersValidStmt)) == SQLITE_ROW};
+	unlock();
+	return ret;
 }
 
 bool ServerDatabase::isRegistered(const std::string& login)
 {
+	lock();
 	sqlite3_reset(_userIdStmt);
 	sqliteThrowExcept(sqlite3_bind_text(_userIdStmt, 1, login.c_str(), AUTO_QUERY_LENGTH, SQLITE_TRANSIENT));
 
-	return sqliteThrowExcept(sqlite3_step(_userIdStmt)) == SQLITE_ROW;
+	bool ret{sqliteThrowExcept(sqlite3_step(_userIdStmt)) == SQLITE_ROW};
+	unlock();
+	return ret;
 }
 
 void ServerDatabase::registerUser(const std::string& login, const std::string& password)
 {
+	lock();
 	sqlite3_reset(_registerUserStmt);
 	sqliteThrowExcept(sqlite3_bind_text(_registerUserStmt, 1, login.c_str(), AUTO_QUERY_LENGTH, SQLITE_TRANSIENT));
 	sqliteThrowExcept(sqlite3_bind_blob(_registerUserStmt, 2, password.c_str(), std::strlen(password.c_str()),
 	                                    SQLITE_TRANSIENT));
 
 	assert(sqliteThrowExcept(sqlite3_step(_registerUserStmt)) == SQLITE_DONE);
+	unlock();
 }
 
-FriendsList ServerDatabase::getAnyFriendsList(const int user, sqlite3_stmt * stmt)
+FriendsList ServerDatabase::getAnyFriendsList(userId user, sqlite3_stmt * stmt)
 {
+	lock();
 	sqlite3_reset(stmt);
-	sqliteThrowExcept(sqlite3_bind_int(stmt, 1, user));
+	sqliteThrowExcept(sqlite3_bind_int(stmt, 1, static_cast<int>(user)));
 
 	FriendsList friends;
 
@@ -223,6 +274,7 @@ FriendsList ServerDatabase::getAnyFriendsList(const int user, sqlite3_stmt * stm
 		                             reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1)) // name
 		                            });
 	}
+	unlock();
 
 	return friends;
 }
