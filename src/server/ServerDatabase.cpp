@@ -50,7 +50,7 @@ std::vector<Deck> ServerDatabase::getDecks(userId id)
 		decks.emplace_back(Deck(reinterpret_cast<const char *>(sqlite3_column_text(_decksStmt, 0))));
 
 		for(size_t i {0}; i < Deck::size; ++i)
-			decks.back().changeCard(i, static_cast<cardId>(sqlite3_column_int(_decksStmt, i + 1)));
+			decks.back().changeCard(i, static_cast<cardId>(sqlite3_column_int(_decksStmt, static_cast<int>(i) + 1)));
 	}
 
 	return decks;
@@ -193,7 +193,7 @@ bool ServerDatabase::areIdentifiersValid(const std::string& login, const std::st
 	sqlite3_reset(_areIdentifiersValidStmt);
 	sqliteThrowExcept(sqlite3_bind_text(_areIdentifiersValidStmt, 1, login.c_str(), AUTO_QUERY_LENGTH,
 	                                    SQLITE_TRANSIENT));
-	sqliteThrowExcept(sqlite3_bind_blob(_areIdentifiersValidStmt, 2, password.c_str(), std::strlen(password.c_str()),
+	sqliteThrowExcept(sqlite3_bind_blob(_areIdentifiersValidStmt, 2, password.c_str(), static_cast<int>(std::strlen(password.c_str())),
 	                                    SQLITE_TRANSIENT));
 
 	return sqliteThrowExcept(sqlite3_step(_areIdentifiersValidStmt)) == SQLITE_ROW;
@@ -211,7 +211,7 @@ void ServerDatabase::registerUser(const std::string& login, const std::string& p
 {
 	sqlite3_reset(_registerUserStmt);
 	sqliteThrowExcept(sqlite3_bind_text(_registerUserStmt, 1, login.c_str(), AUTO_QUERY_LENGTH, SQLITE_TRANSIENT));
-	sqliteThrowExcept(sqlite3_bind_blob(_registerUserStmt, 2, password.c_str(), std::strlen(password.c_str()),
+	sqliteThrowExcept(sqlite3_bind_blob(_registerUserStmt, 2, password.c_str(), static_cast<int>(std::strlen(password.c_str())),
 	                                    SQLITE_TRANSIENT));
 
 	assert(sqliteThrowExcept(sqlite3_step(_registerUserStmt)) == SQLITE_DONE);

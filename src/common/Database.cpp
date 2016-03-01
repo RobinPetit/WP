@@ -12,7 +12,7 @@ Database::Database(std::string filename)
 
 void Database::prepareStmt(Statement& statement)
 {
-	sqliteThrowExcept(sqlite3_prepare_v2(_database, statement.query(), std::strlen(statement.query()),
+	sqliteThrowExcept(sqlite3_prepare_v2(_database, statement.query(), static_cast<int>(std::strlen(statement.query())),
 	                                     statement.statement(), nullptr));
 }
 
