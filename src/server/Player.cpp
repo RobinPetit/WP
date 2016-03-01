@@ -73,7 +73,7 @@ void Player::setDeck(const Deck& newDeck)
 }
 
 /*------------------------------ BOARD INTERFACE */
-void Player::beginGame(bool isActivePlayer)
+void Player::beginGame(bool /* isActivePlayer */)
 {
 	//if (isActivePlayer)
 		//NETWORK: GAME_STARTED_ACTIVE
@@ -81,7 +81,7 @@ void Player::beginGame(bool isActivePlayer)
 		//NETWORK: GAME_STARTED_INACTIVE
 }
 
-void Player::enterTurn(int turn)
+void Player::enterTurn(int /* turn */)
 {
 	_turnData = _emptyTurnData;  // Reset the turn data
 	if (_cardDeck.empty())
@@ -345,7 +345,7 @@ void Player::loseHandCards(const EffectParamsCollection& args)
 	while (not _cardHand.empty() and amount>0)
 	{
 		amount--;
-		int handIndex = (std::uniform_int_distribution<int>(0, _cardHand.size()))(_engine);
+		int handIndex = (std::uniform_int_distribution<int>(0, static_cast<int>(_cardHand.size())))(_engine);
 		cardHandToBin(handIndex);
 	}
 }
@@ -366,7 +366,7 @@ void Player::reviveBinCard(const EffectParamsCollection& args)
 	cardBinToHand(binIndex);
 }
 
-void Player::stealHandCard(const EffectParamsCollection& args)
+void Player::stealHandCard(const EffectParamsCollection& /* args */)
 {
 	//no arguments
 	cardAddToHand(_opponent->cardRemoveFromHand());
@@ -503,7 +503,7 @@ void Player::exploitCardEffects(Card* usedCard)
 	}
 }
 
-void Player::setTeamConstraint(const Card* usedCard, const EffectParamsCollection& args)
+void Player::setTeamConstraint(const Card* /* usedCard */, const EffectParamsCollection& args)
 {
 	int constraintID; //constraint to set
 	int value; //value to give to it
@@ -593,7 +593,7 @@ Card* Player::cardRemoveFromHand()
 {
 	if (_cardHand.empty())
 		return nullptr;
-	int handIndex = (std::uniform_int_distribution<int>(0, _cardHand.size()))(_engine);
+	int handIndex = (std::uniform_int_distribution<int>(0, static_cast<int>(_cardHand.size())))(_engine);
 	Card* stolenCard = _cardHand[handIndex];
 	const auto& handIt = std::find(_cardHand.begin(), _cardHand.end(), _cardHand[handIndex]);
 	_cardHand.erase(handIt);
@@ -603,7 +603,7 @@ Card* Player::cardRemoveFromHand()
 
 Card* Player::cardExchangeFromHand(Card* givenCard)
 {
-	int handIndex = (std::uniform_int_distribution<int>(0, _cardHand.size()))(_engine);
+	int handIndex = (std::uniform_int_distribution<int>(0, static_cast<int>(_cardHand.size())))(_engine);
 	return cardExchangeFromHand(givenCard, handIndex);
 }
 
@@ -650,7 +650,7 @@ void Player::sendIDsFromVector(TransferType type, const std::vector<CardType *>&
 	_specialSocketToClient.send(packet);
 }
 
-void Player::sendCardDataFromVector(TransferType type, const std::vector<Card*>& vect)
+void Player::sendCardDataFromVector(TransferType /* type */, const std::vector<Card*>& vect)
 {
 	sf::Packet packet;
 	std::vector<CardData> cards;
@@ -664,7 +664,7 @@ void Player::sendCardDataFromVector(TransferType type, const std::vector<Card*>&
 	_specialSocketToClient.send(packet);
 }
 
-void Player::sendBoardCreatureDataFromVector(TransferType type, const std::vector<Creature*>& vect)
+void Player::sendBoardCreatureDataFromVector(TransferType /* type */, const std::vector<Creature*>& vect)
 {
 	sf::Packet packet;
 	std::vector<BoardCreatureData> boardCreatures;
@@ -722,21 +722,21 @@ std::vector<int>&& Player::askUserToSelectCards(const std::vector<CardToSelect>&
 std::vector<int>&& Player::getRandomBoardIndexes(const std::vector<CardToSelect>& selection)
 {
 	std::vector<int> indices(selection.size());
-	for (int i=0; i<selection.size(); i++)
+	for (std::size_t i{0}; i < selection.size(); i++)
 	{
 		switch (selection.at(i))
 		{
 			case SELF_BOARD:
-				indices.push_back(std::uniform_int_distribution<int>(0, _cardBoard.size()-1)(_engine));
+				indices.push_back(std::uniform_int_distribution<int>(0, static_cast<int>(_cardBoard.size())-1)(_engine));
 				break;
 			case SELF_HAND:
-				indices.push_back(std::uniform_int_distribution<int>(0, _cardHand.size()-1)(_engine));
+				indices.push_back(std::uniform_int_distribution<int>(0, static_cast<int>(_cardHand.size())-1)(_engine));
 				break;
 			case OPPO_BOARD:
-				indices.push_back(std::uniform_int_distribution<int>(0, _opponent->_cardBoard.size()-1)(_engine));
+				indices.push_back(std::uniform_int_distribution<int>(0, static_cast<int>(_opponent->_cardBoard.size())-1)(_engine));
 				break;
 			case OPPO_HAND:
-				indices.push_back(std::uniform_int_distribution<int>(0, _opponent->_cardHand.size()-1)(_engine));
+				indices.push_back(std::uniform_int_distribution<int>(0, static_cast<int>(_opponent->_cardHand.size())-1)(_engine));
 				break;
 		}
 	}
