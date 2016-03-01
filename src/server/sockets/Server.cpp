@@ -299,7 +299,7 @@ std::string Server::userToString(const _iterator& it)
 
 void Server::findOpponent(const _iterator& it)
 {
-	_lobbyMutex.lock();
+	std::lock_guard<std::mutex> lockLobby{_lobbyMutex};
 	if(!_isAPlayerWaiting)
 	{
 		_isAPlayerWaiting = true;
@@ -322,12 +322,12 @@ void Server::findOpponent(const _iterator& it)
 			createGame(waitingPlayer->second.id, it->second.id);
 		}
 	}
-	_lobbyMutex.unlock();
+	// _lobbyMutex is unlocked when lockLobby is destructed
 }
 
 void Server::clearLobby(const _iterator& it)
 {
-	_lobbyMutex.lock();
+	std::lock_guard<std::mutex> lockLobby{_lobbyMutex};
 	if(not _isAPlayerWaiting or _waitingPlayer != it->first)
 	{
 		std::cerr << "Trying to remove another player from lobby; ignored\n";
@@ -335,15 +335,18 @@ void Server::clearLobby(const _iterator& it)
 	}
 	else
 		_isAPlayerWaiting = false;
-	_lobbyMutex.unlock();
+	// _lobbyMutex is unlocked when lockLobby is destructed
 }
 
 void Server::startGame(std::size_t idx)
 {
 	std::cout << "StartGame(" << idx << ")\n";
-	_accessRunningGames.lock();
-	GameThread& selfThread{*_runningGames[idx]};
-	_accessRunningGames.unlock();
+	GameThread* selfThread;
+	// Putting braces around a std::lock_guard is more exception-safe than lock manually
+	{
+		std::lock_guard<std::mutex> lockRunningGames{_accessRunningGames};
+		selfThread = _runningGames[idx];
+	}
 	const auto& finderById = [](userId playerId)
 	{
 		return [playerId](const std::pair<const std::string, ClientInformations>& it)
@@ -351,17 +354,17 @@ void Server::startGame(std::size_t idx)
 			return it.second.id == playerId;
 		};
 	};
-	const auto& player1 = std::find_if(_clients.begin(), _clients.end(), finderById(selfThread._player1ID));
-	const auto& player2 = std::find_if(_clients.begin(), _clients.end(), finderById(selfThread._player2ID));
+	const auto& player1 = std::find_if(_clients.begin(), _clients.end(), finderById(selfThread->_player1ID));
+	const auto& player2 = std::find_if(_clients.begin(), _clients.end(), finderById(selfThread->_player2ID));
 	std::cout << "Game " << idx << " is starting: " + userToString(player1) + " vs. " + userToString(player2) + "\n";
-	selfThread.startGame(player1->second, player2->second);
+	selfThread->startGame(player1->second, player2->second);
 }
 
 void Server::createGame(userId ID1, userId ID2)
 {
-	_accessRunningGames.lock();
+	std::lock_guard<std::mutex> lockRunningGames{_accessRunningGames};
 	_runningGames.emplace_back(new GameThread(_database, ID1, ID2, &Server::startGame, this, _runningGames.size()));
-	_accessRunningGames.unlock();
+	// _accessRunningGames is unlocked when lockRunningGames is destructed
 }
 
 ///////////////////////// Friends management
