@@ -257,8 +257,9 @@ void Server::quit()
 	for(auto& gameThread: _runningGames)
 	{
 		gameThread->interruptGame();
-		gameThread->join();
-		delete gameThread;
+		// Avoid to throw an exception if not joinable, just in case
+		if(gameThread->joinable())
+			gameThread->join();
 	}
 	_runningGames.clear();
 	// in case the method is called even though server has not been manually ended
@@ -341,12 +342,16 @@ void Server::clearLobby(const _iterator& it)
 void Server::startGame(std::size_t idx)
 {
 	std::cout << "StartGame(" << idx << ")\n";
-	GameThread* selfThread;
-	// Putting braces around a std::lock_guard is more exception-safe than lock manually
-	{
-		std::lock_guard<std::mutex> lockRunningGames{_accessRunningGames};
-		selfThread = _runningGames[idx];
-	}
+
+	// An unique lock also release the mutex at destruction (just like
+	// std::lock_guard) but we can explicitely lock and unlock it, combining
+	// the benefits of manually lock mutexes and the benefits of a scoped lock
+	std::unique_lock<std::mutex> lockRunningGames{_accessRunningGames};
+	// Lock the mutex
+	lockRunningGames.lock();
+	std::unique_ptr<GameThread>& selfThread{_runningGames.at(idx)};
+	// If the access did not throw, we can now release the mutex
+	lockRunningGames.unlock();
 	const auto& finderById = [](userId playerId)
 	{
 		return [playerId](const std::pair<const std::string, ClientInformations>& it)

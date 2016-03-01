@@ -49,7 +49,7 @@ private:
 	std::mutex _lobbyMutex;
 	const std::string _quitPrompt;
 	ServerDatabase _database;
-	std::vector<GameThread *> _runningGames;
+	std::vector<std::unique_ptr<GameThread>> _runningGames;
 	std::mutex _accessRunningGames;
 
 	// private methods
