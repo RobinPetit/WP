@@ -98,7 +98,7 @@ void GameState::startTurn()
 {
 	_myTurn.store(true);
 	display();
-	std::cout << "It is now your turn, type something\n";
+	std::cout << "It is now your turn, what do you want to do? ";
 	while(_myTurn.load())
 	{
 		if(not _nonBlockingInput.waitForData(0.1))
@@ -108,7 +108,6 @@ void GameState::startTurn()
 		handleInput(command);
 		std::cout << "handled\n";
 	}
-	/**/
 }
 
 
@@ -130,7 +129,7 @@ int GameState::askIndex(std::size_t maxIndex, std::string inputMessage)
 		std::cin >> res;
 		if(res > maxIndex)
 			std::cout << "Your answer should be in the range (" << 0 << ", " << maxIndex <<") !\n";
-	}while(res>maxIndex);
+	} while(res > maxIndex);
 
 	return res;
 }
@@ -180,8 +179,10 @@ void GameState::useCard()
 	else
 	{
 		int cardIndex = askSelfHandIndex();
-		std::cout << "You want to use card" << cardIndex << "\n";
-		//NETWORK: USE_CARD
+		std::cout << "You want to use card " << cardIndex << "\n";
+		sf::Packet actionPacket;
+		actionPacket << TransferType::GAME_USE_CARD << static_cast<sf::Int32>(cardIndex);
+		_client.getGameSocket().send(actionPacket);
 	}
 }
 
@@ -194,21 +195,23 @@ void GameState::attackWithCreature()
 	}
 	else
 	{
-		std::cout << "Which creature would you like to attack with?\n";
+		std::cout << "Which creature would you like to attack with? \n";
 		int selfCardIndex = askSelfBoardIndex();
 
-		std::cout << "Which opponent's creature would you like to attack?\n";
+		std::cout << "Which opponent's creature would you like to attack? \n";
 		int oppoCardIndex = askOppoBoardIndex();
 
-		///If there's cards on board
+		// If there's cards on board
 		if(selfCardIndex >= 0 && oppoCardIndex >= 0)
 		{
-			//NETWORK: ATTACK WITH CREATURE
+			sf::Packet actionPacket;
+			actionPacket << TransferType::GAME_ATTACK_WITH_CREATURE
+			             << static_cast<sf::Int32>(selfCardIndex)
+			             << static_cast<sf::Int32>(oppoCardIndex);
+			_client.getGameSocket().send(actionPacket);
 		}
 		else
-		{
-			//do something ?
-		}
+			std::cout << "There is no card to choose, please do something else.\n";
 	}
 }
 
@@ -222,15 +225,18 @@ void GameState::endTurn()
 	}
 	else
 	{
-		sf::Packet packet;
-		packet << TransferType::GAME_PLAYER_LEAVE_TURN;
-		_client.getGameSocket().send(packet);
+		sf::Packet actionPacket;
+		actionPacket << TransferType::GAME_PLAYER_LEAVE_TURN;
+		_client.getGameSocket().send(actionPacket);
 		_myTurn = false;
 	}
 }
 
 void GameState::quit()
 {
+	sf::Packet actionPacket;
+	actionPacket << TransferType::GAME_QUIT_GAME;
+	_client.getGameSocket().send(actionPacket);
 	_playing.store(true);
 	_listeningThread.join();
 	stackPop();

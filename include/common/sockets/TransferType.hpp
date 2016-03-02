@@ -6,7 +6,7 @@
 /// TransferType is an enum that is used to determine the purpose of a TransferedPacket
 enum class TransferType : sf::Uint32
 {
-	/////////////// CHAT
+	/////////////// Chat
 	/// Used in pre-chat communications (getting the addresses and ports)
 	CHAT_PLAYER_IP,
 
@@ -16,7 +16,7 @@ enum class TransferType : sf::Uint32
 	/// Used during the chat communications: tells that the other player wants to end the conversation
 	CHAT_QUIT,
 
-	// GAME
+	/////////////// Game
 	/// Used when the user authenticates to the server
 	GAME_CONNECTION,
 
@@ -83,6 +83,17 @@ enum class TransferType : sf::Uint32
 	/// Used when sending to the client the current state of its hand
 	GAME_HAND_UPDATED,
 
+	/////////////// In-game player actions (client->server)
+
+	/// Used when the user want to use a card in a game
+	GAME_USE_CARD,
+
+	/// Used when the user want to attack with one of its creatures
+	GAME_ATTACK_WITH_CREATURE,
+
+	/// Used when the player quits while playing a game
+	GAME_QUIT_GAME,
+
 	/////////////// Client/Server
 
 	/// Used when the client quits to tell the server it disconnects
@@ -109,7 +120,7 @@ enum class TransferType : sf::Uint32
 	/// Used when a client asks what friendship requests he got
 	PLAYER_GETTING_FRIEND_REQUESTS,
 
-	/////////////////////// Cards managment
+	/////////////// Cards managment
 
 	/// Sent when the user wants its decks list
 	PLAYER_ASKS_DECKS_LIST,
@@ -129,7 +140,7 @@ enum class TransferType : sf::Uint32
 	/// Sent when the user wants the ladder
 	PLAYER_ASKS_LADDER,
 
-	////////////////// General headers
+	/////////////// General headers
 
 	/// Used to acknowledge to client something happened correctly
 	ACKNOWLEDGE,
@@ -138,8 +149,8 @@ enum class TransferType : sf::Uint32
 	FAILURE
 };
 
-/// Overloading of the sf::Packet operators so that a TransferType variable can be stored
-/// in a packet to be sent on the network
+/// Overloading of the sf::Packet operators so that a TransferType variable can
+/// be stored in a packet to be sent on the network
 sf::Packet& operator<<(sf::Packet& packet, const TransferType& type);
 sf::Packet& operator>>(sf::Packet& packet, TransferType& type);
 

@@ -37,7 +37,7 @@ class GameState : public AbstractState
 		///////////////// attributes
 
 		std::vector<CardData> _selfHandCards;
-		std::vector<CardData> _selfGraveCards; //needed for reviving spells
+		std::vector<CardData> _selfGraveCards;  // Needed for reviving spells
 
 		std::vector<BoardCreatureData> _selfBoardCreatures;
 		std::vector<BoardCreatureData> _oppoBoardCreatures;
@@ -105,4 +105,3 @@ class GameState : public AbstractState
 };
 
 #endif  // _GAME_STATE_CLIENT_HPP
-

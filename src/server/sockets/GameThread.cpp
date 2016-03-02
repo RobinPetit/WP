@@ -118,27 +118,57 @@ void GameThread::startGame(const ClientInformations& player1, const ClientInform
 	packet << TransferType::GAME_STARTING << TransferType::GAME_PLAYER_LEAVE_TURN;
 	getSocketFromID(_passivePlayer->getID()).send(packet);
 	_timerThread = std::thread(&GameThread::makeTimer, this);
+
+	runGame();
+
+	packet.clear();
+	packet << TransferType::GAME_OVER;
+	// same message is sent to both players: no need to find by ID
+	_specialOutputSocketPlayer1.send(packet);
+	_specialOutputSocketPlayer2.send(packet);
+}
+
+void GameThread::runGame()
+{
 	// prepare data listening
 	sf::SocketSelector selector;
 	selector.add(_socketPlayer1);
 	selector.add(_socketPlayer2);
+	sf::Packet playerActionPacket;
 	while(_running.load())
 	{
 		if(!selector.wait(sf::milliseconds(50)))
 			continue;
 		// get actions from playing client
 		sf::TcpSocket& modifiedSocket{selector.isReady(_socketPlayer1) ? _socketPlayer1 : _socketPlayer2};
-		modifiedSocket.receive(packet);
+		modifiedSocket.receive(playerActionPacket);
 		TransferType type;
-		packet >> type;
-		if(type == TransferType::GAME_PLAYER_LEAVE_TURN)
-			_turnSwap.store(true);
+		playerActionPacket >> type;
+		switch(type)
+		{
+			case TransferType::GAME_PLAYER_LEAVE_TURN:
+				_turnSwap.store(true);
+				break;
+
+			case TransferType::GAME_USE_CARD:
+				// use card;
+				break;
+
+			case TransferType::GAME_ATTACK_WITH_CREATURE:
+				// attack with creature;
+				break;
+
+			case TransferType::GAME_QUIT_GAME:
+				// quit game;
+				break;
+
+			default:
+				std::cout << "GameThread::runGame error: wrong packet header,"
+				"expected user in-game action header.\n";
+				break;
+		}
+		playerActionPacket.clear();
 	}
-	packet.clear();
-	packet << TransferType::GAME_OVER;
-	// same message is sent to both players: no need to find by ID
-	_specialOutputSocketPlayer1.send(packet);
-	_specialOutputSocketPlayer2.send(packet);
 }
 
 void GameThread::endTurn()
@@ -254,4 +284,3 @@ GameThread::~GameThread()
 	interruptGame();
 	_timerThread.join();
 }
-

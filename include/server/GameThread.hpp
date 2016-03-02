@@ -70,6 +70,8 @@ private:
 	std::string _player2DeckName;
 
 	//////////// Private methods
+	void runGame();
+
 	void setSocket(sf::TcpSocket& socket, sf::TcpSocket& specialSocket, const ClientInformations& player);
 
 	sf::TcpSocket& getSocketFromID(const userId ID);
