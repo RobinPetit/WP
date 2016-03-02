@@ -139,41 +139,50 @@ void GameThread::runGame()
 	{
 		if(!selector.wait(sf::milliseconds(50)))
 			continue;
-		// get actions from playing client
+		// Get actions from playing client
 		sf::TcpSocket& modifiedSocket{selector.isReady(_socketPlayer1) ? _socketPlayer1 : _socketPlayer2};
 		modifiedSocket.receive(playerActionPacket);
+
+		// Check that only actions from the active player are handled
+		sf::TcpSocket& activePlayerSocket{_activePlayer == &_player1 ? _socketPlayer1 : _socketPlayer2};
+
 		TransferType type;
 		playerActionPacket >> type;
-		switch(type)
+		// The GAME_GUIT_GAME action can be send also by passive player, so we
+		// must handle it separately
+		if(type == GAME_QUIT_GAME)
 		{
-			case TransferType::GAME_PLAYER_LEAVE_TURN:
-				_turnSwap.store(true);
-				break;
-
-			case TransferType::GAME_USE_CARD:
+			// quit game
+		}
+		else
+		{
+			switch(type)
 			{
-				sf::Int32 cardIndex;
-				playerActionPacket >> cardIndex;
-				useCard(static_cast<int>(cardIndex));
-				break;
+				case TransferType::GAME_PLAYER_LEAVE_TURN:
+					_turnSwap.store(true);
+					break;
+
+				case TransferType::GAME_USE_CARD:
+				{
+					sf::Int32 cardIndex;
+					playerActionPacket >> cardIndex;
+					useCard(static_cast<int>(cardIndex));
+					break;
+				}
+
+				case TransferType::GAME_ATTACK_WITH_CREATURE:
+				{
+					sf::Int32 attackerIndex, victimIndex;
+					playerActionPacket >> attackerIndex >> victimIndex;
+					attackWithCreature(static_cast<int>(attackerIndex), static_cast<int>(victimIndex));
+					break;
+				}
+
+				default:
+					std::cout << "GameThread::runGame error: wrong packet header, "
+					"expected user in-game action header.\n";
+					break;
 			}
-
-			case TransferType::GAME_ATTACK_WITH_CREATURE:
-			{
-				sf::Int32 attackerIndex, victimIndex;
-				playerActionPacket >> attackerIndex >> victimIndex;
-				attackWithCreature(static_cast<int>(attackerIndex), static_cast<int>(victimIndex));
-				break;
-			}
-
-			case TransferType::GAME_QUIT_GAME:
-				// quit game;
-				break;
-
-			default:
-				std::cout << "GameThread::runGame error: wrong packet header, "
-				"expected user in-game action header.\n";
-				break;
 		}
 		playerActionPacket.clear();
 	}
