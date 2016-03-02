@@ -87,21 +87,22 @@ void GameThread::receiveDecks()
 	std::cout << "waiting for decks\n";
 	sf::Packet deckPacket;
 	TransferType type;
+	std::string player1DeckName, player2DeckName;
 
 	_socketPlayer1.receive(deckPacket);
 	deckPacket >> type;
 	if(type != TransferType::GAME_PLAYER_GIVE_DECK_NAMES)
 		throw std::runtime_error("Unable to get player 1's deck");
-	deckPacket >> _player1DeckName;
+	deckPacket >> player1DeckName;
 
 	_socketPlayer2.receive(deckPacket);
 	deckPacket >> type;
 	if(type != TransferType::GAME_PLAYER_GIVE_DECK_NAMES)
 		throw std::runtime_error("Unable to get player 2's deck");
-	deckPacket >> _player2DeckName;
+	deckPacket >> player2DeckName;
 
-	_player1.setDeck(_database.getDeckByName(_player1ID, _player1DeckName));
-	_player2.setDeck(_database.getDeckByName(_player2ID, _player2DeckName));
+	_player1.setDeck(_database.getDeckByName(_player1ID, player1DeckName));
+	_player2.setDeck(_database.getDeckByName(_player2ID, player2DeckName));
 }
 
 void GameThread::startGame(const ClientInformations& player1, const ClientInformations& player2)
@@ -150,11 +151,12 @@ void GameThread::runGame()
 		playerActionPacket >> type;
 		// The GAME_GUIT_GAME action can be send also by passive player, so we
 		// must handle it separately
-		if(type == GAME_QUIT_GAME)
+		if(type == TransferType::GAME_QUIT_GAME)
 		{
 			// quit game
 		}
-		else
+		// If the action is done by the active player
+		else if(&modifiedSocket == &activePlayerSocket)
 		{
 			switch(type)
 			{

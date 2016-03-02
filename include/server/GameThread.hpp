@@ -64,9 +64,6 @@ private:
 	// Currently low for tests
 	static constexpr std::chrono::seconds _turnTime{30};  // arbitrary
 
-	std::string _player1DeckName;
-	std::string _player2DeckName;
-
 	//////////// Private methods
 	void runGame();
 
