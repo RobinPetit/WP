@@ -24,8 +24,9 @@
 
 %%%%% glossaries %%%%%
 
-\usepackage[nogroupskip,
-            toc, 
+\usepackage[
+			nogroupskip,
+			toc, 
 			numberedsection,
 			style=list]
 		{glossaries}
@@ -36,45 +37,45 @@
 \makenoidxglossaries
 
 \newglossarystyle{listNoIndex}{%
-  \renewcommand*{\glossaryentryfield}[5]{%
-    \item[\glsentryitem{##1}\glstarget{##1}{##2}]
-       ##3\glspostdescription}%
-  \renewcommand*{\glossarysubentryfield}[6]{%
-    \glssubentryitem{##2}%
-    \glstarget{##2}{\strut}##4\glspostdescription}%
+	\renewcommand*{\glossaryentryfield}[5]{%
+		\item[\glsentryitem{##1}\glstarget{##1}{##2}]
+			##3\glspostdescription}%
+	\renewcommand*{\glossarysubentryfield}[6]{%
+		\glssubentryitem{##2}%
+		\glstarget{##2}{\strut}##4\glspostdescription}%
 }
 
 \newglossarystyle{indexNoDescription}{%
-  \renewcommand*{\glossaryentryfield}[5]{%
-    \item\glsentryitem{##1}\textbf{\glstarget{##1}{##2}}%
-      \ifx\relax##4\relax
-      \else
-        \space(##4)%
-      \fi % jusque là rien d'anormal
-	  % ici on n'affiche pas la description
-      \space ##5}% puis on affiche la liste des utilisations
-  % meme principe ci-dessous
-  \renewcommand*{\glossarysubentryfield}[6]{%
-    \ifcase##1\relax
-      % level 0
-      \item
-    \or
-      % level 1
-      \subitem
-      \glssubentryitem{##2}%
-    \else
-      % all other levels
-      \subsubitem
-    \fi
-    \textbf{\glstarget{##2}{##3}}%
-    \ifx\relax##5\relax
-    \else
-      \space(##5)%
-    \fi
-    \space ##6}%
+	\renewcommand*{\glossaryentryfield}[5]{%
+		\item\glsentryitem{##1}\textbf{\glstarget{##1}{##2}}%
+			\ifx\relax##4\relax
+			\else
+				\space(##4)%
+			\fi % jusque là rien d'anormal
+			% ici on n'affiche pas la description
+			\space ##5}% puis on affiche la liste des utilisations
+	% meme principe ci-dessous
+	\renewcommand*{\glossarysubentryfield}[6]{%
+		\ifcase##1\relax
+			% level 0
+			\item
+		\or
+			% level 1
+			\subitem
+			\glssubentryitem{##2}%
+		\else
+			% all other levels
+			\subsubitem
+		\fi
+		\textbf{\glstarget{##2}{##3}}%
+		\ifx\relax##5\relax
+		\else
+			\space(##5)%
+		\fi
+		\space ##6}%
 }%
 
-%%%%% I hate code repetitions in latex %%%%%
+%%%%% I hate code repetitions %%%%%
 
 \let\simplesection\section
 \renewcommand{\section}{\clearpage\simplesection}
