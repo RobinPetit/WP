@@ -79,7 +79,7 @@ void GameState::play()
 			startTurn();
 		else
 		{
-			std::cout << "Waiting for your turn\n";
+			std::cout << "Waiting for your turn...\n";
 			while(not _myTurn.load())
 				sf::sleep(sf::milliseconds(100));
 		}

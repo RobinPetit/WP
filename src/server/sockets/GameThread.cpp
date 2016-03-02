@@ -151,19 +151,27 @@ void GameThread::runGame()
 				break;
 
 			case TransferType::GAME_USE_CARD:
-				// use card;
+			{
+				sf::Int32 cardIndex;
+				playerActionPacket >> cardIndex;
+				useCard(static_cast<int>(cardIndex));
 				break;
+			}
 
 			case TransferType::GAME_ATTACK_WITH_CREATURE:
-				// attack with creature;
+			{
+				sf::Int32 attackerIndex, victimIndex;
+				playerActionPacket >> attackerIndex >> victimIndex;
+				attackWithCreature(static_cast<int>(attackerIndex), static_cast<int>(victimIndex));
 				break;
+			}
 
 			case TransferType::GAME_QUIT_GAME:
 				// quit game;
 				break;
 
 			default:
-				std::cout << "GameThread::runGame error: wrong packet header,"
+				std::cout << "GameThread::runGame error: wrong packet header, "
 				"expected user in-game action header.\n";
 				break;
 		}

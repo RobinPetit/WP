@@ -24,7 +24,7 @@ void LobbyState::display()
 
 void LobbyState::startGame()
 {
-	std::cout << "Let's fin  you an opponent\n";
+	std::cout << "Let's find you an opponent\n";
 	if(_client.startGame())
 		stackPush<GameState>();
 	else
