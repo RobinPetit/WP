@@ -1,11 +1,11 @@
 all: srd.pdf
 
 # Faudrait eviter les espaces dans les noms de fichier
-srd.pdf: srd.tex $(wildcard Diagrammes_UML/*)
+srd.pdf: $(wildcard *.tex) $(wildcard Diagrams/*) $(wildcard *.mdj)
 	pdflatex srd.tex
-	(${HOME}/texmf/scripts/glossaries/makeglossaries $(subst .tex,,$<) || makeglossaries $(subst .tex,,$<))
+	#(${HOME}/texmf/scripts/glossaries/makeglossaries $(subst .tex,,$<) || makeglossaries $(subst .tex,,$<))
 	pdflatex srd.tex
-	pdflatex srd.tex
+	#pdflatex srd.tex
 
 view: srd.pdf
 	evince srd.pdf &
