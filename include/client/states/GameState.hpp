@@ -66,7 +66,7 @@ class GameState : public AbstractState
 		void chooseDeck();
 
 		// Requests user for additional input
-		int askIndex(std::size_t maxIndex, std::string inputMessage);
+		int askIndex(std::size_t upperBound, std::string inputMessage);
 		int askSelfHandIndex();
 		int askSelfBoardIndex();
 		int askSelfGraveyardIndex();

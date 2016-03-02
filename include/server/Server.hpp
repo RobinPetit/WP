@@ -57,8 +57,8 @@ private:
 	void takeConnection();
 
 	/// Used to handle data sent by a logged user
-
 	void receiveData();
+
 	/// Used to receive packet when the user want to connect.
 	/// This functions takes the ownership of the socket, so that the responsability
 	/// of deleting the object is transferred. For example, if the connection

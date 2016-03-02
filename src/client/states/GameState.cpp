@@ -50,21 +50,21 @@ void GameState::chooseDeck()
 {
 	std::vector<Deck> decks = _client.getDecks();
 
-	// ask for the deck to use during the game
-	for(int i=0; i<decks.size(); i++)
+	// Ask for the deck to use during the game
+	for(std::size_t i{0}; i < decks.size(); i++)
 		std::cout << i << " : " << decks.at(i).getName() << std::endl;
 	std::cin.clear();
-	std::size_t res; //chosen deck
+	std::size_t res;  // Chosen deck
 	do
 	{
 		std::cout << "Choose your deck: ";
 		std::cin >> res;
 		std::cout << "you chose" << res << std::endl;
-		if(res > decks.size() or res<0)
-			std::cout << "Your answer should be in the range (" << 0 << ", " << decks.size() <<") !" << std::endl;
-	} while(res > decks.size() or res<0);
+		if(res >= decks.size())
+			std::cout << "Your answer should be in the range [" << 0 << ", " << decks.size() <<"[ !\n";
+	} while(res >= decks.size());
 
-	// send the deck ID to the server
+	// Send the deck ID to the server
 	std::cout << "sending your deck '" << decks.at(res).getName() << "'...\n";
 	sf::Packet deckIdPacket;
 	deckIdPacket << TransferType::GAME_PLAYER_GIVE_DECK_NAMES << decks.at(res).getName();
@@ -114,22 +114,24 @@ void GameState::startTurn()
 //PRIVATE METHODS
 
 // Request user for additional input
-int GameState::askIndex(std::size_t maxIndex, std::string inputMessage)
+int GameState::askIndex(std::size_t upperBound, std::string inputMessage)
 {
-	std::size_t res; //result
-	if (maxIndex==0)
+	int res;
+	if (upperBound == 0)
 	{
 		std::cout << "There are no cards to choose\n";
 		return -1;
 	}
 
+	bool firstTry{true};
 	do
 	{
+		if(not firstTry)
+			std::cout << "Your answer should be in the range [" << 0 << ", " << upperBound <<"[ !\n";
 		std::cout << inputMessage;
 		std::cin >> res;
-		if(res > maxIndex)
-			std::cout << "Your answer should be in the range (" << 0 << ", " << maxIndex <<") !\n";
-	} while(res > maxIndex);
+		firstTry = false;
+	} while(res >= static_cast<int>(upperBound) or res < 0);
 
 	return res;
 }

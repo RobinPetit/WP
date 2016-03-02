@@ -40,11 +40,9 @@ public:
 	/// Destructor
 	~GameThread();
 
+	// Public attributes
 	const userId _player1ID;
 	const userId _player2ID;
-
-	//~Currently low for tests
-	static constexpr std::chrono::seconds _turnTime{30};  // arbitrary
 
 private:
 	//////////// Attributes
@@ -55,16 +53,16 @@ private:
 	sf::TcpSocket _specialOutputSocketPlayer2;
 	Player _player1;
 	Player _player2;
-
 	ServerDatabase& _database;
-	int _turn;
+
 	Player *_activePlayer;
 	Player *_passivePlayer;
+	int _turn;
 	bool _turnCanEnd;
-
 	std::thread _timerThread;
-
 	std::atomic_bool _turnSwap;
+	// Currently low for tests
+	static constexpr std::chrono::seconds _turnTime{30};  // arbitrary
 
 	std::string _player1DeckName;
 	std::string _player2DeckName;
