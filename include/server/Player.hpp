@@ -7,6 +7,7 @@
 #include <array>
 #include <functional>
 #include <cstddef>
+#include <atomic>
 // WizardPoker headers
 #include "server/Card.hpp"
 #include "server/Spell.hpp"
@@ -86,6 +87,7 @@ private:
 	GameThread* _board;
 	Player* _opponent = nullptr;
 	userId _id;
+	std::atomic_bool _isActive;
 
 	//Client communication
 	sf::TcpSocket& _socketToClient;

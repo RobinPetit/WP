@@ -29,7 +29,8 @@ std::function<void(Player&, const EffectParamsCollection&)> Player::_effectMetho
 Player::Player(userId id, sf::TcpSocket& socket, sf::TcpSocket& specialSocket):
 	_id(id),
 	_socketToClient(socket),
-	_specialSocketToClient(specialSocket)
+	_specialSocketToClient(specialSocket),
+	_isActive(false)
 {
 	//NETWORK: GREETINGS_USER
 }
@@ -84,6 +85,8 @@ void Player::beginGame(bool isActivePlayer)
 
 void Player::enterTurn(int turn)
 {
+	_isActive.store(true); //Player is no longer active
+
 	_turnData = _emptyTurnData;  // Reset the turn data
 	if (_cardDeck.empty())
 	{
@@ -115,6 +118,8 @@ void Player::enterTurn(int turn)
 
 void Player::leaveTurn()
 {
+	_isActive.store(false); //Player is no longer active
+
 	//Time out player constraints
 	_constraints.timeOutConstraints();
 	_teamConstraints.timeOutConstraints();
