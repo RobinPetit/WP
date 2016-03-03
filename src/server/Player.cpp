@@ -331,7 +331,7 @@ void Player::setConstraint(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range)
 	{
-		std::cerr << "Error with the card arguments\n";
+		 throw std::runtime_error("Error with cards arguments");
 		return;
 	}
 
@@ -354,7 +354,7 @@ void Player::pickDeckCards(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range)
 	{
-		std::cerr << "Error with the card arguments\n";
+		 throw std::runtime_error("Error with cards arguments");
 		return;
 	}
 	cardDeckToHand(amount);
@@ -369,7 +369,7 @@ void Player::loseHandCards(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range)
 	{
-		std::cerr << "Error with the card arguments\n";
+		 throw std::runtime_error("Error with cards arguments");
 		return;
 	}
 
@@ -391,7 +391,7 @@ void Player::reviveGraveyardCard(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range)
 	{
-		std::cerr << "Error with the card arguments\n";
+		 throw std::runtime_error("Error with cards arguments");
 		return;
 	}
 	cardGraveyardToHand(binIndex);
@@ -419,7 +419,7 @@ void Player::exchgHandCard(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range)
 	{
-		std::cerr << "Error with the card arguments\n";
+		 throw std::runtime_error("Error with cards arguments");
 		return;
 	}
 
@@ -444,7 +444,7 @@ void Player::resetEnergy(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range)
 	{
-		std::cerr << "Error with the card arguments\n";
+		 throw std::runtime_error("Error with cards arguments");
 		return;
 	}
 	_energyInit += additionalPoints; //add points to initial amount of energy
@@ -466,7 +466,7 @@ void Player::changeEnergy(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range)
 	{
-		std::cerr << "Error with the card arguments\n";
+		 throw std::runtime_error("Error with cards arguments");
 		return;
 	}
 	_energy+=points;
@@ -486,7 +486,7 @@ void Player::changeHealth(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range)
 	{
-		std::cerr << "Error with the card arguments\n";
+		 throw std::runtime_error("Error with cards arguments");
 		return;
 	}
 
@@ -551,7 +551,7 @@ void Player::setTeamConstraint(const Card* usedCard, const EffectParamsCollectio
 	}
 	catch (std::out_of_range)
 	{
-		std::cerr << "Error with the card arguments\n";
+		 throw std::runtime_error("Error with cards arguments");
 		return;
 	}
 
