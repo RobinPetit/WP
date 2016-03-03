@@ -282,6 +282,16 @@ const Card* Player::getLastCaster()
 	return _lastCasterCard;
 }
 
+sf::TcpSocket& Player::getSocket()
+{
+    return _socketToClient;
+}
+
+sf::TcpSocket& Player::getSpecialSocket()
+{
+	return _specialSocketToClient;
+}
+
 /*------------------------------ EFFECTS (PRIVATE) */
 void Player::setConstraint(const EffectParamsCollection& args)
 {

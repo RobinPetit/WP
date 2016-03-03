@@ -72,9 +72,6 @@ private:
 	//////////// Private methods
 	void setSocket(sf::TcpSocket& socket, sf::TcpSocket& specialSocket, const ClientInformations& player);
 
-	sf::TcpSocket& getSocketFromID(const userId ID);
-	sf::TcpSocket& getSpecialSocketFromID(const userId ID);
-
 	void makeTimer();
 	void receiveDecks();
 

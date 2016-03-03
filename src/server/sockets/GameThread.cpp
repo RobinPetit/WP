@@ -70,18 +70,6 @@ void GameThread::setSocket(sf::TcpSocket& socket, sf::TcpSocket& specialSocket, 
 		std::cerr << "Error while creating game thread special socket\n";
 }
 
-/////////// ease of implementation
-
-sf::TcpSocket& GameThread::getSocketFromID(const userId ID)
-{
-	return ID == _player1ID ? _socketPlayer1 : _socketPlayer2;
-}
-
-sf::TcpSocket& GameThread::getSpecialSocketFromID(const userId ID)
-{
-	return ID == _player1ID ? _specialOutputSocketPlayer1 : _specialOutputSocketPlayer2;
-}
-
 void GameThread::receiveDecks()
 {
 	std::cout << "waiting for decks\n";
@@ -113,10 +101,10 @@ void GameThread::startGame(const ClientInformations& player1, const ClientInform
 
 	// send the game is starting
 	packet << TransferType::GAME_STARTING << TransferType::GAME_PLAYER_ENTER_TURN;
-	getSocketFromID(_activePlayer->getID()).send(packet);
+	_activePlayer->getSocket().send(packet);
 	packet.clear();
 	packet << TransferType::GAME_STARTING << TransferType::GAME_PLAYER_LEAVE_TURN;
-	getSocketFromID(_passivePlayer->getID()).send(packet);
+	_passivePlayer->getSocket().send(packet);
 	_timerThread = std::thread(&GameThread::makeTimer, this);
 	// prepare data listening
 	sf::SocketSelector selector;
@@ -239,10 +227,12 @@ void GameThread::makeTimer()
 		// send to both players their turn swapped
 		sf::Packet endOfTurn;
 		endOfTurn << TransferType::GAME_PLAYER_LEAVE_TURN;
-		getSpecialSocketFromID(_activePlayer->getID()).send(endOfTurn);
+		_activePlayer->getSpecialSocket().send(endOfTurn);
+
 		sf::Packet startOfTurn;
 		startOfTurn << TransferType::GAME_PLAYER_ENTER_TURN;
-		getSpecialSocketFromID(_passivePlayer->getID()).send(startOfTurn);
+		_passivePlayer->getSpecialSocket().send(startOfTurn);
+
 		endTurn();
 		startOfTurnTime = std::chrono::high_resolution_clock::now();
 		_turnSwap.store(false);

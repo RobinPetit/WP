@@ -54,6 +54,8 @@ public:
 	int getCreatureConstraint(const Creature& subject, int constraintIDD);
 	const Card* getLastCaster();
 	userId getID();
+	sf::TcpSocket& getSocket();
+	sf::TcpSocket& getSpecialSocket();
 	const std::vector<Creature *>& getBoard();
 
 	/// Setters
