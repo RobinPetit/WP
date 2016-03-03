@@ -41,18 +41,20 @@ public:
 	void finishGame(bool hasWon, std::string endMessage); //The game has ended because of some reason
 
 	/// Interface for client input
+	//TODO: check for each function if Player is the active player, and lock changes to _isActive until end of function
 	void useCard(int handIndex); 	///< Use a card
 	void attackWithCreature(int boardIndex, int victim);  ///< Attack victim (-1 for opponent) with a card
 	void endTurn(); //TODO; define behavior
 	void quitGame(); //TODO: define behavior and call _opponent->quitGame();
 
 	/// Interface for applying effects
-	//to Player
-	void applyEffect(const Card* usedCard, EffectParamsCollection effectArgs);
-	//to a Creature
+	void applyEffect(Card* usedCard, EffectParamsCollection effect);
+	//to itself
+	void applyEffectToSelf(const Card* usedCard, EffectParamsCollection effectArgs);
+	//to one of its Creatures
 	void applyEffectToCreature(Creature* casterAndSubject, EffectParamsCollection effectArgs); //With ref. to creature
 	void applyEffectToCreature(const Card* usedCard, EffectParamsCollection effectArgs, std::vector<int> boardIndexes); //With creature index
-	//to all Creatures
+	//to all of its Creatures
 	void applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollection effectArgs);
 
 	/// Getters

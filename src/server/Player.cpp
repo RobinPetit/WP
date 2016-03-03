@@ -236,7 +236,7 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 	else
 	{
 		if (victimIndex<0)
-			_opponent->applyEffect(attacker, {PE_CHANGE_HEALTH, -attacker->getAttack()}); //no forced attacks on opponent
+			_opponent->applyEffectToSelf(attacker, {PE_CHANGE_HEALTH, -attacker->getAttack()}); //no forced attacks on opponent
 		else
 			attacker->makeAttack(*_opponent->_cardBoard.at(victimIndex));
 		response << TransferType::ACKNOWLEDGE;
@@ -258,7 +258,70 @@ void Player::quitGame()
 }
 
 /*------------------------------ EFFECTS INTERFACE */
-void Player::applyEffect(const Card* usedCard, EffectParamsCollection effectArgs)
+void Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
+{
+	int subject;  // who the effect applies to
+	try  // check the input
+	{
+		subject=effectArgs.at(0);
+		effectArgs.erase(effectArgs.begin());
+	}
+	catch (std::out_of_range)
+	{
+		 throw std::runtime_error("Error with cards arguments");
+		return;
+	}
+
+	switch (subject)
+	{
+		case PLAYER_SELF:	//passive player
+			askUserToSelectCards({});
+			applyEffectToSelf(usedCard, effectArgs);
+			break;
+
+		case PLAYER_OPPO:	//active player
+			askUserToSelectCards({});
+			_opponent->applyEffectToSelf(usedCard, effectArgs);
+			break;
+		case CREATURE_SELF_THIS:	//active player's creature that was used
+		{
+			askUserToSelectCards({});
+			Creature* usedCreature = dynamic_cast<Creature*>(usedCard);
+			applyEffectToCreature(usedCreature, effectArgs);
+		}
+			break;
+		case CREATURE_SELF_INDX:	//active player's creature at given index
+			applyEffectToCreature(usedCard, effectArgs, askUserToSelectCards({CardToSelect::SELF_BOARD}));
+			break;
+
+		case CREATURE_SELF_RAND:	//active player's creature at random index
+			askUserToSelectCards({});
+			applyEffectToCreature(usedCard, effectArgs, getRandomBoardIndexes({CardToSelect::SELF_BOARD}));
+			break;
+
+		case CREATURE_SELF_TEAM:	//active player's team of creatures
+			askUserToSelectCards({});
+			applyEffectToCreatureTeam(usedCard, effectArgs);
+			break;
+
+		case CREATURE_OPPO_INDX:	//passive player's creature at given index
+			_opponent->applyEffectToCreature(usedCard, effectArgs, askUserToSelectCards({CardToSelect::OPPO_BOARD}));
+			break;
+
+		case CREATURE_OPPO_RAND:	//passive player's creature at random index
+			askUserToSelectCards({});
+			_opponent->applyEffectToCreature(usedCard, effectArgs, getRandomBoardIndexes({CardToSelect::OPPO_BOARD}));
+			break;
+
+		case CREATURE_OPPO_TEAM:	//passive player's team of creatures
+			askUserToSelectCards({});
+			_opponent->applyEffectToCreatureTeam(usedCard, effectArgs);
+			break;
+	}
+	throw std::runtime_error("Effect subject not valid");
+}
+
+void Player::applyEffectToSelf(const Card* usedCard, EffectParamsCollection effectArgs)
 {
 	_lastCasterCard = usedCard; //remember last used card
 
@@ -271,13 +334,13 @@ void Player::applyEffect(const Card* usedCard, EffectParamsCollection effectArgs
 void Player::applyEffectToCreature(Creature* casterAndSubject, EffectParamsCollection effectArgs)
 {
 	_lastCasterCard = casterAndSubject; //remember last used card
-	casterAndSubject->applyEffect(effectArgs); //call method on effect subject (same as caster)
+	casterAndSubject->applyEffectToSelf(effectArgs); //call method on effect subject (same as caster)
 }
 
 void Player::applyEffectToCreature(const Card* usedCard, EffectParamsCollection effectArgs, std::vector<int> boardIndexes)
 {
 	_lastCasterCard = usedCard; //remember last used card
-	_cardBoard.at(boardIndexes.at(0))->applyEffect(effectArgs);
+	_cardBoard.at(boardIndexes.at(0))->applyEffectToSelf(effectArgs);
 }
 
 void Player::applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollection effectArgs)
@@ -292,7 +355,7 @@ void Player::applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollect
 	}
 	else //other effects just get applied to each creature individually
 		for (unsigned i=0; i<_cardBoard.size(); i++)
-			_cardBoard.at(i)->applyEffect(effectArgs);
+			_cardBoard.at(i)->applyEffectToSelf(effectArgs);
 }
 
 /*------------------------------ GETTERS */
@@ -535,7 +598,7 @@ void Player::exploitCardEffects(Card* usedCard)
 	std::vector<EffectParamsCollection> effects = usedCard->getEffects();
 	for (unsigned i=0; i<effects.size(); i++) //for each effect of the card
 	{
-		_board->applyEffect(usedCard, effects.at(i)); //apply it
+		applyEffect(usedCard, effects.at(i)); //apply it
 	}
 }
 

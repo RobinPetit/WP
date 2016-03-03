@@ -53,7 +53,7 @@ public:
 	void receiveAttack(Creature& attacker, int attack, int forced, int loopCount=0);
 
 	/// Effects interface
-	void applyEffect(EffectParamsCollection effectArgs);
+	void applyEffectToSelf(EffectParamsCollection effectArgs);
 
 	int getAttack();
 	int getHealth();
