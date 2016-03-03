@@ -73,7 +73,7 @@ void Player::setDeck(const Deck& newDeck)
 		_cardDeck.push(loadedCards.at(i));
 }
 
-/*------------------------------ BOARD INTERFACE */
+/*------------------------------ GAMETHREAD INTERFACE */
 void Player::beginGame(bool isActivePlayer)
 {
 	//if (isActivePlayer)
@@ -89,7 +89,10 @@ void Player::enterTurn(int turn)
 	{
 		_turnsSinceEmptyDeck++;
 		if (_turnsSinceEmptyDeck==10)
-			endGame(); //TODO define arguments here
+		{
+			finishGame(false, "You spent 10 turns with an empty deck");
+			_opponent->finishGame(true, "Your opponent spent 10 turns with an empty deck");
+		}
 	}
 
 	//Player's turn-based constraints
@@ -121,6 +124,15 @@ void Player::leaveTurn()
 		_cardBoard.at(i)->leaveTurn();
 }
 
+void Player::finishGame(bool hasWon, std::string endMessage)
+{
+    //Send endMessage to client
+    //unlock cards for client if he has won
+    //Send unlocked card to client
+}
+
+
+/*------------------------------ CLIENT INTERFACE */
 /// \network sends to client one of the following:
 ///	 + SERVER_ACKNOWLEDGEMENT if the card was successfully used
 ///	 + GAME_CARD_LIMIT_TURN_REACHED if the user cannot play cards for this turn
@@ -227,9 +239,17 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 	_socketToClient.send(response);
 }
 
-void Player::endGame()
+void Player::endTurn()
 {
-    //I have no idea what to do here.
+	//Call _timer->reset(); or similar
+    //Call _opponent->enterTurn();
+    //Call _leaveTurn() on self
+}
+
+void Player::quitGame()
+{
+	//Call _timer->release() or similar
+	//Call opponent->finishGame(hasWon=true, endMessage="You quitter !"), self->finishGame(hasWon=false, endMessage="Opponent quit the game") or similar
 }
 
 /*------------------------------ EFFECTS INTERFACE */
@@ -474,8 +494,8 @@ void Player::changeHealth(const EffectParamsCollection& args)
 	if (_health<=0)
 	{
 		_health=0;
-		endGame(); //TODO define arguments here
-		_opponent->endGame();
+		finishGame(false, "You ran out of health");
+		_opponent->finishGame(true, "Your opponent ran out of health");
 		//NETWORK: NO_HEALTH_CHANGED
 		//call die()
 	}

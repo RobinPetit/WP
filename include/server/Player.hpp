@@ -33,13 +33,17 @@ public:
 	/// Destructor.
 	~Player() = default;
 
-	/// Interface for basic gameplay (board)
-	void beginGame(bool isActivePlayer);
-	void enterTurn(int turn);
-	void leaveTurn();
+	/// Interface for basic gameplay
+	void beginGame(bool isActivePlayer);	//The game has begun
+	void enterTurn(int turn);				//The player's turn has started
+	void leaveTurn();						//The player's turn has ended
+	void finishGame(bool hasWon, std::string endMessage); //The game has ended because of some reason
+
+	/// Interface for client input
 	void useCard(int handIndex); 	///< Use a card
 	void attackWithCreature(int boardIndex, int victim);  ///< Attack victim (-1 for opponent) with a card
-	void endGame(); //TODO: define behavior and call for opponent when quitting
+	void endTurn(); //TODO; define behavior
+	void quitGame(); //TODO: define behavior and call _opponent->quitGame();
 
 	/// Interface for applying effects
 	//to Player
