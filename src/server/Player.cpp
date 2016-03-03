@@ -77,15 +77,13 @@ void Player::setDeck(const Deck& newDeck)
 /*------------------------------ GAMETHREAD INTERFACE */
 void Player::beginGame(bool isActivePlayer)
 {
-	//if (isActivePlayer)
-		//NETWORK: GAME_STARTED_ACTIVE
-	//else
-		//NETWORK: GAME_STARTED_INACTIVE
+	_isActive.store(isActivePlayer);
+	//NETWORK: SEND ALL GAME INFORMATION TO CLIENT, ALONG WITH 'game started, it's (not)your turn' message
 }
 
 void Player::enterTurn(int turn)
 {
-	_isActive.store(true); //Player is no longer active
+	_isActive.store(true); //Player has become active
 
 	_turnData = _emptyTurnData;  // Reset the turn data
 	if (_cardDeck.empty())
