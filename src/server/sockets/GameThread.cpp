@@ -70,18 +70,6 @@ void GameThread::setSocket(sf::TcpSocket& socket, sf::TcpSocket& specialSocket, 
 		std::cerr << "Error while creating game thread special socket\n";
 }
 
-/////////// ease of implementation
-
-sf::TcpSocket& GameThread::getSocketFromID(const userId ID)
-{
-	return ID == _player1ID ? _socketPlayer1 : _socketPlayer2;
-}
-
-sf::TcpSocket& GameThread::getSpecialSocketFromID(const userId ID)
-{
-	return ID == _player1ID ? _specialOutputSocketPlayer1 : _specialOutputSocketPlayer2;
-}
-
 void GameThread::receiveDecks()
 {
 	std::cout << "waiting for decks\n";
@@ -113,10 +101,10 @@ void GameThread::startGame(const ClientInformations& player1, const ClientInform
 
 	// send the game is starting
 	packet << TransferType::GAME_STARTING << TransferType::GAME_PLAYER_ENTER_TURN;
-	getSocketFromID(_activePlayer->getID()).send(packet);
+	_activePlayer->getSocket().send(packet);
 	packet.clear();
 	packet << TransferType::GAME_STARTING << TransferType::GAME_PLAYER_LEAVE_TURN;
-	getSocketFromID(_passivePlayer->getID()).send(packet);
+	_passivePlayer->getSocket().send(packet);
 	_timerThread = std::thread(&GameThread::makeTimer, this);
 	// prepare data listening
 	sf::SocketSelector selector;
@@ -149,82 +137,6 @@ void GameThread::endTurn()
 	_activePlayer->enterTurn(_turn/2 +1);  // ALWAYS call active player
 }
 
-void GameThread::useCard(int handIndex)
-{
-	//pass along to active player
-	_activePlayer->useCard(handIndex);
-}
-
-void GameThread::attackWithCreature(int attackerIndex, int victimIndex)
-{
-	//pass along to active player
-	_activePlayer->attackWithCreature(attackerIndex, victimIndex);
-}
-
-/*------------------------------ PLAYER AND CARD INTERFACE */
-void GameThread::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
-{
-	int subject;  // who the effect applies to
-	try  // check the input
-	{
-		subject=effectArgs.at(0);
-		effectArgs.erase(effectArgs.begin());
-	}
-	catch (std::out_of_range)
-	{
-		//SERVER: CARD ERROR
-		return;
-	}
-
-	switch (subject)
-	{
-		case PLAYER_SELF:	//passive player
-			_activePlayer->askUserToSelectCards({});
-			_activePlayer->applyEffect(usedCard, effectArgs);
-			break;
-
-		case PLAYER_OPPO:	//active player
-			_activePlayer->askUserToSelectCards({});
-			_passivePlayer->applyEffect(usedCard, effectArgs);
-			break;
-		case CREATURE_SELF_THIS:	//active player's creature that was used
-		{
-			_activePlayer->askUserToSelectCards({});
-			Creature* usedCreature = dynamic_cast<Creature*>(usedCard);
-			_activePlayer->applyEffectToCreature(usedCreature, effectArgs);
-		}
-			break;
-		case CREATURE_SELF_INDX:	//active player's creature at given index
-			_activePlayer->applyEffectToCreature(usedCard, effectArgs, _activePlayer->askUserToSelectCards({CardToSelect::SELF_BOARD}));
-			break;
-
-		case CREATURE_SELF_RAND:	//active player's creature at random index
-			_activePlayer->askUserToSelectCards({});
-			_activePlayer->applyEffectToCreature(usedCard, effectArgs, _activePlayer->getRandomBoardIndexes({CardToSelect::SELF_BOARD}));
-			break;
-
-		case CREATURE_SELF_TEAM:	//active player's team of creatures
-			_activePlayer->askUserToSelectCards({});
-			_activePlayer->applyEffectToCreatureTeam(usedCard, effectArgs);
-			break;
-
-		case CREATURE_OPPO_INDX:	//passive player's creature at given index
-			_passivePlayer->applyEffectToCreature(usedCard, effectArgs, _activePlayer->askUserToSelectCards({CardToSelect::OPPO_BOARD}));
-			break;
-
-		case CREATURE_OPPO_RAND:	//passive player's creature at random index
-			_activePlayer->askUserToSelectCards({});
-			_passivePlayer->applyEffectToCreature(usedCard, effectArgs, _activePlayer->getRandomBoardIndexes({CardToSelect::OPPO_BOARD}));
-			break;
-
-		case CREATURE_OPPO_TEAM:	//passive player's team of creatures
-			_activePlayer->askUserToSelectCards({});
-			_passivePlayer->applyEffectToCreatureTeam(usedCard, effectArgs);
-			break;
-	}
-	throw std::runtime_error("Effect subject not valid");
-}
-
 // Function only called by a new thread
 void GameThread::makeTimer()
 {
@@ -239,10 +151,12 @@ void GameThread::makeTimer()
 		// send to both players their turn swapped
 		sf::Packet endOfTurn;
 		endOfTurn << TransferType::GAME_PLAYER_LEAVE_TURN;
-		getSpecialSocketFromID(_activePlayer->getID()).send(endOfTurn);
+		_activePlayer->getSpecialSocket().send(endOfTurn);
+
 		sf::Packet startOfTurn;
 		startOfTurn << TransferType::GAME_PLAYER_ENTER_TURN;
-		getSpecialSocketFromID(_passivePlayer->getID()).send(startOfTurn);
+		_passivePlayer->getSpecialSocket().send(startOfTurn);
+
 		endTurn();
 		startOfTurnTime = std::chrono::high_resolution_clock::now();
 		_turnSwap.store(false);

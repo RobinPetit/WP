@@ -5,6 +5,7 @@
 #include "common/sockets/TransferType.hpp"
 #include "common/sockets/PacketOverload.hpp"
 // std-C++ headers
+#include <iostream>
 #include <algorithm>
 // SFML headers
 #include <SFML/Network/Packet.hpp>
@@ -15,7 +16,7 @@ std::function<void(Player&, const EffectParamsCollection&)> Player::_effectMetho
 	&Player::setConstraint,
 	&Player::pickDeckCards,
 	&Player::loseHandCards,
-	&Player::reviveBinCard,
+	&Player::reviveGraveyardCard,
 
 	&Player::stealHandCard,
 	&Player::exchgHandCard,
@@ -28,7 +29,8 @@ std::function<void(Player&, const EffectParamsCollection&)> Player::_effectMetho
 Player::Player(userId id, sf::TcpSocket& socket, sf::TcpSocket& specialSocket):
 	_id(id),
 	_socketToClient(socket),
-	_specialSocketToClient(specialSocket)
+	_specialSocketToClient(specialSocket),
+	_isActive(false)
 {
 	//NETWORK: GREETINGS_USER
 }
@@ -72,23 +74,25 @@ void Player::setDeck(const Deck& newDeck)
 		_cardDeck.push(loadedCards.at(i));
 }
 
-/*------------------------------ BOARD INTERFACE */
-void Player::beginGame(bool /* isActivePlayer */)
+void Player::beginGame(bool isActivePlayer)
 {
-	//if (isActivePlayer)
-		//NETWORK: GAME_STARTED_ACTIVE
-	//else
-		//NETWORK: GAME_STARTED_INACTIVE
+	_isActive.store(isActivePlayer);
+	//NETWORK: SEND ALL GAME INFORMATION TO CLIENT, ALONG WITH 'game started, it's (not)your turn' message
 }
 
 void Player::enterTurn(int /* turn */)
 {
+	_isActive.store(true); //Player has become active
+
 	_turnData = _emptyTurnData;  // Reset the turn data
 	if (_cardDeck.empty())
 	{
 		_turnsSinceEmptyDeck++;
 		if (_turnsSinceEmptyDeck==10)
-			endGame(); //TODO define arguments here
+		{
+			finishGame(false, "You spent 10 turns with an empty deck");
+			_opponent->finishGame(true, "Your opponent spent 10 turns with an empty deck");
+		}
 	}
 
 	//Player's turn-based constraints
@@ -111,6 +115,8 @@ void Player::enterTurn(int /* turn */)
 
 void Player::leaveTurn()
 {
+	_isActive.store(false); //Player is no longer active
+
 	//Time out player constraints
 	_constraints.timeOutConstraints();
 	_teamConstraints.timeOutConstraints();
@@ -120,6 +126,15 @@ void Player::leaveTurn()
 		_cardBoard.at(i)->leaveTurn();
 }
 
+void Player::finishGame(bool hasWon, std::string endMessage)
+{
+    //Send endMessage to client
+    //unlock cards for client if he has won
+    //Send unlocked card to client
+}
+
+
+/*------------------------------ CLIENT INTERFACE */
 /// \network sends to client one of the following:
 ///	 + SERVER_ACKNOWLEDGEMENT if the card was successfully used
 ///	 + GAME_CARD_LIMIT_TURN_REACHED if the user cannot play cards for this turn
@@ -182,7 +197,7 @@ void Player::useSpell(int handIndex, Card *& usedCard)
 	{
 		_turnData.cardsUsed++;
 		_turnData.spellCalls++;
-		cardHandToBin(handIndex);
+		cardHandToGraveyard(handIndex);
 		exploitCardEffects(usedCard);
 		response << TransferType::ACKNOWLEDGE;
 	}
@@ -218,7 +233,7 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 	else
 	{
 		if (victimIndex<0)
-			_opponent->applyEffect(attacker, {PE_CHANGE_HEALTH, -attacker->getAttack()}); //no forced attacks on opponent
+			_opponent->applyEffectToSelf(attacker, {PE_CHANGE_HEALTH, -attacker->getAttack()}); //no forced attacks on opponent
 		else
 			attacker->makeAttack(*_opponent->_cardBoard.at(victimIndex));
 		response << TransferType::ACKNOWLEDGE;
@@ -226,13 +241,84 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 	_socketToClient.send(response);
 }
 
-void Player::endGame()
+void Player::endTurn()
 {
-    //I have no idea what to do here.
+	//Call _timer->reset(); or similar
+    //Call _opponent->enterTurn();
+    //Call _leaveTurn() on self
+}
+
+void Player::quitGame()
+{
+	//Call _timer->release() or similar
+	//Call opponent->finishGame(hasWon=true, endMessage="You quitter !"), self->finishGame(hasWon=false, endMessage="Opponent quit the game") or similar
 }
 
 /*------------------------------ EFFECTS INTERFACE */
-void Player::applyEffect(const Card* usedCard, EffectParamsCollection effectArgs)
+void Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
+{
+	int subject;  // who the effect applies to
+	try  // check the input
+	{
+		subject=effectArgs.at(0);
+		effectArgs.erase(effectArgs.begin());
+	}
+	catch (std::out_of_range)
+	{
+		 throw std::runtime_error("Error with cards arguments");
+		return;
+	}
+
+	switch (subject)
+	{
+		case PLAYER_SELF:	//passive player
+			askUserToSelectCards({});
+			applyEffectToSelf(usedCard, effectArgs);
+			break;
+
+		case PLAYER_OPPO:	//active player
+			askUserToSelectCards({});
+			_opponent->applyEffectToSelf(usedCard, effectArgs);
+			break;
+		case CREATURE_SELF_THIS:	//active player's creature that was used
+		{
+			askUserToSelectCards({});
+			Creature* usedCreature = dynamic_cast<Creature*>(usedCard);
+			applyEffectToCreature(usedCreature, effectArgs);
+		}
+			break;
+		case CREATURE_SELF_INDX:	//active player's creature at given index
+			applyEffectToCreature(usedCard, effectArgs, askUserToSelectCards({CardToSelect::SELF_BOARD}));
+			break;
+
+		case CREATURE_SELF_RAND:	//active player's creature at random index
+			askUserToSelectCards({});
+			applyEffectToCreature(usedCard, effectArgs, getRandomBoardIndexes({CardToSelect::SELF_BOARD}));
+			break;
+
+		case CREATURE_SELF_TEAM:	//active player's team of creatures
+			askUserToSelectCards({});
+			applyEffectToCreatureTeam(usedCard, effectArgs);
+			break;
+
+		case CREATURE_OPPO_INDX:	//passive player's creature at given index
+			_opponent->applyEffectToCreature(usedCard, effectArgs, askUserToSelectCards({CardToSelect::OPPO_BOARD}));
+			break;
+
+		case CREATURE_OPPO_RAND:	//passive player's creature at random index
+			askUserToSelectCards({});
+			_opponent->applyEffectToCreature(usedCard, effectArgs, getRandomBoardIndexes({CardToSelect::OPPO_BOARD}));
+			break;
+
+		case CREATURE_OPPO_TEAM:	//passive player's team of creatures
+			askUserToSelectCards({});
+			_opponent->applyEffectToCreatureTeam(usedCard, effectArgs);
+			break;
+	}
+	throw std::runtime_error("Effect subject not valid");
+}
+
+void Player::applyEffectToSelf(const Card* usedCard, EffectParamsCollection effectArgs)
 {
 	_lastCasterCard = usedCard; //remember last used card
 
@@ -245,13 +331,13 @@ void Player::applyEffect(const Card* usedCard, EffectParamsCollection effectArgs
 void Player::applyEffectToCreature(Creature* casterAndSubject, EffectParamsCollection effectArgs)
 {
 	_lastCasterCard = casterAndSubject; //remember last used card
-	casterAndSubject->applyEffect(effectArgs); //call method on effect subject (same as caster)
+	casterAndSubject->applyEffectToSelf(effectArgs); //call method on effect subject (same as caster)
 }
 
 void Player::applyEffectToCreature(const Card* usedCard, EffectParamsCollection effectArgs, std::vector<int> boardIndexes)
 {
 	_lastCasterCard = usedCard; //remember last used card
-	_cardBoard.at(boardIndexes.at(0))->applyEffect(effectArgs);
+	_cardBoard.at(boardIndexes.at(0))->applyEffectToSelf(effectArgs);
 }
 
 void Player::applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollection effectArgs)
@@ -266,7 +352,7 @@ void Player::applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollect
 	}
 	else //other effects just get applied to each creature individually
 		for (unsigned i=0; i<_cardBoard.size(); i++)
-			_cardBoard.at(i)->applyEffect(effectArgs);
+			_cardBoard.at(i)->applyEffectToSelf(effectArgs);
 }
 
 /*------------------------------ GETTERS */
@@ -280,6 +366,16 @@ int Player::getCreatureConstraint(const Creature& subject, int constraintID)
 const Card* Player::getLastCaster()
 {
 	return _lastCasterCard;
+}
+
+sf::TcpSocket& Player::getSocket()
+{
+    return _socketToClient;
+}
+
+sf::TcpSocket& Player::getSpecialSocket()
+{
+	return _specialSocketToClient;
 }
 
 /*------------------------------ EFFECTS (PRIVATE) */
@@ -300,7 +396,7 @@ void Player::setConstraint(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range)
 	{
-		//SERVER: CARD_ERROR
+		 throw std::runtime_error("Error with cards arguments");
 		return;
 	}
 
@@ -323,7 +419,7 @@ void Player::pickDeckCards(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range)
 	{
-		//SERVER: CARD_ERROR
+		 throw std::runtime_error("Error with cards arguments");
 		return;
 	}
 	cardDeckToHand(amount);
@@ -338,32 +434,37 @@ void Player::loseHandCards(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range)
 	{
-		//SERVER: CARD_ERROR
+		 throw std::runtime_error("Error with cards arguments");
 		return;
 	}
 
 	while (not _cardHand.empty() and amount>0)
 	{
 		amount--;
+<<<<<<< HEAD
 		int handIndex = (std::uniform_int_distribution<int>(0, static_cast<int>(_cardHand.size())))(_engine);
 		cardHandToBin(handIndex);
+=======
+		int handIndex = (std::uniform_int_distribution<int>(0, _cardHand.size()))(_engine);
+		cardHandToGraveyard(handIndex);
+>>>>>>> MergeBoardIntoGameThread
 	}
 }
 
-void Player::reviveBinCard(const EffectParamsCollection& args)
+void Player::reviveGraveyardCard(const EffectParamsCollection& args)
 {
 	int binIndex; //what card to revive
 	try //check the input
 	{
 		binIndex=args.at(0);
-		_cardBin.at(binIndex);
+		_cardGraveyard.at(binIndex);
 	}
 	catch (std::out_of_range)
 	{
-		//SERVER: CARD_ERROR
+		 throw std::runtime_error("Error with cards arguments");
 		return;
 	}
-	cardBinToHand(binIndex);
+	cardGraveyardToHand(binIndex);
 }
 
 void Player::stealHandCard(const EffectParamsCollection& /* args */)
@@ -388,7 +489,7 @@ void Player::exchgHandCard(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range)
 	{
-		//SERVER: CARD_ERROR
+		 throw std::runtime_error("Error with cards arguments");
 		return;
 	}
 
@@ -413,7 +514,7 @@ void Player::resetEnergy(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range)
 	{
-		//SERVER: CARD_ERROR
+		 throw std::runtime_error("Error with cards arguments");
 		return;
 	}
 	_energyInit += additionalPoints; //add points to initial amount of energy
@@ -435,7 +536,7 @@ void Player::changeEnergy(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range)
 	{
-		//SERVER: CARD_ERROR
+		 throw std::runtime_error("Error with cards arguments");
 		return;
 	}
 	_energy+=points;
@@ -455,7 +556,7 @@ void Player::changeHealth(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range)
 	{
-		//SERVER: CARD_ERROR
+		 throw std::runtime_error("Error with cards arguments");
 		return;
 	}
 
@@ -463,8 +564,8 @@ void Player::changeHealth(const EffectParamsCollection& args)
 	if (_health<=0)
 	{
 		_health=0;
-		endGame(); //TODO define arguments here
-		_opponent->endGame();
+		finishGame(false, "You ran out of health");
+		_opponent->finishGame(true, "Your opponent ran out of health");
 		//NETWORK: NO_HEALTH_CHANGED
 		//call die()
 	}
@@ -499,7 +600,7 @@ void Player::exploitCardEffects(Card* usedCard)
 	std::vector<EffectParamsCollection> effects = usedCard->getEffects();
 	for (unsigned i=0; i<effects.size(); i++) //for each effect of the card
 	{
-		_board->applyEffect(usedCard, effects.at(i)); //apply it
+		applyEffect(usedCard, effects.at(i)); //apply it
 	}
 }
 
@@ -520,7 +621,7 @@ void Player::setTeamConstraint(const Card* /* usedCard */, const EffectParamsCol
 	}
 	catch (std::out_of_range)
 	{
-		//NETWORK: INPUT_ERROR
+		 throw std::runtime_error("Error with cards arguments");
 		return;
 	}
 
@@ -555,30 +656,30 @@ void Player::cardHandToBoard(int handIndex)
 	sendBoardState();
 }
 
-void Player::cardHandToBin(int handIndex)
+void Player::cardHandToGraveyard(int handIndex)
 {
 	const auto& handIt = std::find(_cardHand.begin(), _cardHand.end(), _cardHand[handIndex]);
-	_cardBin.push_back(_cardHand.at(handIndex));
+	_cardGraveyard.push_back(_cardHand.at(handIndex));
 	_cardHand.erase(handIt);
 	sendHandState();
 	sendGraveyardState();
 }
 
-void Player::cardBoardToBin(int boardIndex)
+void Player::cardBoardToGraveyard(int boardIndex)
 {
 	const auto& boardIt = std::find(_cardBoard.begin(), _cardBoard.end(), _cardBoard[boardIndex]);
 	_cardBoard.at(boardIndex)->removedFromBoard();
-	_cardBin.push_back(_cardBoard.at(boardIndex));
+	_cardGraveyard.push_back(_cardBoard.at(boardIndex));
 	_cardBoard.erase(boardIt);
 	sendBoardState();
 	sendGraveyardState();
 }
 
-void Player::cardBinToHand(int binIndex)
+void Player::cardGraveyardToHand(int binIndex)
 {
-	const auto& binIt = std::find(_cardBin.begin(), _cardBin.end(), _cardBin[binIndex]);
-	_cardHand.push_back(_cardBin.at(binIndex));
-	_cardBin.erase(binIt);
+	const auto& binIt = std::find(_cardGraveyard.begin(), _cardGraveyard.end(), _cardGraveyard[binIndex]);
+	_cardHand.push_back(_cardGraveyard.at(binIndex));
+	_cardGraveyard.erase(binIt);
 	sendGraveyardState();
 	sendHandState();
 }
@@ -634,7 +735,7 @@ void Player::sendOpponentBoardState()
 
 void Player::sendGraveyardState()
 {
-	sendCardDataFromVector(TransferType::GAME_GRAVEYARD_UPDATED, _cardBin);
+	sendCardDataFromVector(TransferType::GAME_GRAVEYARD_UPDATED, _cardGraveyard);
 }
 
 // use a template to handle both Card and Creature pointers
