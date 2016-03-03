@@ -1,4 +1,7 @@
+// WizardPoker headers
 #include "server/Creature.hpp"
+// std-C++ headers
+#include <iostream>
 
 std::function<void(Creature&, const EffectParamsCollection&)> Creature::_effectMethods[P_EFFECTS_COUNT] =
 {

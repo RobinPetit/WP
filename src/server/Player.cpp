@@ -5,6 +5,7 @@
 #include "common/sockets/TransferType.hpp"
 #include "common/sockets/PacketOverload.hpp"
 // std-C++ headers
+#include <iostream>
 #include <algorithm>
 // SFML headers
 #include <SFML/Network/Packet.hpp>
@@ -15,7 +16,7 @@ std::function<void(Player&, const EffectParamsCollection&)> Player::_effectMetho
 	&Player::setConstraint,
 	&Player::pickDeckCards,
 	&Player::loseHandCards,
-	&Player::reviveBinCard,
+	&Player::reviveGraveyardCard,
 
 	&Player::stealHandCard,
 	&Player::exchgHandCard,
@@ -182,7 +183,7 @@ void Player::useSpell(int handIndex, Card *& usedCard)
 	{
 		_turnData.cardsUsed++;
 		_turnData.spellCalls++;
-		cardHandToBin(handIndex);
+		cardHandToGraveyard(handIndex);
 		exploitCardEffects(usedCard);
 		response << TransferType::ACKNOWLEDGE;
 	}
@@ -356,24 +357,24 @@ void Player::loseHandCards(const EffectParamsCollection& args)
 	{
 		amount--;
 		int handIndex = (std::uniform_int_distribution<int>(0, _cardHand.size()))(_engine);
-		cardHandToBin(handIndex);
+		cardHandToGraveyard(handIndex);
 	}
 }
 
-void Player::reviveBinCard(const EffectParamsCollection& args)
+void Player::reviveGraveyardCard(const EffectParamsCollection& args)
 {
 	int binIndex; //what card to revive
 	try //check the input
 	{
 		binIndex=args.at(0);
-		_cardBin.at(binIndex);
+		_cardGraveyard.at(binIndex);
 	}
 	catch (std::out_of_range)
 	{
 		std::cerr << "Error with the card arguments\n";
 		return;
 	}
-	cardBinToHand(binIndex);
+	cardGraveyardToHand(binIndex);
 }
 
 void Player::stealHandCard(const EffectParamsCollection& args)
@@ -565,30 +566,30 @@ void Player::cardHandToBoard(int handIndex)
 	sendBoardState();
 }
 
-void Player::cardHandToBin(int handIndex)
+void Player::cardHandToGraveyard(int handIndex)
 {
 	const auto& handIt = std::find(_cardHand.begin(), _cardHand.end(), _cardHand[handIndex]);
-	_cardBin.push_back(_cardHand.at(handIndex));
+	_cardGraveyard.push_back(_cardHand.at(handIndex));
 	_cardHand.erase(handIt);
 	sendHandState();
 	sendGraveyardState();
 }
 
-void Player::cardBoardToBin(int boardIndex)
+void Player::cardBoardToGraveyard(int boardIndex)
 {
 	const auto& boardIt = std::find(_cardBoard.begin(), _cardBoard.end(), _cardBoard[boardIndex]);
 	_cardBoard.at(boardIndex)->removedFromBoard();
-	_cardBin.push_back(_cardBoard.at(boardIndex));
+	_cardGraveyard.push_back(_cardBoard.at(boardIndex));
 	_cardBoard.erase(boardIt);
 	sendBoardState();
 	sendGraveyardState();
 }
 
-void Player::cardBinToHand(int binIndex)
+void Player::cardGraveyardToHand(int binIndex)
 {
-	const auto& binIt = std::find(_cardBin.begin(), _cardBin.end(), _cardBin[binIndex]);
-	_cardHand.push_back(_cardBin.at(binIndex));
-	_cardBin.erase(binIt);
+	const auto& binIt = std::find(_cardGraveyard.begin(), _cardGraveyard.end(), _cardGraveyard[binIndex]);
+	_cardHand.push_back(_cardGraveyard.at(binIndex));
+	_cardGraveyard.erase(binIt);
 	sendGraveyardState();
 	sendHandState();
 }
@@ -644,7 +645,7 @@ void Player::sendOpponentBoardState()
 
 void Player::sendGraveyardState()
 {
-	sendCardDataFromVector(TransferType::GAME_GRAVEYARD_UPDATED, _cardBin);
+	sendCardDataFromVector(TransferType::GAME_GRAVEYARD_UPDATED, _cardGraveyard);
 }
 
 // use a template to handle both Card and Creature pointers

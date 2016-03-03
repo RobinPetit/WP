@@ -101,7 +101,7 @@ private:
 	std::stack<Card *> _cardDeck;  ///< Cards that are in the deck (not usable yet)
 	std::vector<Card *> _cardHand;  ///< Cards that are in the player's hand (usable)
 	std::vector<Creature *> _cardBoard;  ///< Cards that are on the board (usable for attacks)
-	std::vector<Card *> _cardBin;  ///< Cards that are discarded (dead creatures, used spells)
+	std::vector<Card *> _cardGraveyard;  ///< Cards that are discarded (dead creatures, used spells)
 	const Card* _lastCasterCard=nullptr; ///<Last card that was used to cast an effect (his or opponent's)
 
 	// Random management
@@ -114,7 +114,7 @@ private:
 	void setConstraint(const EffectParamsCollection& args);
 	void pickDeckCards(const EffectParamsCollection& args);
 	void loseHandCards(const EffectParamsCollection& args);
-	void reviveBinCard(const EffectParamsCollection& args);
+	void reviveGraveyardCard(const EffectParamsCollection& args);
 	void stealHandCard(const EffectParamsCollection& args);
 	void exchgHandCard(const EffectParamsCollection& args);
 	void resetEnergy(const EffectParamsCollection& args);
@@ -127,9 +127,9 @@ private:
 
 	void cardDeckToHand(int amount);
 	void cardHandToBoard(int handIndex);
-	void cardHandToBin(int handIndex);  ///< Move the card at handIndex from the player's hand to the bin
-	void cardBoardToBin(int boardIndex);  ///< Move the card at boardIndex from the board to the bin
-	void cardBinToHand(int binIndex);
+	void cardHandToGraveyard(int handIndex);  ///< Move the card at handIndex from the player's hand to the bin
+	void cardBoardToGraveyard(int boardIndex);  ///< Move the card at boardIndex from the board to the bin
+	void cardGraveyardToHand(int binIndex);
 	void cardAddToHand(Card* given);
 	Card* cardRemoveFromHand();
 	Card* cardExchangeFromHand(Card* given);
