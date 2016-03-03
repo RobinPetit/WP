@@ -158,7 +158,7 @@ void Creature::setConstraint(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range)
 	{
-		//SERVER: CARD_ERROR
+		std::cerr << "Error with the card arguments\n";
 		return;
 	}
 
@@ -199,7 +199,7 @@ void Creature::changeAttack(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range)
 	{
-		//SERVER: CARD_ERROR
+		std::cerr << "Error with the card arguments\n";
 		return;
 	}
 	_attack+=points;
@@ -215,7 +215,7 @@ void Creature::changeHealth(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range)
 	{
-		//SERVER: CARD_ERROR
+		std::cerr << "Error with the card arguments\n";
 		return;
 	}
 
@@ -254,7 +254,7 @@ void Creature::changeShield(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range)
 	{
-		//SERVER: CARD_ERROR
+		std::cerr << "Error with the card arguments\n";
 		return;
 	}
 	_shield += points;

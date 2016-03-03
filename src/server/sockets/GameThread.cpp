@@ -160,7 +160,7 @@ void GameThread::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 	}
 	catch (std::out_of_range)
 	{
-		//SERVER: CARD ERROR
+		std::cerr << "Error with the card arguments\n";
 		return;
 	}
 

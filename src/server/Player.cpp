@@ -310,7 +310,7 @@ void Player::setConstraint(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range)
 	{
-		//SERVER: CARD_ERROR
+		std::cerr << "Error with the card arguments\n";
 		return;
 	}
 
@@ -333,7 +333,7 @@ void Player::pickDeckCards(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range)
 	{
-		//SERVER: CARD_ERROR
+		std::cerr << "Error with the card arguments\n";
 		return;
 	}
 	cardDeckToHand(amount);
@@ -348,7 +348,7 @@ void Player::loseHandCards(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range)
 	{
-		//SERVER: CARD_ERROR
+		std::cerr << "Error with the card arguments\n";
 		return;
 	}
 
@@ -370,7 +370,7 @@ void Player::reviveBinCard(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range)
 	{
-		//SERVER: CARD_ERROR
+		std::cerr << "Error with the card arguments\n";
 		return;
 	}
 	cardBinToHand(binIndex);
@@ -398,7 +398,7 @@ void Player::exchgHandCard(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range)
 	{
-		//SERVER: CARD_ERROR
+		std::cerr << "Error with the card arguments\n";
 		return;
 	}
 
@@ -423,7 +423,7 @@ void Player::resetEnergy(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range)
 	{
-		//SERVER: CARD_ERROR
+		std::cerr << "Error with the card arguments\n";
 		return;
 	}
 	_energyInit += additionalPoints; //add points to initial amount of energy
@@ -445,7 +445,7 @@ void Player::changeEnergy(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range)
 	{
-		//SERVER: CARD_ERROR
+		std::cerr << "Error with the card arguments\n";
 		return;
 	}
 	_energy+=points;
@@ -465,7 +465,7 @@ void Player::changeHealth(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range)
 	{
-		//SERVER: CARD_ERROR
+		std::cerr << "Error with the card arguments\n";
 		return;
 	}
 
@@ -530,7 +530,7 @@ void Player::setTeamConstraint(const Card* usedCard, const EffectParamsCollectio
 	}
 	catch (std::out_of_range)
 	{
-		//NETWORK: INPUT_ERROR
+		std::cerr << "Error with the card arguments\n";
 		return;
 	}
 
