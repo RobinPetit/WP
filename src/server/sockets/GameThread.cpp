@@ -137,18 +137,6 @@ void GameThread::endTurn()
 	_activePlayer->enterTurn(_turn/2 +1);  // ALWAYS call active player
 }
 
-void GameThread::useCard(int handIndex)
-{
-	//pass along to active player
-	_activePlayer->useCard(handIndex);
-}
-
-void GameThread::attackWithCreature(int attackerIndex, int victimIndex)
-{
-	//pass along to active player
-	_activePlayer->attackWithCreature(attackerIndex, victimIndex);
-}
-
 /*------------------------------ PLAYER AND CARD INTERFACE */
 void GameThread::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 {

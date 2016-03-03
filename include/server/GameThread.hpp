@@ -30,10 +30,6 @@ public:
 	/// \TODO change return value to give the result of the game
 	void startGame(const ClientInformations& player1, const ClientInformations& player2);
 
-	/// Interface for user
-	void useCard(int handIndex);
-	void attackWithCreature(int attackerIndex, int victimIndex);
-
 	/// Interface for Player and Card classes
 	void applyEffect(Card* usedCard, EffectParamsCollection effect);
 
