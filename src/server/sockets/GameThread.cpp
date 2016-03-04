@@ -10,6 +10,7 @@
 // std-C++ headers
 #include <iostream>
 #include <chrono>
+#include <cassert>
 
 constexpr std::chrono::seconds GameThread::_turnTime;
 
@@ -92,7 +93,7 @@ void GameThread::receiveDecks()
 	_player2.setDeck(_database.getDeckByName(_player2ID, _player2DeckName));
 }
 
-void GameThread::startGame(const ClientInformations& player1, const ClientInformations& player2)
+userId GameThread::startGame(const ClientInformations& player1, const ClientInformations& player2)
 {
 	establishSockets(player1, player2);
 	sf::Packet packet;
@@ -107,21 +108,24 @@ void GameThread::startGame(const ClientInformations& player1, const ClientInform
 	_passivePlayer->getSocket().send(packet);
 	_timerThread = std::thread(&GameThread::makeTimer, this);
 
-	runGame();
+	userId winnerId{runGame()};
 
 	packet.clear();
 	packet << TransferType::GAME_OVER;
 	// same message is sent to both players: no need to find by ID
 	_specialOutputSocketPlayer1.send(packet);
 	_specialOutputSocketPlayer2.send(packet);
+
+	return winnerId;
 }
 
-void GameThread::runGame()
+userId GameThread::runGame()
 {
 	// prepare data listening
 	sf::SocketSelector selector;
 	selector.add(_socketPlayer1);
 	selector.add(_socketPlayer2);
+	userId winner{0};
 	while(_running.load())
 	{
 		sf::Packet playerActionPacket;
@@ -142,6 +146,7 @@ void GameThread::runGame()
 		if(type == TransferType::GAME_QUIT_GAME)
 		{
 			std::cout << "Game is asked to end\n";
+			winner = (&modifiedSocket == &_socketPlayer1 ? _player2 : _player1).getID();
 			_running.store(false);
 		}
 		else
@@ -175,6 +180,8 @@ void GameThread::runGame()
 			}
 		}
 	}
+	assert(winner != 0);
+	return winner;
 }
 
 void GameThread::endTurn()

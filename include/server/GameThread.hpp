@@ -28,7 +28,7 @@ public:
 	void establishSockets(const ClientInformations& player1, const ClientInformations& player2);
 
 	/// \TODO change return value to give the result of the game
-	void startGame(const ClientInformations& player1, const ClientInformations& player2);
+	userId startGame(const ClientInformations& player1, const ClientInformations& player2);
 
 	/// Destructor
 	~GameThread();
@@ -61,7 +61,7 @@ private:
 	std::string _player2DeckName;
 
 	//////////// Private methods
-	void runGame();
+	userId runGame();
 
 	void setSocket(sf::TcpSocket& socket, sf::TcpSocket& specialSocket, const ClientInformations& player);
 
