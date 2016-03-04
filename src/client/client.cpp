@@ -28,7 +28,6 @@ int main()
 		catch(std::runtime_error& error)
 		{
 			std::cerr << "Exception caught: " << error.what();
-			stack.clear();
 			return -1;
 		}
 	}
