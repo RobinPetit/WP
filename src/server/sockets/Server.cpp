@@ -346,9 +346,8 @@ void Server::startGame(std::size_t idx)
 	// An unique lock also release the mutex at destruction (just like
 	// std::lock_guard) but we can explicitely lock and unlock it, combining
 	// the benefits of manually lock mutexes and the benefits of a scoped lock
+	// Watch out: lock is performed by the constructor. Do not manually re-lock it
 	std::unique_lock<std::mutex> lockRunningGames{_accessRunningGames};
-	// Lock the mutex
-	lockRunningGames.lock();
 	std::unique_ptr<GameThread>& selfThread{_runningGames.at(idx)};
 	// If the access did not throw, we can now release the mutex
 	lockRunningGames.unlock();

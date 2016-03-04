@@ -134,9 +134,9 @@ void GameThread::runGame()
 	sf::SocketSelector selector;
 	selector.add(_socketPlayer1);
 	selector.add(_socketPlayer2);
-	sf::Packet playerActionPacket;
 	while(_running.load())
 	{
+		sf::Packet playerActionPacket;
 		if(!selector.wait(sf::milliseconds(50)))
 			continue;
 		// Get actions from playing client
@@ -144,15 +144,17 @@ void GameThread::runGame()
 		modifiedSocket.receive(playerActionPacket);
 
 		// Check that only actions from the active player are handled
-		sf::TcpSocket& activePlayerSocket{_activePlayer == &_player1 ? _socketPlayer1 : _socketPlayer2};
+		// \TODO: use or remove
+		// sf::TcpSocket& activePlayerSocket{_activePlayer == &_player1 ? _socketPlayer1 : _socketPlayer2};
 
 		TransferType type;
 		playerActionPacket >> type;
 		// The GAME_GUIT_GAME action can be send also by passive player, so we
 		// must handle it separately
-		if(type == GAME_QUIT_GAME)
+		if(type == TransferType::GAME_QUIT_GAME)
 		{
-			// quit game
+			std::cout << "Game is asked to end\n";
+			_running.store(false);
 		}
 		else
 		{
@@ -180,11 +182,10 @@ void GameThread::runGame()
 
 				default:
 					std::cout << "GameThread::runGame error: wrong packet header, "
-					"expected user in-game action header.\n";
+					             "expected user in-game action header.\n";
 					break;
 			}
 		}
-		playerActionPacket.clear();
 	}
 }
 
@@ -229,17 +230,13 @@ void GameThread::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 			_activePlayer->askUserToSelectCards({});
 			_activePlayer->applyEffect(usedCard, effectArgs);
 			break;
-
 		case PLAYER_OPPO:	//active player
 			_activePlayer->askUserToSelectCards({});
 			_passivePlayer->applyEffect(usedCard, effectArgs);
 			break;
 		case CREATURE_SELF_THIS:	//active player's creature that was used
-		{
 			_activePlayer->askUserToSelectCards({});
-			Creature* usedCreature = dynamic_cast<Creature*>(usedCard);
-			_activePlayer->applyEffectToCreature(usedCreature, effectArgs);
-		}
+			_activePlayer->applyEffectToCreature(dynamic_cast<Creature*>(usedCard), effectArgs);
 			break;
 		case CREATURE_SELF_INDX:	//active player's creature at given index
 			_activePlayer->applyEffectToCreature(usedCard, effectArgs, _activePlayer->askUserToSelectCards({CardToSelect::SELF_BOARD}));

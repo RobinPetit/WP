@@ -26,12 +26,17 @@ void LobbyState::startGame()
 {
 	std::cout << "Let's find you an opponent\n";
 	if(_client.startGame())
+	{
 		stackPush<GameState>();
+		stackPop();
+	}
 	else
 		std::cout << "You stopped waiting for an opponent.\n";
+	std::cout << "End of the game!\n";
+	std::cin.ignore();
 }
 
 void LobbyState::quit()
 {
-	stackClear();
+	stackPop();
 }

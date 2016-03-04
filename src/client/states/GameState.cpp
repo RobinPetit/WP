@@ -84,6 +84,7 @@ void GameState::play()
 				sf::sleep(sf::milliseconds(100));
 		}
 	}
+	_listeningThread.join();
 }
 
 void GameState::display()
@@ -104,9 +105,7 @@ void GameState::startTurn()
 		if(not _nonBlockingInput.waitForData(0.1))
 			continue;
 		std::string command{_nonBlockingInput.receiveStdinData()};
-		std::cout << "handling command '" << command << "'\n";
 		handleInput(command);
-		std::cout << "handled\n";
 	}
 }
 
@@ -236,12 +235,13 @@ void GameState::endTurn()
 
 void GameState::quit()
 {
+	// send QUIT message to server
 	sf::Packet actionPacket;
 	actionPacket << TransferType::GAME_QUIT_GAME;
 	_client.getGameSocket().send(actionPacket);
-	_playing.store(true);
-	_listeningThread.join();
-	stackPop();
+	// internal ending
+	_playing.store(false);
+	_myTurn.store(false);
 }
 
 GameState::~GameState()
@@ -291,8 +291,8 @@ void GameState::displayBoardCreatureVector(std::vector<BoardCreatureData> cardVe
 	// This method should display these informations and be called only for displaying the board
 	for (auto i=0U; i<cardVector.size(); i++)
 	{
-		BoardCreatureData thisCreature = cardVector.at(i);
-		cardId id = cardVector.at(i).id;
+		const BoardCreatureData& thisCreature = cardVector.at(i);
+		const cardId id = thisCreature.id;
 		std::cout << i << " : " << getCardName(id) << "(cost:" << getCardCost(id) <<
 		          ", attack:" << thisCreature.attack <<
 		          ", health:" << thisCreature.health <<
@@ -337,7 +337,10 @@ void GameState::inputListening()
 		}
 		receivedPacket >> type;
 		if(type == TransferType::GAME_OVER)
+		{
 			_playing.store(false);
+			_myTurn.store(!_myTurn.load());
+		}
 		else if(type == TransferType::GAME_PLAYER_ENTER_TURN)
 			_myTurn.store(true);
 		else if(type == TransferType::GAME_PLAYER_LEAVE_TURN)
