@@ -100,7 +100,7 @@ enum class TransferType : sf::Uint32
 	PLAYER_DISCONNECTION,
 
 	/// Used when a client checks if another client is connected
-	PLAYER_CHECK_CONNECTION,
+	PLAYER_CHECK_PRESENCE,
 
 	/// Used when a client asks the list of his friends
 	PLAYER_ASKS_FRIENDS,

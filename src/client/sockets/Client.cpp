@@ -255,13 +255,13 @@ FriendsList Client::getConnectedFriends()
 	{
 		// ask the server if player is conencted
 		sf::Packet packet;
-		packet << TransferType::PLAYER_CHECK_CONNECTION << friendUser.name;
+		packet << TransferType::PLAYER_CHECK_PRESENCE << friendUser.name;
 		_socket.send(packet);
 		_socket.receive(packet);
 		TransferType type;
 		packet >> type;
-		if(type != TransferType::PLAYER_CHECK_CONNECTION)
-			continue;
+		if(type == TransferType::FAILURE)
+			throw std::runtime_error("Unable to check " + friendUser.name + " presence: not friends");
 		bool isPresent;
 		packet >> isPresent;
 		// add to vector only if friend is present
