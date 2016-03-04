@@ -10,6 +10,7 @@
 // std-C++ headers
 #include <iostream>
 #include <chrono>
+#include <cassert>
 
 constexpr std::chrono::seconds GameThread::_turnTime;
 
@@ -93,7 +94,7 @@ void GameThread::receiveDecks()
 	_player2.setDeck(_database.getDeckByName(_player2ID, player2DeckName));
 }
 
-void GameThread::startGame(const ClientInformations& player1, const ClientInformations& player2)
+userId GameThread::startGame(const ClientInformations& player1, const ClientInformations& player2)
 {
 	establishSockets(player1, player2);
 	sf::Packet packet;
@@ -101,28 +102,28 @@ void GameThread::startGame(const ClientInformations& player1, const ClientInform
 	receiveDecks();
 
 	// send the game is starting
-	packet << TransferType::GAME_STARTING << TransferType::GAME_PLAYER_ENTER_TURN;
-	_activePlayer->getSocket().send(packet);
-	packet.clear();
-	packet << TransferType::GAME_STARTING << TransferType::GAME_PLAYER_LEAVE_TURN;
-	_passivePlayer->getSocket().send(packet);
+	_activePlayer->beginGame(true);
+	_passivePlayer->beginGame(false);
 	_timerThread = std::thread(&GameThread::makeTimer, this);
 
-	runGame();
+	userId winnerId{runGame()};
 
 	packet.clear();
 	packet << TransferType::GAME_OVER;
 	// same message is sent to both players: no need to find by ID
 	_specialOutputSocketPlayer1.send(packet);
 	_specialOutputSocketPlayer2.send(packet);
+
+	return winnerId;
 }
 
-void GameThread::runGame()
+userId GameThread::runGame()
 {
 	// prepare data listening
 	sf::SocketSelector selector;
 	selector.add(_socketPlayer1);
 	selector.add(_socketPlayer2);
+	userId winner{0};
 	while(_running.load())
 	{
 		sf::Packet playerActionPacket;
@@ -130,7 +131,14 @@ void GameThread::runGame()
 			continue;
 		// Get actions from playing client
 		sf::TcpSocket& modifiedSocket{selector.isReady(_socketPlayer1) ? _socketPlayer1 : _socketPlayer2};
-		modifiedSocket.receive(playerActionPacket);
+		auto status{modifiedSocket.receive(playerActionPacket)};
+		if(status == sf::Socket::Disconnected)
+		{
+			std::cerr << "Lost connection with a player\n";
+			winner = (&modifiedSocket == &_socketPlayer1 ? _player2 : _player1).getID();
+			_running.store(false);
+			break;
+		}
 
 		// Check that only actions from the active player are handled
 		sf::TcpSocket& activePlayerSocket{_activePlayer == &_player1 ? _socketPlayer1 : _socketPlayer2};
@@ -142,6 +150,7 @@ void GameThread::runGame()
 		if(type == TransferType::GAME_QUIT_GAME)
 		{
 			std::cout << "Game is asked to end\n";
+			winner = (&modifiedSocket == &_socketPlayer1 ? _player2 : _player1).getID();
 			_running.store(false);
 		}
 		// If the action is done by the active player
@@ -176,6 +185,8 @@ void GameThread::runGame()
 			}
 		}
 	}
+	assert(winner != 0);
+	return winner;
 }
 
 void GameThread::endTurn()

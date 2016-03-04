@@ -77,6 +77,9 @@ void Player::setDeck(const Deck& newDeck)
 
 void Player::beginGame(bool isActivePlayer)
 {
+	sf::Packet packet;
+	packet << TransferType::GAME_STARTING << (isActivePlayer ? TransferType::GAME_PLAYER_ENTER_TURN : TransferType::GAME_PLAYER_LEAVE_TURN);
+	_socketToClient.send(packet);
 	_isActive.store(isActivePlayer);
 	//NETWORK: SEND ALL GAME INFORMATION TO CLIENT, ALONG WITH 'game started, it's (not)your turn' message
 }

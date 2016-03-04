@@ -175,7 +175,7 @@ void Server::receiveData()
 			removeClient(it);
 			break;
 		// Friendship management
-		case TransferType::PLAYER_CHECK_CONNECTION:
+		case TransferType::PLAYER_CHECK_PRESENCE:
 			checkPresence(it, packet);
 			break;
 		case TransferType::PLAYER_ASKS_FRIENDS:
@@ -247,7 +247,10 @@ void Server::checkPresence(const _iterator& it, sf::Packet& transmission)
 	sf::Packet packet;
 	std::string nameToCheck;
 	transmission >> nameToCheck;
-	packet << TransferType::PLAYER_CHECK_CONNECTION << (_clients.find(nameToCheck) != _clients.end());
+	if(_database.areFriend(it->second.id, _clients[nameToCheck].id))
+		packet << TransferType::ACKNOWLEDGE << (_clients.find(nameToCheck) != _clients.end());
+	else
+		packet << TransferType::FAILURE;
 	it->second.socket->send(packet);
 }
 
@@ -330,10 +333,7 @@ void Server::clearLobby(const _iterator& it)
 {
 	std::lock_guard<std::mutex> lockLobby{_lobbyMutex};
 	if(not _isAPlayerWaiting or _waitingPlayer != it->first)
-	{
 		std::cerr << "Trying to remove another player from lobby; ignored\n";
-		return;
-	}
 	else
 		_isAPlayerWaiting = false;
 	// _lobbyMutex is unlocked when lockLobby is destructed
@@ -341,8 +341,6 @@ void Server::clearLobby(const _iterator& it)
 
 void Server::startGame(std::size_t idx)
 {
-	std::cout << "StartGame(" << idx << ")\n";
-
 	// An unique lock also release the mutex at destruction (just like
 	// std::lock_guard) but we can explicitely lock and unlock it, combining
 	// the benefits of manually lock mutexes and the benefits of a scoped lock
@@ -361,7 +359,11 @@ void Server::startGame(std::size_t idx)
 	const auto& player1 = std::find_if(_clients.begin(), _clients.end(), finderById(selfThread->_player1ID));
 	const auto& player2 = std::find_if(_clients.begin(), _clients.end(), finderById(selfThread->_player2ID));
 	std::cout << "Game " << idx << " is starting: " + userToString(player1) + " vs. " + userToString(player2) + "\n";
-	selfThread->startGame(player1->second, player2->second);
+	userId winnerId{selfThread->startGame(player1->second, player2->second)};
+	// \TODO: change personnal scores
+	const auto& winner = winnerId == selfThread->_player1ID ? player1 : player2;
+	const auto& loser  = winnerId == selfThread->_player1ID ? player2 : player1;
+	std::cout << winner->first << " won and " << loser->first << " lost\n";
 }
 
 void Server::createGame(userId ID1, userId ID2)
