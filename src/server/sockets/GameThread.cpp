@@ -101,11 +101,8 @@ userId GameThread::startGame(const ClientInformations& player1, const ClientInfo
 	receiveDecks();
 
 	// send the game is starting
-	packet << TransferType::GAME_STARTING << TransferType::GAME_PLAYER_ENTER_TURN;
-	_activePlayer->getSocket().send(packet);
-	packet.clear();
-	packet << TransferType::GAME_STARTING << TransferType::GAME_PLAYER_LEAVE_TURN;
-	_passivePlayer->getSocket().send(packet);
+	_activePlayer->beginGame(true);
+	_passivePlayer->beginGame(false);
 	_timerThread = std::thread(&GameThread::makeTimer, this);
 
 	userId winnerId{runGame()};
@@ -133,7 +130,14 @@ userId GameThread::runGame()
 			continue;
 		// Get actions from playing client
 		sf::TcpSocket& modifiedSocket{selector.isReady(_socketPlayer1) ? _socketPlayer1 : _socketPlayer2};
-		modifiedSocket.receive(playerActionPacket);
+		auto status{modifiedSocket.receive(playerActionPacket)};
+		if(status == sf::Socket::Disconnected)
+		{
+			std::cerr << "Lost connection with a player\n";
+			winner = (&modifiedSocket == &_socketPlayer1 ? _player2 : _player1).getID();
+			_running.store(false);
+			break;
+		}
 
 		// Check that only actions from the active player are handled
 		// \TODO: use or remove

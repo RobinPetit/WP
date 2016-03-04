@@ -113,6 +113,7 @@ private:
 	const Card* _lastCasterCard=nullptr; ///<Last card that was used to cast an effect (his or opponent's)
 
 	// Random management
+	/// Used for uniformly distributed integer generation
 	std::default_random_engine _engine;
 
 	// Effects container
