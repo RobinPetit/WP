@@ -65,3 +65,6 @@ bin/
 # Do not commit the resources changes
 resources/
 
+# Do not track the documentation
+doxygen.cfg
+doc/
