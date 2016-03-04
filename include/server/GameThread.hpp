@@ -30,13 +30,6 @@ public:
 	/// \TODO change return value to give the result of the game
 	void startGame(const ClientInformations& player1, const ClientInformations& player2);
 
-	/// Interface for user
-	void useCard(int handIndex);
-	void attackWithCreature(int attackerIndex, int victimIndex);
-
-	/// Interface for Player and Card classes
-	void applyEffect(Card* usedCard, EffectParamsCollection effect);
-
 	/// Destructor
 	~GameThread();
 
@@ -72,14 +65,15 @@ private:
 
 	void setSocket(sf::TcpSocket& socket, sf::TcpSocket& specialSocket, const ClientInformations& player);
 
-	sf::TcpSocket& getSocketFromID(const userId ID);
-	sf::TcpSocket& getSpecialSocketFromID(const userId ID);
-
 	void makeTimer();
 	void receiveDecks();
 
 	void createPlayers();
 	void endTurn();
+
+	void useCard(int cardIndex);
+	void attackWithCreature(int attackerIndex, int victimIndex);
+	void applyEffect(Card* usedCard, EffectParamsCollection effectArgs);
 };
 
 ///////// template code
