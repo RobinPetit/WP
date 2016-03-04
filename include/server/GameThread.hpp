@@ -81,8 +81,8 @@ GameThread::GameThread(ServerDatabase& database, userId player1ID, userId player
 	_player1ID(player1ID),
 	_player2ID(player2ID),
 	_running(true),
-	_player1(_player1ID, _socketPlayer1, _specialOutputSocketPlayer1),
-	_player2(_player2ID, _socketPlayer2, _specialOutputSocketPlayer2),
+	_player1(*this, _player1ID, _socketPlayer1, _specialOutputSocketPlayer1),
+	_player2(*this, _player2ID, _socketPlayer2, _specialOutputSocketPlayer2),
 	_database(database),
 	_turn(0),
 	_turnCanEnd(false)
