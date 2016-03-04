@@ -31,8 +31,8 @@ void GameThread::createPlayers()
 {
 	_activePlayer = &_player1;
 	_passivePlayer = &_player2;
-	std::default_random_engine engine;
-	if(std::bernoulli_distribution(0.5)(engine))
+	std::random_device device;
+	if(std::bernoulli_distribution(0.5)(device))
 		std::swap(_activePlayer, _passivePlayer);
 	_activePlayer->setOpponent(_passivePlayer);
 	_passivePlayer->setOpponent(_activePlayer);
