@@ -7,6 +7,7 @@
 #include <array>
 #include <functional>
 #include <cstddef>
+#include <atomic>
 // WizardPoker headers
 #include "server/Card.hpp"
 #include "server/Spell.hpp"
@@ -33,27 +34,35 @@ public:
 	/// Destructor.
 	~Player() = default;
 
-	/// Interface for basic gameplay (board)
-	void beginGame(bool isActivePlayer);
-	void enterTurn(int turn);
-	void leaveTurn();
+	/// Interface for basic gameplay
+	void beginGame(bool isActivePlayer);	//The game has begun
+	void enterTurn(int turn);				//The player's turn has started
+	void leaveTurn();						//The player's turn has ended
+	void finishGame(bool hasWon, std::string endMessage); //The game has ended because of some reason
+
+	/// Interface for client input
+	//TODO: check for each function if Player is the active player, and lock changes to _isActive until end of function
 	void useCard(int handIndex); 	///< Use a card
 	void attackWithCreature(int boardIndex, int victim);  ///< Attack victim (-1 for opponent) with a card
-	void endGame(); //TODO: define behavior and call for opponent when quitting
+	void endTurn(); //TODO; define behavior
+	void quitGame(); //TODO: define behavior and call _opponent->quitGame();
 
 	/// Interface for applying effects
-	//to Player
-	void applyEffect(const Card* usedCard, EffectParamsCollection effectArgs);
-	//to a Creature
+	void applyEffect(Card* usedCard, EffectParamsCollection effect);
+	//to itself
+	void applyEffectToSelf(const Card* usedCard, EffectParamsCollection effectArgs);
+	//to one of its Creatures
 	void applyEffectToCreature(Creature* casterAndSubject, EffectParamsCollection effectArgs); //With ref. to creature
 	void applyEffectToCreature(const Card* usedCard, EffectParamsCollection effectArgs, std::vector<int> boardIndexes); //With creature index
-	//to all Creatures
+	//to all of its Creatures
 	void applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollection effectArgs);
 
 	/// Getters
 	int getCreatureConstraint(const Creature& subject, int constraintIDD);
 	const Card* getLastCaster();
 	userId getID();
+	sf::TcpSocket& getSocket();
+	sf::TcpSocket& getSpecialSocket();
 	const std::vector<Creature *>& getBoard();
 
 	/// Setters
@@ -80,6 +89,7 @@ private:
 	GameThread* _board;
 	Player* _opponent = nullptr;
 	userId _id;
+	std::atomic_bool _isActive;
 
 	//Client communication
 	sf::TcpSocket& _socketToClient;
@@ -99,7 +109,7 @@ private:
 	std::stack<Card *> _cardDeck;  ///< Cards that are in the deck (not usable yet)
 	std::vector<Card *> _cardHand;  ///< Cards that are in the player's hand (usable)
 	std::vector<Creature *> _cardBoard;  ///< Cards that are on the board (usable for attacks)
-	std::vector<Card *> _cardBin;  ///< Cards that are discarded (dead creatures, used spells)
+	std::vector<Card *> _cardGraveyard;  ///< Cards that are discarded (dead creatures, used spells)
 	const Card* _lastCasterCard=nullptr; ///<Last card that was used to cast an effect (his or opponent's)
 
 	// Random management
@@ -112,7 +122,7 @@ private:
 	void setConstraint(const EffectParamsCollection& args);
 	void pickDeckCards(const EffectParamsCollection& args);
 	void loseHandCards(const EffectParamsCollection& args);
-	void reviveBinCard(const EffectParamsCollection& args);
+	void reviveGraveyardCard(const EffectParamsCollection& args);
 	void stealHandCard(const EffectParamsCollection& args);
 	void exchgHandCard(const EffectParamsCollection& args);
 	void resetEnergy(const EffectParamsCollection& args);
@@ -125,9 +135,9 @@ private:
 
 	void cardDeckToHand(int amount);
 	void cardHandToBoard(int handIndex);
-	void cardHandToBin(int handIndex);  ///< Move the card at handIndex from the player's hand to the bin
-	void cardBoardToBin(int boardIndex);  ///< Move the card at boardIndex from the board to the bin
-	void cardBinToHand(int binIndex);
+	void cardHandToGraveyard(int handIndex);  ///< Move the card at handIndex from the player's hand to the bin
+	void cardBoardToGraveyard(int boardIndex);  ///< Move the card at boardIndex from the board to the bin
+	void cardGraveyardToHand(int binIndex);
 	void cardAddToHand(Card* given);
 	Card* cardRemoveFromHand();
 	Card* cardExchangeFromHand(Card* given);
