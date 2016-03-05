@@ -28,24 +28,25 @@ class Player
 {
 public:
 	/// Constructor
-	Player(GameThread& gameThread, userId id, sf::TcpSocket& socket, sf::TcpSocket& specialSocket);
+	Player(GameThread& gameThread, ServerDatabase& database, userId id);
 	void setOpponent(Player* opponent);  // Complementary
 
 	/// Destructor.
 	~Player() = default;
 
 	/// Interface for basic gameplay
+	void receiveDeck();
 	void beginGame(bool isActivePlayer);	//The game has begun
 	void enterTurn(int turn);				//The player's turn has started
 	void leaveTurn();						//The player's turn has ended
 	void finishGame(bool hasWon, std::string endMessage); //The game has ended because of some reason
 
-	/// Interface for client input
-	//TODO: check for each function if Player is the active player, and lock changes to _isActive until end of function
-	void useCard(int handIndex); 	///< Use a card
-	void attackWithCreature(int boardIndex, int victim);  ///< Attack victim (-1 for opponent) with a card
-	void endTurn(); //TODO; define behavior
-	void quitGame(); //TODO: define behavior and call _opponent->quitGame();
+	// Interface for client input
+
+	/// Tries to receive an input from the client, executes the corresponding
+	/// action.
+	/// \return the status of the socket after the receiving
+	sf::Status tryReceiveClientInput();
 
 	/// Interface for applying effects
 	void applyEffect(Card* usedCard, EffectParamsCollection effect);
@@ -62,13 +63,8 @@ public:
 	const Card* getLastCaster();
 	userId getID();
 	sf::TcpSocket& getSocket();
-	sf::TcpSocket& getSpecialSocket();
 	const std::vector<Creature *>& getBoard();
 
-	/// Setters
-	void setDeck(const Deck& newDeck);
-
-	///
 	/// \return a vector of indices selected
 	/// \param selection a vector of values telling whether the choice must be in player's cards or opponent's cards
 	std::vector<int>&& getRandomBoardIndexes(const std::vector<CardToSelect>& selection);
@@ -87,13 +83,13 @@ private:
 
 	/// Attributes
 	GameThread& _gameThread;
+	ServerDatabase& _database;
 	Player* _opponent = nullptr;
 	userId _id;
 	std::atomic_bool _isActive;
 
 	//Client communication
-	sf::TcpSocket& _socketToClient;
-	sf::TcpSocket& _specialSocketToClient;
+	sf::TcpSocket _socketToClient;
 
 	// Gameplay
 	int _energy, _energyInit = 0, _health;
@@ -119,6 +115,14 @@ private:
 	// Effects container
 	static std::function<void(Player&, const EffectParamsCollection&)> _effectMethods[P_EFFECTS_COUNT];
 
+
+	/// User actions
+	//TODO: check for each function if Player is the active player, and lock changes to _isActive until end of function
+	void useCard(int handIndex); 	///< Use a card
+	void attackWithCreature(int boardIndex, int victim);  ///< Attack victim (-1 for opponent) with a card
+	void endTurn(); //TODO; define behavior
+	void quitGame(); //TODO: define behavior and call _opponent->quitGame();
+
 	/// Effects (private)
 	void setConstraint(const EffectParamsCollection& args);
 	void pickDeckCards(const EffectParamsCollection& args);
@@ -133,6 +137,7 @@ private:
 	/// Other private methods
 	void exploitCardEffects(Card* usedCard);
 	void setTeamConstraint(const Card* usedCard, const EffectParamsCollection& effectArgs);
+	void setDeck(const Deck& newDeck);
 
 	void cardDeckToHand(int amount);
 	void cardHandToBoard(int handIndex);

@@ -40,8 +40,6 @@ public:
 private:
 	//////////// Attributes
 	std::atomic_bool _running;
-	sf::TcpSocket _socketPlayer1;
-	sf::TcpSocket _socketPlayer2;
 	sf::TcpSocket _specialOutputSocketPlayer1;
 	sf::TcpSocket _specialOutputSocketPlayer2;
 	Player _player1;
@@ -63,7 +61,6 @@ private:
 	void setSocket(sf::TcpSocket& socket, sf::TcpSocket& specialSocket, const ClientInformations& player);
 
 	void makeTimer();
-	void receiveDecks();
 
 	void createPlayers();
 	void endTurn();
@@ -81,8 +78,8 @@ GameThread::GameThread(ServerDatabase& database, userId player1ID, userId player
 	_player1ID(player1ID),
 	_player2ID(player2ID),
 	_running(true),
-	_player1(*this, _player1ID, _socketPlayer1, _specialOutputSocketPlayer1),
-	_player2(*this, _player2ID, _socketPlayer2, _specialOutputSocketPlayer2),
+	_player1(*this, database, _player1ID),
+	_player2(*this, database, _player2ID),
 	_database(database),
 	_turn(0),
 	_turnCanEnd(false)

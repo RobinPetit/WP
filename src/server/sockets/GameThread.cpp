@@ -19,8 +19,8 @@ GameThread::GameThread(ServerDatabase& database, userId player1ID, userId player
 	_player1ID(player1ID),
 	_player2ID(player2ID),
 	_running(false),
-	_player1(*this, _player1ID, _socketPlayer1, _specialOutputSocketPlayer1),
-	_player2(*this, _player2ID, _socketPlayer2, _specialOutputSocketPlayer2),
+	_player1(*this, database, _player1ID),
+	_player2(*this, database, _player2ID),
 	_database(database),
 	_turn(0),
 	_turnCanEnd(false)
@@ -49,8 +49,8 @@ void GameThread::interruptGame()
 
 void GameThread::establishSockets(const ClientInformations& player1, const ClientInformations& player2)
 {
-	setSocket(_socketPlayer1, _specialOutputSocketPlayer1, player1);
-	setSocket(_socketPlayer2, _specialOutputSocketPlayer2, player2);
+	setSocket(_player1.getSocket(), _specialOutputSocketPlayer1, player1);
+	setSocket(_player2.getSocket(), _specialOutputSocketPlayer2, player2);
 }
 
 void GameThread::setSocket(sf::TcpSocket& socket, sf::TcpSocket& specialSocket, const ClientInformations& player)
@@ -71,35 +71,13 @@ void GameThread::setSocket(sf::TcpSocket& socket, sf::TcpSocket& specialSocket, 
 		std::cerr << "Error while creating game thread special socket\n";
 }
 
-void GameThread::receiveDecks()
-{
-	std::cout << "waiting for decks\n";
-	sf::Packet deckPacket;
-	TransferType type;
-	std::string player1DeckName, player2DeckName;
-
-	_socketPlayer1.receive(deckPacket);
-	deckPacket >> type;
-	if(type != TransferType::GAME_PLAYER_GIVE_DECK_NAMES)
-		throw std::runtime_error("Unable to get player 1's deck");
-	deckPacket >> player1DeckName;
-
-	_socketPlayer2.receive(deckPacket);
-	deckPacket >> type;
-	if(type != TransferType::GAME_PLAYER_GIVE_DECK_NAMES)
-		throw std::runtime_error("Unable to get player 2's deck");
-	deckPacket >> player2DeckName;
-
-	_player1.setDeck(_database.getDeckByName(_player1ID, player1DeckName));
-	_player2.setDeck(_database.getDeckByName(_player2ID, player2DeckName));
-}
-
 userId GameThread::startGame(const ClientInformations& player1, const ClientInformations& player2)
 {
 	establishSockets(player1, player2);
 	sf::Packet packet;
-	// get players decks
-	receiveDecks();
+	std::cout << "waiting for decks\n";
+	player1.receiveDeck();
+	player2.receiveDeck();
 
 	// send the game is starting
 	_activePlayer->beginGame(true);
@@ -126,62 +104,27 @@ userId GameThread::runGame()
 	userId winner{0};
 	while(_running.load())
 	{
-		sf::Packet playerActionPacket;
-		if(!selector.wait(sf::milliseconds(50)))
-			continue;
-		// Get actions from playing client
-		sf::TcpSocket& modifiedSocket{selector.isReady(_socketPlayer1) ? _socketPlayer1 : _socketPlayer2};
-		auto status{modifiedSocket.receive(playerActionPacket)};
-		if(status == sf::Socket::Disconnected)
+		for(auto player : {_activePlayer, _passivePlayer})
 		{
-			std::cerr << "Lost connection with a player\n";
-			winner = (&modifiedSocket == &_socketPlayer1 ? _player2 : _player1).getID();
-			_running.store(false);
-			break;
-		}
-
-		// Check that only actions from the active player are handled
-		sf::TcpSocket& activePlayerSocket{_activePlayer == &_player1 ? _socketPlayer1 : _socketPlayer2};
-
-		TransferType type;
-		playerActionPacket >> type;
-		// The GAME_GUIT_GAME action can be send also by passive player, so we
-		// must handle it separately
-		if(type == TransferType::GAME_QUIT_GAME)
-		{
-			std::cout << "Game is asked to end\n";
-			winner = (&modifiedSocket == &_socketPlayer1 ? _player2 : _player1).getID();
-			_running.store(false);
-		}
-		// If the action is done by the active player
-		else if(&modifiedSocket == &activePlayerSocket)
-		{
-			switch(type)
+			auto status{player->tryReceiveClientInput()};
+			if(status == sf::Socket::Disconnected)
 			{
-				case TransferType::GAME_PLAYER_LEAVE_TURN:
-					_turnSwap.store(true);
-					break;
-
-				case TransferType::GAME_USE_CARD:
-				{
-					sf::Int32 cardIndex;
-					playerActionPacket >> cardIndex;
-					useCard(static_cast<int>(cardIndex));
-					break;
-				}
-
-				case TransferType::GAME_ATTACK_WITH_CREATURE:
-				{
-					sf::Int32 attackerIndex, victimIndex;
-					playerActionPacket >> attackerIndex >> victimIndex;
-					attackWithCreature(static_cast<int>(attackerIndex), static_cast<int>(victimIndex));
-					break;
-				}
-
-				default:
-					std::cout << "GameThread::runGame error: wrong packet header, "
-					             "expected user in-game action header.\n";
-					break;
+				std::cerr << "Lost connection with a player\n";
+				winner = player->getID();
+				_running.store(false);
+				break;
+			}
+			// The player received some valid input from the client
+			else if(status == sf::Socket::Done)
+			{
+				// TODO: the Player instance should notify when the client
+				// asked to end the game, and here we should check if we
+				// get notified
+				/*
+				std::cout << "Game is asked to end\n";
+				winner = (&modifiedSocket == &_socketPlayer1 ? _player2 : _player1).getID();
+				_running.store(false);
+				*/
 			}
 		}
 	}
@@ -195,18 +138,6 @@ void GameThread::endTurn()
 	_activePlayer->leaveTurn();
 	std::swap(_activePlayer, _passivePlayer);  // swap active and inactive
 	_activePlayer->enterTurn(_turn/2 +1);  // ALWAYS call active player
-}
-
-void GameThread::useCard(int handIndex)
-{
-	//pass along to active player
-	_activePlayer->useCard(handIndex);
-}
-
-void GameThread::attackWithCreature(int attackerIndex, int victimIndex)
-{
-	//pass along to active player
-	_activePlayer->attackWithCreature(attackerIndex, victimIndex);
 }
 
 /*------------------------------ PLAYER AND CARD INTERFACE */

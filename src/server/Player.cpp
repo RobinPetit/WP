@@ -26,14 +26,19 @@ std::function<void(Player&, const EffectParamsCollection&)> Player::_effectMetho
 	&Player::changeHealth,
 };
 
-Player::Player(GameThread& gameThread, userId id, sf::TcpSocket& socket, sf::TcpSocket& specialSocket):
+Player::Player(GameThread& gameThread, ServerDatabase& database, userId id):
 	_gameThread(gameThread),
+	_database(database),
 	_id(id),
-	_socketToClient(socket),
-	_specialSocketToClient(specialSocket),
 	_isActive(false)
 {
 	//NETWORK: GREETINGS_USER
+
+	// Input sockets are non-blocking, this is easier since the sockets of the
+	// two players are separated in the Player instances. So that as soon as a
+	// packet is received, the packet is handled, rather than waiting that the
+	// other Player instance receives a packet from the other client.
+	_socket.setBlocking(false);
 }
 
 void Player::setOpponent(Player* opponent)
@@ -73,6 +78,21 @@ void Player::setDeck(const Deck& newDeck)
 	std::shuffle(loadedCards.begin(), loadedCards.end(), _engine);
 	for (auto i{0U}; i<Deck::size; i++)
 		_cardDeck.push(loadedCards.at(i));
+}
+
+void Player::receiveDeck()
+{
+	sf::Packet deckPacket;
+	TransferType type;
+	std::string deckName;
+
+	_socketToClient.receive(deckPacket);
+	deckPacket >> type;
+	if(type != TransferType::GAME_PLAYER_GIVE_DECK_NAMES)
+		throw std::runtime_error("Unable to get player " + std::to_string(getID()) + " deck");
+	deckPacket >> deckName;
+
+	setDeck(_database.getDeckByName(getID(), deckName));
 }
 
 void Player::beginGame(bool isActivePlayer)
@@ -139,6 +159,51 @@ void Player::finishGame(bool hasWon, std::string endMessage)
 
 
 /*------------------------------ CLIENT INTERFACE */
+sf::Status Player::tryReceiveClientInput()
+{
+	sf::Packet playerActionPacket;
+	const sf::Status status{_socketToClient.receive(playerActionPacket)};
+	// If no data was received
+	if(status != sf::Socket::Done)
+		return status;
+
+	TransferType type;
+	playerActionPacket >> type;
+	if(type == TransferType::GAME_QUIT_GAME)
+		quitGame()
+	// Be sure this is the active player that sent input
+	else if(_isActive.load())
+	{
+		switch(type)
+		{
+			case TransferType::GAME_PLAYER_LEAVE_TURN:
+				endTurn();
+				break;
+
+			case TransferType::GAME_USE_CARD:
+			{
+				sf::Int32 cardIndex;
+				playerActionPacket >> cardIndex;
+				useCard(static_cast<int>(cardIndex));
+				break;
+			}
+
+			case TransferType::GAME_ATTACK_WITH_CREATURE:
+			{
+				sf::Int32 attackerIndex, victimIndex;
+				playerActionPacket >> attackerIndex >> victimIndex;
+				attackWithCreature(static_cast<int>(attackerIndex), static_cast<int>(victimIndex));
+				break;
+			}
+
+			default:
+				std::cout << "Player::tryReceiveClientInput error: wrong packet header, "
+							 "expected in-game action header.\n";
+				break;
+		}
+	}
+}
+
 /// \network sends to client one of the following:
 ///	 + SERVER_ACKNOWLEDGEMENT if the card was successfully used
 ///	 + GAME_CARD_LIMIT_TURN_REACHED if the user cannot play cards for this turn
@@ -375,11 +440,6 @@ const Card* Player::getLastCaster()
 sf::TcpSocket& Player::getSocket()
 {
     return _socketToClient;
-}
-
-sf::TcpSocket& Player::getSpecialSocket()
-{
-	return _specialSocketToClient;
 }
 
 /*------------------------------ EFFECTS (PRIVATE) */
