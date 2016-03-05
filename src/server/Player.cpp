@@ -38,7 +38,7 @@ Player::Player(GameThread& gameThread, ServerDatabase& database, userId id):
 	// two players are separated in the Player instances. So that as soon as a
 	// packet is received, the packet is handled, rather than waiting that the
 	// other Player instance receives a packet from the other client.
-	_socket.setBlocking(false);
+	_socketToClient.setBlocking(false);
 }
 
 void Player::setOpponent(Player* opponent)
@@ -54,6 +54,19 @@ userId Player::getID()
 const std::vector<Creature *>& Player::getBoard()
 {
 	return _cardBoard;
+}
+
+
+bool Player::thereAreBoardChanges()
+{
+	return _pendingBoardChanges.getDataSize() > 0;
+}
+
+sf::Packet Player::getBoardChanges()
+{
+	sf::Packet res{_pendingBoardChanges};
+	_pendingBoardChanges.clear();
+	return res;
 }
 
 void Player::setDeck(const Deck& newDeck)
@@ -159,10 +172,10 @@ void Player::finishGame(bool hasWon, std::string endMessage)
 
 
 /*------------------------------ CLIENT INTERFACE */
-sf::Status Player::tryReceiveClientInput()
+sf::Socket::Status Player::tryReceiveClientInput()
 {
 	sf::Packet playerActionPacket;
-	const sf::Status status{_socketToClient.receive(playerActionPacket)};
+	const sf::Socket::Status status{_socketToClient.receive(playerActionPacket)};
 	// If no data was received
 	if(status != sf::Socket::Done)
 		return status;
@@ -170,7 +183,7 @@ sf::Status Player::tryReceiveClientInput()
 	TransferType type;
 	playerActionPacket >> type;
 	if(type == TransferType::GAME_QUIT_GAME)
-		quitGame()
+		quitGame();
 	// Be sure this is the active player that sent input
 	else if(_isActive.load())
 	{
@@ -202,6 +215,7 @@ sf::Status Player::tryReceiveClientInput()
 				break;
 		}
 	}
+	return status;
 }
 
 /// \network sends to client one of the following:
@@ -216,7 +230,7 @@ void Player::useCard(int handIndex)
 	}
 	catch (std::out_of_range)
 	{
-		sendValueToClient(_socketToClient, TransferType::FAILURE);
+		sendValueToClient(TransferType::FAILURE);
 		return;
 	}
 
@@ -224,14 +238,14 @@ void Player::useCard(int handIndex)
 	//Check if we have enough energy to use this card
 	if (usedCard->getEnergyCost() > _energy)
 	{
-		sendValueToClient(_socketToClient, TransferType::GAME_NOT_ENOUGH_ENERGY);
+		sendValueToClient(TransferType::GAME_NOT_ENOUGH_ENERGY);
 		return;
 	}
 
 	//Check if we have the right to put more cards (constraint)
 	if (_constraints.getConstraint(PC_TEMP_CARD_USE_LIMIT) == _turnData.cardsUsed)
 	{
-		sendValueToClient(_socketToClient, TransferType::GAME_CARD_LIMIT_TURN_REACHED);
+		sendValueToClient(TransferType::GAME_CARD_LIMIT_TURN_REACHED);
 		return;
 	}
 
@@ -284,7 +298,7 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 	}
 	catch (std::out_of_range)
 	{
-		sendValueToClient(_socketToClient, TransferType::FAILURE);
+		sendValueToClient(TransferType::FAILURE);
 		return;
 	}
 
@@ -292,7 +306,7 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 	Creature* attacker = _cardBoard.at(attackerIndex);
 	if (attacker->getEnergyCost() > _energy)
 	{
-		sendValueToClient(_socketToClient, TransferType::GAME_NOT_ENOUGH_ENERGY);
+		sendValueToClient(TransferType::GAME_NOT_ENOUGH_ENERGY);
 		return;
 	}
 	_energy -= attacker->getEnergyCost();
@@ -583,7 +597,7 @@ void Player::resetEnergy(const EffectParamsCollection& args)
 		_energyInit=_maxEnergy;
 
 	_energy = _energyInit;
-	sendCurrentEnergy();
+	logCurrentEnergy();
 }
 
 void Player::changeEnergy(const EffectParamsCollection& args)
@@ -603,7 +617,7 @@ void Player::changeEnergy(const EffectParamsCollection& args)
 		_energy=0;
 	else if (_energy>_maxEnergy)
 		_energy=_maxEnergy;
-	sendCurrentEnergy();
+	logCurrentEnergy();
 }
 
 void Player::changeHealth(const EffectParamsCollection& args)
@@ -630,26 +644,22 @@ void Player::changeHealth(const EffectParamsCollection& args)
 	}
 	else if (_health>_maxHealth) _health=_maxHealth;
 
-	sendCurrentHealth();
+	logCurrentHealth();
 }
 
 
 /////////
 
-void Player::sendCurrentEnergy()
+void Player::logCurrentEnergy()
 {
-	sf::Packet packet;
 	// cast to be sure that the right amount of bits is sent and received
-	packet << TransferType::GAME_PLAYER_ENERGY_UPDATED << static_cast<sf::Uint32>(_energy);
-	_specialSocketToClient.send(packet);
+	_pendingBoardChanges << TransferType::GAME_PLAYER_ENERGY_UPDATED << static_cast<sf::Uint32>(_energy);
 }
 
-void Player::sendCurrentHealth()
+void Player::logCurrentHealth()
 {
-	sf::Packet packet;
 	// cast to be sure that the right amount of bits is sent and received
-	packet << TransferType::GAME_PLAYER_HEALTH_UPDATED << static_cast<sf::Uint32>(_health);
-	_specialSocketToClient.send(packet);
+	_pendingBoardChanges << TransferType::GAME_PLAYER_HEALTH_UPDATED << static_cast<sf::Uint32>(_health);
 }
 
 /*--------------------------- PRIVATE */
@@ -702,7 +712,7 @@ void Player::cardDeckToHand(int amount)
 		_cardHand.push_back(_cardDeck.top());
 		_cardDeck.pop();
 	}
-	sendHandState();
+	logHandState();
 }
 
 void Player::cardHandToBoard(int handIndex)
@@ -711,8 +721,8 @@ void Player::cardHandToBoard(int handIndex)
 	_cardBoard.push_back(dynamic_cast<Creature*>(_cardHand.at(handIndex)));
 	_cardBoard.back()->movedToBoard();
 	_cardHand.erase(handIt);
-	sendHandState();
-	sendBoardState();
+	logHandState();
+	logBoardState();
 }
 
 void Player::cardHandToGraveyard(int handIndex)
@@ -720,8 +730,8 @@ void Player::cardHandToGraveyard(int handIndex)
 	const auto& handIt = std::find(_cardHand.begin(), _cardHand.end(), _cardHand[handIndex]);
 	_cardGraveyard.push_back(_cardHand.at(handIndex));
 	_cardHand.erase(handIt);
-	sendHandState();
-	sendGraveyardState();
+	logHandState();
+	logGraveyardState();
 }
 
 void Player::cardBoardToGraveyard(int boardIndex)
@@ -730,8 +740,8 @@ void Player::cardBoardToGraveyard(int boardIndex)
 	_cardBoard.at(boardIndex)->removedFromBoard();
 	_cardGraveyard.push_back(_cardBoard.at(boardIndex));
 	_cardBoard.erase(boardIt);
-	sendBoardState();
-	sendGraveyardState();
+	logBoardState();
+	logGraveyardState();
 }
 
 void Player::cardGraveyardToHand(int binIndex)
@@ -739,14 +749,14 @@ void Player::cardGraveyardToHand(int binIndex)
 	const auto& binIt = std::find(_cardGraveyard.begin(), _cardGraveyard.end(), _cardGraveyard[binIndex]);
 	_cardHand.push_back(_cardGraveyard.at(binIndex));
 	_cardGraveyard.erase(binIt);
-	sendGraveyardState();
-	sendHandState();
+	logGraveyardState();
+	logHandState();
 }
 
 void Player::cardAddToHand(Card* givenCard)
 {
 	_cardHand.push_back(givenCard);
-	sendHandState();
+	logHandState();
 }
 
 Card* Player::cardRemoveFromHand()
@@ -757,7 +767,7 @@ Card* Player::cardRemoveFromHand()
 	Card* stolenCard = _cardHand[handIndex];
 	const auto& handIt = std::find(_cardHand.begin(), _cardHand.end(), _cardHand[handIndex]);
 	_cardHand.erase(handIt);
-	sendHandState();
+	logHandState();
 	return stolenCard;
 }
 
@@ -773,46 +783,43 @@ Card* Player::cardExchangeFromHand(Card* givenCard, int handIndex)
 		return nullptr;
 	Card* stolen = _cardHand[handIndex];
 	_cardHand.at(handIndex) = givenCard;
-	sendHandState();
+	logHandState();
 	return stolen;
 }
 
-void Player::sendHandState()
+void Player::logHandState()
 {
-	sendCardDataFromVector(TransferType::GAME_HAND_UPDATED, _cardHand);
+	logCardDataFromVector(TransferType::GAME_HAND_UPDATED, _cardHand);
 }
 
-void Player::sendBoardState()
+void Player::logBoardState()
 {
-	sendBoardCreatureDataFromVector(TransferType::GAME_BOARD_UPDATED, _cardBoard);
+	logBoardCreatureDataFromVector(TransferType::GAME_BOARD_UPDATED, _cardBoard);
 }
 
-void Player::sendOpponentBoardState()
+void Player::logOpponentBoardState()
 {
-	sendBoardCreatureDataFromVector(TransferType::GAME_OPPONENT_BOARD_UPDATED, _opponent->getBoard());
+	logBoardCreatureDataFromVector(TransferType::GAME_OPPONENT_BOARD_UPDATED, _opponent->getBoard());
 }
 
-void Player::sendGraveyardState()
+void Player::logGraveyardState()
 {
-	sendCardDataFromVector(TransferType::GAME_GRAVEYARD_UPDATED, _cardGraveyard);
+	logCardDataFromVector(TransferType::GAME_GRAVEYARD_UPDATED, _cardGraveyard);
 }
 
 // use a template to handle both Card and Creature pointers
 template <typename CardType>
-void Player::sendIDsFromVector(TransferType type, const std::vector<CardType *>& vect)
+void Player::logIdsFromVector(TransferType type, const std::vector<CardType *>& vect)
 {
-	sf::Packet packet;
-	packet << type;
+	_pendingBoardChanges << type;
 	std::vector<sf::Uint32> cardIds{static_cast<sf::Uint32>(vect.size())};
 	for(typename std::vector<CardType *>::size_type i{0}; i < vect.size(); ++i)
 		cardIds[i] = vect[i]->getID();
-	packet << cardIds;
-	_specialSocketToClient.send(packet);
+	_pendingBoardChanges << cardIds;
 }
 
-void Player::sendCardDataFromVector(TransferType /* type */, const std::vector<Card*>& vect)
+void Player::logCardDataFromVector(TransferType /* type */, const std::vector<Card*>& vect)
 {
-	sf::Packet packet;
 	std::vector<CardData> cards;
 	for(auto i=0U; i < vect.size(); ++i)
 	{
@@ -820,13 +827,11 @@ void Player::sendCardDataFromVector(TransferType /* type */, const std::vector<C
 		data.id = vect.at(i)->getID();
 		cards.push_back(data);
 	}
-	packet << cards;
-	_specialSocketToClient.send(packet);
+	_pendingBoardChanges << cards;
 }
 
-void Player::sendBoardCreatureDataFromVector(TransferType /* type */, const std::vector<Creature*>& vect)
+void Player::logBoardCreatureDataFromVector(TransferType /* type */, const std::vector<Creature*>& vect)
 {
-	sf::Packet packet;
 	std::vector<BoardCreatureData> boardCreatures;
 	for (auto i=0U; i<vect.size(); i++)
 	{
@@ -854,18 +859,10 @@ void Player::sendBoardCreatureDataFromVector(TransferType /* type */, const std:
 		boardCreatures.push_back(data);
 	}
 	// std::vector transmission in packet is defined in common/sockets/PacketOverload.hpp
-	packet << boardCreatures;
-	_specialSocketToClient.send(packet);
+	_pendingBoardChanges << boardCreatures;
 }
 
 //////////
-
-void Player::sendValueToClient(sf::TcpSocket& socket, TransferType value)
-{
-	sf::Packet packet;
-	packet << value;
-	socket.send(packet);
-}
 
 // TODO: handle the case where the user doesn't give and his turn finishes
 std::vector<int>&& Player::askUserToSelectCards(const std::vector<CardToSelect>& selection)
@@ -901,4 +898,11 @@ std::vector<int>&& Player::getRandomBoardIndexes(const std::vector<CardToSelect>
 		}
 	}
 	return std::move(indices);
+}
+
+void Player::sendValueToClient(TransferType transferType)
+{
+	sf::Packet packet;
+	packet << transferType;
+	_socketToClient.send(packet);
 }

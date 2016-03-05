@@ -76,8 +76,8 @@ userId GameThread::startGame(const ClientInformations& player1, const ClientInfo
 	establishSockets(player1, player2);
 	sf::Packet packet;
 	std::cout << "waiting for decks\n";
-	player1.receiveDeck();
-	player2.receiveDeck();
+	_player1.receiveDeck();
+	_player2.receiveDeck();
 
 	// send the game is starting
 	_activePlayer->beginGame(true);
@@ -97,15 +97,13 @@ userId GameThread::startGame(const ClientInformations& player1, const ClientInfo
 
 userId GameThread::runGame()
 {
-	// prepare data listening
-	sf::SocketSelector selector;
-	selector.add(_socketPlayer1);
-	selector.add(_socketPlayer2);
 	userId winner{0};
 	while(_running.load())
 	{
 		for(auto player : {_activePlayer, _passivePlayer})
 		{
+			sf::TcpSocket& specialSocket{player == &_player1 ? _specialOutputSocketPlayer1 : _specialOutputSocketPlayer2};
+
 			auto status{player->tryReceiveClientInput()};
 			if(status == sf::Socket::Disconnected)
 			{
@@ -117,6 +115,13 @@ userId GameThread::runGame()
 			// The player received some valid input from the client
 			else if(status == sf::Socket::Done)
 			{
+				// Send the changes to the client
+				if(player->thereAreBoardChanges())
+				{
+					sf::Packet boardChanges{player->getBoardChanges()};
+					specialSocket.send(boardChanges);
+				}
+
 				// TODO: the Player instance should notify when the client
 				// asked to end the game, and here we should check if we
 				// get notified
@@ -212,13 +217,16 @@ void GameThread::makeTimer()
 		if(!_turnSwap.load() && std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - startOfTurnTime) < _turnTime)
 			continue;
 		// send to both players their turn swapped
+		// MAYBE TODO: store and maintain two pointers, _activeSpecialSocket and _passiveSpecialSocket as attributes
+		sf::TcpSocket& activeSpecialSocket{_activePlayer == &_player1 ? _specialOutputSocketPlayer1 : _specialOutputSocketPlayer2};
 		sf::Packet endOfTurn;
 		endOfTurn << TransferType::GAME_PLAYER_LEAVE_TURN;
-		_activePlayer->getSpecialSocket().send(endOfTurn);
+		activeSpecialSocket.send(endOfTurn);
 
+		sf::TcpSocket& passiveSpecialSocket{_activePlayer == &_player1 ? _specialOutputSocketPlayer1 : _specialOutputSocketPlayer2};
 		sf::Packet startOfTurn;
 		startOfTurn << TransferType::GAME_PLAYER_ENTER_TURN;
-		_passivePlayer->getSpecialSocket().send(startOfTurn);
+		passiveSpecialSocket.send(startOfTurn);
 
 		endTurn();
 		startOfTurnTime = std::chrono::high_resolution_clock::now();

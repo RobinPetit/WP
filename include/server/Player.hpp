@@ -12,6 +12,7 @@
 #include "server/Card.hpp"
 #include "server/Spell.hpp"
 #include "server/Constraints.hpp"
+#include "server/ServerDatabase.hpp"
 #include "common/CardData.hpp"
 #include "common/GameData.hpp"
 #include "common/Identifiers.hpp"  // userId
@@ -46,7 +47,7 @@ public:
 	/// Tries to receive an input from the client, executes the corresponding
 	/// action.
 	/// \return the status of the socket after the receiving
-	sf::Status tryReceiveClientInput();
+	sf::Socket::Status tryReceiveClientInput();
 
 	/// Interface for applying effects
 	void applyEffect(Card* usedCard, EffectParamsCollection effect);
@@ -64,6 +65,16 @@ public:
 	userId getID();
 	sf::TcpSocket& getSocket();
 	const std::vector<Creature *>& getBoard();
+
+	/// \return true if some changes has been logged since the last player's
+	/// action, false otherwise.
+	bool thereAreBoardChanges();
+
+	/// This method clear the pending board changes and return them.
+	/// \return the changes that occured on the board if therAreBoardChanges(),
+	/// an empty sf::Packet otherwise.
+	/// \post !thereAreBoardChanges();
+	sf::Packet getBoardChanges();
 
 	/// \return a vector of indices selected
 	/// \param selection a vector of values telling whether the choice must be in player's cards or opponent's cards
@@ -90,6 +101,7 @@ private:
 
 	//Client communication
 	sf::TcpSocket _socketToClient;
+	sf::Packet _pendingBoardChanges;
 
 	// Gameplay
 	int _energy, _energyInit = 0, _health;
@@ -152,19 +164,19 @@ private:
 	void useCreature(int handIndex, Card *& usedCard);
 	void useSpell(int handIndex, Card *& useSpell);
 
-	void sendCurrentEnergy();
-	void sendCurrentHealth();
+	void logCurrentEnergy();
+	void logCurrentHealth();
 
-	void sendHandState();
-	void sendBoardState();
-	void sendOpponentBoardState();
-	void sendGraveyardState();
+	void logHandState();
+	void logBoardState();
+	void logOpponentBoardState();
+	void logGraveyardState();
 
 	template <typename CardType>
-	void sendIDsFromVector(TransferType type, const std::vector<CardType *>& vect);
-	void sendCardDataFromVector(TransferType type, const std::vector<Card*>& vect);
-	void sendBoardCreatureDataFromVector(TransferType type, const std::vector<Creature*>& vect);
-	void sendValueToClient(sf::TcpSocket& socket, TransferType value);
+	void logIdsFromVector(TransferType type, const std::vector<CardType *>& vect);
+	void logCardDataFromVector(TransferType type, const std::vector<Card*>& vect);
+	void logBoardCreatureDataFromVector(TransferType type, const std::vector<Creature*>& vect);
+	void sendValueToClient(TransferType value);
 };
 
 
