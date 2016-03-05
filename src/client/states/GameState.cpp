@@ -58,22 +58,20 @@ void GameState::chooseDeck()
 	// Ask for the deck to use during the game
 	for(std::size_t i{0}; i < decks.size(); i++)
 		std::cout << i << " : " << decks.at(i).getName() << std::endl;
-	std::cin.clear();
 	std::size_t res;  // Chosen deck
 	do
 	{
 		std::cout << "Choose your deck: ";
 		std::cin >> res;
-		std::cout << "you chose" << res << std::endl;
 		if(res >= decks.size())
 			std::cout << "Your answer should be in the range [" << 0 << ", " << decks.size() <<"[ !\n";
 	} while(res >= decks.size());
 
-	// Send the deck ID to the server
-	std::cout << "sending your deck '" << decks.at(res).getName() << "'...\n";
-	sf::Packet deckIdPacket;
-	deckIdPacket << TransferType::GAME_PLAYER_GIVE_DECK_NAMES << decks.at(res).getName();
-	_client.getGameSocket().send(deckIdPacket);
+	// Send the deck name to the server
+	std::cout << "sending deck " << decks.at(res).getName() << std::endl;
+	sf::Packet deckNamePacket;
+	deckNamePacket << TransferType::GAME_PLAYER_GIVE_DECK_NAMES << decks.at(res).getName();
+	_client.getGameSocket().send(deckNamePacket);
 }
 
 void GameState::play()
@@ -277,20 +275,16 @@ void GameState::displayGame()
 	std::cout << "***************" << std::endl;
 }
 
-void GameState::displayCardVector(std::vector<CardData> cardVector)
+void GameState::displayCardVector(const std::vector<CardData>& cardVector)
 {
 	for (auto i=0U; i<cardVector.size(); i++)
 	{
 		cardId id = cardVector.at(i).id;
-		std::cout << i << " : " << getCardName(id) << "(cost:" << getCardCost(id) << ")";
-		//TODO use card names instead of card IDs ?
-		if (i!=cardVector.size()-1)
-			std::cout << ", ";
+		std::cout << "  * " << i << " : " << getCardName(id) << "(cost:" << getCardCost(id) << ")" << (i < cardVector.size()-1 ? ", " : "") << "\n";
 	}
-	std::cout << std::endl;
 }
 
-void GameState::displayBoardCreatureVector(std::vector<BoardCreatureData> cardVector)
+void GameState::displayBoardCreatureVector(const std::vector<BoardCreatureData>& cardVector)
 {
 	// The board vector also contains real time informations about the cards (health, attack, shield, shield type)
 	// This method should display these informations and be called only for displaying the board

@@ -82,8 +82,8 @@ class GameState : public AbstractState
 
 		// Game display
 		void displayGame();
-		void displayCardVector(std::vector<CardData> cardVector);
-		void displayBoardCreatureVector(std::vector<BoardCreatureData> cardVector);
+		void displayCardVector(const std::vector<CardData>& cardVector);
+		void displayBoardCreatureVector(const std::vector<BoardCreatureData>& cardVector);
 
 		const std::string& getCardName(cardId id);
 		CostValue getCardCost(cardId id);
