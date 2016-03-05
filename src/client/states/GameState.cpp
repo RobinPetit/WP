@@ -507,7 +507,7 @@ void GameState::applySelfEffect()
 	}
 }*/
 
-std::string GameState::getCardName(cardId id)
+const std::string& GameState::getCardName(cardId id)
 {
 	if (id<=10)
 		return ALL_CREATURES[id-1].name;
@@ -523,7 +523,7 @@ CostValue GameState::getCardCost(cardId id)
 		return ALL_SPELLS[id-10].cost;
 }
 
-std::string GameState::getCardDescription(cardId id)
+const std::string& GameState::getCardDescription(cardId id)
 {
 	if (id<=10)
 		return ALL_CREATURES[id-1].description;

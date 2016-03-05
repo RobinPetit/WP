@@ -85,9 +85,9 @@ class GameState : public AbstractState
 		void displayCardVector(std::vector<CardData> cardVector);
 		void displayBoardCreatureVector(std::vector<BoardCreatureData> cardVector);
 
-		std::string getCardName(cardId id);
+		const std::string& getCardName(cardId id);
 		CostValue getCardCost(cardId id);
-		std::string getCardDescription(cardId id);
+		const std::string& getCardDescription(cardId id);
 
 		/// Start the new thread waiting for special data
 		void initListening();
