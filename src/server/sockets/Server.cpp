@@ -62,9 +62,9 @@ void Server::takeConnection()
 	newClient->receive(packet);
 	TransferType type;
 	packet >> type;
-	if(type == TransferType::GAME_CONNECTION)
+	if(type == TransferType::CONNECTION)
 		connectUser(packet, std::move(newClient));
-	else if(type == TransferType::GAME_REGISTERING)
+	else if(type == TransferType::REGISTERING)
 		registerUser(packet, std::move(newClient));
 	else if(type == TransferType::CHAT_PLAYER_IP)
 		handleChatRequest(packet, std::move(newClient));
@@ -83,14 +83,14 @@ void Server::connectUser(sf::Packet& connectionPacket, std::unique_ptr<sf::TcpSo
 		// Check if the user is not already connected
 		if(_clients.find(playerName) != _clients.end())
 		{
-			connectionPacket << TransferType::GAME_ALREADY_CONNECTED;
+			connectionPacket << TransferType::ALREADY_CONNECTED;
 			throw std::runtime_error(playerName + " tried to connect to the server but is already connected.");
 		}
 
 		// FIXME : this method call returns always false _database.areIdentifiersValid(playerName, password))
 		if(not _database.isRegistered(playerName))
 		{
-			connectionPacket << TransferType::GAME_WRONG_IDENTIFIERS;
+			connectionPacket << TransferType::WRONG_IDENTIFIERS;
 			throw std::runtime_error(playerName + " gives wrong identifiers when trying to connect.");
 		}
 		std::cout << "New player connected: " << playerName << std::endl;
@@ -127,7 +127,7 @@ void Server::registerUser(sf::Packet& registeringPacket, std::unique_ptr<sf::Tcp
 
 		if(_database.isRegistered(playerName))
 		{
-			registeringPacket << TransferType::GAME_USERNAME_NOT_AVAILABLE;
+			registeringPacket << TransferType::USERNAME_NOT_AVAILABLE;
 			throw std::runtime_error(playerName + " tried to register to the server but the name is not available.");
 		}
 		_database.registerUser(playerName, password);
@@ -138,7 +138,7 @@ void Server::registerUser(sf::Packet& registeringPacket, std::unique_ptr<sf::Tcp
 	{
 		// If Database::registerUser threw an exception, the packet is empty
 		if(registeringPacket.getDataSize() == 0)
-			registeringPacket << TransferType::GAME_FAILED_TO_REGISTER;
+			registeringPacket << TransferType::FAILED_TO_REGISTER;
 
 		std::cout << "registerUser error: " << e.what() << "\n";
 	}
@@ -170,27 +170,27 @@ void Server::receiveData()
 		packet >> type;
 		switch(type)
 		{
-		case TransferType::PLAYER_DISCONNECTION:
+		case TransferType::DISCONNECTION:
 			std::cout << "Player " + userToString(it) + " quits the game!" << std::endl;
 			removeClient(it);
 			break;
 		// Friendship management
-		case TransferType::PLAYER_CHECK_PRESENCE:
+		case TransferType::CHECK_PRESENCE:
 			checkPresence(it, packet);
 			break;
-		case TransferType::PLAYER_ASKS_FRIENDS:
+		case TransferType::ASK_FRIENDS:
 			sendFriends(it);
 			break;
-		case TransferType::PLAYER_NEW_FRIEND:
+		case TransferType::NEW_FRIEND:
 			handleFriendshipRequest(it, packet);
 			break;
-		case TransferType::PLAYER_REMOVE_FRIEND:
+		case TransferType::REMOVE_FRIEND:
 			handleRemoveFriend(it, packet);
 			break;
-		case TransferType::PLAYER_RESPONSE_FRIEND_REQUEST:
+		case TransferType::RESPONSE_FRIEND_REQUEST:
 			handleFriendshipRequestResponse(it, packet);
 			break;
-		case TransferType::PLAYER_GETTING_FRIEND_REQUESTS:
+		case TransferType::GET_FRIEND_REQUESTS:
 			sendFriendshipRequests(it);
 			break;
 		// Game management
@@ -201,23 +201,23 @@ void Server::receiveData()
 			clearLobby(it);
 			break;
 		// Cards management
-		case TransferType::PLAYER_ASKS_DECKS_LIST:
+		case TransferType::ASK_DECKS_LIST:
 			sendDecks(it);
 			break;
-		case TransferType::PLAYER_EDIT_DECK:
+		case TransferType::EDIT_DECK:
 			handleDeckEditing(it, packet);
 			break;
-		case TransferType::PLAYER_CREATE_DECK:
+		case TransferType::CREATE_DECK:
 			handleDeckCreation(it, packet);
 			break;
-		case TransferType::PLAYER_DELETE_DECK:
+		case TransferType::DELETE_DECK:
 			handleDeckDeletion(it, packet);
 			break;
-		case TransferType::PLAYER_ASKS_CARDS_COLLECTION:
+		case TransferType::ASK_CARDS_COLLECTION:
 			sendCardsCollection(it);
 			break;
 		// Others
-		case TransferType::PLAYER_ASKS_LADDER:
+		case TransferType::ASK_LADDER:
 			sendLadder(it);
 			break;
 		default:
@@ -341,8 +341,8 @@ void Server::clearLobby(const _iterator& it)
 
 void Server::startGame(std::size_t idx)
 {
-	// An unique lock also release the mutex at destruction (just like
-	// std::lock_guard) but we can explicitely lock and unlock it, combining
+	// A unique lock also releases the mutex at destruction (just like
+	// std::lock_guard) but we can explicitly lock and unlock it, combining
 	// the benefits of manually lock mutexes and the benefits of a scoped lock
 	// Watch out: lock is performed by the constructor. Do not manually re-lock it
 	std::unique_lock<std::mutex> lockRunningGames{_accessRunningGames};
@@ -638,7 +638,7 @@ void Server::sendLadder(const _iterator& it)
 	try
 	{
 		Ladder ladder{_database.getLadder()};
-		response << TransferType::PLAYER_ASKS_LADDER << ladder;
+		response << TransferType::ACKNOWLEDGE << ladder;
 	}
 	catch(const std::runtime_error& e)
 	{
