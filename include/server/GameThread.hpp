@@ -27,7 +27,6 @@ public:
 
 	void establishSockets(const ClientInformations& player1, const ClientInformations& player2);
 
-	/// \TODO change return value to give the result of the game
 	userId startGame(const ClientInformations& player1, const ClientInformations& player2);
 
 	/// Destructor

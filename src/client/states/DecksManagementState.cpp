@@ -2,6 +2,7 @@
 #include <iostream>
 // WizardPoker headers
 #include "client/states/DecksManagementState.hpp"
+#include "common/CardData.hpp"
 
 DecksManagementState::DecksManagementState(StateStack& stateStack, Client& client):
 	AbstractState(stateStack, client)
@@ -117,8 +118,7 @@ cardId DecksManagementState::askForReplacingCard(std::size_t deckIndex)
 	for(const auto& card : _cardsCollection)
 		std::cout << static_cast<std::size_t>(card) << ". " << card << "\n";
 	std::cout << "Which card do you want to put in you deck? ";
-	// \TODO Replace 666 by the number of different cards in the game
-	cardId replacingCard{static_cast<cardId>(askForNumber(0, 666))};
+	cardId replacingCard{static_cast<cardId>(askForNumber(0, nbSpells + nbCreatures))};
 
 	// Check if the given card is valid
 	if(not _cardsCollection.contains(replacingCard))

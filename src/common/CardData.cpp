@@ -118,7 +118,7 @@ const CreatureData ALL_CREATURES[] = {
 		"Gains 1 HP and 1 ATTACK each turn."
 	},
 	{
-			"Humanoide maid",
+		"Humanoide maid",
 		COST_2, ATTACK_0, HEALTH_5, SHIELD_0, SHIELD_NONE,
 		{{CE_SET_CONSTRAINT,CREATURE_TEAM,CE_ADD_HEALTH,2},{PE_SET_CONSTRAINT,PLAYER_SELF,CE_ADD_HEALTH,2}},
 		"Gives a friendly creature and this creature owner 2 HP each turn."
@@ -269,3 +269,7 @@ const SpellData ALL_SPELLS[] = {
 		"Deal 3 damage or summon two 1/1 snacks"
 	}*/
 };
+
+const std::size_t nbSpells{sizeof(ALL_SPELLS) / sizeof(SpellData)};
+
+const std::size_t nbCreatures{sizeof(ALL_CREATURES) / sizeof(CreatureData)};

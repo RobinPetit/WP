@@ -52,7 +52,7 @@ private:
 	std::mutex _accessRunningGames;
 
 	// private methods
-	/// Used to handle a newconnection request (when the listener gets a packet)
+	/// Used to handle a new connection request (when the listener gets a packet)
 	void takeConnection(sf::TcpListener& listener);
 
 	/// Used to handle data sent by a logged user

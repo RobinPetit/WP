@@ -100,7 +100,6 @@ void Client::sendRegisteringToken(const std::string& name, const std::string& pa
 	switch(response)
 	{
 	case TransferType::USERNAME_NOT_AVAILABLE:
-		//TODO throw an exception rather than cout
 		throw std::runtime_error("the username " + name + " is not available.");
 
 	case TransferType::FAILED_TO_REGISTER:
