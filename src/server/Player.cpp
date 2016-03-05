@@ -26,7 +26,8 @@ std::function<void(Player&, const EffectParamsCollection&)> Player::_effectMetho
 	&Player::changeHealth,
 };
 
-Player::Player(userId id, sf::TcpSocket& socket, sf::TcpSocket& specialSocket):
+Player::Player(GameThread& gameThread, userId id, sf::TcpSocket& socket, sf::TcpSocket& specialSocket):
+	_gameThread(gameThread),
 	_id(id),
 	_socketToClient(socket),
 	_specialSocketToClient(specialSocket),

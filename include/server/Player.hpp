@@ -28,7 +28,7 @@ class Player
 {
 public:
 	/// Constructor
-	Player(userId id, sf::TcpSocket& socket, sf::TcpSocket& specialSocket);
+	Player(GameThread& gameThread, userId id, sf::TcpSocket& socket, sf::TcpSocket& specialSocket);
 	void setOpponent(Player* opponent);  // Complementary
 
 	/// Destructor.
@@ -86,7 +86,7 @@ private:
 	constexpr static TurnData _emptyTurnData = {0, 0, 0, 0};
 
 	/// Attributes
-	GameThread* _board;
+	GameThread& _gameThread;
 	Player* _opponent = nullptr;
 	userId _id;
 	std::atomic_bool _isActive;

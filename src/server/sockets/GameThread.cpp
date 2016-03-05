@@ -19,8 +19,8 @@ GameThread::GameThread(ServerDatabase& database, userId player1ID, userId player
 	_player1ID(player1ID),
 	_player2ID(player2ID),
 	_running(false),
-	_player1(_player1ID, _socketPlayer1, _specialOutputSocketPlayer1),
-	_player2(_player2ID, _socketPlayer2, _specialOutputSocketPlayer2),
+	_player1(*this, _player1ID, _socketPlayer1, _specialOutputSocketPlayer1),
+	_player2(*this, _player2ID, _socketPlayer2, _specialOutputSocketPlayer2),
 	_database(database),
 	_turn(0),
 	_turnCanEnd(false)
@@ -76,21 +76,22 @@ void GameThread::receiveDecks()
 	std::cout << "waiting for decks\n";
 	sf::Packet deckPacket;
 	TransferType type;
+	std::string player1DeckName, player2DeckName;
 
 	_socketPlayer1.receive(deckPacket);
 	deckPacket >> type;
 	if(type != TransferType::GAME_PLAYER_GIVE_DECK_NAMES)
 		throw std::runtime_error("Unable to get player 1's deck");
-	deckPacket >> _player1DeckName;
+	deckPacket >> player1DeckName;
 
 	_socketPlayer2.receive(deckPacket);
 	deckPacket >> type;
 	if(type != TransferType::GAME_PLAYER_GIVE_DECK_NAMES)
 		throw std::runtime_error("Unable to get player 2's deck");
-	deckPacket >> _player2DeckName;
+	deckPacket >> player2DeckName;
 
-	_player1.setDeck(_database.getDeckByName(_player1ID, _player1DeckName));
-	_player2.setDeck(_database.getDeckByName(_player2ID, _player2DeckName));
+	_player1.setDeck(_database.getDeckByName(_player1ID, player1DeckName));
+	_player2.setDeck(_database.getDeckByName(_player2ID, player2DeckName));
 }
 
 userId GameThread::startGame(const ClientInformations& player1, const ClientInformations& player2)
@@ -140,8 +141,7 @@ userId GameThread::runGame()
 		}
 
 		// Check that only actions from the active player are handled
-		// \TODO: use or remove
-		// sf::TcpSocket& activePlayerSocket{_activePlayer == &_player1 ? _socketPlayer1 : _socketPlayer2};
+		sf::TcpSocket& activePlayerSocket{_activePlayer == &_player1 ? _socketPlayer1 : _socketPlayer2};
 
 		TransferType type;
 		playerActionPacket >> type;
@@ -153,7 +153,8 @@ userId GameThread::runGame()
 			winner = (&modifiedSocket == &_socketPlayer1 ? _player2 : _player1).getID();
 			_running.store(false);
 		}
-		else
+		// If the action is done by the active player
+		else if(&modifiedSocket == &activePlayerSocket)
 		{
 			switch(type)
 			{
