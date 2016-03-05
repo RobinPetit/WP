@@ -14,7 +14,6 @@
 
 Server::Server():
 	_clients(),
-	_listener(),
 	_socketSelector(),
 	_done(false),
 	_threadRunning(false),
@@ -28,31 +27,32 @@ Server::Server():
 
 int Server::start(const sf::Uint16 listenerPort)
 {
-	if(_listener.listen(listenerPort) != sf::Socket::Done)
+	sf::TcpListener listener;
+	if(listener.listen(listenerPort) != sf::Socket::Done)
 		return UNABLE_TO_LISTEN;
 	_quitThread = std::thread(&Server::waitQuit, this);
 	_threadRunning.store(true);
 	sf::sleep(SOCKET_TIME_SLEEP);
-	_socketSelector.add(_listener);
+	_socketSelector.add(listener);
 	while(!_done.load())
 	{
 		// if no socket is ready, wait again
 		if(!_socketSelector.wait(sf::milliseconds(50)))
 			continue;
 		// if listener is ready, then a new connection is incoming
-		if(_socketSelector.isReady(_listener))
-			takeConnection();
+		if(_socketSelector.isReady(listener))
+			takeConnection(listener);
 		else  // one of the client sockets has received something
 			receiveData();
 	}
 	return SUCCESS;
 }
 
-void Server::takeConnection()
+void Server::takeConnection(sf::TcpListener& listener)
 {
 	std::unique_ptr<sf::TcpSocket> newClient{new sf::TcpSocket()};
 	// if listener can't accept correctly, free the allocated socket
-	if(_listener.accept(*newClient) != sf::Socket::Done)
+	if(listener.accept(*newClient) != sf::Socket::Done)
 	{
 		std::cout << "Error when trying to accept a new client.\n";
 		return;
@@ -271,8 +271,6 @@ void Server::quit()
 	_threadRunning.store(false);
 	_socketSelector.clear();
 	_clients.clear();
-	// leave listening port
-	_listener.close();
 }
 
 Server::~Server()
