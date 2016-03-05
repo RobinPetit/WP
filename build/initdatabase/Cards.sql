@@ -1,3 +1,9 @@
+-- To create cards to be added to database when initdatabase.sh is executed
+--    insert into this file
+-- To add cards to an existing database, use sqlite3 shell interface
+--    execute '.read "CardData.sql"' to import enums from C++ code
+--    then adapt the commands below to your needs
+
 -- TODO:
 -- UNLIMITED_TURNS=100
 

@@ -1,4 +1,4 @@
-// This file is the part of CardData.hpp which is used to 
+// This file is the part of CardData.hpp which is used to
 // initialize database at compile time
 // So it must follow some rules
 // In particular
