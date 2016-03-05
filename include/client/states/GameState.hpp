@@ -93,8 +93,13 @@ class GameState : public AbstractState
 		void initListening();
 		/// Called by the game listening thread: waits for server game thread special data
 		void inputListening();
+
 		/// Handles the whole transmission until END_OF_TRANSMISSION is found
 		void treatMultiTransmission(TransferType& type, sf::Packet& transmission);
+/*
+		/// Print informations contained in a packet received by the listener thread
+		void handlePacket(sf::Packet& packet);
+*/
 
 		// Not needed ?
 		///Those methods can be used for effects

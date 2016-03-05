@@ -123,9 +123,9 @@ userId GameThread::runGame()
 					specialSocket.send(boardChanges);
 				}
 
-				// TODO: the Player instance should notify when the client
-				// asked to end the game, and here we should check if we
-				// get notified
+				// Check if the player quitted the game
+				if(_winner != 0)
+					break;
 			}
 		}
 		sf::sleep(sf::milliseconds(250));
