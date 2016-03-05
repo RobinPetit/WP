@@ -29,6 +29,10 @@ public:
 
 	userId startGame(const ClientInformations& player1, const ClientInformations& player2);
 
+	void endGame(userId winnerId);
+
+	void swapTurns();
+
 	/// Destructor
 	~GameThread();
 
@@ -44,6 +48,8 @@ private:
 	Player _player1;
 	Player _player2;
 	ServerDatabase& _database;
+
+	userId _winner;
 
 	Player *_activePlayer;
 	Player *_passivePlayer;
@@ -80,8 +86,10 @@ GameThread::GameThread(ServerDatabase& database, userId player1ID, userId player
 	_player1(*this, database, _player1ID),
 	_player2(*this, database, _player2ID),
 	_database(database),
+	_winner{0},
 	_turn(0),
-	_turnCanEnd(false)
+	_turnCanEnd(false),
+	_turnSwap{false}
 {
 	createPlayers();
 }

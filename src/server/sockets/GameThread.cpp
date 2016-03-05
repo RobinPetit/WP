@@ -22,8 +22,10 @@ GameThread::GameThread(ServerDatabase& database, userId player1ID, userId player
 	_player1(*this, database, _player1ID),
 	_player2(*this, database, _player2ID),
 	_database(database),
+	_winner{0},
 	_turn(0),
-	_turnCanEnd(false)
+	_turnCanEnd(false),
+	_turnSwap{false}
 {
 	createPlayers();
 }
@@ -97,7 +99,6 @@ userId GameThread::startGame(const ClientInformations& player1, const ClientInfo
 
 userId GameThread::runGame()
 {
-	userId winner{0};
 	while(_running.load())
 	{
 		for(auto player : {_activePlayer, _passivePlayer})
@@ -108,7 +109,7 @@ userId GameThread::runGame()
 			if(status == sf::Socket::Disconnected)
 			{
 				std::cerr << "Lost connection with a player\n";
-				winner = player->getID();
+				_winner = player->getID();
 				_running.store(false);
 				break;
 			}
@@ -125,16 +126,19 @@ userId GameThread::runGame()
 				// TODO: the Player instance should notify when the client
 				// asked to end the game, and here we should check if we
 				// get notified
-				/*
-				std::cout << "Game is asked to end\n";
-				winner = (&modifiedSocket == &_socketPlayer1 ? _player2 : _player1).getID();
-				_running.store(false);
-				*/
 			}
 		}
+		sf::sleep(sf::milliseconds(250));
 	}
-	assert(winner != 0);
-	return winner;
+	assert(_winner != 0);
+	return _winner;
+}
+
+void GameThread::endGame(userId winnerId)
+{
+	std::cout << "Game is asked to end\n";
+	_winner = winnerId;
+	_running.store(false);
 }
 
 void GameThread::endTurn()
@@ -143,6 +147,11 @@ void GameThread::endTurn()
 	_activePlayer->leaveTurn();
 	std::swap(_activePlayer, _passivePlayer);  // swap active and inactive
 	_activePlayer->enterTurn(_turn/2 +1);  // ALWAYS call active player
+}
+
+void GameThread::swapTurns()
+{
+	_turnSwap.store(true);
 }
 
 /*------------------------------ PLAYER AND CARD INTERFACE */
@@ -223,7 +232,7 @@ void GameThread::makeTimer()
 		endOfTurn << TransferType::GAME_PLAYER_LEAVE_TURN;
 		activeSpecialSocket.send(endOfTurn);
 
-		sf::TcpSocket& passiveSpecialSocket{_activePlayer == &_player1 ? _specialOutputSocketPlayer1 : _specialOutputSocketPlayer2};
+		sf::TcpSocket& passiveSpecialSocket{_activePlayer == &_player1 ? _specialOutputSocketPlayer2 : _specialOutputSocketPlayer1};
 		sf::Packet startOfTurn;
 		startOfTurn << TransferType::GAME_PLAYER_ENTER_TURN;
 		passiveSpecialSocket.send(startOfTurn);

@@ -99,7 +99,10 @@ void Player::receiveDeck()
 	TransferType type;
 	std::string deckName;
 
+	// Have the socket blocking because the data is needed to go further
+	_socketToClient.setBlocking(true);
 	_socketToClient.receive(deckPacket);
+	_socketToClient.setBlocking(false);
 	deckPacket >> type;
 	if(type != TransferType::GAME_PLAYER_GIVE_DECK_NAMES)
 		throw std::runtime_error("Unable to get player " + std::to_string(getID()) + " deck");
@@ -182,6 +185,7 @@ sf::Socket::Status Player::tryReceiveClientInput()
 
 	TransferType type;
 	playerActionPacket >> type;
+
 	if(type == TransferType::GAME_QUIT_GAME)
 		quitGame();
 	// Be sure this is the active player that sent input
@@ -211,7 +215,7 @@ sf::Socket::Status Player::tryReceiveClientInput()
 
 			default:
 				std::cout << "Player::tryReceiveClientInput error: wrong packet header, "
-							 "expected in-game action header.\n";
+				             "expected in-game action header.\n";
 				break;
 		}
 	}
@@ -326,6 +330,7 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 
 void Player::endTurn()
 {
+	_gameThread.swapTurns();
 	//Call _timer->reset(); or similar
     //Call _opponent->enterTurn();
     //Call _leaveTurn() on self
@@ -333,6 +338,7 @@ void Player::endTurn()
 
 void Player::quitGame()
 {
+	_gameThread.endGame(_opponent->getID());
 	//Call _timer->release() or similar
 	//Call opponent->finishGame(hasWon=true, endMessage="You quitter !"), self->finishGame(hasWon=false, endMessage="Opponent quit the game") or similar
 }
@@ -582,7 +588,7 @@ void Player::resetEnergy(const EffectParamsCollection& args)
 		else if(_energyInit > _maxEnergy)
 			_energyInit = _maxEnergy;
 		_energy = _energyInit;
-		sendCurrentEnergy();
+		logCurrentEnergy();
 	}
 	catch (std::out_of_range&)
 	{
