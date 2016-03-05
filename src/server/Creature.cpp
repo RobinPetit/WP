@@ -162,7 +162,6 @@ void Creature::setConstraint(const EffectParamsCollection& args)
 	catch (std::out_of_range)
 	{
 		 throw std::runtime_error("Error with cards arguments");
-		return;
 	}
 
 	switch (casterOptions)
@@ -172,6 +171,7 @@ void Creature::setConstraint(const EffectParamsCollection& args)
 			break;
 		default:
 			_constraints.setConstraint(constraintID, value, turns);
+			break;
 	}
 }
 
@@ -202,11 +202,11 @@ void Creature::changeAttack(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range)
 	{
-		 throw std::runtime_error("Error with cards arguments");
-		return;
+		throw std::runtime_error("Error with cards arguments");
 	}
 	_attack+=points;
-	if (_attack<0) _attack=0;
+	if (_attack<0)
+		_attack=0;
 }
 
 void Creature::changeHealth(const EffectParamsCollection& args)
@@ -219,7 +219,6 @@ void Creature::changeHealth(const EffectParamsCollection& args)
 	catch (std::out_of_range)
 	{
 		 throw std::runtime_error("Error with cards arguments");
-		return;
 	}
 
 	//bool forced = args.at(1) : if attack is forced, shield does not count
@@ -227,14 +226,16 @@ void Creature::changeHealth(const EffectParamsCollection& args)
 	{
 		switch (_shieldType)
 		{
-			case 0:
+			case SHIELD_BLUE:
 				points+= _shield;	//Blue shield, can allow part of the attack to deal damage
-				if (points>0) points=0;
+				if (points>0)
+					points=0;
 				break;
-			case 1:
-				if (points <= _shield) points=0;	//Orange shield, only stronger attacks go through
+			case SHIELD_ORANGE:
+				if (points <= _shield)
+					points=0;	//Orange shield, only stronger attacks go through
 				break;
-			case 2:
+			case SHIELD_LEGENDARY:
 				points=0;	//Legendary shield, regular attacks don't go through
 				break;
 		}
@@ -258,8 +259,8 @@ void Creature::changeShield(const EffectParamsCollection& args)
 	catch (std::out_of_range)
 	{
 		 throw std::runtime_error("Error with cards arguments");
-		return;
 	}
 	_shield += points;
-	if (_shield<0) _shield=0;
+	if (_shield<0)
+		_shield=0;
 }
