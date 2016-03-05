@@ -36,7 +36,7 @@ void GameState::init()
 	_client.getGameSocket().receive(packet);
 	TransferType type;
 	packet >> type;
-	treatMultiTransmission(type, packet);
+	handlePacket(type, packet);
 	// receive turn informations
 	_client.getGameSocket().receive(packet);
 	packet >> type;
@@ -351,16 +351,18 @@ void GameState::inputListening()
 		else if(type == TransferType::GAME_PLAYER_LEAVE_TURN)
 			_myTurn.store(false);
 		else
-			treatMultiTransmission(type, receivedPacket);
+			handlePacket(type, receivedPacket);
 	}
 	std::cout << "GAME OVER\n";
 }
 
-void GameState::treatMultiTransmission(TransferType& type, sf::Packet& transmission)
+void GameState::handlePacket(TransferType& type, sf::Packet& transmission)
 {
 	do
 	{
-		if(type == TransferType::GAME_PLAYER_ENERGY_UPDATED)
+		switch(type)
+		{
+		case TransferType::GAME_PLAYER_ENERGY_UPDATED:
 		{
 			// energy (and health and others) are transmitted through the network as 32 bit
 			// unsigned integers. So be sure to receive the exact same thing to avoid encoding
@@ -369,139 +371,54 @@ void GameState::treatMultiTransmission(TransferType& type, sf::Packet& transmiss
 			transmission >> energy32;
 			std::lock_guard<std::mutex> lock{_accessEnergy};
 			_selfEnergy = energy32;
-			std::cout << "Energy points updated: " << energy32 << std::endl;
 		}
-		else if(type == TransferType::GAME_PLAYER_HEALTH_UPDATED)
+			break;
+
+		case TransferType::GAME_PLAYER_HEALTH_UPDATED:
 		{
 			sf::Uint32 health32;
 			transmission >> health32;
 			std::lock_guard<std::mutex> lock{_accessHealth};
 			_selfHealth = health32;
-			std::cout << "Health points updated: " << health32 << std::endl;
 		}
-		else if(type == TransferType::GAME_OPPONENT_HEALTH_UPDATED)
+			break;
+
+		case TransferType::GAME_OPPONENT_HEALTH_UPDATED:
 		{
 			sf::Uint32 health32;
 			transmission >> health32;
 			std::lock_guard<std::mutex> lock{_accessHealth};
 			_oppoHealth = health32;
-			std::cout << "Opponent's health points updated: " << health32 << std::endl;
 		}
-		else if(type == TransferType::GAME_BOARD_UPDATED)
-		{
+			break;
+
+		case TransferType::GAME_BOARD_UPDATED:
 			std::cout << "Board updated" << std::endl;
 			transmission >> _selfBoardCreatures;
-		}
-		else if(type == TransferType::GAME_OPPONENT_BOARD_UPDATED)
-		{
+			break;
+
+		case TransferType::GAME_OPPONENT_BOARD_UPDATED:
 			std::cout << "Opponent's board updated" << std::endl;
 			transmission >> _oppoBoardCreatures;
-		}
-		else if(type == TransferType::GAME_GRAVEYARD_UPDATED)
-		{
+			break;
+		case TransferType::GAME_GRAVEYARD_UPDATED:
 			std::cout << "Graveyard updated" << std::endl;
 			transmission >> _selfGraveCards;
-		}
-		else if(type == TransferType::GAME_HAND_UPDATED)
-		{
+			break;
+
+		case TransferType::GAME_HAND_UPDATED:
 			std::cout << "Hand updated" << std::endl;
 			std::cout << _selfHandCards.size();
 			transmission >> _selfHandCards;
-			std::cout << " - " << _selfHandCards.size() << '\n';
+			break;
+
+		default:
+			std::cerr << "Unknown message received: " << static_cast<std::underlying_type<TransferType>::type>(type) << "; ignore." << std::endl;
+			break;
 		}
 		transmission >> type;
 	} while(type != TransferType::END_OF_TRANSMISSION);
 	displayGame();
-/*
-		// Everything is fine
-		else
-			handlePacket(receivedPacket);
-	}
-	std::cout << "Game over!\n";
-}
-
-void GameState::handlePacket(sf::Packet& packet)
-{
-	TransferType type;
-	// Packets received by listener socket are a composed of multiple headers
-	// followed by their data, such as:
-	// packet << GAME_PLAYER_ENERGY_UPDATED << newEnergy
-	//        << GAME_PLAYER_HEALTH_UPDATED << newHealth << ...;
-	while(not packet.endOfPacket())
-	{
-		packet >> type;
-		switch(type)
-		{
-			case TransferType::GAME_OVER:
-				_playing.store(false);
-				_myTurn.store(!_myTurn.load());
-				break;
-
-			case TransferType::GAME_PLAYER_ENTER_TURN:
-				_myTurn.store(true);
-				break;
-
-			case TransferType::GAME_PLAYER_LEAVE_TURN:
-				_myTurn.store(false);
-				break;
-
-			case TransferType::GAME_PLAYER_ENERGY_UPDATED:
-			{
-				std::cout << "Energy points updated" << std::endl;
-				// energy (and health and others) are transmitted through the network as 32 bit
-				// unsigned integers. So be sure to receive the exact same thing to avoid encoding
-				// errors and then set it in the "real" attribute
-				sf::Uint32 energy32;
-				_accessEnergy.lock();
-				packet >> energy32;
-				_selfEnergy = energy32;
-				_accessEnergy.unlock();
-				displayGame();
-				break;
-
-			}
-			case TransferType::GAME_PLAYER_HEALTH_UPDATED:
-			{
-				std::cout << "Health points updated" << std::endl;
-				sf::Uint32 health32;
-				_accessHealth.lock();
-				packet >> health32;
-				_selfHealth = health32;
-				_accessHealth.unlock();
-				displayGame();
-				break;
-
-			}
-			case TransferType::GAME_BOARD_UPDATED:
-				std::cout << "Board updated" << std::endl;
-				packet >> _selfBoardCreatures;
-				displayGame();
-				break;
-
-			case TransferType::GAME_OPPONENT_BOARD_UPDATED:
-				std::cout << "Opponent's board updated" << std::endl;
-				packet >> _oppoBoardCreatures;
-				displayGame();
-				break;
-
-			case TransferType::GAME_GRAVEYARD_UPDATED:
-				std::cout << "Graveyard updated" << std::endl;
-				packet >> _selfGraveCards;
-				displayGame();
-				break;
-
-			case TransferType::GAME_HAND_UPDATED:
-				std::cout << "Hand updated" << std::endl;
-				packet >> _selfHandCards;
-				displayGame();
-				break;
-
-			default:
-				std::cerr << "Unknown message received: " << static_cast<std::underlying_type<TransferType>::type>(type) << "; ignore." << std::endl;
-				break;
-		}
-	}
-*/
 }
 
 //Not needed ?

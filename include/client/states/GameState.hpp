@@ -95,7 +95,7 @@ class GameState : public AbstractState
 		void inputListening();
 
 		/// Handles the whole transmission until END_OF_TRANSMISSION is found
-		void treatMultiTransmission(TransferType& type, sf::Packet& transmission);
+		void handlePacket(TransferType& type, sf::Packet& transmission);
 /*
 		/// Print informations contained in a packet received by the listener thread
 		void handlePacket(sf::Packet& packet);
