@@ -146,11 +146,6 @@ void Player::enterTurn(int /* turn */)
 	//Will call creature's turn-based constraints
 	for (unsigned i=0; i<_cardBoard.size(); i++)
 		_cardBoard.at(i)->enterTurn();
-
-	// Tell to player that its turn starts
-	sf::Packet packet;
-	packet << TransferType::GAME_PLAYER_ENTER_TURN;
-	_socketToClient.send(packet);
 }
 
 void Player::leaveTurn()
@@ -331,16 +326,11 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 void Player::endTurn()
 {
 	_gameThread.swapTurns();
-	//Call _timer->reset(); or similar
-    //Call _opponent->enterTurn();
-    //Call _leaveTurn() on self
 }
 
 void Player::quitGame()
 {
 	_gameThread.endGame(_opponent->getID());
-	//Call _timer->release() or similar
-	//Call opponent->finishGame(hasWon=true, endMessage="You quitter !"), self->finishGame(hasWon=false, endMessage="Opponent quit the game") or similar
 }
 
 /*------------------------------ EFFECTS INTERFACE */
