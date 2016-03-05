@@ -58,7 +58,7 @@ void Client::registerToServer(const std::string& name, const std::string& passwo
 void Client::sendConnectionToken(const std::string& password)
 {
 	sf::Packet packet;
-	packet << TransferType::GAME_CONNECTION
+	packet << TransferType::CONNECTION
 	       << _name
 	       << password
 	       << static_cast<sf::Uint16>(_chatListenerPort);
@@ -71,10 +71,10 @@ void Client::sendConnectionToken(const std::string& password)
 	packet >> response;
 	switch(response)
 	{
-	case TransferType::GAME_ALREADY_CONNECTED:
+	case TransferType::ALREADY_CONNECTED:
 		throw std::runtime_error("you are already connected!");
 
-	case TransferType::GAME_WRONG_IDENTIFIERS:
+	case TransferType::WRONG_IDENTIFIERS:
 		throw std::runtime_error("invalid username or password.");
 
 	case TransferType::ACKNOWLEDGE:
@@ -89,7 +89,7 @@ void Client::sendConnectionToken(const std::string& password)
 void Client::sendRegisteringToken(const std::string& name, const std::string& password, sf::TcpSocket& socket)
 {
 	sf::Packet packet;
-	packet << TransferType::GAME_REGISTERING << name << password;
+	packet << TransferType::REGISTERING << name << password;
 	if(socket.send(packet) != sf::Socket::Done)
 		throw std::runtime_error("sending packet failed.");
 
@@ -99,11 +99,10 @@ void Client::sendRegisteringToken(const std::string& name, const std::string& pa
 	packet >> response;
 	switch(response)
 	{
-	case TransferType::GAME_USERNAME_NOT_AVAILABLE:
-		//TODO throw an exception rather than cout
+	case TransferType::USERNAME_NOT_AVAILABLE:
 		throw std::runtime_error("the username " + name + " is not available.");
 
-	case TransferType::GAME_FAILED_TO_REGISTER:
+	case TransferType::FAILED_TO_REGISTER:
 		throw std::runtime_error("the server failed to register your account.");
 
 	case TransferType::ACKNOWLEDGE:
@@ -150,7 +149,7 @@ void Client::quit()
 	{
 		// tell the server that the player leaves
 		sf::Packet packet;
-		packet << TransferType::PLAYER_DISCONNECTION;
+		packet << TransferType::DISCONNECTION;
 		_socket.send(packet);
 	}
 	// If a connection failed, the socket is connected but the server
@@ -255,7 +254,7 @@ FriendsList Client::getConnectedFriends()
 	{
 		// ask the server if player is conencted
 		sf::Packet packet;
-		packet << TransferType::PLAYER_CHECK_PRESENCE << friendUser.name;
+		packet << TransferType::CHECK_PRESENCE << friendUser.name;
 		_socket.send(packet);
 		_socket.receive(packet);
 		TransferType type;
@@ -283,7 +282,7 @@ void Client::updateFriends()
 {
 	sf::Packet packet;
 	// send that friends list is asked
-	packet << TransferType::PLAYER_ASKS_FRIENDS;
+	packet << TransferType::ASK_FRIENDS;
 	_socket.send(packet);
 	_socket.receive(packet);
 	TransferType responseHeader;
@@ -299,7 +298,7 @@ void Client::updateFriendshipRequests()
 {
 	sf::Packet packet;
 	// send that requests list is asked
-	packet << TransferType::PLAYER_GETTING_FRIEND_REQUESTS;
+	packet << TransferType::GET_FRIEND_REQUESTS;
 	_socket.send(packet);
 	_socket.receive(packet);
 	TransferType responseHeader;
@@ -321,7 +320,7 @@ void Client::sendFriendshipRequest(const std::string& name)
 	if(isFriend(name))
 		throw std::runtime_error(name + "is already your friend.");
 	sf::Packet packet;
-	packet << TransferType::PLAYER_NEW_FRIEND << name;
+	packet << TransferType::NEW_FRIEND << name;
 	_socket.send(packet);
 	// server acknowledges with ACKNOWLEDGE if request was correctly made and by NOT_EXISTING_FRIEND otherwise
 	_socket.receive(packet);
@@ -348,7 +347,7 @@ void Client::removeFriend(const std::string& name)
 		throw std::runtime_error(name + "is not a friend of yours.");
 	sf::Packet packet;
 	// send that the user remove name from its friend list
-	packet << TransferType::PLAYER_REMOVE_FRIEND;
+	packet << TransferType::REMOVE_FRIEND;
 	packet << name;
 	_socket.send(packet);
 	_socket.receive(packet);
@@ -361,7 +360,7 @@ void Client::removeFriend(const std::string& name)
 void Client::acceptFriendshipRequest(const std::string& name, bool accept)
 {
 	sf::Packet packet;
-	packet << TransferType::PLAYER_RESPONSE_FRIEND_REQUEST << name << accept;
+	packet << TransferType::RESPONSE_FRIEND_REQUEST << name << accept;
 	_socket.send(packet);
 	_socket.receive(packet);
 	TransferType responseHeader;
@@ -474,7 +473,7 @@ std::vector<Deck> Client::getDecks()
 		throw NotConnectedException("unable to get the decks list.");
 	sf::Packet packet;
 	// send that friends list is asked
-	packet << TransferType::PLAYER_ASKS_DECKS_LIST;
+	packet << TransferType::ASK_DECKS_LIST;
 	_socket.send(packet);
 	_socket.receive(packet);
 	TransferType responseHeader;
@@ -492,7 +491,7 @@ void Client::handleDeckEditing(const Deck& editedDeck)
 		throw NotConnectedException("unable to get the decks list.");
 	sf::Packet packet;
 	// send that friends list is asked
-	packet << TransferType::PLAYER_EDIT_DECK << editedDeck;
+	packet << TransferType::EDIT_DECK << editedDeck;
 	_socket.send(packet);
 	_socket.receive(packet);
 	TransferType responseHeader;
@@ -507,7 +506,7 @@ void Client::handleDeckCreation(const Deck& createdDeck)
 		throw NotConnectedException("unable to get the decks list.");
 	sf::Packet packet;
 	// send that friends list is asked
-	packet << TransferType::PLAYER_CREATE_DECK << createdDeck;
+	packet << TransferType::CREATE_DECK << createdDeck;
 	_socket.send(packet);
 	_socket.receive(packet);
 	TransferType responseHeader;
@@ -522,7 +521,7 @@ void Client::handleDeckDeletion(const std::string& deletedDeckName)
 		throw NotConnectedException("unable to get the decks list.");
 	sf::Packet packet;
 	// send that friends list is asked
-	packet << TransferType::PLAYER_DELETE_DECK << deletedDeckName;
+	packet << TransferType::DELETE_DECK << deletedDeckName;
 	_socket.send(packet);
 	_socket.receive(packet);
 	TransferType responseHeader;
@@ -537,7 +536,7 @@ CardsCollection Client::getCardsCollection()
 		throw NotConnectedException("unable to get the decks list.");
 	sf::Packet packet;
 	// send that friends list is asked
-	packet << TransferType::PLAYER_ASKS_CARDS_COLLECTION;
+	packet << TransferType::ASK_CARDS_COLLECTION;
 	_socket.send(packet);
 	_socket.receive(packet);
 	TransferType responseHeader;
@@ -557,7 +556,7 @@ Ladder Client::getLadder()
 		throw NotConnectedException("unable to get the decks list.");
 	sf::Packet packet;
 	// send that friends list is asked
-	packet << TransferType::PLAYER_ASKS_LADDER;
+	packet << TransferType::ASK_LADDER;
 	_socket.send(packet);
 	_socket.receive(packet);
 	TransferType responseHeader;

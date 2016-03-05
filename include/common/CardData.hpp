@@ -172,4 +172,8 @@ extern const CreatureData ALL_CREATURES[];
 
 extern const SpellData ALL_SPELLS[];
 
+extern const std::size_t nbSpells;
+
+extern const std::size_t nbCreatures;
+
 #endif  // _CARD_DATA_HPP

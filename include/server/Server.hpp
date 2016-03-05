@@ -39,7 +39,6 @@ private:
 
 	// attributes
 	std::unordered_map<std::string, ClientInformations> _clients;
-	sf::TcpListener _listener;
 	sf::SocketSelector _socketSelector;
 	std::atomic_bool _done;
 	std::atomic_bool _threadRunning;
@@ -53,8 +52,8 @@ private:
 	std::mutex _accessRunningGames;
 
 	// private methods
-	/// Used to handle a newconnection request (when the listener gets a packet)
-	void takeConnection();
+	/// Used to handle a new connection request (when the listener gets a packet)
+	void takeConnection(sf::TcpListener& listener);
 
 	/// Used to handle data sent by a logged user
 	void receiveData();
