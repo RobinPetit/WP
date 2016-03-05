@@ -74,8 +74,11 @@ enum class TransferType : sf::Uint32
 	/// Used to tell the client that its energy points have been updated
 	GAME_PLAYER_ENERGY_UPDATED,
 
-	/// Used to tell the client that its health points gave been udpated
+	/// Used to tell the client that its health points have been udpated
 	GAME_PLAYER_HEALTH_UPDATED,
+
+	/// Used to tell the client that its opponent's health points have been updated
+	GAME_OPPONENT_HEALTH_UPDATED,
 
 	/// Used when sending to the client the current state of the board
 	GAME_BOARD_UPDATED,
@@ -149,7 +152,10 @@ enum class TransferType : sf::Uint32
 	ACKNOWLEDGE,
 
 	/// Used as a "false-valued boolean" for actions requested by the client
-	FAILURE
+	FAILURE,
+
+	/// Used in long communications containing several headers to signal the end of the packet
+	END_OF_TRANSMISSION,
 };
 
 /// Overloading of the sf::Packet operators so that a TransferType variable can

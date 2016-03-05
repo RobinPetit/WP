@@ -12,6 +12,7 @@
 #include "common/CardData.hpp"
 #include "common/GameData.hpp"
 #include "common/Identifiers.hpp"
+#include "common/sockets/TransferType.hpp"
 
 // Forward declarations
 class StateStack;
@@ -92,6 +93,8 @@ class GameState : public AbstractState
 		void initListening();
 		/// Called by the game listening thread: waits for server game thread special data
 		void inputListening();
+		/// Handles the whole transmission until END_OF_TRANSMISSION is found
+		void treatMultiTransmission(TransferType& type, sf::Packet& transmission);
 
 		// Not needed ?
 		///Those methods can be used for effects

@@ -32,8 +32,13 @@ void GameState::init()
 	initListening();
 	chooseDeck();
 	sf::Packet packet;
+	// receive in game data
 	_client.getGameSocket().receive(packet);
 	TransferType type;
+	packet >> type;
+	treatMultiTransmission(type, packet);
+	// receive turn informations
+	_client.getGameSocket().receive(packet);
 	packet >> type;
 	if(type != TransferType::GAME_STARTING)
 		throw std::runtime_error("Wrong signal received: " + std::to_string(static_cast<sf::Uint32>(type)));
@@ -345,57 +350,68 @@ void GameState::inputListening()
 			_myTurn.store(true);
 		else if(type == TransferType::GAME_PLAYER_LEAVE_TURN)
 			_myTurn.store(false);
-		else if(type == TransferType::GAME_PLAYER_ENERGY_UPDATED)
+		else
+			treatMultiTransmission(type, receivedPacket);
+	}
+	std::cout << "GAME OVER\n";
+}
+
+void GameState::treatMultiTransmission(TransferType& type, sf::Packet& transmission)
+{
+	do
+	{
+		if(type == TransferType::GAME_PLAYER_ENERGY_UPDATED)
 		{
-			std::cout << "Energy points updated" << std::endl;
 			// energy (and health and others) are transmitted through the network as 32 bit
 			// unsigned integers. So be sure to receive the exact same thing to avoid encoding
 			// errors and then set it in the "real" attribute
 			sf::Uint32 energy32;
-			_accessEnergy.lock();
-			receivedPacket >> energy32;
+			transmission >> energy32;
+			std::lock_guard<std::mutex> lock{_accessEnergy};
 			_selfEnergy = energy32;
-			_accessEnergy.unlock();
-			displayGame();
+			std::cout << "Energy points updated: " << energy32 << std::endl;
 		}
 		else if(type == TransferType::GAME_PLAYER_HEALTH_UPDATED)
 		{
-			std::cout << "Health points updated" << std::endl;
 			sf::Uint32 health32;
-			_accessHealth.lock();
-			receivedPacket >> health32;
+			transmission >> health32;
+			std::lock_guard<std::mutex> lock{_accessHealth};
 			_selfHealth = health32;
-			_accessHealth.unlock();
-			displayGame();
+			std::cout << "Health points updated: " << health32 << std::endl;
+		}
+		else if(type == TransferType::GAME_OPPONENT_HEALTH_UPDATED)
+		{
+			sf::Uint32 health32;
+			transmission >> health32;
+			std::lock_guard<std::mutex> lock{_accessHealth};
+			_oppoHealth = health32;
+			std::cout << "Opponent's health points updated: " << health32 << std::endl;
 		}
 		else if(type == TransferType::GAME_BOARD_UPDATED)
 		{
 			std::cout << "Board updated" << std::endl;
-			receivedPacket >> _selfBoardCreatures;
-			displayGame();
+			transmission >> _selfBoardCreatures;
 		}
 		else if(type == TransferType::GAME_OPPONENT_BOARD_UPDATED)
 		{
 			std::cout << "Opponent's board updated" << std::endl;
-			receivedPacket >> _oppoBoardCreatures;
-			displayGame();
+			transmission >> _oppoBoardCreatures;
 		}
 		else if(type == TransferType::GAME_GRAVEYARD_UPDATED)
 		{
 			std::cout << "Graveyard updated" << std::endl;
-			receivedPacket >> _selfGraveCards;
-			displayGame();
+			transmission >> _selfGraveCards;
 		}
 		else if(type == TransferType::GAME_HAND_UPDATED)
 		{
 			std::cout << "Hand updated" << std::endl;
-			receivedPacket >> _selfHandCards;
-			displayGame();
+			std::cout << _selfHandCards.size();
+			transmission >> _selfHandCards;
+			std::cout << " - " << _selfHandCards.size() << '\n';
 		}
-		else
-			std::cerr << "Unknown message received: " << static_cast<sf::Uint32>(type) << "; ignore." << std::endl;
-	}
-	std::cout << "GAME OVER\n";
+		transmission >> type;
+	} while(type != TransferType::END_OF_TRANSMISSION);
+	displayGame();
 }
 
 //Not needed ?
