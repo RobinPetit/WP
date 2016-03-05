@@ -333,9 +333,8 @@ void Server::clearLobby(const _iterator& it)
 {
 	std::lock_guard<std::mutex> lockLobby{_lobbyMutex};
 	if(not _isAPlayerWaiting or _waitingPlayer != it->first)
-		std::cerr << "Trying to remove another player from lobby; ignored\n";
-	else
-		_isAPlayerWaiting = false;
+		throw std::runtime_error("Trying to remove another player from lobby; ignored\n");
+	_isAPlayerWaiting = false;
 	// _lobbyMutex is unlocked when lockLobby is destructed
 }
 
@@ -383,21 +382,19 @@ void Server::handleChatRequest(sf::Packet& packet, std::unique_ptr<sf::TcpSocket
 	std::string callerName;
 	sf::Uint16 callerPort;
 	packet >> callerName >> calleeName >> callerPort;
-	std::cout << "start request\n";
 	// first of all, verify that player exist
 	// if it does, send his IP
 	auto callee = _clients.find(calleeName);
 	if(callee == _clients.end())
 	{
 		std::cout << "player does not exist!\n";
-		responseToCaller << static_cast<sf::Uint32>(0);
+		responseToCaller << TransferType::FAILURE;
 	}
 	else
 	{
-		responseToCaller << _clients[calleeName].socket->getRemoteAddress().toInteger();
+		responseToCaller << TransferType::ACKNOWLEDGE << _clients[calleeName].socket->getRemoteAddress().toInteger();
 		sf::Packet packetToCalle;
 		sf::TcpSocket toCallee;
-		std::cout << "address is " << _clients[calleeName].socket->getRemoteAddress() << " and port is " << _clients[calleeName].listeningPort << std::endl;
 		if(toCallee.connect(_clients[calleeName].socket->getRemoteAddress(), _clients[calleeName].listeningPort) != sf::Socket::Done)
 			std::cerr << "Unable to connect to callee (" << calleeName << ")\n";
 		else
