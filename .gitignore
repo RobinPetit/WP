@@ -67,4 +67,4 @@ bin/
 
 # Do not commit the resources changes
 resources/
-
+!resources/common/initdatabase.sql
