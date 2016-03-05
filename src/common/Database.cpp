@@ -28,49 +28,39 @@ int Database::sqliteThrowExcept(int errcode) const
 {
 	switch(errcode)
 	{
+	case SQLITE_ROW:
+	case SQLITE_DONE:
 	case SQLITE_OK:
 		break;
 
 	case SQLITE_CORRUPT:
 		throw std::runtime_error("Database corrupted, need reinstall");
-		break;
 
 	case SQLITE_INTERNAL:
 		throw std::runtime_error("Database engine unexpected error");
-		break;
 
 	case SQLITE_PERM:
 	case SQLITE_READONLY:
 		throw std::runtime_error("Database permissions error");
-		break;
 
 	case SQLITE_ABORT:
 	case SQLITE_INTERRUPT:
 		throw std::runtime_error("Database operation aborted");
-		break;
 
 	case SQLITE_BUSY:
 	case SQLITE_LOCKED:
 		throw std::runtime_error("Database busy/locked: is this instance the only one running?");
-		break;
 
 	case SQLITE_NOMEM:
 	case SQLITE_IOERR:
 	case SQLITE_FULL:
 		throw std::runtime_error("IO error");
-		break;
 
 	case SQLITE_CANTOPEN:
 		throw std::runtime_error("Database MS unable to open file");
-		break;
 
 	case SQLITE_SCHEMA:
 		throw std::runtime_error("Database schema has changed, need reinstall or update");
-		break;
-
-	case SQLITE_ROW:
-	case SQLITE_DONE:
-		break;
 
 	case SQLITE_ERROR:
 	default:
@@ -78,4 +68,14 @@ int Database::sqliteThrowExcept(int errcode) const
 	}
 
 	return errcode;
+}
+
+void Database::lock()
+{
+	_dbAccess.lock();
+}
+
+void Database::unlock()
+{
+	_dbAccess.unlock();
 }

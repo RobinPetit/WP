@@ -8,6 +8,8 @@
 #include <vector>
 #include <array>
 #include <utility> // std::pair
+#include <mutex>
+
 // SQLite headers
 #include <sqlite3.h>
 // WizardPoker headers
@@ -21,22 +23,28 @@ struct LadderEntry
 	unsigned victories;
 	unsigned defeats;
 };
+
 constexpr int ladderSize = 20;
 using Ladder =  std::array<LadderEntry, ladderSize>;
 
 struct Statement : private std::pair<sqlite3_stmt **, const char *> // I dont care that it is a std::pair (this is just for implementation) and I prefer apply maximum restrictions rule
 {
 	Statement(first_type statement, second_type query)
-		: std::pair<first_type, second_type>(statement, query) {}
+		: std::pair<first_type, second_type>(statement, query)
+	{
+	}
+
 	sqlite3_stmt ** statement()
 	{
 		return first;
 	}
+
 	const char * query() const
 	{
 		return second;
 	}
 };
+
 template <std::size_t N>
 using StatementsList = std::array<Statement, N>;
 
@@ -59,6 +67,16 @@ protected:
 	int sqliteThrowExcept(int errcode) const;
 
 	sqlite3 *_database;
+
+	/// Acts like a mutex to have a thread-safe access to the database
+	void lock();
+
+	/// Release the unique access to the database
+	void unlock();
+
+private:
+	/// Avoids race conditions on DB
+	std::mutex _dbAccess;
 };
 
 struct Friend
