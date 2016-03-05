@@ -149,7 +149,7 @@ void Player::useCard(int handIndex)
 	{
 		_cardHand.at(handIndex);
 	}
-	catch (std::out_of_range)
+	catch (std::out_of_range&)
 	{
 		sendValueToClient(_socketToClient, TransferType::FAILURE);
 		return;
@@ -217,7 +217,7 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 		_cardHand.at(attackerIndex);
 		_opponent->_cardHand.at(victimIndex);
 	}
-	catch (std::out_of_range)
+	catch (std::out_of_range&)
 	{
 		sendValueToClient(_socketToClient, TransferType::FAILURE);
 		return;
@@ -267,10 +267,9 @@ void Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 		subject=effectArgs.at(0);
 		effectArgs.erase(effectArgs.begin());
 	}
-	catch (std::out_of_range)
+	catch (std::out_of_range&)
 	{
-		 throw std::runtime_error("Error with cards arguments");
-		return;
+		throw std::runtime_error("Error with cards arguments");
 	}
 
 	switch (subject)
@@ -398,10 +397,9 @@ void Player::setConstraint(const EffectParamsCollection& args)
 		if (constraintID<0 or constraintID>=P_CONSTRAINTS_COUNT or turns<0)
 			throw std::out_of_range("");
 	}
-	catch (std::out_of_range)
+	catch (std::out_of_range&)
 	{
-		 throw std::runtime_error("Error with cards arguments");
-		return;
+		throw std::runtime_error("Error with cards arguments");
 	}
 
 	switch (casterOptions)
@@ -421,10 +419,9 @@ void Player::pickDeckCards(const EffectParamsCollection& args)
 	{
 		amount=args.at(0);
 	}
-	catch (std::out_of_range)
+	catch (std::out_of_range&)
 	{
-		 throw std::runtime_error("Error with cards arguments");
-		return;
+		throw std::runtime_error("Error with cards arguments");
 	}
 	cardDeckToHand(amount);
 }
@@ -436,10 +433,9 @@ void Player::loseHandCards(const EffectParamsCollection& args)
 	{
 		amount=args.at(0);
 	}
-	catch (std::out_of_range)
+	catch (std::out_of_range&)
 	{
-		 throw std::runtime_error("Error with cards arguments");
-		return;
+		throw std::runtime_error("Error with cards arguments");
 	}
 
 	while (not _cardHand.empty() and amount>0)
@@ -458,10 +454,9 @@ void Player::reviveGraveyardCard(const EffectParamsCollection& args)
 		binIndex=args.at(0);
 		_cardGraveyard.at(binIndex);
 	}
-	catch (std::out_of_range)
+	catch (std::out_of_range&)
 	{
-		 throw std::runtime_error("Error with cards arguments");
-		return;
+		throw std::runtime_error("Error with cards arguments");
 	}
 	cardGraveyardToHand(binIndex);
 }
@@ -486,10 +481,9 @@ void Player::exchgHandCard(const EffectParamsCollection& args)
 		myCardIndex = args.at(0);
 		myCard = _cardHand.at(myCardIndex);
 	}
-	catch (std::out_of_range)
+	catch (std::out_of_range&)
 	{
-		 throw std::runtime_error("Error with cards arguments");
-		return;
+		throw std::runtime_error("Error with cards arguments");
 	}
 
 	Card* hisCard =  _opponent->cardExchangeFromHand(myCard);
@@ -506,71 +500,59 @@ void Player::exchgHandCard(const EffectParamsCollection& args)
 
 void Player::resetEnergy(const EffectParamsCollection& args)
 {
-	int additionalPoints; //energy points to add to reset value
 	try //check the input
 	{
-		additionalPoints=args.at(0);
+		_energyInit += args.at(0);
+		if(_energyInit < 0)
+			_energy = 0;
+		else if(_energyInit > _maxEnergy)
+			_energyInit = _maxEnergy;
+		_energy = _energyInit;
+		sendCurrentEnergy();
 	}
-	catch (std::out_of_range)
+	catch (std::out_of_range&)
 	{
-		 throw std::runtime_error("Error with cards arguments");
-		return;
+		throw std::runtime_error("Error with cards arguments");
 	}
-	_energyInit += additionalPoints; //add points to initial amount of energy
-	if (_energyInit<0)
-		_energyInit=0;
-	else if (_energy>_maxEnergy)
-		_energyInit=_maxEnergy;
-
-	_energy = _energyInit;
-	sendCurrentEnergy();
 }
 
 void Player::changeEnergy(const EffectParamsCollection& args)
 {
-	int points; //points to add
 	try //check the input
 	{
-		points=args.at(0);
+		_energy += args.at(0);
+		if(_energy < 0)
+			_energy = 0;
+		else if(_energy > _maxEnergy)
+			_energy = _maxEnergy;
+		sendCurrentEnergy();
 	}
-	catch (std::out_of_range)
+	catch (std::out_of_range&)
 	{
-		 throw std::runtime_error("Error with cards arguments");
-		return;
+		throw std::runtime_error("Error with cards arguments");
 	}
-	_energy+=points;
-	if (_energy<0)
-		_energy=0;
-	else if (_energy>_maxEnergy)
-		_energy=_maxEnergy;
-	sendCurrentEnergy();
 }
 
 void Player::changeHealth(const EffectParamsCollection& args)
 {
-	int points; //points to add
 	try //check the input
 	{
-		points=args.at(0);
+		_health += args.at(0);
+		if(_health < 0)
+		{
+			_health = 0;
+			finishGame(false, "You ran out of health");
+			_opponent->finishGame(true, "Your opponent ran out of health");
+			//NETWORK: NO_HEALTH_CHANGED
+		}
+		else if(_health > _maxHealth)
+			_health = _maxHealth;
+		sendCurrentHealth();
 	}
-	catch (std::out_of_range)
+	catch (std::out_of_range&)
 	{
-		 throw std::runtime_error("Error with cards arguments");
-		return;
+		throw std::runtime_error("Error with cards arguments");
 	}
-
-	_health+=points;
-	if (_health<=0)
-	{
-		_health=0;
-		finishGame(false, "You ran out of health");
-		_opponent->finishGame(true, "Your opponent ran out of health");
-		//NETWORK: NO_HEALTH_CHANGED
-		//call die()
-	}
-	else if (_health>_maxHealth) _health=_maxHealth;
-
-	sendCurrentHealth();
 }
 
 
@@ -618,10 +600,9 @@ void Player::setTeamConstraint(const Card* /* usedCard */, const EffectParamsCol
 		if (constraintID<0 or constraintID>=C_CONSTRAINTS_COUNT or turns<0)
 			throw std::out_of_range("");
 	}
-	catch (std::out_of_range)
+	catch (std::out_of_range&)
 	{
-		 throw std::runtime_error("Error with cards arguments");
-		return;
+		throw std::runtime_error("Error with cards arguments");
 	}
 
 	switch (casterOptions)

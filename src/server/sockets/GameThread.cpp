@@ -218,7 +218,7 @@ void GameThread::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 		subject=effectArgs.at(0);
 		effectArgs.erase(effectArgs.begin());
 	}
-	catch (std::out_of_range)
+	catch (std::out_of_range&)
 	{
 		//SERVER: CARD ERROR
 		return;

@@ -159,7 +159,7 @@ void Creature::setConstraint(const EffectParamsCollection& args)
 		if (constraintID<0 or constraintID>=C_CONSTRAINTS_COUNT or turns<0)
 			throw std::out_of_range("");
 	}
-	catch (std::out_of_range)
+	catch (std::out_of_range&)
 	{
 		 throw std::runtime_error("Error with cards arguments");
 	}
@@ -195,18 +195,16 @@ void Creature::resetShield(const EffectParamsCollection&)
 
 void Creature::changeAttack(const EffectParamsCollection& args)
 {
-	int points; //attack points to add
 	try //check the input
 	{
-		points=args.at(0);
+		_attack += args.at(0);
+		if(_attack < 0)
+			_attack = 0;
 	}
-	catch (std::out_of_range)
+	catch (std::out_of_range&)
 	{
 		throw std::runtime_error("Error with cards arguments");
 	}
-	_attack+=points;
-	if (_attack<0)
-		_attack=0;
 }
 
 void Creature::changeHealth(const EffectParamsCollection& args)
@@ -216,7 +214,7 @@ void Creature::changeHealth(const EffectParamsCollection& args)
 	{
 		points=args.at(0);
 	}
-	catch (std::out_of_range)
+	catch (std::out_of_range&)
 	{
 		 throw std::runtime_error("Error with cards arguments");
 	}
@@ -251,16 +249,14 @@ void Creature::changeHealth(const EffectParamsCollection& args)
 
 void Creature::changeShield(const EffectParamsCollection& args)
 {
-	int points; //shield points to add
 	try //check the input
 	{
-		points=args.at(0);
+		_shield += args.at(0);
+		if(_shield < 0)
+			_shield = 0;
 	}
-	catch (std::out_of_range)
+	catch (std::out_of_range&)
 	{
 		 throw std::runtime_error("Error with cards arguments");
 	}
-	_shield += points;
-	if (_shield<0)
-		_shield=0;
 }
