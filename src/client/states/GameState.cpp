@@ -192,9 +192,26 @@ void GameState::useCard()
 		_client.getGameSocket().receive(actionPacket);
 		TransferType responseHeader;
 		actionPacket >> responseHeader;
-		// TODO: check other possible response
-		if(responseHeader != TransferType::ACKNOWLEDGE)
+		switch(responseHeader)
+		{
+		case TransferType::ACKNOWLEDGE:
+			std::cout << "The card has been successfuly used.\n";
+			break;
+
+		case TransferType::GAME_NOT_ENOUGH_ENERGY:
+			std::cout << "You have not enough energy to use this card.\n";
+			break;
+
+		case TransferType::GAME_CARD_LIMIT_TURN_REACHED:
+			std::cout << "You can't use more cards, the limit is reached.\n";
+			break;
+
+		// This line is more documentative than really needed
+		case TransferType::FAILURE:
+		default:
 			std::cout << "An error occured when using a card.\n";
+			break;
+		}
 	}
 }
 
@@ -221,12 +238,25 @@ void GameState::attackWithCreature()
 			             << static_cast<sf::Int32>(selfCardIndex)
 			             << static_cast<sf::Int32>(oppoCardIndex);
 			_client.getGameSocket().send(actionPacket);
-		_client.getGameSocket().receive(actionPacket);
-		TransferType responseHeader;
-		actionPacket >> responseHeader;
-		// TODO: check other possible responses
-		if(responseHeader != TransferType::ACKNOWLEDGE)
-			std::cout << "An error occured when attacking with creature.\n";
+			_client.getGameSocket().receive(actionPacket);
+			TransferType responseHeader;
+			actionPacket >> responseHeader;
+			switch(responseHeader)
+			{
+			case TransferType::ACKNOWLEDGE:
+				std::cout << "The monster successfuly attacked.\n";
+				break;
+
+			case TransferType::GAME_NOT_ENOUGH_ENERGY:
+				std::cout << "You have not enough energy to attack with this monster.\n";
+				break;
+
+			// This line is more documentative than really needed
+			case TransferType::FAILURE:
+			default:
+				std::cout << "An error occured when attacking with this monster.\n";
+				break;
+			}
 		}
 		else
 			std::cout << "There is no card to choose, please do something else.\n";
