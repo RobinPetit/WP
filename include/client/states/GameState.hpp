@@ -94,8 +94,8 @@ class GameState : public AbstractState
 		/// Called by the game listening thread: waits for server game thread special data
 		void inputListening();
 
-		/// Handles the whole transmission until END_OF_TRANSMISSION is found
-		void handlePacket(TransferType& type, sf::Packet& transmission);
+		/// Handles the whole transmission until transmission.endOfPacket()
+		void handlePacket(sf::Packet& transmission);
 
 		// Not needed ?
 		///Those methods can be used for effects

@@ -153,9 +153,6 @@ enum class TransferType : sf::Uint32
 
 	/// Used as a "false-valued boolean" for actions requested by the client
 	FAILURE,
-
-	/// Used in long communications containing several headers to signal the end of the packet
-	END_OF_TRANSMISSION,
 };
 
 /// Overloading of the sf::Packet operators so that a TransferType variable can

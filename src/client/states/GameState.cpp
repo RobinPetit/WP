@@ -32,13 +32,14 @@ void GameState::init()
 	initListening();
 	chooseDeck();
 	sf::Packet packet;
+
 	// receive in game data
 	_client.getGameSocket().receive(packet);
-	TransferType type;
-	packet >> type;
-	handlePacket(type, packet);
+	handlePacket(packet);
+
 	// receive turn informations
 	_client.getGameSocket().receive(packet);
+	TransferType type;
 	packet >> type;
 	if(type != TransferType::GAME_STARTING)
 		throw std::runtime_error("Wrong signal received: " + std::to_string(static_cast<sf::Uint32>(type)));
@@ -312,7 +313,6 @@ void GameState::initListening()
 
 void GameState::inputListening()
 {
-	TransferType type;
 	sf::TcpSocket& listeningSocket{_client.getGameListeningSocket()};
 	_client.waitTillReadyToPlay();
 	sf::Packet receivedPacket;
@@ -334,28 +334,36 @@ void GameState::inputListening()
 			std::cerr << "Error while transmitting data\n";
 			_playing.store(false);
 		}
-		receivedPacket >> type;
-		if(type == TransferType::GAME_OVER)
-		{
-			_playing.store(false);
-			_myTurn.store(!_myTurn.load());
-		}
-		else if(type == TransferType::GAME_PLAYER_ENTER_TURN)
-			_myTurn.store(true);
-		else if(type == TransferType::GAME_PLAYER_LEAVE_TURN)
-			_myTurn.store(false);
 		else
-			handlePacket(type, receivedPacket);
+		{
+			handlePacket(receivedPacket);
+			displayGame();
+		}
 	}
 	std::cout << "GAME OVER\n";
 }
 
-void GameState::handlePacket(TransferType& type, sf::Packet& transmission)
+void GameState::handlePacket(sf::Packet& transmission)
 {
-	do
+	TransferType type;
+	while(not transmission.endOfPacket())
 	{
+		transmission >> type;
 		switch(type)
 		{
+		case TransferType::GAME_OVER:
+			_playing.store(false);
+			_myTurn.store(!_myTurn.load());
+			break;
+
+		case TransferType::GAME_PLAYER_ENTER_TURN:
+			_myTurn.store(true);
+			break;
+
+		case TransferType::GAME_PLAYER_LEAVE_TURN:
+			_myTurn.store(false);
+			break;
+
 		case TransferType::GAME_PLAYER_ENERGY_UPDATED:
 		{
 			// energy (and health and others) are transmitted through the network as 32 bit
@@ -410,9 +418,7 @@ void GameState::handlePacket(TransferType& type, sf::Packet& transmission)
 			std::cerr << "Unknown message received: " << static_cast<std::underlying_type<TransferType>::type>(type) << "; ignore." << std::endl;
 			break;
 		}
-		transmission >> type;
-	} while(type != TransferType::END_OF_TRANSMISSION);
-	displayGame();
+	}
 }
 
 //Not needed ?

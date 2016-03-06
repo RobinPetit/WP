@@ -31,8 +31,8 @@ Player::Player(GameThread& gameThread, ServerDatabase& database, userId id):
 	_database(database),
 	_id(id),
 	_isActive(false),
-	_health{_maxHealth},
-	_energy{_energyInit}
+	_energy{_energyInit},
+	_health{_maxHealth}
 {
 	// Input sockets are non-blocking, this is easier since the sockets of the
 	// two players are separated in the Player instances. So that as soon as a
@@ -123,7 +123,6 @@ void Player::beginGame(bool isActivePlayer)
 	logCurrentEnergy();
 	logCurrentHealth();
 	logOpponentHealth();
-	_pendingBoardChanges << TransferType::END_OF_TRANSMISSION;
 	_socketToClient.send(_pendingBoardChanges);
 	_pendingBoardChanges.clear();
 
