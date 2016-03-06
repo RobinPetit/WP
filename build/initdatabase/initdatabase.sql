@@ -18,7 +18,7 @@ PRAGMA foreign_keys = ON;
 -----------------------------------------------------------
 --------------------- SERVER DATABASE ---------------------
 SELECT "SERVER";
-.shell rm -f ../../resources/server/database.db
+-- .shell rm -f ../../resources/server/database.db
 .open ../../resources/server/database.db
 
 -- Examples to add card, friendRequest and account at the end of the document.
@@ -354,7 +354,9 @@ SELECT 'SELECT "CLIENT/Cards/Tables";';
 
 -----------------------------------------------------------
 --------------------- CLIENT DATABASE ---------------------
-.shell rm -f ../../resources/client/database.db
+-- its seems that some versions of sqlite have troubles with the .shell
+-- metacommand, so this must be executed from outside
+-- .shell rm -f ../../resources/client/database.db
 .open ../../resources/client/database.db
 
 .read "toClient.sql"

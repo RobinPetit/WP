@@ -10,4 +10,6 @@ sed -f compileCardDataPass2.sed ../../include/common/CardData.inc > CardData.tmp
 sed -f compileCardDataPass3.sed CardData.tmp >> CardData.sql;
 
 echo ' + creating db files'
+rm -f ../../resources/server/database.db
+rm -f ../../resources/client/database.db
 sqlite3 :memory: ".read initdatabase.sql"
