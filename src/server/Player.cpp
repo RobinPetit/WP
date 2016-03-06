@@ -262,6 +262,7 @@ void Player::useCard(int handIndex)
 
 	_energy -= usedCard->getEnergyCost();
 	(*this.*(usedCard->isCreature() ? &Player::useCreature : &Player::useSpell))(handIndex, usedCard);
+	logHandState();
 }
 
 ////////////////////// specialized card cases
@@ -280,6 +281,7 @@ void Player::useCreature(int handIndex, Card *& usedCard)
 		response << TransferType::ACKNOWLEDGE;
 	}
 	_socketToClient.send(response);
+	logBoardState();
 }
 
 void Player::useSpell(int handIndex, Card *& usedCard)
@@ -296,6 +298,7 @@ void Player::useSpell(int handIndex, Card *& usedCard)
 		response << TransferType::ACKNOWLEDGE;
 	}
 	_socketToClient.send(response);
+	logGraveyardState();
 }
 
 void Player::attackWithCreature(int attackerIndex, int victimIndex)

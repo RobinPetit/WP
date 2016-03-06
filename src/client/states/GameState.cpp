@@ -110,6 +110,8 @@ void GameState::startTurn()
 			continue;
 		std::string command{_nonBlockingInput.receiveStdinData()};
 		handleInput(command);
+		display();
+		std::cout << "What do you want to do next? ";
 	}
 }
 
@@ -122,7 +124,7 @@ int GameState::askIndex(std::size_t upperBound, std::string inputMessage)
 	int res;
 	if (upperBound == 0)
 	{
-		std::cout << "There are no cards to choose\n";
+		std::cout << "There are no cards to choose.\n";
 		return -1;
 	}
 
@@ -143,34 +145,34 @@ int GameState::askSelfHandIndex()
 {
 	std::cout << "These are the cards in your hand:" << std::endl;
 	displayCardVector(_selfHandCards);
-	return askIndex(_selfHandCards.size(), "Choose the index for a card in your hand :");
+	return askIndex(_selfHandCards.size(), "Choose the index for a card in your hand: ");
 }
 
 int GameState::askSelfBoardIndex()
 {
 	std::cout << "These are the cards on your board:" << std::endl;
 	displayBoardCreatureVector(_selfBoardCreatures);
-	return askIndex(_selfBoardCreatures.size(), "Choose the index for a card on your board :");
+	return askIndex(_selfBoardCreatures.size(), "Choose the index for a card on your board: ");
 }
 
 int GameState::askSelfGraveyardIndex()
 {
 	std::cout << "These are the cards in your graveyard:" << std::endl;
 	displayCardVector(_selfGraveCards);
-	return askIndex(_selfGraveCards.size(), "Choose the index for a card in the graveyard :");
+	return askIndex(_selfGraveCards.size(), "Choose the index for a card in the graveyard: ");
 }
 
 int GameState::askOppoHandIndex()
 {
 	std::cout << "Your opponent has " << _oppoHandSize << " cards in his hand." << std::endl;
-	return askIndex(_oppoHandSize, "Choose the index for a card in the opponent's hand :");
+	return askIndex(_oppoHandSize, "Choose the index for a card in the opponent's hand: ");
 }
 
 int GameState::askOppoBoardIndex()
 {
 	std::cout << "These are the cards on your opponent's board:" << std::endl;
 	displayBoardCreatureVector(_oppoBoardCreatures);
-	return askIndex(_oppoBoardCreatures.size(), "Choose the index for a card on the opponent's board :");
+	return askIndex(_oppoBoardCreatures.size(), "Choose the index for a card on the opponent's board: ");
 }
 
 //User actions
@@ -184,10 +186,15 @@ void GameState::useCard()
 	else
 	{
 		int cardIndex = askSelfHandIndex();
-		std::cout << "You want to use card " << cardIndex << "\n";
 		sf::Packet actionPacket;
 		actionPacket << TransferType::GAME_USE_CARD << static_cast<sf::Int32>(cardIndex);
 		_client.getGameSocket().send(actionPacket);
+		_client.getGameSocket().receive(actionPacket);
+		TransferType responseHeader;
+		actionPacket >> responseHeader;
+		// TODO: check other possible response
+		if(responseHeader != TransferType::ACKNOWLEDGE)
+			std::cout << "An error occured when using a card.\n";
 	}
 }
 
@@ -214,6 +221,12 @@ void GameState::attackWithCreature()
 			             << static_cast<sf::Int32>(selfCardIndex)
 			             << static_cast<sf::Int32>(oppoCardIndex);
 			_client.getGameSocket().send(actionPacket);
+		_client.getGameSocket().receive(actionPacket);
+		TransferType responseHeader;
+		actionPacket >> responseHeader;
+		// TODO: check other possible responses
+		if(responseHeader != TransferType::ACKNOWLEDGE)
+			std::cout << "An error occured when attacking with creature.\n";
 		}
 		else
 			std::cout << "There is no card to choose, please do something else.\n";
@@ -293,10 +306,10 @@ void GameState::displayBoardCreatureVector(const std::vector<BoardCreatureData>&
 	{
 		const BoardCreatureData& thisCreature = cardVector.at(i);
 		const cardId id = thisCreature.id;
-		std::cout << i << " : " << getCardName(id) << "(cost:" << getCardCost(id) <<
-		          ", attack:" << thisCreature.attack <<
-		          ", health:" << thisCreature.health <<
-		          ", shield:" << thisCreature.shield << "-" << thisCreature.shieldType << ")";
+		std::cout << i << " : " << getCardName(id) << "(cost: " << getCardCost(id) <<
+		          ", attack: " << thisCreature.attack <<
+		          ", health: " << thisCreature.health <<
+		          ", shield: " << thisCreature.shield << "-" << thisCreature.shieldType << ")";
 		//TODO use card names instead of card IDs ?
 		if (i!=cardVector.size()-1)
 			std::cout << ", ";
