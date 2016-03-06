@@ -523,7 +523,7 @@ CostValue GameState::getCardCost(cardId id)
 	if (id<=10)
 		return ALL_CREATURES[id-1].cost;
 	else
-		return ALL_SPELLS[id-10].cost;
+		return ALL_SPELLS[id-11].cost;
 }
 
 std::string GameState::getCardDescription(cardId id)
