@@ -60,11 +60,12 @@ public:
 	void applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollection effectArgs);
 
 	/// Getters
-	int getCreatureConstraint(const Creature& subject, int constraintIDD);
-	const Card* getLastCaster();
-	userId getID();
+	int getCreatureConstraint(const Creature& subject, int constraintIDD) const;
+	const Card* getLastCaster() const;
+	userId getID() const;
 	sf::TcpSocket& getSocket();
-	const std::vector<Creature *>& getBoard();
+	const std::vector<Creature *>& getBoard() const;
+	int getHealth() const;
 
 	/// \return true if some changes has been logged since the last player's
 	/// action, false otherwise.
@@ -171,6 +172,7 @@ private:
 	void logBoardState();
 	void logOpponentBoardState();
 	void logGraveyardState();
+	void logOpponentHealth();
 
 	template <typename CardType>
 	void logIdsFromVector(TransferType type, const std::vector<CardType *>& vect);

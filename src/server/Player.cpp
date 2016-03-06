@@ -30,10 +30,10 @@ Player::Player(GameThread& gameThread, ServerDatabase& database, userId id):
 	_gameThread(gameThread),
 	_database(database),
 	_id(id),
-	_isActive(false)
+	_isActive(false),
+	_health{_maxHealth},
+	_energy{_energyInit}
 {
-	//NETWORK: GREETINGS_USER
-
 	// Input sockets are non-blocking, this is easier since the sockets of the
 	// two players are separated in the Player instances. So that as soon as a
 	// packet is received, the packet is handled, rather than waiting that the
@@ -46,16 +46,20 @@ void Player::setOpponent(Player* opponent)
 	_opponent = opponent;
 }
 
-userId Player::getID()
+int Player::getHealth() const
+{
+	return _health;
+}
+
+userId Player::getID() const
 {
 	return _id;
 }
 
-const std::vector<Creature *>& Player::getBoard()
+const std::vector<Creature *>& Player::getBoard() const
 {
 	return _cardBoard;
 }
-
 
 bool Player::thereAreBoardChanges()
 {
@@ -113,11 +117,20 @@ void Player::receiveDeck()
 
 void Player::beginGame(bool isActivePlayer)
 {
+	// init Player's data
+	cardDeckToHand(4);
+	// log & send
+	logCurrentEnergy();
+	logCurrentHealth();
+	logOpponentHealth();
+	_pendingBoardChanges << TransferType::END_OF_TRANSMISSION;
+	_socketToClient.send(_pendingBoardChanges);
+	_pendingBoardChanges.clear();
+
 	sf::Packet packet;
 	packet << TransferType::GAME_STARTING << (isActivePlayer ? TransferType::GAME_PLAYER_ENTER_TURN : TransferType::GAME_PLAYER_LEAVE_TURN);
 	_socketToClient.send(packet);
 	_isActive.store(isActivePlayer);
-	//NETWORK: SEND ALL GAME INFORMATION TO CLIENT, ALONG WITH 'game started, it's (not)your turn' message
 }
 
 void Player::enterTurn(int /* turn */)
@@ -434,14 +447,14 @@ void Player::applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollect
 }
 
 /*------------------------------ GETTERS */
-int Player::getCreatureConstraint(const Creature& subject, int constraintID)
+int Player::getCreatureConstraint(const Creature& subject, int constraintID) const
 {
 	//returns the value respecting both the creature and the whole team's constraints
 	int creatureValue = subject.getPersonalConstraint(constraintID);
 	return _teamConstraints.getOverallConstraint(constraintID, creatureValue);
 }
 
-const Card* Player::getLastCaster()
+const Card* Player::getLastCaster() const
 {
 	return _lastCasterCard;
 }
@@ -538,8 +551,8 @@ void Player::stealHandCard(const EffectParamsCollection& /* args */)
 }
 
 /// \network sends to user one of the following:
-///	 + SERVER_UNABLE_TO_PERFORM if opponent has no card in his hand
-///	 + SERVER_ACKNOWLEDGEMENT if card has been swapped
+///	 + FAILURE if opponent has no card in his hand
+///	 + ACKNOWLEDGE if card has been swapped
 void Player::exchgHandCard(const EffectParamsCollection& args)
 {
 	int myCardIndex; //card to exchange
@@ -642,6 +655,11 @@ void Player::logCurrentHealth()
 	_pendingBoardChanges << TransferType::GAME_PLAYER_HEALTH_UPDATED << static_cast<sf::Uint32>(_health);
 }
 
+void Player::logOpponentHealth()
+{
+	_pendingBoardChanges << TransferType::GAME_OPPONENT_HEALTH_UPDATED << static_cast<sf::Uint32>(_opponent->getHealth());
+}
+
 /*--------------------------- PRIVATE */
 
 void Player::exploitCardEffects(Card* usedCard)
@@ -685,7 +703,7 @@ void Player::setTeamConstraint(const Card* /* usedCard */, const EffectParamsCol
 
 void Player::cardDeckToHand(int amount)
 {
-	if(not _cardDeck.empty() and amount>0)
+	while(not _cardDeck.empty() and amount>0)
 	{
 		amount--;
 		_cardHand.push_back(_cardDeck.top());
@@ -797,7 +815,7 @@ void Player::logIdsFromVector(TransferType type, const std::vector<CardType *>& 
 	_pendingBoardChanges << cardIds;
 }
 
-void Player::logCardDataFromVector(TransferType /* type */, const std::vector<Card*>& vect)
+void Player::logCardDataFromVector(TransferType type, const std::vector<Card*>& vect)
 {
 	std::vector<CardData> cards;
 	for(auto i=0U; i < vect.size(); ++i)
@@ -806,10 +824,10 @@ void Player::logCardDataFromVector(TransferType /* type */, const std::vector<Ca
 		data.id = vect.at(i)->getID();
 		cards.push_back(data);
 	}
-	_pendingBoardChanges << cards;
+	_pendingBoardChanges << type << cards;
 }
 
-void Player::logBoardCreatureDataFromVector(TransferType /* type */, const std::vector<Creature*>& vect)
+void Player::logBoardCreatureDataFromVector(TransferType type, const std::vector<Creature*>& vect)
 {
 	std::vector<BoardCreatureData> boardCreatures;
 	for (auto i=0U; i<vect.size(); i++)
@@ -834,11 +852,12 @@ void Player::logBoardCreatureDataFromVector(TransferType /* type */, const std::
 				break;
 			case SHIELD_LEGENDARY:
 				data.shieldType = "legendary";
+				break;
 		}
 		boardCreatures.push_back(data);
 	}
 	// std::vector transmission in packet is defined in common/sockets/PacketOverload.hpp
-	_pendingBoardChanges << boardCreatures;
+	_pendingBoardChanges << type << boardCreatures;
 }
 
 //////////

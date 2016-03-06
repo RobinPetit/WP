@@ -32,8 +32,13 @@ void GameState::init()
 	initListening();
 	chooseDeck();
 	sf::Packet packet;
+	// receive in game data
 	_client.getGameSocket().receive(packet);
 	TransferType type;
+	packet >> type;
+	handlePacket(type, packet);
+	// receive turn informations
+	_client.getGameSocket().receive(packet);
 	packet >> type;
 	if(type != TransferType::GAME_STARTING)
 		throw std::runtime_error("Wrong signal received: " + std::to_string(static_cast<sf::Uint32>(type)));
@@ -53,22 +58,20 @@ void GameState::chooseDeck()
 	// Ask for the deck to use during the game
 	for(std::size_t i{0}; i < decks.size(); i++)
 		std::cout << i << " : " << decks.at(i).getName() << std::endl;
-	std::cin.clear();
 	std::size_t res;  // Chosen deck
 	do
 	{
 		std::cout << "Choose your deck: ";
 		std::cin >> res;
-		std::cout << "you chose" << res << std::endl;
 		if(res >= decks.size())
 			std::cout << "Your answer should be in the range [" << 0 << ", " << decks.size() <<"[ !\n";
 	} while(res >= decks.size());
 
-	// Send the deck ID to the server
-	std::cout << "sending your deck '" << decks.at(res).getName() << "'...\n";
-	sf::Packet deckIdPacket;
-	deckIdPacket << TransferType::GAME_PLAYER_GIVE_DECK_NAMES << decks.at(res).getName();
-	_client.getGameSocket().send(deckIdPacket);
+	// Send the deck name to the server
+	std::cout << "sending deck " << decks.at(res).getName() << std::endl;
+	sf::Packet deckNamePacket;
+	deckNamePacket << TransferType::GAME_PLAYER_GIVE_DECK_NAMES << decks.at(res).getName();
+	_client.getGameSocket().send(deckNamePacket);
 }
 
 void GameState::play()
@@ -272,20 +275,16 @@ void GameState::displayGame()
 	std::cout << "***************" << std::endl;
 }
 
-void GameState::displayCardVector(std::vector<CardData> cardVector)
+void GameState::displayCardVector(const std::vector<CardData>& cardVector)
 {
 	for (auto i=0U; i<cardVector.size(); i++)
 	{
 		cardId id = cardVector.at(i).id;
-		std::cout << i << " : " << getCardName(id) << "(cost:" << getCardCost(id) << ")";
-		//TODO use card names instead of card IDs ?
-		if (i!=cardVector.size()-1)
-			std::cout << ", ";
+		std::cout << "  * " << i << " : " << getCardName(id) << "(cost:" << getCardCost(id) << ")" << (i < cardVector.size()-1 ? ", " : "") << "\n";
 	}
-	std::cout << std::endl;
 }
 
-void GameState::displayBoardCreatureVector(std::vector<BoardCreatureData> cardVector)
+void GameState::displayBoardCreatureVector(const std::vector<BoardCreatureData>& cardVector)
 {
 	// The board vector also contains real time informations about the cards (health, attack, shield, shield type)
 	// This method should display these informations and be called only for displaying the board
@@ -313,6 +312,7 @@ void GameState::initListening()
 
 void GameState::inputListening()
 {
+	TransferType type;
 	sf::TcpSocket& listeningSocket{_client.getGameListeningSocket()};
 	_client.waitTillReadyToPlay();
 	sf::Packet receivedPacket;
@@ -334,94 +334,85 @@ void GameState::inputListening()
 			std::cerr << "Error while transmitting data\n";
 			_playing.store(false);
 		}
-		// Everything is fine
+		receivedPacket >> type;
+		if(type == TransferType::GAME_OVER)
+		{
+			_playing.store(false);
+			_myTurn.store(!_myTurn.load());
+		}
+		else if(type == TransferType::GAME_PLAYER_ENTER_TURN)
+			_myTurn.store(true);
+		else if(type == TransferType::GAME_PLAYER_LEAVE_TURN)
+			_myTurn.store(false);
 		else
-			handlePacket(receivedPacket);
+			handlePacket(type, receivedPacket);
 	}
-	std::cout << "Game over!\n";
+	std::cout << "GAME OVER\n";
 }
 
-void GameState::handlePacket(sf::Packet& packet)
+void GameState::handlePacket(TransferType& type, sf::Packet& transmission)
 {
-	TransferType type;
-	// Packets received by listener socket are a composed of multiple headers
-	// followed by their data, such as:
-	// packet << GAME_PLAYER_ENERGY_UPDATED << newEnergy
-	//        << GAME_PLAYER_HEALTH_UPDATED << newHealth << ...;
-	while(not packet.endOfPacket())
+	do
 	{
-		packet >> type;
 		switch(type)
 		{
-			case TransferType::GAME_OVER:
-				_playing.store(false);
-				_myTurn.store(!_myTurn.load());
-				break;
-
-			case TransferType::GAME_PLAYER_ENTER_TURN:
-				_myTurn.store(true);
-				break;
-
-			case TransferType::GAME_PLAYER_LEAVE_TURN:
-				_myTurn.store(false);
-				break;
-
-			case TransferType::GAME_PLAYER_ENERGY_UPDATED:
-			{
-				std::cout << "Energy points updated" << std::endl;
-				// energy (and health and others) are transmitted through the network as 32 bit
-				// unsigned integers. So be sure to receive the exact same thing to avoid encoding
-				// errors and then set it in the "real" attribute
-				sf::Uint32 energy32;
-				_accessEnergy.lock();
-				packet >> energy32;
-				_selfEnergy = energy32;
-				_accessEnergy.unlock();
-				displayGame();
-				break;
-
-			}
-			case TransferType::GAME_PLAYER_HEALTH_UPDATED:
-			{
-				std::cout << "Health points updated" << std::endl;
-				sf::Uint32 health32;
-				_accessHealth.lock();
-				packet >> health32;
-				_selfHealth = health32;
-				_accessHealth.unlock();
-				displayGame();
-				break;
-
-			}
-			case TransferType::GAME_BOARD_UPDATED:
-				std::cout << "Board updated" << std::endl;
-				packet >> _selfBoardCreatures;
-				displayGame();
-				break;
-
-			case TransferType::GAME_OPPONENT_BOARD_UPDATED:
-				std::cout << "Opponent's board updated" << std::endl;
-				packet >> _oppoBoardCreatures;
-				displayGame();
-				break;
-
-			case TransferType::GAME_GRAVEYARD_UPDATED:
-				std::cout << "Graveyard updated" << std::endl;
-				packet >> _selfGraveCards;
-				displayGame();
-				break;
-
-			case TransferType::GAME_HAND_UPDATED:
-				std::cout << "Hand updated" << std::endl;
-				packet >> _selfHandCards;
-				displayGame();
-				break;
-
-			default:
-				std::cerr << "Unknown message received: " << static_cast<std::underlying_type<TransferType>::type>(type) << "; ignore." << std::endl;
-				break;
+		case TransferType::GAME_PLAYER_ENERGY_UPDATED:
+		{
+			// energy (and health and others) are transmitted through the network as 32 bit
+			// unsigned integers. So be sure to receive the exact same thing to avoid encoding
+			// errors and then set it in the "real" attribute
+			sf::Uint32 energy32;
+			transmission >> energy32;
+			std::lock_guard<std::mutex> lock{_accessEnergy};
+			_selfEnergy = energy32;
 		}
-	}
+			break;
+
+		case TransferType::GAME_PLAYER_HEALTH_UPDATED:
+		{
+			sf::Uint32 health32;
+			transmission >> health32;
+			std::lock_guard<std::mutex> lock{_accessHealth};
+			_selfHealth = health32;
+		}
+			break;
+
+		case TransferType::GAME_OPPONENT_HEALTH_UPDATED:
+		{
+			sf::Uint32 health32;
+			transmission >> health32;
+			std::lock_guard<std::mutex> lock{_accessHealth};
+			_oppoHealth = health32;
+		}
+			break;
+
+		case TransferType::GAME_BOARD_UPDATED:
+			std::cout << "Board updated" << std::endl;
+			transmission >> _selfBoardCreatures;
+			break;
+
+		case TransferType::GAME_OPPONENT_BOARD_UPDATED:
+			std::cout << "Opponent's board updated" << std::endl;
+			transmission >> _oppoBoardCreatures;
+			break;
+		case TransferType::GAME_GRAVEYARD_UPDATED:
+			std::cout << "Graveyard updated" << std::endl;
+			transmission >> _selfGraveCards;
+			break;
+
+		case TransferType::GAME_HAND_UPDATED:
+			std::cout << "Hand updated" << std::endl;
+			std::cout << _selfHandCards.size();
+			transmission >> _selfHandCards;
+			break;
+
+		default:
+			std::cerr << "Unknown message received: " << static_cast<std::underlying_type<TransferType>::type>(type) << "; ignore." << std::endl;
+			break;
+		}
+		transmission >> type;
+	} while(type != TransferType::END_OF_TRANSMISSION);
+	displayGame();
 }
 
 //Not needed ?
@@ -510,7 +501,7 @@ void GameState::applySelfEffect()
 	}
 }*/
 
-std::string GameState::getCardName(cardId id)
+const std::string& GameState::getCardName(cardId id)
 {
 	if (id<=10)
 		return ALL_CREATURES[id-1].name;
@@ -526,7 +517,7 @@ CostValue GameState::getCardCost(cardId id)
 		return ALL_SPELLS[id-11].cost;
 }
 
-std::string GameState::getCardDescription(cardId id)
+const std::string& GameState::getCardDescription(cardId id)
 {
 	if (id<=10)
 		return ALL_CREATURES[id-1].description;

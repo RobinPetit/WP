@@ -12,6 +12,7 @@
 #include "common/CardData.hpp"
 #include "common/GameData.hpp"
 #include "common/Identifiers.hpp"
+#include "common/sockets/TransferType.hpp"
 
 // Forward declarations
 class StateStack;
@@ -81,19 +82,20 @@ class GameState : public AbstractState
 
 		// Game display
 		void displayGame();
-		void displayCardVector(std::vector<CardData> cardVector);
-		void displayBoardCreatureVector(std::vector<BoardCreatureData> cardVector);
+		void displayCardVector(const std::vector<CardData>& cardVector);
+		void displayBoardCreatureVector(const std::vector<BoardCreatureData>& cardVector);
 
-		std::string getCardName(cardId id);
+		const std::string& getCardName(cardId id);
 		CostValue getCardCost(cardId id);
-		std::string getCardDescription(cardId id);
+		const std::string& getCardDescription(cardId id);
 
 		/// Start the new thread waiting for special data
 		void initListening();
 		/// Called by the game listening thread: waits for server game thread special data
 		void inputListening();
-		/// Print informations contained in a packet received by the listener thread
-		void handlePacket(sf::Packet& packet);
+
+		/// Handles the whole transmission until END_OF_TRANSMISSION is found
+		void handlePacket(TransferType& type, sf::Packet& transmission);
 
 		// Not needed ?
 		///Those methods can be used for effects
