@@ -22,6 +22,6 @@ target_link_libraries(${SERVER_NAME} ${COMMON_NAME} ${EXTERNAL_LIBRARIES})
 add_custom_command(
 		TARGET ${SERVER_NAME}
 		PRE_BUILD
-		COMMAND ./../../build/initdatabase/initdatabase.sh
-		WORKING_DIRECTORY ../../../build/initdatabase/
+		COMMAND ./initdatabase.sh
+		WORKING_DIRECTORY ../../../prebuildscript/
 	)
