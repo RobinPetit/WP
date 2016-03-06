@@ -13,3 +13,7 @@ echo ' + creating db files'
 rm -f ../resources/server/database.db
 rm -f ../resources/client/database.db
 sqlite3 :memory: ".read initdatabase.sql"
+
+rm -f CardData.sql
+rm -f CardData.tmp
+rm -f toClient.sql
