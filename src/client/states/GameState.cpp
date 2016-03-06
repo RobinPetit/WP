@@ -409,21 +409,24 @@ void GameState::handlePacket(sf::Packet& transmission)
 
 		case TransferType::GAME_BOARD_UPDATED:
 			std::cout << "Board updated" << std::endl;
+			_selfBoardCreatures.clear();
 			transmission >> _selfBoardCreatures;
 			break;
 
 		case TransferType::GAME_OPPONENT_BOARD_UPDATED:
 			std::cout << "Opponent's board updated" << std::endl;
+			_oppoBoardCreatures.clear();
 			transmission >> _oppoBoardCreatures;
 			break;
 		case TransferType::GAME_GRAVEYARD_UPDATED:
 			std::cout << "Graveyard updated" << std::endl;
+			_selfGraveCards.clear();
 			transmission >> _selfGraveCards;
 			break;
 
 		case TransferType::GAME_HAND_UPDATED:
 			std::cout << "Hand updated" << std::endl;
-			std::cout << _selfHandCards.size();
+			_selfHandCards.clear();
 			transmission >> _selfHandCards;
 			break;
 
