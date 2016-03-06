@@ -125,7 +125,10 @@ userId GameThread::runGame()
 
 				// Check if the player quitted the game
 				if(_winner != 0)
+				{
+					_running.store(false);
 					break;
+				}
 			}
 		}
 		sf::sleep(sf::milliseconds(250));
