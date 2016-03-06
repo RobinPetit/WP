@@ -272,42 +272,36 @@ void Player::useCard(int handIndex)
 
 void Player::useCreature(int handIndex, Card *& usedCard)
 {
-	sf::Packet response;
 	if (_constraints.getConstraint(PC_TEMP_CREATURE_PLACING_LIMIT) == _turnData.creaturesPlaced)
-		response << TransferType::FAILURE;
+		sendValueToClient(TransferType::FAILURE);
 	else
 	{
 		_turnData.cardsUsed++;
 		_turnData.creaturesPlaced++;
 		cardHandToBoard(handIndex);
 		exploitCardEffects(usedCard);
-		response << TransferType::ACKNOWLEDGE;
+		sendValueToClient(TransferType::ACKNOWLEDGE);
 	}
-	_socketToClient.send(response);
 	logBoardState();
 }
 
 void Player::useSpell(int handIndex, Card *& usedCard)
 {
-	sf::Packet response;
 	if (_constraints.getConstraint(PC_TEMP_SPELL_CALL_LIMIT) == _turnData.spellCalls)
-		response << TransferType::FAILURE;
+		sendValueToClient(TransferType::FAILURE);
 	else
 	{
 		_turnData.cardsUsed++;
 		_turnData.spellCalls++;
 		cardHandToGraveyard(handIndex);
 		exploitCardEffects(usedCard);
-		response << TransferType::ACKNOWLEDGE;
+		sendValueToClient(TransferType::ACKNOWLEDGE);
 	}
-	_socketToClient.send(response);
 	logGraveyardState();
 }
 
 void Player::attackWithCreature(int attackerIndex, int victimIndex)
 {
-	sf::Packet response;
-
 	try //check the input
 	{
 		_cardHand.at(attackerIndex);
@@ -329,16 +323,15 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 	_energy -= attacker->getEnergyCost();
 
 	if (_constraints.getConstraint(PC_TEMP_CREATURE_ATTACK_LIMIT) == _turnData.creatureAttacks)
-		response << TransferType::FAILURE;
+		sendValueToClient(TransferType::FAILURE);
 	else
 	{
 		if (victimIndex<0)
 			_opponent->applyEffectToSelf(attacker, {PE_CHANGE_HEALTH, -attacker->getAttack()}); //no forced attacks on opponent
 		else
 			attacker->makeAttack(*_opponent->_cardBoard.at(victimIndex));
-		response << TransferType::ACKNOWLEDGE;
+		sendValueToClient(TransferType::ACKNOWLEDGE);
 	}
-	_socketToClient.send(response);
 }
 
 void Player::endTurn()
