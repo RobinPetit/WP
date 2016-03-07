@@ -86,12 +86,13 @@ private:
 	/// Types
 	struct TurnData
 	{
+		int turnCount;
 		int cardsUsed;
 		int creaturesPlaced;
 		int creatureAttacks;
 		int spellCalls;
 	};
-	constexpr static TurnData _emptyTurnData = {0, 0, 0, 0};
+	constexpr static TurnData _emptyTurnData = {0, 0, 0, 0, 0};
 
 	/// Attributes
 	GameThread& _gameThread;

@@ -133,11 +133,13 @@ void Player::beginGame(bool isActivePlayer)
 	_isActive.store(isActivePlayer);
 }
 
-void Player::enterTurn(int /* turn */)
+void Player::enterTurn(int turn)
 {
 	_isActive.store(true); //Player has become active
 
 	_turnData = _emptyTurnData;  // Reset the turn data
+	_turnData.turnCount = turn;  // Store turn number
+
 	if (_cardDeck.empty())
 	{
 		_turnsSinceEmptyDeck++;
