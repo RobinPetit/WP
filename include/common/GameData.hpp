@@ -5,7 +5,7 @@
 #include "common/CardData.hpp"
 
 /// These struct are used to communicate changes of the game data on the network (server => client).
-enum CardToSelect : int32_t
+enum CardToSelect : sf::Int32
 {
 	SELF_BOARD,
 	OPPO_BOARD,
