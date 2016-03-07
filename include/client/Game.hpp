@@ -23,7 +23,6 @@ class Game
 
 		void play();
 		void startTurn();
-		// void updateData(std::array<unsigned, 5>);
 
 		~Game();
 
@@ -93,11 +92,7 @@ class Game
 		/// Handles the whole transmission until transmission.endOfPacket()
 		void handlePacket(sf::Packet& transmission);
 
-		// Not needed ?
-		///Those methods can be used for effects
-		//void changeHealth(int);
-		//void changeOppoHealth(int);
-		//void changeEnergy(int);
+		/// Those methods can be used for effects
 		//void pickCard(int); //HAPPENS IN SERVER
 		//void applyOppoEffect();
 		//void applySelfEffect();

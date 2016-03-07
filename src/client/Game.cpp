@@ -505,31 +505,6 @@ void Game::handlePacket(sf::Packet& transmission)
 	}
 }
 
-//Not needed ?
-/*
-void Game::updateData(std::array<unsigned, 5> data)
-{
-	_selfEnergy = data[0];
-	_selfHealth = data[1]; _oppoHealth = data[2];
-	_selfDeckSize = data[3];
-	_oppoHandSize = data[4];
-
-}
-
-void Game::changeHealth(int health)
-{
-	_selfHealth += health;
-}
-
-void Game::changeOppoHealth(int health)
-{
-	_oppoHealth += health;
-}
-
-void Game::changeEnergy(int energy)
-{
-	_selfEnergy += energy;
-}*/
 /*void Game::pickCard(int pickedCard)
 {
 	if(_remainCards > 0)
