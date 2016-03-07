@@ -325,7 +325,8 @@ void GameState::displayCardVector(const std::vector<CardData>& cardVector)
 	for (auto i=0U; i<cardVector.size(); i++)
 	{
 		cardId id = cardVector.at(i).id;
-		std::cout << "  * " << i << " : " << getCardName(id) << "(cost:" << getCardCost(id) << ")" << (i < cardVector.size()-1 ? ", " : "") << "\n";
+		std::cout << "  * " << i << " : " << getCardName(id) << " (cost: " << getCardCost(id)
+		          << ")" << (i < cardVector.size()-1 ? ", " : "") << "\n";
 	}
 }
 
@@ -337,10 +338,10 @@ void GameState::displayBoardCreatureVector(const std::vector<BoardCreatureData>&
 	{
 		const BoardCreatureData& thisCreature = cardVector.at(i);
 		const cardId id = thisCreature.id;
-		std::cout << i << " : " << getCardName(id) << "(cost: " << getCardCost(id) <<
-		          ", attack: " << thisCreature.attack <<
-		          ", health: " << thisCreature.health <<
-		          ", shield: " << thisCreature.shield << "-" << thisCreature.shieldType << ")";
+		std::cout << i << " : " << getCardName(id) << " (cost: " << getCardCost(id) <<
+		             ", attack: " << thisCreature.attack <<
+		             ", health: " << thisCreature.health <<
+		             ", shield: " << thisCreature.shield << "-" << thisCreature.shieldType << ")";
 		//TODO use card names instead of card IDs ?
 		if (i!=cardVector.size()-1)
 			std::cout << ", ";

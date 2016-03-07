@@ -92,7 +92,7 @@ void Player::setDeck(const Deck& newDeck)
 			loadedCards.push_back(new Spell(card, spell.cost, spell.effects));
 		}
 	}
-	std::shuffle(loadedCards.begin(), loadedCards.end(), _engine);
+	std::shuffle(loadedCards.begin(), loadedCards.end(), std::mt19937(std::random_device()()));
 	for (auto i{0U}; i<Deck::size; i++)
 		_cardDeck.push(loadedCards.at(i));
 }
