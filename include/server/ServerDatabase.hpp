@@ -12,9 +12,9 @@ class ServerDatabase : public Database
 public:
 	/// Constructor
 	/// \param filename: relative path to sqlite3 file.
-	explicit ServerDatabase(const std::string filename = FILENAME);
+	explicit ServerDatabase(const std::string& filename = FILENAME);
 
-	userId getUserId(const std::string login);
+	userId getUserId(const std::string& login);
 	std::string getLogin(userId id);
 
 	inline FriendsList getFriendsList(userId id)

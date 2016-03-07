@@ -3,9 +3,8 @@
 #include <string>
 #include <cstring>
 
-Database::Database(std::string filename)
+Database::Database(const std::string& filename)
 {
-	std::cout << filename.c_str() << std::endl;
 	sqliteThrowExcept(sqlite3_open(filename.c_str(), &_database));
 	sqliteThrowExcept(sqlite3_exec(_database, "PRAGMA foreign_keys = ON;", nullptr, nullptr, nullptr));
 }
@@ -24,7 +23,7 @@ Database::~Database()
 		std::cerr << "ERROR while closing database connection" << std::endl; // TODO error handling
 }
 
-int Database::sqliteThrowExcept(int errcode) const
+int Database::sqliteThrowExcept(int errcode)
 {
 	switch(errcode)
 	{

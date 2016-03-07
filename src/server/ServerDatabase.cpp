@@ -7,16 +7,15 @@
 #define AUTO_QUERY_LENGTH -1
 
 // TODO: this is multi-threaded
-// Rien à voir mais j'y pense maintenant: ajouter aux requirements que l'utilisateur doit pouvoir supprimer toutes ses données personnelles
 
 const char ServerDatabase::FILENAME[] = "../resources/server/database.db";
-ServerDatabase::ServerDatabase(std::string filename) : Database(filename)
+ServerDatabase::ServerDatabase(const std::string& filename) : Database(filename)
 {
 	for(size_t i = 0; i < _statements.size(); ++i)
 		prepareStmt(_statements[i]);
 }
 
-userId ServerDatabase::getUserId(const std::string login)
+userId ServerDatabase::getUserId(const std::string& login)
 {
 	sqlite3_reset(_userIdStmt);
 	sqliteThrowExcept(sqlite3_bind_text(_userIdStmt, 1, login.c_str(), AUTO_QUERY_LENGTH, SQLITE_TRANSIENT));
