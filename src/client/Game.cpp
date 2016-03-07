@@ -81,7 +81,6 @@ void Game::chooseDeck()
 
 void Game::play()
 {
-	_playing.store(true);
 	while(_playing.load())
 	{
 		if(_myTurn.load())
@@ -439,13 +438,11 @@ void Game::handlePacket(sf::Packet& transmission)
 			break;
 
 		case TransferType::GAME_PLAYER_ENTER_TURN:
-			std::cout << "entering turn\n";
 			_myTurn.store(true);
 			break;
 
 		case TransferType::GAME_PLAYER_LEAVE_TURN:
 			_myTurn.store(false);
-			std::cout << "leaving turn\n";
 			break;
 
 		case TransferType::GAME_PLAYER_ENERGY_UPDATED:
