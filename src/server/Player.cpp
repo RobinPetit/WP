@@ -879,16 +879,16 @@ std::vector<int>&& Player::getRandomBoardIndexes(const std::vector<CardToSelect>
 	{
 		switch (selection.at(i))
 		{
-			case SELF_BOARD:
+			case CardToSelect::SELF_BOARD:
 				indices.push_back(std::uniform_int_distribution<int>(0, static_cast<int>(_cardBoard.size())-1)(_engine));
 				break;
-			case SELF_HAND:
+			case CardToSelect::SELF_HAND:
 				indices.push_back(std::uniform_int_distribution<int>(0, static_cast<int>(_cardHand.size())-1)(_engine));
 				break;
-			case OPPO_BOARD:
+			case CardToSelect::OPPO_BOARD:
 				indices.push_back(std::uniform_int_distribution<int>(0, static_cast<int>(_opponent->_cardBoard.size())-1)(_engine));
 				break;
-			case OPPO_HAND:
+			case CardToSelect::OPPO_HAND:
 				indices.push_back(std::uniform_int_distribution<int>(0, static_cast<int>(_opponent->_cardHand.size())-1)(_engine));
 				break;
 		}
