@@ -80,6 +80,17 @@ CardsCollection ServerDatabase::getCardsCollection(userId id)
 	return cards;
 }
 
+void ServerDatabase::addCard(userId id, cardId card)
+{
+	lock();
+	sqlite3_reset(_newCardStmt);
+	sqliteThrowExcept(sqlite3_bind_int(_newCardStmt, 1, static_cast<int>(card)));
+	sqliteThrowExcept(sqlite3_bind_int(_newCardStmt, 2, static_cast<int>(id)));
+
+	assert(sqliteThrowExcept(sqlite3_step(_newCardStmt)) == SQLITE_DONE);
+	unlock();
+}
+
 Ladder ServerDatabase::getLadder()
 {
 	lock();

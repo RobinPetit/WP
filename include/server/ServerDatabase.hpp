@@ -37,6 +37,7 @@ public:
 	bool isFriendshipRequestSent(userId from, userId to);
 
 	CardsCollection getCardsCollection(userId id);
+	void addCard(userId id, cardId card);
 
 	std::vector<Deck> getDecks(userId id);
 	Deck getDeckByName(userId id, const std::string& deckName);
@@ -74,11 +75,12 @@ private:
 	sqlite3_stmt * _createDeckStmt;
 	sqlite3_stmt * _deleteDeckByNameStmt;
 	sqlite3_stmt * _editDeckByNameStmt;
+	sqlite3_stmt * _newCardStmt;
 
 	// `constexpr std::array::size_type size() const;`
-	// -> I consider this 15 as the definition of the variable, so it is not a magic number
-	// -> future uses have to be _statements.size() -> 15 is writed only one time
-	StatementsList<18> _statements
+	// -> I consider this 19 as the definition of the variable, so it is not a magic number
+	// -> future uses have to be _statements.size() -> 19 is written only one time
+	StatementsList<19> _statements
 	{
 		{
 			Statement {
@@ -182,6 +184,11 @@ private:
 				"		card7 = ?9, card8 = ?10, card9 = ?11, card10 = ?12, card11 = ?13, card12 = ?14, card13 = ?15, "
 				"		card14 = ?16, card15 = ?17, card16 = ?18, card17 = ?19, card18 = ?20, card19 = ?21 "
 				"	WHERE owner == ?22 AND name == ?1;" // name <- ?1 because complete query should be `...SET name = ?1...`
+			},
+			Statement {
+				&_newCardStmt,
+				"INSERT INTO GivenCard(card, owner) "
+				"	VALUES (?1, ?2);"
 			}
 		}
 	};
