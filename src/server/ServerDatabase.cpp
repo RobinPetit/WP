@@ -17,6 +17,7 @@ ServerDatabase::ServerDatabase(const std::string& filename) : Database(filename)
 
 userId ServerDatabase::getUserId(const std::string& login)
 {
+	std::unique_lock<std::mutex> lock{_dbAccess};
 	sqlite3_reset(_userIdStmt);
 	sqliteThrowExcept(sqlite3_bind_text(_userIdStmt, 1, login.c_str(), AUTO_QUERY_LENGTH, SQLITE_TRANSIENT));
 
@@ -28,6 +29,7 @@ userId ServerDatabase::getUserId(const std::string& login)
 
 std::string ServerDatabase::getLogin(userId id)
 {
+	std::unique_lock<std::mutex> lock{_dbAccess};
 	sqlite3_reset(_loginStmt);
 	sqliteThrowExcept(sqlite3_bind_int(_loginStmt, 1, static_cast<int>(id)));
 
@@ -39,6 +41,7 @@ std::string ServerDatabase::getLogin(userId id)
 
 std::vector<Deck> ServerDatabase::getDecks(userId id)
 {
+	std::unique_lock<std::mutex> lock{_dbAccess};
 	sqlite3_reset(_decksStmt);
 	sqliteThrowExcept(sqlite3_bind_int(_decksStmt, 1, static_cast<int>(id)));
 
@@ -57,6 +60,7 @@ std::vector<Deck> ServerDatabase::getDecks(userId id)
 
 CardsCollection ServerDatabase::getCardsCollection(userId id)
 {
+	std::unique_lock<std::mutex> lock{_dbAccess};
 	sqlite3_reset(_cardsCollectionStmt);
 	sqliteThrowExcept(sqlite3_bind_int(_cardsCollectionStmt, 1, static_cast<int>(id)));
 
@@ -70,8 +74,19 @@ CardsCollection ServerDatabase::getCardsCollection(userId id)
 	return cards;
 }
 
+void ServerDatabase::addCard(userId id, cardId card)
+{
+	std::unique_lock<std::mutex> lock{_dbAccess};
+	sqlite3_reset(_newCardStmt);
+	sqliteThrowExcept(sqlite3_bind_int(_newCardStmt, 1, static_cast<int>(card)));
+	sqliteThrowExcept(sqlite3_bind_int(_newCardStmt, 2, static_cast<int>(id)));
+
+	assert(sqliteThrowExcept(sqlite3_step(_newCardStmt)) == SQLITE_DONE);
+}
+
 Ladder ServerDatabase::getLadder()
 {
+	std::unique_lock<std::mutex> lock{_dbAccess};
 	sqlite3_reset(_ladderStmt);
 	sqliteThrowExcept(sqlite3_bind_int(_ladderStmt, 1, ladderSize));
 
@@ -89,6 +104,7 @@ Ladder ServerDatabase::getLadder()
 
 void ServerDatabase::addFriend(userId userId1, userId userId2)
 {
+	std::unique_lock<std::mutex> lock{_dbAccess};
 	sqlite3_reset(_addFriendStmt);
 	sqliteThrowExcept(sqlite3_bind_int(_addFriendStmt, 1, static_cast<int>(userId1)));
 	sqliteThrowExcept(sqlite3_bind_int(_addFriendStmt, 2, static_cast<int>(userId2)));
@@ -98,6 +114,7 @@ void ServerDatabase::addFriend(userId userId1, userId userId2)
 
 void ServerDatabase::removeFriend(userId userId1, userId userId2)
 {
+	std::unique_lock<std::mutex> lock{_dbAccess};
 	sqlite3_reset(_removeFriendStmt);
 	sqliteThrowExcept(sqlite3_bind_int(_removeFriendStmt, 1, static_cast<int>(userId1 < userId2 ? userId1 : userId2)));
 	sqliteThrowExcept(sqlite3_bind_int(_removeFriendStmt, 2, static_cast<int>(userId1 < userId2 ? userId2 : userId1)));
@@ -108,6 +125,7 @@ void ServerDatabase::removeFriend(userId userId1, userId userId2)
 
 bool ServerDatabase::areFriend(userId userId1, userId userId2)
 {
+	std::unique_lock<std::mutex> lock{_dbAccess};
 	sqlite3_reset(_areFriendStmt);
 	sqliteThrowExcept(sqlite3_bind_int(_areFriendStmt, 1, static_cast<int>(userId1)));
 	sqliteThrowExcept(sqlite3_bind_int(_areFriendStmt, 2, static_cast<int>(userId2)));
@@ -117,6 +135,7 @@ bool ServerDatabase::areFriend(userId userId1, userId userId2)
 
 void ServerDatabase::addFriendshipRequest(userId from, userId to)
 {
+	std::unique_lock<std::mutex> lock{_dbAccess};
 	sqlite3_reset(_addFriendshipRequestStmt);
 	sqliteThrowExcept(sqlite3_bind_int(_addFriendshipRequestStmt, 1, static_cast<int>(from)));
 	sqliteThrowExcept(sqlite3_bind_int(_addFriendshipRequestStmt, 2, static_cast<int>(to)));
@@ -126,6 +145,7 @@ void ServerDatabase::addFriendshipRequest(userId from, userId to)
 
 void ServerDatabase::removeFriendshipRequest(userId from, userId to)
 {
+	std::unique_lock<std::mutex> lock{_dbAccess};
 	sqlite3_reset(_removeFriendshipRequestStmt);
 	sqliteThrowExcept(sqlite3_bind_int(_removeFriendshipRequestStmt, 1, static_cast<int>(from)));
 	sqliteThrowExcept(sqlite3_bind_int(_removeFriendshipRequestStmt, 2, static_cast<int>(to)));
@@ -135,6 +155,7 @@ void ServerDatabase::removeFriendshipRequest(userId from, userId to)
 
 bool ServerDatabase::isFriendshipRequestSent(userId from, userId to)
 {
+	std::unique_lock<std::mutex> lock{_dbAccess};
 	sqlite3_reset(_isFriendshipRequestSentStmt);
 	sqliteThrowExcept(sqlite3_bind_int(_isFriendshipRequestSentStmt, 1, static_cast<int>(from)));
 	sqliteThrowExcept(sqlite3_bind_int(_isFriendshipRequestSentStmt, 2, static_cast<int>(to)));
@@ -144,6 +165,7 @@ bool ServerDatabase::isFriendshipRequestSent(userId from, userId to)
 
 Deck ServerDatabase::getDeckByName(userId id, const std::string& deckName)
 {
+	std::unique_lock<std::mutex> lock{_dbAccess};
 	// TODO this is certainly not the best way to get an unique deck from the DB
 	for(auto& deck : getDecks(id))
 		if(deck.getName() == deckName)
@@ -153,6 +175,7 @@ Deck ServerDatabase::getDeckByName(userId id, const std::string& deckName)
 
 void ServerDatabase::createDeck(userId id, const Deck& deck)
 {
+	std::unique_lock<std::mutex> lock{_dbAccess};
 	sqlite3_reset(_createDeckStmt);
 	sqliteThrowExcept(sqlite3_bind_int(_createDeckStmt, 1, static_cast<int>(id)));
 	sqliteThrowExcept(sqlite3_bind_text(_createDeckStmt, 2, deck.getName().c_str(), AUTO_QUERY_LENGTH,
@@ -168,6 +191,7 @@ void ServerDatabase::createDeck(userId id, const Deck& deck)
 
 void ServerDatabase::deleteDeckByName(userId id, const std::string& deckName)
 {
+	std::unique_lock<std::mutex> lock{_dbAccess};
 	sqlite3_reset(_deleteDeckByNameStmt);
 	sqliteThrowExcept(sqlite3_bind_int(_deleteDeckByNameStmt, 1, static_cast<int>(id)));
 	sqliteThrowExcept(sqlite3_bind_text(_deleteDeckByNameStmt, 2, deckName.c_str(), AUTO_QUERY_LENGTH, SQLITE_TRANSIENT));
@@ -177,6 +201,7 @@ void ServerDatabase::deleteDeckByName(userId id, const std::string& deckName)
 
 void ServerDatabase::editDeck(userId id, const Deck& deck)
 {
+	std::unique_lock<std::mutex> lock{_dbAccess};
 	sqlite3_reset(_editDeckByNameStmt);
 	sqliteThrowExcept(sqlite3_bind_text(_editDeckByNameStmt, 1, deck.getName().c_str(), AUTO_QUERY_LENGTH, SQLITE_TRANSIENT));
 
@@ -189,6 +214,7 @@ void ServerDatabase::editDeck(userId id, const Deck& deck)
 
 bool ServerDatabase::areIdentifiersValid(const std::string& login, const std::string& password)
 {
+	std::unique_lock<std::mutex> lock{_dbAccess};
 	sqlite3_reset(_areIdentifiersValidStmt);
 	sqliteThrowExcept(sqlite3_bind_text(_areIdentifiersValidStmt, 1, login.c_str(), AUTO_QUERY_LENGTH,
 	                                    SQLITE_TRANSIENT));
@@ -200,6 +226,7 @@ bool ServerDatabase::areIdentifiersValid(const std::string& login, const std::st
 
 bool ServerDatabase::isRegistered(const std::string& login)
 {
+	std::unique_lock<std::mutex> lock{_dbAccess};
 	sqlite3_reset(_userIdStmt);
 	sqliteThrowExcept(sqlite3_bind_text(_userIdStmt, 1, login.c_str(), AUTO_QUERY_LENGTH, SQLITE_TRANSIENT));
 
@@ -208,6 +235,7 @@ bool ServerDatabase::isRegistered(const std::string& login)
 
 void ServerDatabase::registerUser(const std::string& login, const std::string& password)
 {
+	std::unique_lock<std::mutex> lock{_dbAccess};
 	sqlite3_reset(_registerUserStmt);
 	sqliteThrowExcept(sqlite3_bind_text(_registerUserStmt, 1, login.c_str(), AUTO_QUERY_LENGTH, SQLITE_TRANSIENT));
 	sqliteThrowExcept(sqlite3_bind_blob(_registerUserStmt, 2, password.c_str(), static_cast<int>(std::strlen(password.c_str())),
@@ -218,6 +246,7 @@ void ServerDatabase::registerUser(const std::string& login, const std::string& p
 
 FriendsList ServerDatabase::getAnyFriendsList(userId user, sqlite3_stmt * stmt)
 {
+	std::unique_lock<std::mutex> lock{_dbAccess};
 	sqlite3_reset(stmt);
 	sqliteThrowExcept(sqlite3_bind_int(stmt, 1, static_cast<int>(user)));
 
