@@ -106,8 +106,8 @@ private:
 	sf::Packet _pendingBoardChanges;
 
 	// Gameplay
-	int _energy, _energyInit = 0, _health;
-	int _turnsSinceEmptyDeck;
+	int _energy = 1, _energyInit = 1, _health = 20;
+	int _turnsSinceEmptyDeck = 0;
 	static const int _maxEnergy = 10, _maxHealth = 20;
 	TurnData _turnData;
 

@@ -117,8 +117,6 @@ void Player::receiveDeck()
 
 void Player::beginGame(bool isActivePlayer)
 {
-	if(isActivePlayer)
-		_energy = _maxEnergy;
 
 	// init Player's data
 	cardDeckToHand(4);
