@@ -382,10 +382,32 @@ void GameState::inputListening()
 		else
 		{
 			handlePacket(receivedPacket);
-			displayGame();
+			// do not re-display in game menu if game is over
+			if(_playing.load())
+				displayGame();
 		}
 	}
-	std::cout << "GAME OVER\n";
+}
+
+void GameState::endGame(sf::Packet& transmission)
+{
+	TransferType type;
+	transmission >> type;
+	if(type == TransferType::WINNER)
+	{
+		cardId newCard;
+		transmission >> newCard;
+		std::cout << "You won! And you won the card '" << getCardName(newCard) << "'" << std::endl;
+	}
+	else
+	{
+		// A player is WINNER XOR LOSER in the end of the game.
+		// Any other signal reveals a bug
+		assert(type == TransferType::LOSER);
+		std::cout << "You lost!" << std::endl;
+	}
+	_playing.store(false);
+	_myTurn.store(!_myTurn.load());
 }
 
 void GameState::handlePacket(sf::Packet& transmission)
@@ -397,8 +419,7 @@ void GameState::handlePacket(sf::Packet& transmission)
 		switch(type)
 		{
 		case TransferType::GAME_OVER:
-			_playing.store(false);
-			_myTurn.store(!_myTurn.load());
+			endGame(transmission);
 			break;
 
 		case TransferType::GAME_PLAYER_ENTER_TURN:

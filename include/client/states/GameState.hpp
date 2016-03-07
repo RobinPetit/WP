@@ -78,6 +78,7 @@ class GameState : public AbstractState
 		void attackWithCreature();
 		void endTurn();
 		void quit();
+		void endGame(sf::Packet& transmission);  // only used to lighten handlePacket
 
 		// Game display
 		void displayGame();

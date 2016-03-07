@@ -29,11 +29,10 @@ void LobbyState::startGame()
 	{
 		stackPush<GameState>();
 		stackPop();
+		waitForEnter();
 	}
 	else
 		std::cout << "You stopped waiting for an opponent.\n";
-	std::cout << "End of the game!\n";
-	std::cin.ignore();
 }
 
 void LobbyState::quit()

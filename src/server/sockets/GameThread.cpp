@@ -2,6 +2,7 @@
 #include "server/GameThread.hpp"
 #include "common/sockets/TransferType.hpp"
 #include "server/Creature.hpp"
+#include "common/CardData.hpp"
 // SFML headers
 #include <SFML/Network/TcpListener.hpp>
 #include <SFML/Network/IpAddress.hpp>
@@ -88,11 +89,30 @@ userId GameThread::startGame(const ClientInformations& player1, const ClientInfo
 
 	userId winnerId{runGame()};
 
+	// NOTE:
+	// The reason TransferType::GAME_OVER is kept even though two different
+	// signals are send according to who won and who lost is the following:
+	// having only one signal for the end of the game allows the client to
+	// first check if it is the end, and then check if he won or lost.
+	// This way, no need to have two **separate** `if`s or two **separate**
+	// `case`s in a switch.
+
+	// Send to the winner he wins and send his new card ID
 	packet.clear();
-	packet << TransferType::GAME_OVER;
-	// same message is sent to both players: no need to find by ID
-	_specialOutputSocketPlayer1.send(packet);
-	_specialOutputSocketPlayer2.send(packet);
+	std::random_device device;
+	std::mt19937 generator{device()};
+	cardId earnedCardId{std::uniform_int_distribution<int>(0, nbSpells + nbCreatures)(generator)};
+	++earnedCardId;  // Card indices start to 1 because of SQLite
+	// \TODO: add earnedCardId to winner's card collection
+	packet << TransferType::GAME_OVER << TransferType::WINNER << earnedCardId;
+	sf::TcpSocket& winnerSocket{winnerId == _player1ID ? _specialOutputSocketPlayer1 : _specialOutputSocketPlayer2};
+	winnerSocket.send(packet);
+
+	// Send to the loser he lost (do NOT send a card index thus)
+	packet.clear();
+	packet << TransferType::GAME_OVER << TransferType::LOSER;
+	sf::TcpSocket& loserSocket{winnerId == _player1ID ? _specialOutputSocketPlayer2 : _specialOutputSocketPlayer1};
+	loserSocket.send(packet);
 
 	return winnerId;
 }
