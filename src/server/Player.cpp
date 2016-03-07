@@ -75,7 +75,7 @@ sf::Packet Player::getBoardChanges()
 
 void Player::setDeck(const Deck& newDeck)
 {
-	std::vector<Card* > loadedCards;
+	std::vector<Card *> loadedCards{Deck::size};
 	for(std::size_t i{0}; i < Deck::size; ++i)
 	{
 		const cardId card{newDeck.getCard(i)};
@@ -902,3 +902,20 @@ void Player::sendValueToClient(TransferType transferType)
 	packet << transferType;
 	_socketToClient.send(packet);
 }
+
+Player::~Player()
+{
+	// free the memory (all of the card pointers allocated)
+	for(auto& card: _cardBoard)
+		delete card;
+	for(auto& card: _cardGraveyard)
+		delete card;
+	for(auto& card: _cardHand)
+		delete card;
+	while(not _cardDeck.empty())
+	{
+		delete _cardDeck.top();
+		_cardDeck.pop();
+	}
+}
+

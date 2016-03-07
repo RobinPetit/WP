@@ -33,7 +33,7 @@ public:
 	void setOpponent(Player* opponent);  // Complementary
 
 	/// Destructor.
-	~Player() = default;
+	~Player();
 
 	/// Interface for basic gameplay
 	void receiveDeck();
@@ -60,7 +60,7 @@ public:
 	void applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollection effectArgs);
 
 	/// Getters
-	int getCreatureConstraint(const Creature& subject, int constraintIDD) const;
+	int getCreatureConstraint(const Creature& subject, int constraintID) const;
 	const Card* getLastCaster() const;
 	userId getID() const;
 	sf::TcpSocket& getSocket();
@@ -96,6 +96,7 @@ private:
 	/// Attributes
 	GameThread& _gameThread;
 	ServerDatabase& _database;
+	// Pointer responsability is not given to this Player: it is not an allocated-attribute
 	Player* _opponent = nullptr;
 	userId _id;
 	std::atomic_bool _isActive;
@@ -115,6 +116,10 @@ private:
 	Constraints _teamConstraints = Constraints(C_CONSTRAINT_DEFAULTS, C_CONSTRAINTS_COUNT);
 
 	// Card holders
+	// The sum of the lengths of these std::vectors/std::stacks is **always** 20
+	// because at first, all are empty except the deck which contains... The deck
+	// obviously... And then the cards move from one to another but never disappear
+	// or are created
 	std::stack<Card *> _cardDeck;  ///< Cards that are in the deck (not usable yet)
 	std::vector<Card *> _cardHand;  ///< Cards that are in the player's hand (usable)
 	std::vector<Creature *> _cardBoard;  ///< Cards that are on the board (usable for attacks)
