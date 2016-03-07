@@ -41,7 +41,7 @@ std::string ServerDatabase::getLogin(userId id)
 
 std::vector<Deck> ServerDatabase::getDecks(userId id)
 {
-	std::unique_lock<std::mutex> lock{_dbAccess};
+	// std::unique_lock<std::mutex> lock{_dbAccess};
 	sqlite3_reset(_decksStmt);
 	sqliteThrowExcept(sqlite3_bind_int(_decksStmt, 1, static_cast<int>(id)));
 

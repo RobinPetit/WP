@@ -14,28 +14,23 @@
 #include "common/Identifiers.hpp"
 #include "common/sockets/TransferType.hpp"
 
-// Forward declarations
-class StateStack;
-
-/// Cannot be more explicit.
-class GameState : public AbstractState
+/// The class representing the gameplay for the client
+class Game
 {
 	public:
 		/// Constructor.
-		GameState(StateStack& stateStack, Client& client);
-
-		/// The display function.
-		/// It must do all things related to drawing or printing stuff on the screen.
-		virtual void display() override;
+		Game(Client& client);
 
 		void play();
 		void startTurn();
-		void updateData(std::array<unsigned, 5>);
+		// void updateData(std::array<unsigned, 5>);
 
-		~GameState();
+		~Game();
 
 	private:
 		///////////////// attributes
+
+		Client& _client;
 
 		std::vector<CardData> _selfHandCards;
 		std::vector<CardData> _selfGraveCards;  // Needed for reviving spells
@@ -81,6 +76,7 @@ class GameState : public AbstractState
 		void endGame(sf::Packet& transmission);  // only used to lighten handlePacket
 
 		// Game display
+		void display();
 		void displayGame();
 		void displayCardVector(const std::vector<CardData>& cardVector);
 		void displayBoardCreatureVector(const std::vector<BoardCreatureData>& cardVector);
@@ -106,6 +102,10 @@ class GameState : public AbstractState
 		//void applyOppoEffect();
 		//void applySelfEffect();
 		//void putOnBoard(std::size_t);
+
+		//////////// static member
+
+		static const std::vector<std::pair<const std::string, void (Game::*)()>> _actions;
 };
 
 #endif  // _GAME_STATE_CLIENT_HPP

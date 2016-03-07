@@ -6,7 +6,6 @@
 #include "client/states/FriendsManagementState.hpp"
 #include "client/states/LadderState.hpp"
 #include "client/states/MainMenuState.hpp"
-#include "client/states/GameState.hpp"
 #include "client/states/LobbyState.hpp"
 
 MainMenuState::MainMenuState(StateStack& stateStack, Client& client):

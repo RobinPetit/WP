@@ -13,7 +13,8 @@ set(SOURCES	"client.cpp"
 		"states/LobbyState.cpp"
 		"states/MainMenuState.cpp"
 		"states/HomeState.cpp"
-		"states/GameState.cpp"
+		# Game
+		"Game.cpp"
 	)
 
 set(CLIENT_NAME "${PROJECT_NAME}_client")

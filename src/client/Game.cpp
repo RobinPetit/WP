@@ -10,24 +10,28 @@
 #include "client/sockets/Client.hpp"
 #include "common/sockets/TransferType.hpp"
 #include "common/sockets/PacketOverload.hpp"
-#include "client/states/GameState.hpp"
+#include "client/Game.hpp"
 #include "client/NonBlockingInput.hpp"
 
-GameState::GameState(StateStack& stateStack, Client& client):
-	AbstractState(stateStack, client),
-	_playing(true)
+const std::vector<std::pair<const std::string, void (Game::*)()>> Game::_actions =
 {
-	addAction("Quit", &GameState::quit);
-	addAction("Use a card from hand", &GameState::useCard);
-	addAction("Attack with a creature", &GameState::attackWithCreature);
-	addAction("End your turn", &GameState::endTurn);
+	{"Quit", &Game::quit},
+	{"Use a card from hand", &Game::useCard},
+	{"Attack with a creature", &Game::attackWithCreature},
+	{"End your turn", &Game::endTurn},
+};
+
+Game::Game(Client& client):
+	_client{client},
+	_playing(false)
+{
 	std::cout << "Your game is about to start!\n";
 	_client.waitTillReadyToPlay();
+	_playing.store(true);
 	init();
-	play();
 }
 
-void GameState::init()
+void Game::init()
 {
 	initListening();
 	chooseDeck();
@@ -52,7 +56,7 @@ void GameState::init()
 		throw std::runtime_error("Wrong turn information: " + std::to_string(static_cast<sf::Uint32>(type)));
 }
 
-void GameState::chooseDeck()
+void Game::chooseDeck()
 {
 	std::vector<Deck> decks = _client.getDecks();
 
@@ -75,8 +79,9 @@ void GameState::chooseDeck()
 	_client.getGameSocket().send(deckNamePacket);
 }
 
-void GameState::play()
+void Game::play()
 {
+	_playing.store(true);
 	while(_playing.load())
 	{
 		if(_myTurn.load())
@@ -91,15 +96,16 @@ void GameState::play()
 	_listeningThread.join();
 }
 
-void GameState::display()
+void Game::display()
 {
 	displayGame();
 	std::cout << "Here are your options:\n";
-	// Display the actions
-	AbstractState::display();
+	std::size_t idx{0};
+	for(const auto& action: _actions)
+		std::cout << idx++ << ". " << action.first << std::endl;
 }
 
-void GameState::startTurn()
+void Game::startTurn()
 {
 	NonBlockingInput input;
 	_myTurn.store(true);
@@ -110,7 +116,15 @@ void GameState::startTurn()
 		if(not input.waitForData(0.1))
 			continue;
 		std::string command{input.receiveStdinData()};
-		handleInput(command);
+		try
+		{
+			(this->*(_actions.at(std::stoi(command)).second))();
+		}
+		catch(std::exception&)
+		{
+			std::cout << "Your input should be in [" << 0 << ", " << _actions.size() << ")\n";
+			continue;
+		}
 		display();
 		std::cout << "What do you want to do next? ";
 	}
@@ -120,7 +134,7 @@ void GameState::startTurn()
 //PRIVATE METHODS
 
 // Request user for additional input
-int GameState::askIndex(std::size_t upperBound, std::string inputMessage)
+int Game::askIndex(std::size_t upperBound, std::string inputMessage)
 {
 	int res;
 	if (upperBound == 0)
@@ -142,34 +156,34 @@ int GameState::askIndex(std::size_t upperBound, std::string inputMessage)
 	return res;
 }
 
-int GameState::askSelfHandIndex()
+int Game::askSelfHandIndex()
 {
 	std::cout << "These are the cards in your hand:" << std::endl;
 	displayCardVector(_selfHandCards);
 	return askIndex(_selfHandCards.size(), "Choose the index for a card in your hand: ");
 }
 
-int GameState::askSelfBoardIndex()
+int Game::askSelfBoardIndex()
 {
 	std::cout << "These are the cards on your board:" << std::endl;
 	displayBoardCreatureVector(_selfBoardCreatures);
 	return askIndex(_selfBoardCreatures.size(), "Choose the index for a card on your board: ");
 }
 
-int GameState::askSelfGraveyardIndex()
+int Game::askSelfGraveyardIndex()
 {
 	std::cout << "These are the cards in your graveyard:" << std::endl;
 	displayCardVector(_selfGraveCards);
 	return askIndex(_selfGraveCards.size(), "Choose the index for a card in the graveyard: ");
 }
 
-int GameState::askOppoHandIndex()
+int Game::askOppoHandIndex()
 {
 	std::cout << "Your opponent has " << _oppoHandSize << " cards in his hand." << std::endl;
 	return askIndex(_oppoHandSize, "Choose the index for a card in the opponent's hand: ");
 }
 
-int GameState::askOppoBoardIndex()
+int Game::askOppoBoardIndex()
 {
 	std::cout << "These are the cards on your opponent's board:" << std::endl;
 	displayBoardCreatureVector(_oppoBoardCreatures);
@@ -177,7 +191,7 @@ int GameState::askOppoBoardIndex()
 }
 
 //User actions
-void GameState::useCard()
+void Game::useCard()
 {
 	if (not _myTurn)
 	{
@@ -216,7 +230,7 @@ void GameState::useCard()
 	}
 }
 
-void GameState::attackWithCreature()
+void Game::attackWithCreature()
 {
 	if (not _myTurn)
 	{
@@ -265,7 +279,7 @@ void GameState::attackWithCreature()
 }
 
 
-void GameState::endTurn()
+void Game::endTurn()
 {
 	if (not _myTurn)
 	{
@@ -281,7 +295,7 @@ void GameState::endTurn()
 	}
 }
 
-void GameState::quit()
+void Game::quit()
 {
 	// send QUIT message to server
 	sf::Packet actionPacket;
@@ -292,12 +306,12 @@ void GameState::quit()
 	_myTurn.store(false);
 }
 
-GameState::~GameState()
+Game::~Game()
 {
 	quit();
 }
 
-void GameState::displayGame()
+void Game::displayGame()
 {
 	_client.getTerminal().clearScreen();
 	std::cout << "***************" << std::endl;
@@ -320,7 +334,7 @@ void GameState::displayGame()
 	std::cout << "***************" << std::endl;
 }
 
-void GameState::displayCardVector(const std::vector<CardData>& cardVector)
+void Game::displayCardVector(const std::vector<CardData>& cardVector)
 {
 	for (auto i=0U; i<cardVector.size(); i++)
 	{
@@ -330,7 +344,7 @@ void GameState::displayCardVector(const std::vector<CardData>& cardVector)
 	}
 }
 
-void GameState::displayBoardCreatureVector(const std::vector<BoardCreatureData>& cardVector)
+void Game::displayBoardCreatureVector(const std::vector<BoardCreatureData>& cardVector)
 {
 	// The board vector also contains real time informations about the cards (health, attack, shield, shield type)
 	// This method should display these informations and be called only for displaying the board
@@ -351,12 +365,12 @@ void GameState::displayBoardCreatureVector(const std::vector<BoardCreatureData>&
 
 //////////////// special data receival
 
-void GameState::initListening()
+void Game::initListening()
 {
-	_listeningThread = std::thread(&GameState::inputListening, this);
+	_listeningThread = std::thread(&Game::inputListening, this);
 }
 
-void GameState::inputListening()
+void Game::inputListening()
 {
 	sf::TcpSocket& listeningSocket{_client.getGameListeningSocket()};
 	_client.waitTillReadyToPlay();
@@ -381,6 +395,7 @@ void GameState::inputListening()
 		}
 		else
 		{
+			std::cout << "handling packet\n";
 			handlePacket(receivedPacket);
 			// do not re-display in game menu if game is over
 			if(_playing.load())
@@ -389,7 +404,7 @@ void GameState::inputListening()
 	}
 }
 
-void GameState::endGame(sf::Packet& transmission)
+void Game::endGame(sf::Packet& transmission)
 {
 	TransferType type;
 	transmission >> type;
@@ -411,7 +426,7 @@ void GameState::endGame(sf::Packet& transmission)
 	_myTurn.store(!_myTurn.load());
 }
 
-void GameState::handlePacket(sf::Packet& transmission)
+void Game::handlePacket(sf::Packet& transmission)
 {
 	TransferType type;
 	while(not transmission.endOfPacket())
@@ -424,11 +439,13 @@ void GameState::handlePacket(sf::Packet& transmission)
 			break;
 
 		case TransferType::GAME_PLAYER_ENTER_TURN:
+			std::cout << "entering turn\n";
 			_myTurn.store(true);
 			break;
 
 		case TransferType::GAME_PLAYER_LEAVE_TURN:
 			_myTurn.store(false);
+			std::cout << "leaving turn\n";
 			break;
 
 		case TransferType::GAME_PLAYER_ENERGY_UPDATED:
@@ -493,7 +510,7 @@ void GameState::handlePacket(sf::Packet& transmission)
 
 //Not needed ?
 /*
-void GameState::updateData(std::array<unsigned, 5> data)
+void Game::updateData(std::array<unsigned, 5> data)
 {
 	_selfEnergy = data[0];
 	_selfHealth = data[1]; _oppoHealth = data[2];
@@ -502,21 +519,21 @@ void GameState::updateData(std::array<unsigned, 5> data)
 
 }
 
-void GameState::changeHealth(int health)
+void Game::changeHealth(int health)
 {
 	_selfHealth += health;
 }
 
-void GameState::changeOppoHealth(int health)
+void Game::changeOppoHealth(int health)
 {
 	_oppoHealth += health;
 }
 
-void GameState::changeEnergy(int energy)
+void Game::changeEnergy(int energy)
 {
 	_selfEnergy += energy;
 }*/
-/*void GameState::pickCard(int pickedCard)
+/*void Game::pickCard(int pickedCard)
 {
 	if(_remainCards > 0)
 	{
@@ -526,14 +543,14 @@ void GameState::changeEnergy(int energy)
 }*/
 
 /*
-void GameState::putOnBoard(std::size_t cardIndex)
+void Game::putOnBoard(std::size_t cardIndex)
 {
 	int card = _inHand[cardIndex];  // Save the card ID
 	_inHand.erase(_inHand.begin()+cardIndex);  // Remove it from the hand
 	_onBoard.push_back(card);  // Put it on the board
 }*/
 /*
-void GameState::applyOppoEffect()
+void Game::applyOppoEffect()
 {
 	if(not _myTurn)
 	{
@@ -555,7 +572,7 @@ void GameState::applyOppoEffect()
 	}
 }*/
 /*
-void GameState::applySelfEffect()
+void Game::applySelfEffect()
 {
 	if(not _myTurn)
 	{
@@ -577,7 +594,7 @@ void GameState::applySelfEffect()
 	}
 }*/
 
-const std::string& GameState::getCardName(cardId id)
+const std::string& Game::getCardName(cardId id)
 {
 	if (id<=10)
 		return ALL_CREATURES[id-1].name;
@@ -585,7 +602,7 @@ const std::string& GameState::getCardName(cardId id)
 		return ALL_SPELLS[id-11].name;
 }
 
-CostValue GameState::getCardCost(cardId id)
+CostValue Game::getCardCost(cardId id)
 {
 	if (id<=10)
 		return ALL_CREATURES[id-1].cost;
@@ -593,7 +610,7 @@ CostValue GameState::getCardCost(cardId id)
 		return ALL_SPELLS[id-11].cost;
 }
 
-const std::string& GameState::getCardDescription(cardId id)
+const std::string& Game::getCardDescription(cardId id)
 {
 	if (id<=10)
 		return ALL_CREATURES[id-1].description;
