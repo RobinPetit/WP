@@ -101,14 +101,15 @@ void GameState::display()
 
 void GameState::startTurn()
 {
+	NonBlockingInput input;
 	_myTurn.store(true);
 	display();
 	std::cout << "It is now your turn, what do you want to do? ";
 	while(_myTurn.load())
 	{
-		if(not _nonBlockingInput.waitForData(0.1))
+		if(not input.waitForData(0.1))
 			continue;
-		std::string command{_nonBlockingInput.receiveStdinData()};
+		std::string command{input.receiveStdinData()};
 		handleInput(command);
 		display();
 		std::cout << "What do you want to do next? ";

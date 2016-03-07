@@ -56,7 +56,6 @@ class GameState : public AbstractState
 		// \TODO: sync with Client::_inGame
 		std::atomic_bool _playing;
 		std::atomic_bool _myTurn;
-		NonBlockingInput _nonBlockingInput;
 		/// Waits for special server data such as END_OF_TURN, BOARD_UPDATE, etc.
 		std::thread _listeningThread;
 
