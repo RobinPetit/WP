@@ -918,4 +918,3 @@ Player::~Player()
 		_cardDeck.pop();
 	}
 }
-
