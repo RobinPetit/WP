@@ -103,7 +103,7 @@ userId GameThread::startGame(const ClientInformations& player1, const ClientInfo
 	std::mt19937 generator{device()};
 	cardId earnedCardId{std::uniform_int_distribution<int>(0, nbSpells + nbCreatures)(generator)};
 	++earnedCardId;  // Card indices start to 1 because of SQLite
-	// \TODO: add earnedCardId to winner's card collection
+	_database.addCard(winnerId, earnedCardId);
 	packet << TransferType::GAME_OVER << TransferType::WINNER << earnedCardId;
 	sf::TcpSocket& winnerSocket{winnerId == _player1ID ? _specialOutputSocketPlayer1 : _specialOutputSocketPlayer2};
 	winnerSocket.send(packet);
