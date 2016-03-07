@@ -178,9 +178,9 @@ void Player::leaveTurn()
 
 void Player::finishGame(bool hasWon, std::string endMessage)
 {
-    //Send endMessage to client
-    //unlock cards for client if he has won
-    //Send unlocked card to client
+	_gameThread.endGame(hasWon ? getID() : _opponent->getID());
+	// TODO: write an enum that list all possible reasons of a game ending,
+	// and use this rather than endMessage
 }
 
 
