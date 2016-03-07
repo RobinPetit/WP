@@ -68,13 +68,6 @@ protected:
 
 	sqlite3 *_database;
 
-	/// Acts like a mutex to have a thread-safe access to the database
-	void lock();
-
-	/// Release the unique access to the database
-	void unlock();
-
-private:
 	/// Avoids race conditions on DB
 	std::mutex _dbAccess;
 };
