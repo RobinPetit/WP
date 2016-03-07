@@ -101,10 +101,12 @@ userId GameThread::startGame(const ClientInformations& player1, const ClientInfo
 	packet.clear();
 	std::random_device device;
 	std::mt19937 generator{device()};
-	cardId earnedCardId{std::uniform_int_distribution<int>(0, nbSpells + nbCreatures)(generator)};
+	cardId earnedCardId{std::uniform_int_distribution<int>(0, static_cast<int>(nbSpells + nbCreatures))(generator)};
 	++earnedCardId;  // Card indices start to 1 because of SQLite
 	_database.addCard(winnerId, earnedCardId);
 	packet << TransferType::GAME_OVER << TransferType::WINNER << earnedCardId;
+	// \TODO: add earnedCardId to winner's card collection
+	packet << TransferType::GAME_OVER << TransferType::WINNER << static_cast<sf::Int32>(earnedCardId);
 	sf::TcpSocket& winnerSocket{winnerId == _player1ID ? _specialOutputSocketPlayer1 : _specialOutputSocketPlayer2};
 	winnerSocket.send(packet);
 

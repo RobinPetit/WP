@@ -395,8 +395,9 @@ void GameState::endGame(sf::Packet& transmission)
 	transmission >> type;
 	if(type == TransferType::WINNER)
 	{
-		cardId newCard;
-		transmission >> newCard;
+		sf::Int32 newCard32;
+		transmission >> newCard32;
+		cardId newCard{static_cast<cardId>(newCard32)};
 		std::cout << "You won! And you won the card '" << getCardName(newCard) << "'" << std::endl;
 	}
 	else
