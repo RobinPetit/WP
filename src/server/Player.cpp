@@ -84,17 +84,17 @@ void Player::setDeck(const Deck& newDeck)
 		if(card <= 10)
 		{
 			CreatureData creat = ALL_CREATURES[card-1];
-			loadedCards.push_back(new Creature(card, creat.cost, creat.attack, creat.health, creat.shield, creat.shieldType, creat.effects));
+			loadedCards[i] = new Creature(card, creat.cost, creat.attack, creat.health, creat.shield, creat.shieldType, creat.effects);
 		}
 		else
 		{
 			SpellData spell = ALL_SPELLS[card - 11];
-			loadedCards.push_back(new Spell(card, spell.cost, spell.effects));
+			loadedCards[i] = new Spell(card, spell.cost, spell.effects);
 		}
 	}
 	std::shuffle(loadedCards.begin(), loadedCards.end(), std::mt19937(std::random_device()()));
-	for (auto i{0U}; i<Deck::size; i++)
-		_cardDeck.push(loadedCards.at(i));
+	for(const auto& cardInShuffledDeck: loadedCards)
+		_cardDeck.push(cardInShuffledDeck);
 }
 
 void Player::receiveDeck()
