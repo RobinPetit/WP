@@ -23,7 +23,7 @@ int main()
 	int serverStatus;
 	// Same as client: loop 10 times to find an available port
 	int counter{0};
-	while(((serverStatus = server.start(serverPort++)) == UNABLE_TO_LISTEN) && ((++counter) > 10))
+	while(((serverStatus = server.start(serverPort++)) == UNABLE_TO_LISTEN) && ((++counter) < 10))
 		;
 	return serverStatus;
 }

@@ -267,7 +267,8 @@ void Server::quit()
 	_runningGames.clear();
 	// in case the method is called even though server has not been manually ended
 	_done.store(true);
-	_quitThread.join();
+	if(_quitThread.joinable())
+		_quitThread.join();
 	_threadRunning.store(false);
 	_socketSelector.clear();
 	_clients.clear();
