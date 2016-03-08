@@ -467,28 +467,22 @@ void Game::handlePacket(sf::Packet& transmission)
 			// energy (and health and others) are transmitted through the network as 32 bit
 			// unsigned integers. So be sure to receive the exact same thing to avoid encoding
 			// errors and then set it in the "real" attribute
-			sf::Uint32 energy32;
-			transmission >> energy32;
 			std::lock_guard<std::mutex> lock{_accessEnergy};
-			_selfEnergy = energy32;
+			_selfEnergy = receiveFromPacket<sf::Uint32>(transmission);
 		}
 			break;
 
 		case TransferType::GAME_PLAYER_HEALTH_UPDATED:
 		{
-			sf::Uint32 health32;
-			transmission >> health32;
 			std::lock_guard<std::mutex> lock{_accessHealth};
-			_selfHealth = health32;
+			_selfHealth = receiveFromPacket<sf::Uint32>(transmission);
 		}
 			break;
 
 		case TransferType::GAME_OPPONENT_HEALTH_UPDATED:
 		{
-			sf::Uint32 health32;
-			transmission >> health32;
 			std::lock_guard<std::mutex> lock{_accessHealth};
-			_oppoHealth = health32;
+			_oppoHealth = receiveFromPacket<sf::Uint32>(transmission);
 		}
 			break;
 
@@ -605,4 +599,13 @@ const std::string& Game::getCardDescription(cardId id)
 		return ALL_CREATURES[id-1].description;
 	else
 		return ALL_SPELLS[id-11].description;
+}
+
+template <typename FixedSizeIntegerType>
+FixedSizeIntegerType Game::receiveFromPacket(sf::Packet& receivedPacket)
+{
+	assert(not receivedPacket.endOfPacket());
+	FixedSizeIntegerType value;
+	receivedPacket >> value;
+	return std::move(value);
 }

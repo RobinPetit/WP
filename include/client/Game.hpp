@@ -101,6 +101,9 @@ class Game
 		//////////// static member
 
 		static const std::vector<std::pair<const std::string, void (Game::*)()>> _actions;
+
+		template <typename FixedSizeIntegerType>
+		static FixedSizeIntegerType receiveFromPacket(sf::Packet& receivedPacket);
 };
 
 #endif  // _GAME_STATE_CLIENT_HPP
