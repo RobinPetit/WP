@@ -1,5 +1,5 @@
-#ifndef _END_GAME_CAUSE_HPP_
-#define _END_GAME_CAUSE_HPP_
+#ifndef _END_GAME_HPP_
+#define _END_GAME_HPP_
 
 #include <SFML/Network/Packet.hpp>
 
@@ -34,4 +34,4 @@ struct EndGame
 	bool applyToSelf;
 };
 
-#endif  // _END_GAME_CAUSE_HPP_
+#endif  // _END_GAME_HPP_

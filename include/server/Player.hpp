@@ -17,7 +17,7 @@
 #include "common/GameData.hpp"
 #include "common/Identifiers.hpp"  // userId
 #include "common/sockets/TransferType.hpp"
-#include "common/sockets/EndGameCause.hpp"
+#include "common/sockets/EndGame.hpp"
 #include "common/Deck.hpp"
 // SFML headers
 #include <SFML/Network/TcpSocket.hpp>

@@ -9,6 +9,7 @@
 #include "server/ClientInformations.hpp"
 #include "common/Identifiers.hpp"  // userId
 #include "server/ServerDatabase.hpp"
+#include "common/sockets/EndGame.hpp"
 // SFML headers
 #include <SFML/Network/TcpSocket.hpp>
 

@@ -10,6 +10,7 @@
 #include "client/sockets/Client.hpp"
 #include "common/sockets/TransferType.hpp"
 #include "common/sockets/PacketOverload.hpp"
+#include "common/sockets/EndGame.hpp"
 #include "client/Game.hpp"
 #include "client/NonBlockingInput.hpp"
 
