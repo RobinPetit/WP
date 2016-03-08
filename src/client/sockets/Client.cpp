@@ -432,7 +432,7 @@ void Client::inputListening()
 				initInGameConnection(packet);
 			else
 				std::cerr << "Unknown type of message\n";
-			std::cin.ignore();
+			//std::cin.ignore(); //IS THIS LINE USEFUL ? This is what was causing the input problem for decks
 		}
 	}
 }

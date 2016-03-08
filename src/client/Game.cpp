@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <cassert>
+#include <limits>
 // SFML headers
 #include <SFML/Network/IpAddress.hpp>
 #include <SFML/Network/SocketSelector.hpp>
@@ -64,14 +65,7 @@ void Game::chooseDeck()
 	// Ask for the deck to use during the game
 	for(std::size_t i{0}; i < decks.size(); i++)
 		std::cout << i << " : " << decks.at(i).getName() << std::endl;
-	std::size_t res;  // Chosen deck
-	do
-	{
-		std::cout << "Choose your deck: ";
-		std::cin >> res;
-		if(res >= decks.size())
-			std::cout << "Your answer should be in the range [" << 0 << ", " << decks.size() <<"[ !\n";
-	} while(res >= decks.size());
+	int res = askIndex(decks.size(), "Choose your deck number: ");  // Chosen deck
 
 	// Send the deck name to the server
 	std::cout << "sending deck " << decks.at(res).getName() << std::endl;
@@ -136,22 +130,20 @@ void Game::startTurn()
 // Request user for additional input
 int Game::askIndex(std::size_t upperBound, std::string inputMessage)
 {
-	int res;
 	if (upperBound == 0)
 	{
-		std::cout << "There are no cards to choose.\n";
+		std::cout << "There are no items to choose.\n";
 		return -1;
 	}
 
-	bool firstTry{true};
-	do
+	int res = -1;
+	std::cout << inputMessage;
+	while(!(std::cin >> res) or res >= static_cast<int>(upperBound) or res < 0)
 	{
-		if(not firstTry)
-			std::cout << "Your answer should be in the range [" << 0 << ", " << upperBound <<"[ !\n";
-		std::cout << inputMessage;
-		std::cin >> res;
-		firstTry = false;
-	} while(res >= static_cast<int>(upperBound) or res < 0);
+		std::cin.clear();
+		std::cin.ignore (std::numeric_limits<std::streamsize>::max(), '\n'); //discard characters until newline is found
+		std::cout << "Your answer should be in the range [" << 0 << ", " << upperBound <<"[ !\n" << inputMessage;
+	}
 
 	return res;
 }
