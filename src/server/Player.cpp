@@ -144,10 +144,7 @@ void Player::enterTurn(int turn)
 	{
 		_turnsSinceEmptyDeck++;
 		if (_turnsSinceEmptyDeck==10)
-		{
-			finishGame(false, "You spent 10 turns with an empty deck");
-			_opponent->finishGame(true, "Your opponent spent 10 turns with an empty deck");
-		}
+			finishGame(false, EndGame::Cause::TEN_TURNS_WITH_EMPTY_DECK);
 	}
 
 	//Player's turn-based constraints
@@ -176,9 +173,9 @@ void Player::leaveTurn()
 		_cardBoard.at(i)->leaveTurn();
 }
 
-void Player::finishGame(bool hasWon, std::string endMessage)
+void Player::finishGame(bool hasWon, EndGame::Cause cause)
 {
-	_gameThread.endGame(hasWon ? getID() : _opponent->getID());
+	_gameThread.endGame(hasWon ? getID() : _opponent->getID(), cause);
 	// TODO: write an enum that list all possible reasons of a game ending,
 	// and use this rather than endMessage
 }
@@ -197,7 +194,7 @@ sf::Socket::Status Player::tryReceiveClientInput()
 	playerActionPacket >> type;
 
 	if(type == TransferType::GAME_QUIT_GAME)
-		quitGame();
+		finishGame(false, EndGame::Cause::QUITTED);
 	// Be sure this is the active player that sent input
 	else if(_isActive.load())
 	{
@@ -337,11 +334,6 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 void Player::endTurn()
 {
 	_gameThread.swapTurns();
-}
-
-void Player::quitGame()
-{
-	_gameThread.endGame(_opponent->getID());
 }
 
 /*------------------------------ EFFECTS INTERFACE */
@@ -623,13 +615,13 @@ void Player::changeHealth(const EffectParamsCollection& args)
 		if(_health < 0)
 		{
 			_health = 0;
-			finishGame(false, "You ran out of health");
-			_opponent->finishGame(true, "Your opponent ran out of health");
-			//NETWORK: NO_HEALTH_CHANGED
+			finishGame(false, EndGame::Cause::OUT_OF_HEALTH);
 		}
 		else if(_health > _maxHealth)
+		{
 			_health = _maxHealth;
-		logCurrentHealth();
+			logCurrentHealth();
+		}
 	}
 	catch (std::out_of_range&)
 	{

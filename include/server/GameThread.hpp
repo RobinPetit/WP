@@ -29,7 +29,7 @@ public:
 
 	userId startGame(const ClientInformations& player1, const ClientInformations& player2);
 
-	void endGame(userId winnerId);
+	void endGame(userId winnerId, EndGame::Cause cause);
 
 	void swapTurns();
 
@@ -50,6 +50,7 @@ private:
 	ServerDatabase& _database;
 
 	userId _winner;
+	EndGame::Cause _endGamecause;
 
 	Player *_activePlayer;
 	Player *_passivePlayer;

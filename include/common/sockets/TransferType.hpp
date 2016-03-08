@@ -65,12 +65,6 @@ enum class TransferType : sf::Uint32
 	/// Used to tell the client the game is over: one player won, the other failed
 	GAME_OVER,
 
-	/// Used after GAME_OVER to tell the client he won the game (the index of the received card is send after that)
-	WINNER,
-
-	/// Used after GAME_OVER to tell the client he lost the game
-	LOSER,
-
 	/// Used to tell the client that he cannot play cards during this turn anymore
 	GAME_CARD_LIMIT_TURN_REACHED,
 

@@ -405,20 +405,45 @@ void Game::inputListening()
 
 void Game::endGame(sf::Packet& transmission)
 {
-	TransferType type;
-	transmission >> type;
-	if(type == TransferType::WINNER)
+	EndGame endGameInfo;
+	transmission >> endGameInfo;
+	if(endGameInfo.applyToSelf)
 	{
-		cardId newCard;
-		transmission >> newCard;
-		std::cout << "You won! And you won the card '" << getCardName(newCard) << "'" << std::endl;
+		switch(endGameInfo.cause)
+		{
+		case EndGame::Cause::TEN_TURNS_WITH_EMPTY_DECK:
+			std::cout << "You lost because you played 10 turns with an empty deck!\n";
+			break;
+
+		case EndGame::Cause::OUT_OF_HEALTH:
+			std::cout << "You lost because you ran out of health!\n";
+			break;
+
+		case EndGame::Cause::QUITTED:
+			std::cout << "You quitted the game.\n";
+			break;
+		}
 	}
 	else
 	{
-		// A player is WINNER XOR LOSER in the end of the game.
-		// Any other signal reveals a bug
-		assert(type == TransferType::LOSER);
-		std::cout << "You lost!" << std::endl;
+		switch(endGameInfo.cause)
+		{
+		case EndGame::Cause::TEN_TURNS_WITH_EMPTY_DECK:
+			std::cout << "You won because your opponent played 10 turns with an empty deck!\n";
+			break;
+
+		case EndGame::Cause::OUT_OF_HEALTH:
+			std::cout << "You won because your opponent ran out of health!\n";
+			break;
+
+		case EndGame::Cause::QUITTED:
+			std::cout << "You won because your opponent quitted the game!\n";
+			break;
+		}
+		// Get the won card
+		cardId newCard;
+		transmission >> newCard;
+		std::cout << "You won the card '" << getCardName(newCard) << "'\n";
 	}
 	_playing.store(false);
 	_myTurn.store(!_myTurn.load());

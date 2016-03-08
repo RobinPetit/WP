@@ -1,7 +1,7 @@
 #ifndef _IDENTIFIERS_COMMON_HPP
 #define _IDENTIFIERS_COMMON_HPP
 
-#include <SFML/System.hpp>
+#include <SFML/Network/Packet.hpp>
 
 /// The identifier of a card, this is the identifier that is encoded in the
 /// database, and the only information used to transmit a card on the network.

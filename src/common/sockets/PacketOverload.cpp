@@ -135,3 +135,17 @@ sf::Packet& operator >>(sf::Packet& packet, CardData& data)
 {
 	return packet >> data.id;
 }
+
+sf::Packet& operator <<(sf::Packet& packet, const EndGame& endGameInfo)
+{
+	return packet << static_cast<std::underlying_type<EndGame::Cause>::type>(endGameInfo.cause)
+	              << endGameInfo.applyToSelf;
+}
+
+sf::Packet& operator >>(sf::Packet& packet, EndGame& endGameInfo)
+{
+	std::underlying_type<EndGame::Cause>::type convertedCause;
+	packet >> convertedCause >> endGameInfo.applyToSelf;
+	endGameInfo.cause = static_cast<EndGame::Cause>(convertedCause);
+	return packet;
+}

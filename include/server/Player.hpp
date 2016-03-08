@@ -17,6 +17,7 @@
 #include "common/GameData.hpp"
 #include "common/Identifiers.hpp"  // userId
 #include "common/sockets/TransferType.hpp"
+#include "common/sockets/EndGameCause.hpp"
 #include "common/Deck.hpp"
 // SFML headers
 #include <SFML/Network/TcpSocket.hpp>
@@ -35,12 +36,15 @@ public:
 	/// Destructor.
 	~Player();
 
-	/// Interface for basic gameplay
+	// Interface for basic gameplay
+	/// Receive the deck sent by the client and put it in the game
 	void receiveDeck();
-	void beginGame(bool isActivePlayer);	//The game has begun
-	void enterTurn(int turn);				//The player's turn has started
-	void leaveTurn();						//The player's turn has ended
-	void finishGame(bool hasWon, std::string endMessage); //The game has ended because of some reason
+	/// The game has begun.
+	void beginGame(bool isActivePlayer);
+	/// The player's turn has started
+	void enterTurn(int turn);
+	/// The player's turn has ended
+	void leaveTurn();
 
 	// Interface for client input
 
@@ -140,7 +144,8 @@ private:
 	void useCard(int handIndex); 	///< Use a card
 	void attackWithCreature(int boardIndex, int victim);  ///< Attack victim (-1 for opponent) with a card
 	void endTurn(); //TODO; define behavior
-	void quitGame(); //TODO: define behavior and call _opponent->quitGame();
+	/// The game has ended because of some reason (maybe because the user want to quit the game)
+	void finishGame(bool hasWon, EndGame::Cause cause);
 
 	/// Effects (private)
 	void setConstraint(const EffectParamsCollection& args);

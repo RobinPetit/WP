@@ -1,6 +1,7 @@
 // WizardPoker headers
 #include "server/GameThread.hpp"
 #include "common/sockets/TransferType.hpp"
+#include "common/sockets/PacketOverload.hpp"
 #include "server/Creature.hpp"
 #include "common/CardData.hpp"
 // SFML headers
@@ -105,13 +106,17 @@ userId GameThread::startGame(const ClientInformations& player1, const ClientInfo
 	++earnedCardId;  // Card indices start to 1 because of SQLite
 	_database.addCard(winnerId, earnedCardId);
 	// \TODO: add earnedCardId to winner's card collection
-	packet << TransferType::GAME_OVER << TransferType::WINNER << earnedCardId;
+
+	// Send to the winner he won
+	// EndGame::applyToSelf indicate which player won the game: false mean that
+	// the player who receive this message has won.
+	packet << TransferType::GAME_OVER << EndGame{_endGamecause, false} << earnedCardId;
 	sf::TcpSocket& winnerSocket{winnerId == _player1ID ? _specialOutputSocketPlayer1 : _specialOutputSocketPlayer2};
 	winnerSocket.send(packet);
 
 	// Send to the loser he lost (do NOT send a card index thus)
 	packet.clear();
-	packet << TransferType::GAME_OVER << TransferType::LOSER;
+	packet << TransferType::GAME_OVER << EndGame{_endGamecause, true};
 	sf::TcpSocket& loserSocket{winnerId == _player1ID ? _specialOutputSocketPlayer2 : _specialOutputSocketPlayer1};
 	loserSocket.send(packet);
 
@@ -158,10 +163,11 @@ userId GameThread::runGame()
 	return _winner;
 }
 
-void GameThread::endGame(userId winnerId)
+void GameThread::endGame(userId winnerId, EndGame::Cause cause)
 {
 	std::cout << "Game is asked to end\n";
 	_winner = winnerId;
+	_endGamecause = cause;
 	_running.store(false);
 }
 
