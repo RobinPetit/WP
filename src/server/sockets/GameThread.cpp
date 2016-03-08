@@ -90,14 +90,6 @@ userId GameThread::startGame(const ClientInformations& player1, const ClientInfo
 
 	userId winnerId{runGame()};
 
-	// NOTE:
-	// The reason TransferType::GAME_OVER is kept even though two different
-	// signals are send according to who won and who lost is the following:
-	// having only one signal for the end of the game allows the client to
-	// first check if it is the end, and then check if he won or lost.
-	// This way, no need to have two **separate** `if`s or two **separate**
-	// `case`s in a switch.
-
 	// Send to the winner he wins and send his new card ID
 	packet.clear();
 	std::random_device device;
