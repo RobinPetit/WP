@@ -4,37 +4,37 @@
 const CreatureData ALL_CREATURES[] = {
 	{
 		"Tower guard",
-		COST_3, ATTACK_2, HEALTH_8, SHIELD_1, SHIELD_BLUE,
+		COST_1, ATTACK_2, HEALTH_8, SHIELD_1, SHIELD_BLUE,
 		{{CREATURE_SELF_THIS,CE_SET_CONSTRAINT,CC_TURN_HEALTH_CHANGE,1,UNLIMITED_TURNS,NO_CASTER_NEEDED}},
 		"This creature gains 1 HEALTH each turn"
 	},
 	{
 		"Diabolic imp",
-		COST_2, ATTACK_3, HEALTH_2, SHIELD_0, SHIELD_NONE,
+		COST_1, ATTACK_3, HEALTH_2, SHIELD_0, SHIELD_NONE,
 		{{CREATURE_SELF_THIS,CE_SET_CONSTRAINT,CC_TURN_ATTACK_CHANGE,1,UNLIMITED_TURNS,NO_CASTER_NEEDED}},
 		"This creature gains 1 ATTACK each turn"
 	},
 	{
 		"Little Ragnaros",
-		COST_4, ATTACK_4, HEALTH_4, SHIELD_1, SHIELD_LEGENDARY,
+		COST_2, ATTACK_4, HEALTH_4, SHIELD_1, SHIELD_LEGENDARY,
 		{{PLAYER_OPPO,PE_SET_CONSTRAINT,PC_TURN_HEALTH_CHANGE,-2,UNLIMITED_TURNS,IF_CASTER_ALIVE}},
 		"Each turn, your opponent loses 2 HP"
 	},
 	{
 		"White wizard",
-		COST_7, ATTACK_7, HEALTH_7, SHIELD_0, SHIELD_NONE,
+		COST_3, ATTACK_7, HEALTH_7, SHIELD_0, SHIELD_NONE,
 		{{CREATURE_SELF_THIS,CE_SET_CONSTRAINT,CC_TEMP_BLOCK_ATTACKS,2,UNLIMITED_TURNS,NO_CASTER_NEEDED}},
 		"Blocks the next 2 attacks on your team"
 	},
 	{
  		"Greedy imp",
-		COST_2, ATTACK_2, HEALTH_2, SHIELD_2, SHIELD_ORANGE,
+		COST_1, ATTACK_2, HEALTH_2, SHIELD_2, SHIELD_ORANGE,
 		{{PLAYER_SELF,PE_SET_CONSTRAINT,PC_TURN_CARDS_PICKED,2,1,NO_CASTER_NEEDED}},
 		"Allows you to draw one more card at the beginning of your next turn"
 	},
 	{
 		"Unbridled bear",
-		COST_3, ATTACK_3, HEALTH_4, SHIELD_0, SHIELD_NONE,
+		COST_2, ATTACK_3, HEALTH_4, SHIELD_0, SHIELD_NONE,
 		{{CREATURE_OPPO_TEAM,CE_CHANGE_SHIELD,-1}},
 		"Takes away 1 shield of each opposite creatures when placed"
 	},
@@ -52,13 +52,13 @@ const CreatureData ALL_CREATURES[] = {
 	},
 	{
 		"Mecha spider",
-		COST_3, ATTACK_4, HEALTH_2, SHIELD_1, SHIELD_ORANGE,
+		COST_1, ATTACK_4, HEALTH_2, SHIELD_1, SHIELD_ORANGE,
 		{{CREATURE_OPPO_RAND,CE_RESET_ATTACK,1}},
 		"Reset the attack for a random opponent's creature"
 	},
 	{
 		"Mirage of happiness",
-		COST_3, ATTACK_0, HEALTH_5, SHIELD_3, SHIELD_BLUE,
+		COST_2, ATTACK_0, HEALTH_5, SHIELD_3, SHIELD_BLUE,
 		{{PLAYER_OPPO,PE_SET_CONSTRAINT,PC_TEMP_SPELL_CALL_LIMIT,2,UNLIMITED_TURNS,NO_CASTER_NEEDED}},
 		"Your opponent can't play more than 2 spells per turn."
 	}/*,
@@ -141,7 +141,7 @@ const SpellData ALL_SPELLS[] = {
 	},
 	{
 		"Care",
-		COST_5,
+		COST_2,
 		{{CREATURE_SELF_INDX, CE_CHANGE_HEALTH, 2}},
 		"Increase a creature's health of 2 points"
 	},
@@ -153,13 +153,13 @@ const SpellData ALL_SPELLS[] = {
 	},
 	{
 		"Discard",
-		COST_4,
+		COST_2,
 		{{PLAYER_OPPO, PE_LOSE_HAND_CARDS, 1}},
 		"Your opponent loses a random card from his hand"
 	},
 	{
 		"Sickness",
-		COST_3,
+		COST_1,
 		{{CREATURE_OPPO_TEAM, CE_CHANGE_ATTACK, -1}},
 		"Decrease all your opponent's creatures' attack of 1 point"
 	},
@@ -177,13 +177,13 @@ const SpellData ALL_SPELLS[] = {
 	},
 	{
 		"Robbery",
-		COST_5,
+		COST_2,
 		{{CREATURE_OPPO_TEAM, CE_CHANGE_ATTACK, -1},{CREATURE_SELF_TEAM, CE_CHANGE_ATTACK, 1}},
 		"Decrease all your opponent's creatures' attack of 1 point and increase yours of 1 point"
 	},
 	{
 		"Exchange",
-		COST_4,
+		COST_1,
 		{{PLAYER_SELF, PE_EXCHG_HAND_CARD, 1}},
 		"You exchange a card of your choice with a random card from the opponent's hand"
 	}/*,
