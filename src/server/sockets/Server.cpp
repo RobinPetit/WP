@@ -30,7 +30,13 @@ int Server::start(const sf::Uint16 listenerPort)
 	sf::TcpListener listener;
 	if(listener.listen(listenerPort) != sf::Socket::Done)
 		return UNABLE_TO_LISTEN;
+
+	// Make sure the thread is not joinable before assigning it, an abort seems
+	// to occur in the assignment, this is caused because the thread is joinable
+	if(_quitThread.joinable())
+		_quitThread.join();
 	_quitThread = std::thread(&Server::waitQuit, this);
+
 	_threadRunning.store(true);
 	sf::sleep(SOCKET_TIME_SLEEP);
 	_socketSelector.add(listener);
