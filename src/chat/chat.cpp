@@ -250,9 +250,9 @@ int main(int argc, char **argv)
 	output(out, selfName, presence);
 	// code to quit properly (frees the memory)
 	running.store(false);
-	inputThread.join();
+	if(inputThread.joinable())
+		inputThread.join();
 	// close the file when the input thread is over: be sure it does not need to log something anymore
 	logFile.close();
 	return EXIT_SUCCESS;
 }
-

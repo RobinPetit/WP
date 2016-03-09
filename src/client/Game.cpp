@@ -87,7 +87,8 @@ void Game::play()
 				sf::sleep(sf::milliseconds(100));
 		}
 	}
-	_listeningThread.join();
+	if(_listeningThread.joinable())
+		_listeningThread.join();
 }
 
 void Game::display()

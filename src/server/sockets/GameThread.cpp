@@ -268,5 +268,6 @@ void GameThread::makeTimer()
 GameThread::~GameThread()
 {
 	interruptGame();
-	_timerThread.join();
+	if(_timerThread.joinable())
+		_timerThread.join();
 }
