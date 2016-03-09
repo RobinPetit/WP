@@ -42,7 +42,7 @@ class Deck
 
 		const std::string& getName() const;
 
-		void setName(const std::string newName);
+		void setName(const std::string& newName);
 
 		Iterator begin();
 

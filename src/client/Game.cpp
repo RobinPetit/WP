@@ -128,7 +128,7 @@ void Game::startTurn()
 //PRIVATE METHODS
 
 // Request user for additional input
-int Game::askIndex(std::size_t upperBound, std::string inputMessage)
+int Game::askIndex(std::size_t upperBound, const std::string& inputMessage)
 {
 	if (upperBound == 0)
 	{

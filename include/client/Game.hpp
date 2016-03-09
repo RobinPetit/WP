@@ -60,7 +60,7 @@ class Game
 		void chooseDeck();
 
 		// Requests user for additional input
-		int askIndex(std::size_t upperBound, std::string inputMessage);
+		int askIndex(std::size_t upperBound, const std::string& inputMessage);
 		int askSelfHandIndex();
 		int askSelfBoardIndex();
 		int askSelfGraveyardIndex();

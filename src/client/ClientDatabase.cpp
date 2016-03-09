@@ -1,3 +1,3 @@
 #include "client/ClientDatabase.hpp"
 
-ClientDatabase::ClientDatabase(std::string filename) : Database(filename) {}
+ClientDatabase::ClientDatabase(const std::string& filename) : Database(filename) {}
