@@ -1,18 +1,26 @@
-#include "server/ServerDatabase.hpp"
 #include "common/Identifiers.hpp"
+#include "server/ServerDatabase.hpp"
+#include "server/Spell.hpp"
+#include "server/Card.hpp"
+#include "server/Creature.hpp"
 
 #include <cassert>
 #include <cstring>
+#include <string>
+#include <utility>
 
 #define AUTO_QUERY_LENGTH -1
 
 // TODO: this is multi-threaded
 
 const char ServerDatabase::FILENAME[] = "../resources/server/database.db";
-ServerDatabase::ServerDatabase(std::string filename) : Database(filename)
+ServerDatabase::ServerDatabase(std::string filename) : Database(filename), _cards()
 {
 	for(size_t i = 0; i < _statements.size(); ++i)
 		prepareStmt(_statements[i]);
+
+	createSpellCards();
+	createCreatureCards();
 }
 
 userId ServerDatabase::getUserId(const std::string login)
@@ -24,7 +32,7 @@ userId ServerDatabase::getUserId(const std::string login)
 	if(sqliteThrowExcept(sqlite3_step(_userIdStmt)) == SQLITE_DONE)
 		throw std::runtime_error("ERROR login not found");
 
-	userId ret{sqlite3_column_int(_userIdStmt, 0)};
+	userId ret {sqlite3_column_int(_userIdStmt, 0)};
 	unlock();
 	return ret;
 }
@@ -38,7 +46,7 @@ std::string ServerDatabase::getLogin(userId id)
 	if(sqliteThrowExcept(sqlite3_step(_loginStmt)) == SQLITE_DONE)
 		throw std::runtime_error("ERROR userId not found");
 
-	std::string ret{reinterpret_cast<const char *>(sqlite3_column_text(_loginStmt, 0))};
+	std::string ret {reinterpret_cast<const char *>(sqlite3_column_text(_loginStmt, 0))};
 	unlock();
 	return ret;
 }
@@ -58,6 +66,7 @@ std::vector<Deck> ServerDatabase::getDecks(userId id)
 		for(size_t i {0}; i < Deck::size; ++i)
 			decks.back().changeCard(i, static_cast<cardId>(sqlite3_column_int(_decksStmt, i + 1)));
 	}
+
 	unlock();
 
 	return decks;
@@ -75,6 +84,7 @@ CardsCollection ServerDatabase::getCardsCollection(userId id)
 	{
 		cards.addCard(sqlite3_column_int(_cardsCollectionStmt, 0));
 	}
+
 	unlock();
 
 	return cards;
@@ -94,6 +104,7 @@ Ladder ServerDatabase::getLadder()
 		ladder[i].victories = sqlite3_column_int(_ladderStmt, 1);
 		ladder[i].defeats = sqlite3_column_int(_ladderStmt, 2);
 	}
+
 	unlock();
 
 	return ladder;
@@ -129,7 +140,7 @@ bool ServerDatabase::areFriend(userId userId1, userId userId2)
 	sqliteThrowExcept(sqlite3_bind_int(_areFriendStmt, 1, static_cast<int>(userId1)));
 	sqliteThrowExcept(sqlite3_bind_int(_areFriendStmt, 2, static_cast<int>(userId2)));
 
-	bool ret{sqliteThrowExcept(sqlite3_step(_areFriendStmt)) == SQLITE_ROW};
+	bool ret {sqliteThrowExcept(sqlite3_step(_areFriendStmt)) == SQLITE_ROW};
 	unlock();
 	return ret;
 }
@@ -163,7 +174,7 @@ bool ServerDatabase::isFriendshipRequestSent(userId from, userId to)
 	sqliteThrowExcept(sqlite3_bind_int(_isFriendshipRequestSentStmt, 1, static_cast<int>(from)));
 	sqliteThrowExcept(sqlite3_bind_int(_isFriendshipRequestSentStmt, 2, static_cast<int>(to)));
 
-	bool ret{sqliteThrowExcept(sqlite3_step(_isFriendshipRequestSentStmt)) == SQLITE_ROW};
+	bool ret {sqliteThrowExcept(sqlite3_step(_isFriendshipRequestSentStmt)) == SQLITE_ROW};
 	unlock();
 	return ret;
 }
@@ -171,13 +182,15 @@ bool ServerDatabase::isFriendshipRequestSent(userId from, userId to)
 Deck ServerDatabase::getDeckByName(userId id, const std::string& deckName)
 {
 	lock();
+
 	// TODO this is certainly not the best way to get an unique deck from the DB
-	for(auto& deck : getDecks(id))
+	for(auto & deck : getDecks(id))
 		if(deck.getName() == deckName)
 		{
 			unlock();
 			return deck;
 		}
+
 	unlock();
 	return Deck();
 }
@@ -218,6 +231,7 @@ void ServerDatabase::editDeck(userId id, const Deck& deck)
 
 	for(auto card = 0U; card < Deck::size; ++card)
 		sqliteThrowExcept(sqlite3_bind_int(_editDeckByNameStmt, card + 2, static_cast<int>(deck.getCard(card))));
+
 	sqliteThrowExcept(sqlite3_bind_int(_editDeckByNameStmt, 22, static_cast<int>(id)));
 
 	assert(sqliteThrowExcept(sqlite3_step(_editDeckByNameStmt)) == SQLITE_DONE);
@@ -233,7 +247,7 @@ bool ServerDatabase::areIdentifiersValid(const std::string& login, const std::st
 	sqliteThrowExcept(sqlite3_bind_blob(_areIdentifiersValidStmt, 2, password.c_str(), std::strlen(password.c_str()),
 	                                    SQLITE_TRANSIENT));
 
-	bool ret{sqliteThrowExcept(sqlite3_step(_areIdentifiersValidStmt)) == SQLITE_ROW};
+	bool ret {sqliteThrowExcept(sqlite3_step(_areIdentifiersValidStmt)) == SQLITE_ROW};
 	unlock();
 	return ret;
 }
@@ -244,7 +258,7 @@ bool ServerDatabase::isRegistered(const std::string& login)
 	sqlite3_reset(_userIdStmt);
 	sqliteThrowExcept(sqlite3_bind_text(_userIdStmt, 1, login.c_str(), AUTO_QUERY_LENGTH, SQLITE_TRANSIENT));
 
-	bool ret{sqliteThrowExcept(sqlite3_step(_userIdStmt)) == SQLITE_ROW};
+	bool ret {sqliteThrowExcept(sqlite3_step(_userIdStmt)) == SQLITE_ROW};
 	unlock();
 	return ret;
 }
@@ -275,9 +289,77 @@ FriendsList ServerDatabase::getAnyFriendsList(userId user, sqlite3_stmt * stmt)
 		                             reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1)) // name
 		                            });
 	}
+
 	unlock();
 
 	return friends;
+}
+
+void ServerDatabase::createSpellCards()
+{
+	sqlite3_reset(_getSpellCardsStmt);
+
+	assert(sqliteThrowExcept(sqlite3_step(_getSpellCardsStmt)) == SQLITE_ROW);
+
+	register int cardId(sqlite3_column_int(_getSpellCardsStmt, 0));
+
+	_cards.emplace(
+	    std::make_pair<>(
+	        cardId,
+	        std::unique_ptr<Card>(new Spell(
+	                                  cardId, sqlite3_column_int(_getSpellCardsStmt, 1), // cost
+	                                  std::vector<EffectParamsCollection>(createCardEffects(cardId)) // spells
+	                              ))
+	    )
+	);
+}
+
+void ServerDatabase::createCreatureCards()
+{
+	sqlite3_reset(_getCreatureCardsStmt);
+
+	assert(sqliteThrowExcept(sqlite3_step(_getCreatureCardsStmt)) == SQLITE_ROW);
+
+	int cardId(sqlite3_column_int(_getCreatureCardsStmt, 0));
+
+	_cards.emplace(
+	    std::make_pair<>(
+	        cardId,
+	        std::unique_ptr<Card>(new Creature(
+	                                  cardId,
+	                                  sqlite3_column_int(_getCreatureCardsStmt, 1), // cost
+	                                  sqlite3_column_int(_getCreatureCardsStmt, 2), // attack
+	                                  sqlite3_column_int(_getCreatureCardsStmt, 3), // health
+	                                  sqlite3_column_int(_getCreatureCardsStmt, 4), // shield
+	                                  sqlite3_column_int(_getCreatureCardsStmt, 5), // shieldType
+	                                  std::vector<EffectParamsCollection>(createCardEffects(cardId)) // spells
+	                              ))
+	    )
+	);
+}
+
+std::vector<EffectParamsCollection> ServerDatabase::createCardEffects(int cardId)
+{
+	sqlite3_reset(_getCardEffectsStmt);
+	sqliteThrowExcept(sqlite3_bind_int(_getCardEffectsStmt, 1, cardId));
+
+	std::vector<EffectParamsCollection> effects;
+
+	while(sqliteThrowExcept(sqlite3_step(_getCardEffectsStmt)) == SQLITE_ROW)
+	{
+		effects.push_back(EffectParamsCollection
+		{
+			sqlite3_column_int(_getCardEffectsStmt, 0),
+			sqlite3_column_int(_getCardEffectsStmt, 1),
+			sqlite3_column_int(_getCardEffectsStmt, 2),
+			sqlite3_column_int(_getCardEffectsStmt, 3),
+			sqlite3_column_int(_getCardEffectsStmt, 4),
+			sqlite3_column_int(_getCardEffectsStmt, 5),
+			sqlite3_column_int(_getCardEffectsStmt, 6),
+		});
+	}
+
+	return effects;
 }
 
 ServerDatabase::~ServerDatabase()

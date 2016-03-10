@@ -64,7 +64,7 @@ protected:
 	void prepareStmt(Statement&);
 
 	/// Throw exception if errcode is actually an error code
-	int sqliteThrowExcept(int errcode) const;
+	static int sqliteThrowExcept(int errcode);
 
 	sqlite3 *_database;
 

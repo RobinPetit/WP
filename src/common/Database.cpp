@@ -24,7 +24,7 @@ Database::~Database()
 		std::cerr << "ERROR while closing database connection" << std::endl; // TODO error handling
 }
 
-int Database::sqliteThrowExcept(int errcode) const
+int Database::sqliteThrowExcept(int errcode)
 {
 	switch(errcode)
 	{

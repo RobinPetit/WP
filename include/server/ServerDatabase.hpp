@@ -1,8 +1,15 @@
 #ifndef _SERVER_DATABASE_SERVER_HPP
 #define _SERVER_DATABASE_SERVER_HPP
 
+#include <map>
+#include <memory>
+
 #include "common/Database.hpp"
 #include "common/Identifiers.hpp"
+#include "server/Card.hpp"
+
+class Creature;
+class Spell;
 
 // for the moment login and name are used for the same string
 
@@ -53,8 +60,13 @@ public:
 private:
 	/// Default relative path to sqlite3 file
 	static const char FILENAME[];
+	std::map<int, std::unique_ptr<Card> > _cards;
 
 	FriendsList getAnyFriendsList(userId id, sqlite3_stmt * stmt);
+	/// Add a card to _cards;
+	void createSpellCards();
+	void createCreatureCards();
+	std::vector<EffectParamsCollection> createCardEffects(int cardId);
 
 	sqlite3_stmt * _friendListStmt;
 	sqlite3_stmt * _userIdStmt;
@@ -74,11 +86,11 @@ private:
 	sqlite3_stmt * _createDeckStmt;
 	sqlite3_stmt * _deleteDeckByNameStmt;
 	sqlite3_stmt * _editDeckByNameStmt;
+	sqlite3_stmt * _getSpellCardsStmt;
+	sqlite3_stmt * _getCreatureCardsStmt;
+	sqlite3_stmt * _getCardEffectsStmt;
 
-	// `constexpr std::array::size_type size() const;`
-	// -> I consider this 15 as the definition of the variable, so it is not a magic number
-	// -> future uses have to be _statements.size() -> 15 is writed only one time
-	StatementsList<18> _statements
+	StatementsList<21> _statements
 	{
 		{
 			Statement {
@@ -182,7 +194,21 @@ private:
 				"		card7 = ?9, card8 = ?10, card9 = ?11, card10 = ?12, card11 = ?13, card12 = ?14, card13 = ?15, "
 				"		card14 = ?16, card15 = ?17, card16 = ?18, card17 = ?19, card18 = ?20, card19 = ?21 "
 				"	WHERE owner == ?22 AND name == ?1;" // name <- ?1 because complete query should be `...SET name = ?1...`
-			}
+			},
+			Statement {
+				&_getSpellCardsStmt,
+				"SELECT id, cost FROM SpellCard;"
+			},
+			Statement {
+				&_getCreatureCardsStmt,
+				"SELECT id, cost, attack, health, shield, shieldType FROM CreatureCard;"
+			},
+			Statement {
+				&_getCardEffectsStmt,
+				"SELECT parameter0, parameter1, parameter2, parameter3,"
+				"       parameter4, parameter5, parameter6"
+				"FROM Effect WHERE owner== ?1;"
+			},
 		}
 	};
 };
