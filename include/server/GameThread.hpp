@@ -74,7 +74,6 @@ private:
 
 	void useCard(int cardIndex);
 	void attackWithCreature(int attackerIndex, int victimIndex);
-	void applyEffect(Card* usedCard, EffectParamsCollection effectArgs);
 };
 
 ///////// template code

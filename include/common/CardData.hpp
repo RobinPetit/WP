@@ -4,9 +4,7 @@
 #include <string>
 #include <vector>
 #include "common/Identifiers.hpp"
-
-
-#include "CardData.inc"
+#include "common/CardData.inc"
 
 constexpr int UNLIMITED_TURNS=100;
 

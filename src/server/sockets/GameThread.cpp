@@ -176,66 +176,6 @@ void GameThread::swapTurns()
 	_turnSwap.store(true);
 }
 
-/*------------------------------ PLAYER AND CARD INTERFACE */
-void GameThread::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
-{
-	int subject;  // who the effect applies to
-	try  // check the input
-	{
-		subject=effectArgs.at(0);
-		effectArgs.erase(effectArgs.begin());
-	}
-	catch (std::out_of_range&)
-	{
-		//SERVER: CARD ERROR
-		return;
-	}
-
-	switch (subject)
-	{
-		case PLAYER_SELF:	//passive player
-			_activePlayer->askUserToSelectCards({});
-			_activePlayer->applyEffect(usedCard, effectArgs);
-			break;
-		case PLAYER_OPPO:	//active player
-			_activePlayer->askUserToSelectCards({});
-			_passivePlayer->applyEffect(usedCard, effectArgs);
-			break;
-		case CREATURE_SELF_THIS:	//active player's creature that was used
-			_activePlayer->askUserToSelectCards({});
-			_activePlayer->applyEffectToCreature(dynamic_cast<Creature*>(usedCard), effectArgs);
-			break;
-		case CREATURE_SELF_INDX:	//active player's creature at given index
-			_activePlayer->applyEffectToCreature(usedCard, effectArgs, _activePlayer->askUserToSelectCards({CardToSelect::SELF_BOARD}));
-			break;
-
-		case CREATURE_SELF_RAND:	//active player's creature at random index
-			_activePlayer->askUserToSelectCards({});
-			_activePlayer->applyEffectToCreature(usedCard, effectArgs, _activePlayer->getRandomBoardIndexes({CardToSelect::SELF_BOARD}));
-			break;
-
-		case CREATURE_SELF_TEAM:	//active player's team of creatures
-			_activePlayer->askUserToSelectCards({});
-			_activePlayer->applyEffectToCreatureTeam(usedCard, effectArgs);
-			break;
-
-		case CREATURE_OPPO_INDX:	//passive player's creature at given index
-			_passivePlayer->applyEffectToCreature(usedCard, effectArgs, _activePlayer->askUserToSelectCards({CardToSelect::OPPO_BOARD}));
-			break;
-
-		case CREATURE_OPPO_RAND:	//passive player's creature at random index
-			_activePlayer->askUserToSelectCards({});
-			_passivePlayer->applyEffectToCreature(usedCard, effectArgs, _activePlayer->getRandomBoardIndexes({CardToSelect::OPPO_BOARD}));
-			break;
-
-		case CREATURE_OPPO_TEAM:	//passive player's team of creatures
-			_activePlayer->askUserToSelectCards({});
-			_passivePlayer->applyEffectToCreatureTeam(usedCard, effectArgs);
-			break;
-	}
-	throw std::runtime_error("Effect subject not valid");
-}
-
 // Function only called by a new thread
 void GameThread::makeTimer()
 {

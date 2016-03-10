@@ -30,10 +30,9 @@ Player::Player(GameThread& gameThread, ServerDatabase& database, userId id):
 	_gameThread(gameThread),
 	_database(database),
 	_id(id),
-	_isActive(false),
-	_energy{_energyInit},
-	_health{_healthInit}
+	_isActive(false)
 {
+	std::cout << _energy << _health << std::endl;
 	// Input sockets are non-blocking, this is easier since the sockets of the
 	// two players are separated in the Player instances. So that as soon as a
 	// packet is received, the packet is handled, rather than waiting that the
@@ -119,7 +118,7 @@ void Player::receiveDeck()
 
 void Player::beginGame(bool isActivePlayer)
 {
-
+	std::cout << "Pre-beginGame" << _energy << _health << std::endl;
 	// init Player's data
 	cardDeckToHand(4);
 	// log & send
@@ -133,10 +132,12 @@ void Player::beginGame(bool isActivePlayer)
 	packet << TransferType::GAME_STARTING << (isActivePlayer ? TransferType::GAME_PLAYER_ENTER_TURN : TransferType::GAME_PLAYER_LEAVE_TURN);
 	_socketToClient.send(packet);
 	_isActive.store(isActivePlayer);
+	std::cout << "Post-beginGame" << _energy << _health << std::endl;
 }
 
 void Player::enterTurn(int turn)
 {
+	std::cout << "Pre-enterTurn" << _energy << _health << std::endl;
 	_isActive.store(true); //Player has become active
 
 	_turnData = _emptyTurnData;  // Reset the turn data
@@ -160,6 +161,7 @@ void Player::enterTurn(int turn)
 	//Will call creature's turn-based constraints
 	for (unsigned i=0; i<_cardBoard.size(); i++)
 		_cardBoard.at(i)->enterTurn();
+	std::cout << "Post-enterTurn" << _energy << _health << std::endl;
 }
 
 void Player::leaveTurn()
@@ -398,8 +400,9 @@ void Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 			askUserToSelectCards({});
 			_opponent->applyEffectToCreatureTeam(usedCard, effectArgs);
 			break;
+		default:
+			throw std::runtime_error("Effect subject not valid");
 	}
-	throw std::runtime_error("Effect subject not valid");
 }
 
 void Player::applyEffectToSelf(const Card* usedCard, EffectParamsCollection effectArgs)
@@ -579,17 +582,16 @@ void Player::resetEnergy(const EffectParamsCollection& args)
 	try //check the input
 	{
 		_energyInit += args.at(0);
-		if(_energyInit < 0)
-			_energy = 0;
-		else if(_energyInit > _maxEnergy)
-			_energyInit = _maxEnergy;
-		_energy = _energyInit;
-		logCurrentEnergy();
 	}
 	catch (std::out_of_range&)
 	{
 		throw std::runtime_error("Error with cards arguments");
 	}
+	if(_energyInit < 0)
+		_energyInit = 0;
+	else if(_energyInit > _maxEnergy)
+		_energyInit = _maxEnergy;
+	_energy = _energyInit;
 	logCurrentEnergy();
 }
 
@@ -598,16 +600,16 @@ void Player::changeEnergy(const EffectParamsCollection& args)
 	try //check the input
 	{
 		_energy += args.at(0);
-		if(_energy < 0)
-			_energy = 0;
-		else if(_energy > _maxEnergy)
-			_energy = _maxEnergy;
-		logCurrentEnergy();
 	}
 	catch (std::out_of_range&)
 	{
 		throw std::runtime_error("Error with cards arguments");
 	}
+	if(_energy < 0)
+		_energy = 0;
+	else if(_energy > _maxEnergy)
+		_energy = _maxEnergy;
+	logCurrentEnergy();
 }
 
 void Player::changeHealth(const EffectParamsCollection& args)
