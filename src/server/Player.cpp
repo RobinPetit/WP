@@ -92,7 +92,9 @@ void Player::setDeck(const Deck& newDeck)
 			loadedCards[i] = new Spell(card, spell.cost, spell.effects);
 		}
 	}
-	std::shuffle(loadedCards.begin(), loadedCards.end(), std::mt19937(std::random_device()()));
+	//Deterministic behavior is best while testing
+	//TODO: re-enable shuffling when required
+	//std::shuffle(loadedCards.begin(), loadedCards.end(), std::mt19937(std::random_device()()));
 	for(const auto& cardInShuffledDeck: loadedCards)
 		_cardDeck.push(cardInShuffledDeck);
 }

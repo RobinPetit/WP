@@ -60,7 +60,7 @@ private:
 	std::thread _timerThread;
 	std::atomic_bool _turnSwap;
 	// Currently low for tests
-	static constexpr std::chrono::seconds _turnTime{30};  // arbitrary
+	static constexpr std::chrono::seconds _turnTime{120};  // arbitrary, need more time nor for testing
 
 	//////////// Private methods
 	userId runGame();

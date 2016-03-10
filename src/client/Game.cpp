@@ -152,21 +152,21 @@ int Game::askIndex(std::size_t upperBound, const std::string& inputMessage)
 int Game::askSelfHandIndex()
 {
 	std::cout << "These are the cards in your hand:" << std::endl;
-	displayCardVector(_selfHandCards);
+	displayCardVector(_selfHandCards, true);
 	return askIndex(_selfHandCards.size(), "Choose the index for a card in your hand: ");
 }
 
 int Game::askSelfBoardIndex()
 {
 	std::cout << "These are the cards on your board:" << std::endl;
-	displayBoardCreatureVector(_selfBoardCreatures);
+	displayBoardCreatureVector(_selfBoardCreatures, true);
 	return askIndex(_selfBoardCreatures.size(), "Choose the index for a card on your board: ");
 }
 
 int Game::askSelfGraveyardIndex()
 {
 	std::cout << "These are the cards in your graveyard:" << std::endl;
-	displayCardVector(_selfGraveCards);
+	displayCardVector(_selfGraveCards, true);
 	return askIndex(_selfGraveCards.size(), "Choose the index for a card in the graveyard: ");
 }
 
@@ -179,7 +179,7 @@ int Game::askOppoHandIndex()
 int Game::askOppoBoardIndex()
 {
 	std::cout << "These are the cards on your opponent's board:" << std::endl;
-	displayBoardCreatureVector(_oppoBoardCreatures);
+	displayBoardCreatureVector(_oppoBoardCreatures, true);
 	return askIndex(_oppoBoardCreatures.size(), "Choose the index for a card on the opponent's board: ");
 }
 
@@ -327,17 +327,18 @@ void Game::displayGame()
 	std::cout << "***************" << std::endl;
 }
 
-void Game::displayCardVector(const std::vector<CardData>& cardVector)
+void Game::displayCardVector(const std::vector<CardData>& cardVector, bool displayDescription)
 {
 	for (auto i=0U; i<cardVector.size(); i++)
 	{
 		cardId id = cardVector.at(i).id;
 		std::cout << "  * " << i << " : " << getCardName(id) << " (cost: " << getCardCost(id)
-		          << ")" << (i < cardVector.size()-1 ? ", " : "") << "\n";
+		          << ")" << (i < cardVector.size()-1 ? ", " : "")
+		          << (displayDescription ? getCardDescription(id) : "") << "\n";
 	}
 }
 
-void Game::displayBoardCreatureVector(const std::vector<BoardCreatureData>& cardVector)
+void Game::displayBoardCreatureVector(const std::vector<BoardCreatureData>& cardVector, bool displayDescription)
 {
 	// The board vector also contains real time informations about the cards (health, attack, shield, shield type)
 	// This method should display these informations and be called only for displaying the board
@@ -348,7 +349,8 @@ void Game::displayBoardCreatureVector(const std::vector<BoardCreatureData>& card
 		std::cout << i << " : " << getCardName(id) << " (cost: " << getCardCost(id) <<
 		             ", attack: " << thisCreature.attack <<
 		             ", health: " << thisCreature.health <<
-		             ", shield: " << thisCreature.shield << "-" << thisCreature.shieldType << ")";
+		             ", shield: " << thisCreature.shield << "-" << thisCreature.shieldType << ")"
+		             << (displayDescription ? getCardDescription(id) : "") << "\n";
 		//TODO use card names instead of card IDs ?
 		if (i!=cardVector.size()-1)
 			std::cout << ", ";
