@@ -77,8 +77,8 @@ class Game
 		// Game display
 		void display();
 		void displayGame();
-		void displayCardVector(const std::vector<CardData>& cardVector);
-		void displayBoardCreatureVector(const std::vector<BoardCreatureData>& cardVector);
+		void displayCardVector(const std::vector<CardData>& cardVector, bool displayDescription=false);
+		void displayBoardCreatureVector(const std::vector<BoardCreatureData>& cardVector, bool displayDescription=false);
 
 		const std::string& getCardName(cardId id);
 		CostValue getCardCost(cardId id);
