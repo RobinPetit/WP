@@ -32,7 +32,7 @@ Player::Player(GameThread& gameThread, ServerDatabase& database, userId id):
 	_id(id),
 	_isActive(false),
 	_energy{_energyInit},
-	_health{_maxHealth}
+	_health{_healthInit}
 {
 	// Input sockets are non-blocking, this is easier since the sockets of the
 	// two players are separated in the Player instances. So that as soon as a

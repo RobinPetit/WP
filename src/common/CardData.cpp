@@ -10,7 +10,7 @@ const CreatureData ALL_CREATURES[] = {
 	},
 	{
 		"Diabolic imp",
-		COST_1, ATTACK_3, HEALTH_2, SHIELD_0, SHIELD_NONE,
+		COST_1, ATTACK_3, HEALTH_2, SHIELD_1, SHIELD_NONE,
 		{{CREATURE_SELF_THIS,CE_SET_CONSTRAINT,CC_TURN_ATTACK_CHANGE,1,UNLIMITED_TURNS,NO_CASTER_NEEDED}},
 		"This creature gains 1 ATTACK each turn"
 	},
@@ -22,7 +22,7 @@ const CreatureData ALL_CREATURES[] = {
 	},
 	{
 		"White wizard",
-		COST_3, ATTACK_7, HEALTH_7, SHIELD_0, SHIELD_NONE,
+		COST_3, ATTACK_7, HEALTH_7, SHIELD_1, SHIELD_NONE,
 		{{CREATURE_SELF_THIS,CE_SET_CONSTRAINT,CC_TEMP_BLOCK_ATTACKS,2,UNLIMITED_TURNS,NO_CASTER_NEEDED}},
 		"Blocks the next 2 attacks on your team"
 	},
@@ -34,7 +34,7 @@ const CreatureData ALL_CREATURES[] = {
 	},
 	{
 		"Unbridled bear",
-		COST_2, ATTACK_3, HEALTH_4, SHIELD_0, SHIELD_NONE,
+		COST_2, ATTACK_3, HEALTH_4, SHIELD_1, SHIELD_NONE,
 		{{CREATURE_OPPO_TEAM,CE_CHANGE_SHIELD,-1}},
 		"Takes away 1 shield of each opposite creatures when placed"
 	},
@@ -46,7 +46,7 @@ const CreatureData ALL_CREATURES[] = {
 	},
 	{
 		"White dragon",
-		COST_10, ATTACK_9, HEALTH_10, SHIELD_0, SHIELD_NONE,
+		COST_10, ATTACK_9, HEALTH_10, SHIELD_1, SHIELD_NONE,
 		{{CREATURE_SELF_TEAM,CE_SET_CONSTRAINT,CC_TURN_ATTACK_CHANGE,1,UNLIMITED_TURNS,IF_CASTER_ALIVE}},
 		"All your friendly creatures gain 1 ATTACK each turn"
 	},
@@ -58,13 +58,13 @@ const CreatureData ALL_CREATURES[] = {
 	},
 	{
 		"Mirage of happiness",
-		COST_2, ATTACK_0, HEALTH_5, SHIELD_3, SHIELD_BLUE,
+		COST_2, ATTACK_1, HEALTH_5, SHIELD_3, SHIELD_BLUE,
 		{{PLAYER_OPPO,PE_SET_CONSTRAINT,PC_TEMP_SPELL_CALL_LIMIT,2,UNLIMITED_TURNS,NO_CASTER_NEEDED}},
 		"Your opponent can't play more than 2 spells per turn."
 	}/*,
 	{
 		"Armored leprechaun",
-		COST_1, ATTACK_1, HEALTH_3, SHIELD_0, SHIELD_NONE,
+		COST_1, ATTACK_1, HEALTH_3, SHIELD_1, SHIELD_NONE,
 		{{PLAYER_SELF,PE_SET_CONSTRAINT,PC_TURN_CARDS_PICKED,1,1,NO_CASTER_NEEDED}},
 		"Allows you to draw one more card at the beginning of your next turn"
 	},
@@ -77,13 +77,13 @@ const CreatureData ALL_CREATURES[] = {
 	},
 	{
 		"Warrior apprentice",
-		COST_1, ATTACK_2, HEALTH_2, SHIELD_0, SHIELD_NONE,
+		COST_1, ATTACK_2, HEALTH_2, SHIELD_1, SHIELD_NONE,
 		{{}},
 		"No effect"
 	},
 	{
 		"Resurrected triceratops",
-		COST_0, ATTACK_0, HEALTH_1, SHIELD_0, SHIELD_NONE,
+		COST_0, ATTACK_0, HEALTH_1, SHIELD_1, SHIELD_NONE,
 		{{}},
 		"No effect"
 	},
@@ -101,13 +101,13 @@ const CreatureData ALL_CREATURES[] = {
 	},
 	{
 		"Silver wolf",
-		COST_4, ATTACK_6, HEALTH_5, SHIELD_0, SHIELD_NONE,
+		COST_4, ATTACK_6, HEALTH_5, SHIELD_1, SHIELD_NONE,
 		{{}},
 		"No effect."
 	},
 	{
 		"Kuriboh",
-		COST_1, ATTACK_2, HEALTH_2, SHIELD_0, SHIELD_NONE,
+		COST_1, ATTACK_2, HEALTH_2, SHIELD_1, SHIELD_NONE,
 		{{CREATURE_SELF_TEAM,CE_RESET_SHIELD,2}},
 		"Resets 2 friendly shields."
 	},
@@ -119,7 +119,7 @@ const CreatureData ALL_CREATURES[] = {
 	},
 	{
 		"Humanoide maid",
-		COST_2, ATTACK_0, HEALTH_5, SHIELD_0, SHIELD_NONE,
+		COST_2, ATTACK_0, HEALTH_5, SHIELD_1, SHIELD_NONE,
 		{{CE_SET_CONSTRAINT,CREATURE_TEAM,CE_ADD_HEALTH,2},{PE_SET_CONSTRAINT,PLAYER_SELF,CE_ADD_HEALTH,2}},
 		"Gives a friendly creature and this creature owner 2 HP each turn."
 	}*/

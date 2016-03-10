@@ -37,7 +37,7 @@ VALUES(
 	'This creature gains 1 ATTACK each turn',
 	(SELECT id FROM ENUM_VALUES WHERE name == 'ATTACK_3'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'HEALTH_2'),
-	(SELECT id FROM ENUM_VALUES WHERE name == 'SHIELD_0'),
+	(SELECT id FROM ENUM_VALUES WHERE name == 'SHIELD_1'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'SHIELD_NONE')
 );
 
@@ -83,7 +83,7 @@ VALUES(
 	'Blocks the next 2 attacks on your team',
 	(SELECT id FROM ENUM_VALUES WHERE name == 'ATTACK_7'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'HEALTH_7'),
-	(SELECT id FROM ENUM_VALUES WHERE name == 'SHIELD_0'),
+	(SELECT id FROM ENUM_VALUES WHERE name == 'SHIELD_1'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'SHIELD_NONE')
 );
 
@@ -129,7 +129,7 @@ VALUES(
 	'Takes away 1 shield of each opposite creatures when placed',
 	(SELECT id FROM ENUM_VALUES WHERE name == 'ATTACK_2'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'HEALTH_4'),
-	(SELECT id FROM ENUM_VALUES WHERE name == 'SHIELD_0'),
+	(SELECT id FROM ENUM_VALUES WHERE name == 'SHIELD_1'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'SHIELD_NONE')
 );
 
@@ -163,7 +163,7 @@ VALUES(
 	'All your friendly creatures gain 1 ATTACK each turn',
 	(SELECT id FROM ENUM_VALUES WHERE name == 'ATTACK_9'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'HEALTH_10'),
-	(SELECT id FROM ENUM_VALUES WHERE name == 'SHIELD_0'),
+	(SELECT id FROM ENUM_VALUES WHERE name == 'SHIELD_1'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'SHIELD_NONE')
 );
 
@@ -207,7 +207,7 @@ VALUES(
 	'Mirage of hapiness',
 	(SELECT id FROM ENUM_VALUES WHERE name == 'COST_3'),
 	'Your opponent can''t play more than 2 spells per turn',
-	(SELECT id FROM ENUM_VALUES WHERE name == 'ATTACK_0'),
+	(SELECT id FROM ENUM_VALUES WHERE name == 'ATTACK_1'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'HEALTH_5'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'SHIELD_3'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'SHIELD_BLUE')
