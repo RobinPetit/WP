@@ -747,8 +747,11 @@ void Player::cardGraveyardToHand(int binIndex)
 
 void Player::cardAddToHand(Card* givenCard)
 {
-	_cardHand.push_back(givenCard);
-	logHandState();
+	if (givenCard!=nullptr)
+	{
+		_cardHand.push_back(givenCard);
+		logHandState();
+	}
 }
 
 Card* Player::cardRemoveFromHand()

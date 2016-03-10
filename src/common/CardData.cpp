@@ -182,10 +182,10 @@ const SpellData ALL_SPELLS[] = {
 		"Decrease all your opponent's creatures' attack of 1 point and increase yours of 1 point"
 	},
 	{
-		"Exchange",
+		"Grand Theft Card",
 		COST_1,
-		{{PLAYER_SELF, PE_EXCHG_HAND_CARD, 1}},
-		"You exchange a card of your choice with a random card from the opponent's hand"
+		{{PLAYER_SELF, PE_STEAL_HAND_CARD}},
+		"You steal a random card from the opponent''s hand"
 	}/*,
 	// TODO: CE_SELF_HYPNOTIZED NOT CREATED YET
 	{

@@ -410,17 +410,17 @@ VALUES(
 
 INSERT INTO SpellCard(name, cost, description)
 VALUES(
-	'Exchange',
-	(SELECT id FROM ENUM_VALUES WHERE name == 'COST_4'),
-	'You exchange a card of your choice with a random card from the opponent''s hand'
+	'Grand Theft Card',
+	(SELECT id FROM ENUM_VALUES WHERE name == 'COST_1'),
+	'You steal a random card from the opponent''s hand'
 );
 
 INSERT INTO Effect(owner, parameter0, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6)
 VALUES(
-	(SELECT id FROM Card WHERE name == 'Exchange'),
+	(SELECT id FROM Card WHERE name == 'Grand Theft Card'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'PLAYER_SELF'),
-	(SELECT id FROM ENUM_VALUES WHERE name == 'PE_EXCHG_HAND_CARD'),
-	(1),
+	(SELECT id FROM ENUM_VALUES WHERE name == 'PE_STEAL_HAND_CARD'),
+	(NULL),
 	(NULL),
 	(NULL),
 	(NULL),
