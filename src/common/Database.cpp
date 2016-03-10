@@ -70,12 +70,3 @@ int Database::sqliteThrowExcept(int errcode)
 	return errcode;
 }
 
-void Database::lock()
-{
-	_dbAccess.lock();
-}
-
-void Database::unlock()
-{
-	_dbAccess.unlock();
-}

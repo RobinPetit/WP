@@ -44,6 +44,7 @@ public:
 	bool isFriendshipRequestSent(userId from, userId to);
 
 	CardsCollection getCardsCollection(userId id);
+	void addCard(userId id, cardId card);
 
 	std::vector<Deck> getDecks(userId id);
 	Deck getDeckByName(userId id, const std::string& deckName);
@@ -89,8 +90,9 @@ private:
 	sqlite3_stmt * _getSpellCardsStmt;
 	sqlite3_stmt * _getCreatureCardsStmt;
 	sqlite3_stmt * _getCardEffectsStmt;
+	sqlite3_stmt * _newCardStmt;
 
-	StatementsList<21> _statements
+	StatementsList<22> _statements
 	{
 		{
 			Statement {
@@ -208,6 +210,11 @@ private:
 				"SELECT parameter0, parameter1, parameter2, parameter3,"
 				"       parameter4, parameter5, parameter6"
 				"FROM Effect WHERE owner== ?1;"
+			},
+			Statement {
+				&_newCardStmt,
+				"INSERT INTO GivenCard(card, owner) "
+				"	VALUES (?1, ?2);"
 			},
 		}
 	};
