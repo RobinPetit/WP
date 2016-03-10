@@ -117,7 +117,7 @@ void Game::startTurn()
 		}
 		catch(std::exception&)
 		{
-			std::cout << "Your input should be in [" << 0 << ", " << _actions.size() << ")\n";
+			std::cout << "Your input should be in the range [" << 0 << ", " << _actions.size() << "[\n";
 			continue;
 		}
 		display();
