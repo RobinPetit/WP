@@ -525,67 +525,7 @@ void Game::handlePacket(sf::Packet& transmission)
 	}
 }
 
-/*void Game::pickCard(int pickedCard)
-{
-	if(_remainCards > 0)
-	{
-		_inHand.push_back(pickedCard);
-		--_remainCards; // Player took a card from his deck
-	}
-}*/
-
-/*
-void Game::putOnBoard(std::size_t cardIndex)
-{
-	int card = _inHand[cardIndex];  // Save the card ID
-	_inHand.erase(_inHand.begin()+cardIndex);  // Remove it from the hand
-	_onBoard.push_back(card);  // Put it on the board
-}*/
-/*
-void Game::applyOppoEffect()
-{
-	if(not _myTurn)
-	{
-		std::cout << "You must wait your turn!\n";
-		return;
-	}
-	else
-	{
-		std::size_t oppoCardIndex;
-		std::cout << "On which opponent's creature would you like to apply the effect?\n";
-		oppoCardIndex = selectOppo();
-
-		if(oppoCardIndex > 0)
-		{
-			//TODO send the effect
-			//Note that the indexes are vector's indexes +1
-			//0 indicate there's no card in the vector.
-		}
-	}
-}*/
-/*
-void Game::applySelfEffect()
-{
-	if(not _myTurn)
-	{
-		std::cout << "You must wait your turn!\n";
-		return;
-	}
-	else
-	{
-		size_t selfCardIndex;
-		std::cout << "On which of your creature would you like to apply the effect?\n";
-		selfCardIndex = selectBoard();
-
-		if (selfCardIndex > 0)
-		{
-			//TODO send the effect
-			//Note that the indexes are vector's indexes +1
-			//0 indicate there's no card in the vector.
-		}
-	}
-}*/
-
+///////////////TODO: USE DATABASE INSTEAD
 const std::string& Game::getCardName(cardId id)
 {
 	if (id<=10)
