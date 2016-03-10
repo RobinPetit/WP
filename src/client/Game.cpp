@@ -454,14 +454,17 @@ void Game::handlePacket(sf::Packet& transmission)
 		switch(type)
 		{
 		case TransferType::GAME_OVER:
+			std::cout << "GAME OVER" << std::endl;
 			endGame(transmission);
 			break;
 
 		case TransferType::GAME_PLAYER_ENTER_TURN:
+			std::cout << "You got the turn" << std::endl;
 			_myTurn.store(true);
 			break;
 
 		case TransferType::GAME_PLAYER_LEAVE_TURN:
+			std::cout << "You lost the turn" << std::endl;
 			_myTurn.store(false);
 			break;
 
@@ -470,6 +473,7 @@ void Game::handlePacket(sf::Packet& transmission)
 			// energy (and health and others) are transmitted through the network as 32 bit
 			// unsigned integers. So be sure to receive the exact same thing to avoid encoding
 			// errors and then set it in the "real" attribute
+			std::cout << "Energy updated" << std::endl;
 			std::lock_guard<std::mutex> lock{_accessEnergy};
 			_selfEnergy = receiveFromPacket<sf::Uint32>(transmission);
 		}
@@ -477,6 +481,7 @@ void Game::handlePacket(sf::Packet& transmission)
 
 		case TransferType::GAME_PLAYER_HEALTH_UPDATED:
 		{
+			std::cout << "Health updated" << std::endl;
 			std::lock_guard<std::mutex> lock{_accessHealth};
 			_selfHealth = receiveFromPacket<sf::Uint32>(transmission);
 		}
@@ -484,6 +489,7 @@ void Game::handlePacket(sf::Packet& transmission)
 
 		case TransferType::GAME_OPPONENT_HEALTH_UPDATED:
 		{
+			std::cout << "Opponent health updated" << std::endl;
 			std::lock_guard<std::mutex> lock{_accessHealth};
 			_oppoHealth = receiveFromPacket<sf::Uint32>(transmission);
 		}
@@ -496,7 +502,7 @@ void Game::handlePacket(sf::Packet& transmission)
 			break;
 
 		case TransferType::GAME_OPPONENT_BOARD_UPDATED:
-			std::cout << "Opponent's board updated" << std::endl;
+			std::cout << "Opponent board updated" << std::endl;
 			_oppoBoardCreatures.clear();
 			transmission >> _oppoBoardCreatures;
 			break;
