@@ -648,33 +648,28 @@ void Player::changeHealth(const EffectParamsCollection& args)
 
 void Player::logCurrentEnergy()
 {
-	std::lock_guard<std::mutex> lock{_lockPacket};
 	// cast to be sure that the right amount of bits is sent and received
 	_pendingBoardChanges << TransferType::GAME_PLAYER_ENERGY_UPDATED << static_cast<sf::Uint32>(_energy);
 }
 
 void Player::logCurrentHealth()
 {
-	std::lock_guard<std::mutex> lock{_lockPacket};
 	// cast to be sure that the right amount of bits is sent and received
 	_pendingBoardChanges << TransferType::GAME_PLAYER_HEALTH_UPDATED << static_cast<sf::Uint32>(_health);
 }
 
 void Player::logOpponentHealth()
 {
-	std::lock_guard<std::mutex> lock{_lockPacket};
 	_pendingBoardChanges << TransferType::GAME_OPPONENT_HEALTH_UPDATED << static_cast<sf::Uint32>(_opponent->getHealth());
 }
 
 void Player::logCurrentDeck()
 {
-	std::lock_guard<std::mutex> lock{_lockPacket};
 	_pendingBoardChanges << TransferType::GAME_DECK_UPDATED << static_cast<sf::Uint32>(_cardDeck.size());
 }
 
 void Player::logOpponentHandState()
 {
-	std::lock_guard<std::mutex> lock{_lockPacket};
 	_pendingBoardChanges << TransferType::GAME_OPPONENT_HAND_UPDATED << static_cast<sf::Uint32>(_opponent->getHandSize());
 }
 
@@ -844,7 +839,6 @@ void Player::logIdsFromVector(TransferType type, const std::vector<CardType *>& 
 	for(typename std::vector<CardType *>::size_type i{0}; i < vect.size(); ++i)
 		cardIds[i] = vect[i]->getID();
 
-	std::lock_guard<std::mutex> lock{_lockPacket};
 	_pendingBoardChanges << type << cardIds;
 }
 
@@ -857,8 +851,6 @@ void Player::logCardDataFromVector(TransferType type, const std::vector<Card*>& 
 		data.id = vect.at(i)->getID();
 		cards.push_back(data);
 	}
-
-	std::lock_guard<std::mutex> lock{_lockPacket};
 	_pendingBoardChanges << type << cards;
 }
 
@@ -891,8 +883,6 @@ void Player::logBoardCreatureDataFromVector(TransferType type, const std::vector
 		}
 		boardCreatures.push_back(data);
 	}
-
-	std::lock_guard<std::mutex> lock{_lockPacket};
 	// std::vector transmission in packet is defined in common/sockets/PacketOverload.hpp
 	_pendingBoardChanges << type << boardCreatures;
 }
