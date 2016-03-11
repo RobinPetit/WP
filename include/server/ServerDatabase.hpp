@@ -21,6 +21,8 @@ public:
 	/// \param filename: relative path to sqlite3 file.
 	explicit ServerDatabase(const std::string filename = FILENAME);
 
+	Card* getCard(cardId card);
+
 	userId getUserId(const std::string login);
 	std::string getLogin(userId id);
 

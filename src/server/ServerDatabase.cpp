@@ -23,6 +23,14 @@ ServerDatabase::ServerDatabase(std::string filename) : Database(filename), _card
 	createCreatureCards();
 }
 
+Card* ServerDatabase::getCard(cardId card)
+{
+	if(_cards.count(card) == 0)
+		throw std::runtime_error("The requested card (" + std::to_string(card) + ") does not exist.");
+
+	return _cards.at(card).get();
+}
+
 userId ServerDatabase::getUserId(const std::string login)
 {
 	std::unique_lock<std::mutex> lock{_dbAccess};
