@@ -70,6 +70,7 @@ public:
 	sf::TcpSocket& getSocket();
 	const std::vector<Creature *>& getBoard() const;
 	int getHealth() const;
+	std::vector<Card *>::size_type getHandSize() const;
 
 	/// \return true if some changes has been logged since the last player's
 	/// action, false otherwise.
@@ -96,7 +97,10 @@ private:
 		int creatureAttacks;
 		int spellCalls;
 	};
+
+	/// const{expr} static variables
 	constexpr static TurnData _emptyTurnData = {0, 0, 0, 0, 0};
+	constexpr static unsigned _initialAmountOfCards{4};
 
 	/// Attributes
 	GameThread& _gameThread;
@@ -184,6 +188,8 @@ private:
 	void logOpponentBoardState();
 	void logGraveyardState();
 	void logOpponentHealth();
+	void logOpponentHandState();
+	void logCurrentDeck();
 
 	template <typename CardType>
 	void logIdsFromVector(TransferType type, const std::vector<CardType *>& vect);

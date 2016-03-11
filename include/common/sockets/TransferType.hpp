@@ -92,6 +92,12 @@ enum class TransferType : sf::Uint32
 	/// Used when sending to the client the current state of its hand
 	GAME_HAND_UPDATED,
 
+	/// Used when sending to the client the state of its opponent's hand
+	GAME_OPPONENT_HAND_UPDATED,
+
+	/// Used when sending to the client its deck size
+	GAME_DECK_UPDATED,
+
 	/////////////// In-game player actions (client->server)
 
 	/// Used when the user want to use a card in a game

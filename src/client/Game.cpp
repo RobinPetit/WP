@@ -518,6 +518,16 @@ void Game::handlePacket(sf::Packet& transmission)
 			transmission >> _selfHandCards;
 			break;
 
+		case TransferType::GAME_OPPONENT_HAND_UPDATED:
+			std::cout << "Opponent's hand updated" << std::endl;
+			_oppoHandSize = receiveFromPacket<sf::Uint32>(transmission);
+			break;
+
+		case TransferType::GAME_DECK_UPDATED:
+			std::cout << "Deck size updated" << std::endl;
+			_selfDeckSize = receiveFromPacket<sf::Uint32>(transmission);
+			break;
+
 		default:
 			std::cerr << "Unknown message received: " << static_cast<std::underlying_type<TransferType>::type>(type) << "; ignore." << std::endl;
 			break;

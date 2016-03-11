@@ -50,6 +50,11 @@ int Player::getHealth() const
 	return _health;
 }
 
+std::vector<Card *>::size_type Player::getHandSize() const
+{
+	return _cardHand.size();
+}
+
 userId Player::getID() const
 {
 	return _id;
@@ -120,11 +125,16 @@ void Player::beginGame(bool isActivePlayer)
 {
 	std::cout << "Pre-beginGame" << _energy << _health << std::endl;
 	// init Player's data
-	cardDeckToHand(4);
+	cardDeckToHand(_initialAmountOfCards);  // calls logHandState
 	// log & send
 	logCurrentEnergy();
 	logCurrentHealth();
 	logOpponentHealth();
+	logCurrentDeck();
+	// Do not call `logOpponentHandState()` because players are initialized one after another.
+	// So when (first player).beginGame is called, (second player).hand is still empty.
+	// Thus to ensure the right value is sent, it is sent directly
+	_pendingBoardChanges << TransferType::GAME_OPPONENT_HAND_UPDATED << static_cast<sf::Uint32>(_initialAmountOfCards);
 	_socketToClient.send(_pendingBoardChanges);
 	_pendingBoardChanges.clear();
 
@@ -636,7 +646,7 @@ void Player::changeHealth(const EffectParamsCollection& args)
 }
 
 
-/////////
+///////// logers
 
 void Player::logCurrentEnergy()
 {
@@ -653,6 +663,16 @@ void Player::logCurrentHealth()
 void Player::logOpponentHealth()
 {
 	_pendingBoardChanges << TransferType::GAME_OPPONENT_HEALTH_UPDATED << static_cast<sf::Uint32>(_opponent->getHealth());
+}
+
+void Player::logCurrentDeck()
+{
+	_pendingBoardChanges << TransferType::GAME_DECK_UPDATED << static_cast<sf::Uint32>(_cardDeck.size());
+}
+
+void Player::logOpponentHandState()
+{
+	_pendingBoardChanges << TransferType::GAME_OPPONENT_HAND_UPDATED << static_cast<sf::Uint32>(_opponent->getHandSize());
 }
 
 /*--------------------------- PRIVATE */
@@ -918,3 +938,4 @@ Player::~Player()
 		_cardDeck.pop();
 	}
 }
+
