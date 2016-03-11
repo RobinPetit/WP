@@ -186,8 +186,6 @@ void Player::leaveTurn()
 void Player::finishGame(bool hasWon, EndGame::Cause cause)
 {
 	_gameThread.endGame(hasWon ? getID() : _opponent->getID(), cause);
-	// TODO: write an enum that list all possible reasons of a game ending,
-	// and use this rather than endMessage
 }
 
 
