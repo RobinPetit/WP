@@ -131,8 +131,10 @@ userId GameThread::runGame()
 				_running.store(false);
 				break;
 			}
+			if(status == sf::Socket::Error)
+				std::cerr << "Error while transmitting, ignoring block\n";
 			// The player received some valid input from the client
-			else if(status == sf::Socket::Done)
+			else  // if status == sf::Socket::Done or if status == sf::Socket::NotReady
 			{
 				// Send the changes to the client
 				if(player->thereAreBoardChanges())

@@ -290,8 +290,8 @@ void AbstractGame::inputListening()
 		else
 		{
 			handlePacket(receivedPacket);
-			// do not re-display in game menu if game is over
-			if(_playing.load())
+			// do not re-display in game menu if game is over or if player is currently playing
+			if(_playing.load() && not _myTurn.load())
 				displayGame();
 		}
 	}
