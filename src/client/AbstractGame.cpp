@@ -53,7 +53,7 @@ void AbstractGame::init()
 	else if(type == TransferType::GAME_PLAYER_LEAVE_TURN)
 	{
 		_myTurn.store(false);
-		std::cout << "The opponent begins, wait for your turn...\n";
+		std::cout << "Your opponent begins, wait for your turn...\n";
 	}
 	else
 		throw std::runtime_error("Wrong turn information: " + std::to_string(static_cast<sf::Uint32>(type)));
