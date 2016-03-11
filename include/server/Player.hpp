@@ -121,6 +121,7 @@ private:
 	//Client communication
 	sf::TcpSocket _socketToClient;
 	sf::Packet _pendingBoardChanges;
+	std::mutex _lockPacket;
 
 	// Gameplay
 	int _energy = 1, _energyInit = 1, _health = 20, _healthInit = 20;
