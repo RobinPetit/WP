@@ -12,28 +12,27 @@
 #include "common/sockets/TransferType.hpp"
 #include "common/sockets/PacketOverload.hpp"
 #include "common/sockets/EndGame.hpp"
-#include "client/Game.hpp"
 #include "client/NonBlockingInput.hpp"
+#include "client/AbstractGame.hpp"
 
-const std::vector<std::pair<const std::string, void (Game::*)()>> Game::_actions =
+const std::vector<std::pair<const std::string, void (AbstractGame::*)()>> AbstractGame::_actions =
 {
-	{"Quit", &Game::quit},
-	{"Use a card from hand", &Game::useCard},
-	{"Attack with a creature", &Game::attackWithCreature},
-	{"End your turn", &Game::endTurn},
+	{"Quit", &AbstractGame::quit},
+	{"Use a card from hand", &AbstractGame::useCard},
+	{"Attack with a creature", &AbstractGame::attackWithCreature},
+	{"End your turn", &AbstractGame::endTurn},
 };
 
-Game::Game(Client& client):
+AbstractGame::AbstractGame(Client& client):
 	_client{client},
 	_playing(false)
 {
-	std::cout << "Your game is about to start!\n";
 	_client.waitTillReadyToPlay();
 	_playing.store(true);
 	init();
 }
 
-void Game::init()
+void AbstractGame::init()
 {
 	initListening();
 	chooseDeck();
@@ -58,23 +57,7 @@ void Game::init()
 		throw std::runtime_error("Wrong turn information: " + std::to_string(static_cast<sf::Uint32>(type)));
 }
 
-void Game::chooseDeck()
-{
-	std::vector<Deck> decks = _client.getDecks();
-
-	// Ask for the deck to use during the game
-	for(std::size_t i{0}; i < decks.size(); i++)
-		std::cout << i << " : " << decks.at(i).getName() << std::endl;
-	int res = askIndex(decks.size(), "Choose your deck number: ");  // Chosen deck
-
-	// Send the deck name to the server
-	std::cout << "sending deck " << decks.at(res).getName() << std::endl;
-	sf::Packet deckNamePacket;
-	deckNamePacket << TransferType::GAME_PLAYER_GIVE_DECK_NAMES << decks.at(res).getName();
-	_client.getGameSocket().send(deckNamePacket);
-}
-
-void Game::play()
+void AbstractGame::play()
 {
 	while(_playing.load())
 	{
@@ -82,7 +65,6 @@ void Game::play()
 			startTurn();
 		else
 		{
-			std::cout << "Waiting for your turn...\n";
 			while(not _myTurn.load())
 				sf::sleep(sf::milliseconds(100));
 		}
@@ -91,16 +73,7 @@ void Game::play()
 		_listeningThread.join();
 }
 
-void Game::display()
-{
-	displayGame();
-	std::cout << "Here are your options:\n";
-	std::size_t idx{0};
-	for(const auto& action: _actions)
-		std::cout << idx++ << ". " << action.first << std::endl;
-}
-
-void Game::startTurn()
+void AbstractGame::startTurn()
 {
 	NonBlockingInput input;
 	_myTurn.store(true);
@@ -128,67 +101,12 @@ void Game::startTurn()
 
 //PRIVATE METHODS
 
-// Request user for additional input
-int Game::askIndex(std::size_t upperBound, const std::string& inputMessage)
-{
-	if (upperBound == 0)
-	{
-		std::cout << "There are no items to choose.\n";
-		return -1;
-	}
-
-	int res = -1;
-	std::cout << inputMessage;
-	while(!(std::cin >> res) or res >= static_cast<int>(upperBound) or res < 0)
-	{
-		std::cin.clear();
-		std::cin.ignore (std::numeric_limits<std::streamsize>::max(), '\n'); //discard characters until newline is found
-		std::cout << "Your answer should be in the range [" << 0 << ", " << upperBound <<"[ !\n" << inputMessage;
-	}
-
-	return res;
-}
-
-int Game::askSelfHandIndex()
-{
-	std::cout << "These are the cards in your hand:" << std::endl;
-	displayCardVector(_selfHandCards, true);
-	return askIndex(_selfHandCards.size(), "Choose the index for a card in your hand: ");
-}
-
-int Game::askSelfBoardIndex()
-{
-	std::cout << "These are the cards on your board:" << std::endl;
-	displayBoardCreatureVector(_selfBoardCreatures, true);
-	return askIndex(_selfBoardCreatures.size(), "Choose the index for a card on your board: ");
-}
-
-int Game::askSelfGraveyardIndex()
-{
-	std::cout << "These are the cards in your graveyard:" << std::endl;
-	displayCardVector(_selfGraveCards, true);
-	return askIndex(_selfGraveCards.size(), "Choose the index for a card in the graveyard: ");
-}
-
-int Game::askOppoHandIndex()
-{
-	std::cout << "Your opponent has " << _oppoHandSize << " cards in his hand." << std::endl;
-	return askIndex(_oppoHandSize, "Choose the index for a card in the opponent's hand: ");
-}
-
-int Game::askOppoBoardIndex()
-{
-	std::cout << "These are the cards on your opponent's board:" << std::endl;
-	displayBoardCreatureVector(_oppoBoardCreatures, true);
-	return askIndex(_oppoBoardCreatures.size(), "Choose the index for a card on the opponent's board: ");
-}
-
 //User actions
-void Game::useCard()
+void AbstractGame::useCard()
 {
 	if (not _myTurn)
 	{
-		std::cout << "You must wait your turn!\n";
+		displayMessage("You must wait your turn!");
 		return;
 	}
 	else
@@ -203,39 +121,39 @@ void Game::useCard()
 		switch(responseHeader)
 		{
 		case TransferType::ACKNOWLEDGE:
-			std::cout << "The card has been successfuly used.\n";
+			displayMessage("The card has been successfuly used.");
 			break;
 
 		case TransferType::GAME_NOT_ENOUGH_ENERGY:
-			std::cout << "You have not enough energy to use this card.\n";
+			displayMessage("You have not enough energy to use this card.");
 			break;
 
 		case TransferType::GAME_CARD_LIMIT_TURN_REACHED:
-			std::cout << "You can't use more cards, the limit is reached.\n";
+			displayMessage("You can't use more cards, the limit is reached.");
 			break;
 
 		// This line is more documentative than really needed
 		case TransferType::FAILURE:
 		default:
-			std::cout << "An error occured when using a card.\n";
+			displayMessage("An error occured when using a card.");
 			break;
 		}
 	}
 }
 
-void Game::attackWithCreature()
+void AbstractGame::attackWithCreature()
 {
 	if (not _myTurn)
 	{
-		std::cout << "You must wait your turn!\n";
+		displayMessage("You must wait your turn!");
 		return;
 	}
 	else
 	{
-		std::cout << "Which creature would you like to attack with? \n";
+		displayMessage("Which creature would you like to attack with?");
 		int selfCardIndex = askSelfBoardIndex();
 
-		std::cout << "Which opponent's creature would you like to attack? \n";
+		displayMessage("Which opponent's creature would you like to attack?");
 		int oppoCardIndex = askOppoBoardIndex();
 
 		// If there's cards on board
@@ -252,31 +170,31 @@ void Game::attackWithCreature()
 			switch(responseHeader)
 			{
 			case TransferType::ACKNOWLEDGE:
-				std::cout << "The monster successfuly attacked.\n";
+				displayMessage("The monster successfuly attacked.");
 				break;
 
 			case TransferType::GAME_NOT_ENOUGH_ENERGY:
-				std::cout << "You have not enough energy to attack with this monster.\n";
+				displayMessage("You have not enough energy to attack with this monster.");
 				break;
 
 			// This line is more documentative than really needed
 			case TransferType::FAILURE:
 			default:
-				std::cout << "An error occured when attacking with this monster.\n";
+				displayMessage("An error occured when attacking with this monster.");
 				break;
 			}
 		}
 		else
-			std::cout << "There is no card to choose, please do something else.\n";
+			displayMessage("There is no card to choose, please do something else.");
 	}
 }
 
 
-void Game::endTurn()
+void AbstractGame::endTurn()
 {
 	if (not _myTurn)
 	{
-		std::cout << "You must wait your turn!\n";
+		displayMessage("You must wait your turn!\n");
 		return;
 	}
 	else
@@ -288,7 +206,7 @@ void Game::endTurn()
 	}
 }
 
-void Game::quit()
+void AbstractGame::quit()
 {
 	// send QUIT message to server
 	sf::Packet actionPacket;
@@ -299,73 +217,19 @@ void Game::quit()
 	_myTurn.store(false);
 }
 
-Game::~Game()
+AbstractGame::~AbstractGame()
 {
 	quit();
 }
 
-void Game::displayGame()
-{
-	_client.getTerminal().clearScreen();
-	std::cout << "***************" << std::endl;
-	std::cout << "-----CARDS-----" << std::endl;
-	std::cout << "You have " << _selfDeckSize << " cards left in your deck." << std::endl;
-	std::cout << "Your opponent has " << _oppoHandSize << " cards in his hand." << std::endl;
-	std::cout << "Cards in your graveyard:" << std::endl;
-	displayCardVector(_selfGraveCards);
-	std::cout << "Cards on your opponent's board:" << std::endl;
-	displayBoardCreatureVector(_oppoBoardCreatures);
-	std::cout << "Cards on your board:" << std::endl;
-	displayBoardCreatureVector(_selfBoardCreatures);
-	std::cout << "Cards in your hand:" << std::endl;
-	displayCardVector(_selfHandCards);
-
-	std::cout << "-----HEALTH & ENERGY-----" << std::endl;
-	std::cout << "Your opponent has " << _oppoHealth << " life points left." << std::endl;
-	std::cout << "You have " << _selfHealth << " life points left." << std::endl;
-	std::cout << "You have " << _selfEnergy << " energy points left." << std::endl;
-	std::cout << "***************" << std::endl;
-}
-
-void Game::displayCardVector(const std::vector<CardData>& cardVector, bool displayDescription)
-{
-	for (auto i=0U; i<cardVector.size(); i++)
-	{
-		cardId id = cardVector.at(i).id;
-		std::cout << "  * " << i << " : " << getCardName(id) << " (cost: " << getCardCost(id)
-		          << ")" << (i < cardVector.size()-1 ? ", " : "")
-		          << (displayDescription ? getCardDescription(id) : "") << "\n";
-	}
-}
-
-void Game::displayBoardCreatureVector(const std::vector<BoardCreatureData>& cardVector, bool displayDescription)
-{
-	// The board vector also contains real time informations about the cards (health, attack, shield, shield type)
-	// This method should display these informations and be called only for displaying the board
-	for (auto i=0U; i<cardVector.size(); i++)
-	{
-		const BoardCreatureData& thisCreature = cardVector.at(i);
-		const cardId id = thisCreature.id;
-		std::cout << i << " : " << getCardName(id) << " (cost: " << getCardCost(id) <<
-		             ", attack: " << thisCreature.attack <<
-		             ", health: " << thisCreature.health <<
-		             ", shield: " << thisCreature.shield << "-" << thisCreature.shieldType << ")"
-		             << (displayDescription ? getCardDescription(id) : "") << "\n";
-		//TODO use card names instead of card IDs ?
-		if (i!=cardVector.size()-1)
-			std::cout << ", ";
-	}
-	std::cout << std::endl;
-}
-
 //////////////// special data receival
 
-void Game::initListening()
+void AbstractGame::initListening()
 {
-	_listeningThread = std::thread(&Game::inputListening, this);
+	_listeningThread = std::thread(&AbstractGame::inputListening, this);
 }
 
-void Game::inputListening()
+void AbstractGame::inputListening()
 {
 	sf::TcpSocket& listeningSocket{_client.getGameListeningSocket()};
 	_client.waitTillReadyToPlay();
@@ -390,7 +254,6 @@ void Game::inputListening()
 		}
 		else
 		{
-			std::cout << "handling packet\n";
 			handlePacket(receivedPacket);
 			// do not re-display in game menu if game is over
 			if(_playing.load())
@@ -399,7 +262,7 @@ void Game::inputListening()
 	}
 }
 
-void Game::endGame(sf::Packet& transmission)
+void AbstractGame::endGame(sf::Packet& transmission)
 {
 	EndGame endGameInfo;
 	transmission >> endGameInfo;
@@ -408,15 +271,15 @@ void Game::endGame(sf::Packet& transmission)
 		switch(endGameInfo.cause)
 		{
 		case EndGame::Cause::TEN_TURNS_WITH_EMPTY_DECK:
-			std::cout << "You lost because you played 10 turns with an empty deck!\n";
+			displayMessage("You lost because you played 10 turns with an empty deck!");
 			break;
 
 		case EndGame::Cause::OUT_OF_HEALTH:
-			std::cout << "You lost because you ran out of health!\n";
+			displayMessage("You lost because you ran out of health!");
 			break;
 
 		case EndGame::Cause::QUITTED:
-			std::cout << "You quitted the game.\n";
+			displayMessage("You quitted the game.");
 			break;
 		}
 	}
@@ -425,28 +288,29 @@ void Game::endGame(sf::Packet& transmission)
 		switch(endGameInfo.cause)
 		{
 		case EndGame::Cause::TEN_TURNS_WITH_EMPTY_DECK:
-			std::cout << "You won because your opponent played 10 turns with an empty deck!\n";
+			displayMessage("You won because your opponent played 10 turns with an empty deck!");
 			break;
 
 		case EndGame::Cause::OUT_OF_HEALTH:
-			std::cout << "You won because your opponent ran out of health!\n";
+			displayMessage("You won because your opponent ran out of health!");
 			break;
 
 		case EndGame::Cause::QUITTED:
-			std::cout << "You won because your opponent quitted the game!\n";
+			displayMessage("You won because your opponent quitted the game!");
 			break;
 		}
 		// Get the won card
 		cardId newCard;
 		transmission >> newCard;
-		std::cout << "You won the card '" << getCardName(newCard) << "'\n";
+		receiveCard(newCard);
 	}
 	_playing.store(false);
 	_myTurn.store(!_myTurn.load());
 }
 
-void Game::handlePacket(sf::Packet& transmission)
+void AbstractGame::handlePacket(sf::Packet& transmission)
 {
+	// TODO: std::couts here are debug. To remove
 	TransferType type;
 	while(not transmission.endOfPacket())
 	{
@@ -536,7 +400,7 @@ void Game::handlePacket(sf::Packet& transmission)
 }
 
 ///////////////TODO: USE DATABASE INSTEAD
-const std::string& Game::getCardName(cardId id)
+const std::string& AbstractGame::getCardName(cardId id)
 {
 	if (id<=10)
 		return ALL_CREATURES[id-1].name;
@@ -544,7 +408,7 @@ const std::string& Game::getCardName(cardId id)
 		return ALL_SPELLS[id-11].name;
 }
 
-CostValue Game::getCardCost(cardId id)
+CostValue AbstractGame::getCardCost(cardId id)
 {
 	if (id<=10)
 		return ALL_CREATURES[id-1].cost;
@@ -552,7 +416,7 @@ CostValue Game::getCardCost(cardId id)
 		return ALL_SPELLS[id-11].cost;
 }
 
-const std::string& Game::getCardDescription(cardId id)
+const std::string& AbstractGame::getCardDescription(cardId id)
 {
 	if (id<=10)
 		return ALL_CREATURES[id-1].description;
@@ -561,10 +425,11 @@ const std::string& Game::getCardDescription(cardId id)
 }
 
 template <typename FixedSizeIntegerType>
-FixedSizeIntegerType Game::receiveFromPacket(sf::Packet& receivedPacket)
+FixedSizeIntegerType AbstractGame::receiveFromPacket(sf::Packet& receivedPacket)
 {
 	assert(not receivedPacket.endOfPacket());
 	FixedSizeIntegerType value;
 	receivedPacket >> value;
 	return std::move(value);
 }
+
