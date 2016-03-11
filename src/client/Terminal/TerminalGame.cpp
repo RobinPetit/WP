@@ -21,7 +21,6 @@ void TerminalGame::chooseDeck()
 	int res = askIndex(decks.size(), "Choose your deck number: ");  // Chosen deck
 
 	// Send the deck name to the server
-	std::cout << "sending deck " << decks.at(res).getName() << std::endl;
 	sf::Packet deckNamePacket;
 	deckNamePacket << TransferType::GAME_PLAYER_GIVE_DECK_NAMES << decks.at(res).getName();
 	_client.getGameSocket().send(deckNamePacket);
@@ -164,4 +163,3 @@ TerminalGame::~TerminalGame()
 {
 
 }
-

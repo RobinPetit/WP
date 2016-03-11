@@ -372,7 +372,6 @@ void AbstractGame::handlePacket(sf::Packet& transmission)
 			// energy (and health and others) are transmitted through the network as 32 bit
 			// unsigned integers. So be sure to receive the exact same thing to avoid encoding
 			// errors and then set it in the "real" attribute
-			std::cout << "Energy updated" << std::endl;
 			std::lock_guard<std::mutex> lock{_accessEnergy};
 			_selfEnergy = receiveFromPacket<sf::Uint32>(transmission);
 		}
@@ -380,7 +379,6 @@ void AbstractGame::handlePacket(sf::Packet& transmission)
 
 		case TransferType::GAME_PLAYER_HEALTH_UPDATED:
 		{
-			std::cout << "Health updated" << std::endl;
 			std::lock_guard<std::mutex> lock{_accessHealth};
 			_selfHealth = receiveFromPacket<sf::Uint32>(transmission);
 		}
@@ -388,42 +386,35 @@ void AbstractGame::handlePacket(sf::Packet& transmission)
 
 		case TransferType::GAME_OPPONENT_HEALTH_UPDATED:
 		{
-			std::cout << "Opponent health updated" << std::endl;
 			std::lock_guard<std::mutex> lock{_accessHealth};
 			_oppoHealth = receiveFromPacket<sf::Uint32>(transmission);
 		}
 			break;
 
 		case TransferType::GAME_BOARD_UPDATED:
-			std::cout << "Board updated" << std::endl;
 			_selfBoardCreatures.clear();
 			transmission >> _selfBoardCreatures;
 			break;
 
 		case TransferType::GAME_OPPONENT_BOARD_UPDATED:
-			std::cout << "Opponent board updated" << std::endl;
 			_oppoBoardCreatures.clear();
 			transmission >> _oppoBoardCreatures;
 			break;
 		case TransferType::GAME_GRAVEYARD_UPDATED:
-			std::cout << "Graveyard updated" << std::endl;
 			_selfGraveCards.clear();
 			transmission >> _selfGraveCards;
 			break;
 
 		case TransferType::GAME_HAND_UPDATED:
-			std::cout << "Hand updated" << std::endl;
 			_selfHandCards.clear();
 			transmission >> _selfHandCards;
 			break;
 
 		case TransferType::GAME_OPPONENT_HAND_UPDATED:
-			std::cout << "Opponent's hand updated" << std::endl;
 			_oppoHandSize = receiveFromPacket<sf::Uint32>(transmission);
 			break;
 
 		case TransferType::GAME_DECK_UPDATED:
-			std::cout << "Deck size updated" << std::endl;
 			_selfDeckSize = receiveFromPacket<sf::Uint32>(transmission);
 			break;
 

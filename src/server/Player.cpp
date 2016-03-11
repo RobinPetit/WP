@@ -98,7 +98,7 @@ void Player::setDeck(const Deck& newDeck)
 	}
 	//Deterministic behavior is best while testing
 	//TODO: re-enable shuffling when required
-	//std::shuffle(loadedCards.begin(), loadedCards.end(), std::mt19937(std::random_device()()));
+	std::shuffle(loadedCards.begin(), loadedCards.end(), std::mt19937(std::random_device()()));
 	for(const auto& cardInShuffledDeck: loadedCards)
 		_cardDeck.push(cardInShuffledDeck);
 }
@@ -123,7 +123,6 @@ void Player::receiveDeck()
 
 void Player::beginGame(bool isActivePlayer)
 {
-	std::cout << "Pre-beginGame" << _energy << _health << std::endl;
 	// init Player's data
 	cardDeckToHand(_initialAmountOfCards);  // calls logHandState
 	// log & send
@@ -142,12 +141,10 @@ void Player::beginGame(bool isActivePlayer)
 	packet << TransferType::GAME_STARTING << (isActivePlayer ? TransferType::GAME_PLAYER_ENTER_TURN : TransferType::GAME_PLAYER_LEAVE_TURN);
 	_socketToClient.send(packet);
 	_isActive.store(isActivePlayer);
-	std::cout << "Post-beginGame" << _energy << _health << std::endl;
 }
 
 void Player::enterTurn(int turn)
 {
-	std::cout << "Pre-enterTurn" << _energy << _health << std::endl;
 	_isActive.store(true); //Player has become active
 
 	_turnData = _emptyTurnData;  // Reset the turn data
@@ -171,7 +168,6 @@ void Player::enterTurn(int turn)
 	//Will call creature's turn-based constraints
 	for (unsigned i=0; i<_cardBoard.size(); i++)
 		_cardBoard.at(i)->enterTurn();
-	std::cout << "Post-enterTurn" << _energy << _health << std::endl;
 }
 
 void Player::leaveTurn()
@@ -746,7 +742,6 @@ void Player::cardHandToBoard(int handIndex)
 	_opponent->logOpponentHandState();
 	logBoardState();
 	_opponent->logOpponentBoardState();
-	std::cout << "all loged\n";
 }
 
 void Player::cardHandToGraveyard(int handIndex)
@@ -968,4 +963,3 @@ Player::~Player()
 		_cardDeck.pop();
 	}
 }
-
