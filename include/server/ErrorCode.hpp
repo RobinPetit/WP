@@ -8,7 +8,7 @@
 enum
 {
 	/// return code in case of non-free listening port
-	UNABLE_TO_LISTEN,
+	UNABLE_TO_LISTEN=1,
 };
 
 #endif // _ERROR_CODE_SERVER_HPP_
