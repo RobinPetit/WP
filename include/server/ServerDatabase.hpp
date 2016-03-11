@@ -61,13 +61,13 @@ public:
 private:
 	/// Default relative path to sqlite3 file
 	static const char FILENAME[];
-	std::map<int, std::unique_ptr<Card> > _cards;
+	std::map<cardId, std::unique_ptr<Card> > _cards;
 
 	FriendsList getAnyFriendsList(userId id, sqlite3_stmt * stmt);
 	/// Add a card to _cards;
 	void createSpellCards();
 	void createCreatureCards();
-	std::vector<EffectParamsCollection> createCardEffects(int cardId);
+	std::vector<EffectParamsCollection> createCardEffects(cardId id);
 
 	sqlite3_stmt * _friendListStmt;
 	sqlite3_stmt * _userIdStmt;
@@ -205,11 +205,11 @@ private:
 				&_getCreatureCardsStmt,
 				"SELECT id, cost, attack, health, shield, shieldType FROM CreatureCard;"
 			},
-			Statement {
+			Statement { // 20
 				&_getCardEffectsStmt,
 				"SELECT parameter0, parameter1, parameter2, parameter3,"
-				"       parameter4, parameter5, parameter6"
-				"FROM Effect WHERE owner== ?1;"
+				"	parameter4, parameter5, parameter6 "
+				"FROM Effect WHERE owner == ?1;"
 			},
 			Statement {
 				&_newCardStmt,

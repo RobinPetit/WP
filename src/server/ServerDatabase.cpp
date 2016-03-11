@@ -274,54 +274,55 @@ FriendsList ServerDatabase::getAnyFriendsList(userId user, sqlite3_stmt * stmt)
 
 void ServerDatabase::createSpellCards()
 {
-	std::unique_lock<std::mutex> lock{_dbAccess};
+	std::unique_lock<std::mutex> lock {_dbAccess};
 	sqlite3_reset(_getSpellCardsStmt);
 
-	assert(sqliteThrowExcept(sqlite3_step(_getSpellCardsStmt)) == SQLITE_ROW);
+	while(sqliteThrowExcept(sqlite3_step(_getSpellCardsStmt)) == SQLITE_ROW)
+	{
+		cardId id(sqlite3_column_int64(_getSpellCardsStmt, 0));
 
-	register int cardId(sqlite3_column_int(_getSpellCardsStmt, 0));
-
-	_cards.emplace(
-	    std::make_pair<>(
-	        cardId,
-	        std::unique_ptr<Card>(new Spell(
-	                                  cardId, sqlite3_column_int(_getSpellCardsStmt, 1), // cost
-	                                  std::vector<EffectParamsCollection>(createCardEffects(cardId)) // spells
-	                              ))
-	    )
-	);
+		_cards.emplace(
+		    std::make_pair<>(
+		        id,
+		        std::unique_ptr<Card>(new Spell(
+		                                  id, sqlite3_column_int(_getSpellCardsStmt, 1), // cost
+		                                  std::vector<EffectParamsCollection>(createCardEffects(id)) // effects
+		                              ))
+		    )
+		);
+	}
 }
 
 void ServerDatabase::createCreatureCards()
 {
-	std::unique_lock<std::mutex> lock{_dbAccess};
+	std::unique_lock<std::mutex> lock {_dbAccess};
 	sqlite3_reset(_getCreatureCardsStmt);
 
-	assert(sqliteThrowExcept(sqlite3_step(_getCreatureCardsStmt)) == SQLITE_ROW);
+	while(sqliteThrowExcept(sqlite3_step(_getCreatureCardsStmt)) == SQLITE_ROW)
+	{
+		cardId id(sqlite3_column_int64(_getCreatureCardsStmt, 0));
 
-	int cardId(sqlite3_column_int(_getCreatureCardsStmt, 0));
-
-	_cards.emplace(
-	    std::make_pair<>(
-	        cardId,
-	        std::unique_ptr<Card>(new Creature(
-	                                  cardId,
-	                                  sqlite3_column_int(_getCreatureCardsStmt, 1), // cost
-	                                  sqlite3_column_int(_getCreatureCardsStmt, 2), // attack
-	                                  sqlite3_column_int(_getCreatureCardsStmt, 3), // health
-	                                  sqlite3_column_int(_getCreatureCardsStmt, 4), // shield
-	                                  sqlite3_column_int(_getCreatureCardsStmt, 5), // shieldType
-	                                  std::vector<EffectParamsCollection>(createCardEffects(cardId)) // spells
-	                              ))
-	    )
-	);
+		_cards.emplace(
+		    std::make_pair<>(
+		        id,
+		        std::unique_ptr<Card>(new Creature(
+		                                  id,
+		                                  sqlite3_column_int(_getCreatureCardsStmt, 1), // cost
+		                                  sqlite3_column_int(_getCreatureCardsStmt, 2), // attack
+		                                  sqlite3_column_int(_getCreatureCardsStmt, 3), // health
+		                                  sqlite3_column_int(_getCreatureCardsStmt, 4), // shield
+		                                  sqlite3_column_int(_getCreatureCardsStmt, 5), // shieldType
+		                                  std::vector<EffectParamsCollection>(createCardEffects(id)) // effects
+		                              ))
+		    )
+		);
+	}
 }
 
-std::vector<EffectParamsCollection> ServerDatabase::createCardEffects(int cardId)
+std::vector<EffectParamsCollection> ServerDatabase::createCardEffects(cardId id)
 {
-	std::unique_lock<std::mutex> lock{_dbAccess};
 	sqlite3_reset(_getCardEffectsStmt);
-	sqliteThrowExcept(sqlite3_bind_int(_getCardEffectsStmt, 1, cardId));
+	sqliteThrowExcept(sqlite3_bind_int64(_getCardEffectsStmt, 1, id));
 
 	std::vector<EffectParamsCollection> effects;
 
