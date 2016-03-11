@@ -53,6 +53,9 @@ bin/
 *.out
 *.app
 
+# Do not track database files
+*.db
+
 # Add your IDE's temporary files extension here
 	# code::blocks
 *.cbp
