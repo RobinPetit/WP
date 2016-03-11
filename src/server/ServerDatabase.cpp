@@ -11,8 +11,6 @@
 
 #define AUTO_QUERY_LENGTH -1
 
-// TODO: this is multi-threaded
-
 const char ServerDatabase::FILENAME[] = "../resources/server/database.db";
 ServerDatabase::ServerDatabase(std::string filename) : Database(filename), _cards()
 {
