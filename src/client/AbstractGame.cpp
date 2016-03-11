@@ -29,7 +29,6 @@ AbstractGame::AbstractGame(Client& client):
 {
 	_client.waitTillReadyToPlay();
 	_playing.store(true);
-	init();
 }
 
 void AbstractGame::init()

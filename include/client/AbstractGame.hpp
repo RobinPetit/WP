@@ -21,6 +21,7 @@ class AbstractGame
 		/// Constructor.
 		AbstractGame(Client& client);
 
+		void init();
 		void play();
 		void startTurn();
 
@@ -67,7 +68,6 @@ class AbstractGame
 		//////////////// private methods
 
 		// called by the constructor to init the object
-		void init();
 		virtual void chooseDeck() = 0;
 
 		// User interface ("actions")

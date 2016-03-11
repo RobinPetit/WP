@@ -28,6 +28,7 @@ void LobbyState::startGame()
 	if(_client.startGame())
 	{
 		TerminalGame game{_client};
+		game.init();
 		game.play();
 		waitForEnter();
 	}
