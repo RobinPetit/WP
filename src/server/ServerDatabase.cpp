@@ -68,7 +68,7 @@ std::vector<Deck> ServerDatabase::getDecks(userId id)
 		decks.emplace_back(Deck(reinterpret_cast<const char *>(sqlite3_column_text(_decksStmt, 0))));
 
 		for(int i {0}; i < static_cast<int>(Deck::size); ++i)
-			decks.back().changeCard(i, static_cast<cardId>(sqlite3_column_int64(_decksStmt, i + 1)));
+			decks.back().changeCard(i, sqlite3_column_int64(_decksStmt, i + 1));
 	}
 
 	return decks;
