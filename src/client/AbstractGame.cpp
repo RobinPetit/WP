@@ -149,7 +149,7 @@ void AbstractGame::useCard()
 
 void AbstractGame::treatAdditionnalInputs(const std::vector<CardToSelect>& inputs)
 {
-	std::vector<sf::Uint32> indices{inputs.size()};
+	std::vector<sf::Uint32> indices(inputs.size());
 	for(auto i{0U}; i < inputs.size(); ++i)
 	{
 		switch(inputs[i])
@@ -467,4 +467,3 @@ FixedSizeIntegerType AbstractGame::receiveFromPacket(sf::Packet& receivedPacket)
 	receivedPacket >> value;
 	return std::move(value);
 }
-
