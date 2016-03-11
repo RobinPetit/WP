@@ -9,6 +9,7 @@
 #include "common/constants.hpp"
 #include "common/sockets/TransferType.hpp"
 #include "common/NotConnectedException.hpp"
+#include "common/UnableToConnectException.hpp"
 #include "common/sockets/PacketOverload.hpp"
 #include "common/Deck.hpp"
 // std-C++ headers
@@ -51,7 +52,7 @@ void Client::registerToServer(const std::string& name, const std::string& passwo
 	sf::TcpSocket socket;
 	// if connection does not work, don't go further
 	if(socket.connect(address, port) != sf::Socket::Done)
-		throw std::runtime_error("unable to connect to server on port " + std::to_string(port) + ".");
+		throw UnableToConnectException("unable to connect to server on port " + std::to_string(port) + ".");
 	sendRegisteringToken(shrinkedName, password, socket);
 }
 
@@ -115,15 +116,16 @@ void Client::sendRegisteringToken(const std::string& name, const std::string& pa
 
 void Client::initServer(const std::string& name, const sf::IpAddress& address, sf::Uint16 port)
 {
-	// if client is already connected to a server, do not try to re-connect it
+	// If client is already connected to a server, do not try to re-connect it.
+	// We talk here about a socket connexion, not the authentication.
 	if(_isConnected)
-		throw std::runtime_error("already connected.");
+		throw UnableToConnectException("already connected.");
 	_name = shrinkName(name);
 	_serverAddress = address;
 	_serverPort = port;
 	// if connection does not work, don't go further
 	if(_socket.connect(address, port) != sf::Socket::Done)
-		throw std::runtime_error("unable to connect to server on port " + std::to_string(port) + ".");
+		throw UnableToConnectException("unable to connect to server on port " + std::to_string(port) + ".");
 	if(!_userTerminal.hasKnownTerminal())
 		std::cout << "Warning: as no known terminal has been found, chat is disabled" << std::endl;
 	else
