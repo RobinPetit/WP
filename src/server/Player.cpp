@@ -273,6 +273,7 @@ void Player::useCard(int handIndex)
 	_energy -= usedCard->getEnergyCost();
 	(*this.*(usedCard->isCreature() ? &Player::useCreature : &Player::useSpell))(handIndex, usedCard);
 	logHandState();
+	_opponent->logOpponentHandState();
 }
 
 ////////////////////// specialized card cases

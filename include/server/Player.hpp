@@ -87,14 +87,6 @@ public:
 	std::vector<int>&& getRandomBoardIndexes(const std::vector<CardToSelect>& selection);
 	std::vector<int>&& askUserToSelectCards(const std::vector<CardToSelect>& selection);
 
-	/////////////////////// public loggers
-	// the loggers about opponent's data must be public so that
-	// one player can call the logger on the other player
-
-	void logOpponentBoardState();
-	void logOpponentHealth();
-	void logOpponentHandState();
-
 private:
 	/// Types
 	struct TurnData
@@ -195,6 +187,9 @@ private:
 	void logBoardState();
 	void logGraveyardState();
 	void logCurrentDeck();
+	void logOpponentBoardState();
+	void logOpponentHealth();
+	void logOpponentHandState();
 
 	template <typename CardType>
 	void logIdsFromVector(TransferType type, const std::vector<CardType *>& vect);
