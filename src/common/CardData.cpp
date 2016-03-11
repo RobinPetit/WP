@@ -4,37 +4,37 @@
 const CreatureData ALL_CREATURES[] = {
 	{
 		"Tower guard",
-		COST_3, ATTACK_2, HEALTH_8, SHIELD_1, SHIELD_BLUE,
+		COST_1, ATTACK_2, HEALTH_8, SHIELD_1, SHIELD_BLUE,
 		{{CREATURE_SELF_THIS,CE_SET_CONSTRAINT,CC_TURN_HEALTH_CHANGE,1,UNLIMITED_TURNS,NO_CASTER_NEEDED}},
 		"This creature gains 1 HEALTH each turn"
 	},
 	{
 		"Diabolic imp",
-		COST_2, ATTACK_3, HEALTH_2, SHIELD_0, SHIELD_NONE,
+		COST_1, ATTACK_3, HEALTH_2, SHIELD_1, SHIELD_NONE,
 		{{CREATURE_SELF_THIS,CE_SET_CONSTRAINT,CC_TURN_ATTACK_CHANGE,1,UNLIMITED_TURNS,NO_CASTER_NEEDED}},
 		"This creature gains 1 ATTACK each turn"
 	},
 	{
 		"Little Ragnaros",
-		COST_4, ATTACK_4, HEALTH_4, SHIELD_1, SHIELD_LEGENDARY,
+		COST_2, ATTACK_4, HEALTH_4, SHIELD_1, SHIELD_LEGENDARY,
 		{{PLAYER_OPPO,PE_SET_CONSTRAINT,PC_TURN_HEALTH_CHANGE,-2,UNLIMITED_TURNS,IF_CASTER_ALIVE}},
 		"Each turn, your opponent loses 2 HP"
 	},
 	{
 		"White wizard",
-		COST_7, ATTACK_7, HEALTH_7, SHIELD_0, SHIELD_NONE,
+		COST_3, ATTACK_7, HEALTH_7, SHIELD_1, SHIELD_NONE,
 		{{CREATURE_SELF_THIS,CE_SET_CONSTRAINT,CC_TEMP_BLOCK_ATTACKS,2,UNLIMITED_TURNS,NO_CASTER_NEEDED}},
 		"Blocks the next 2 attacks on your team"
 	},
 	{
  		"Greedy imp",
-		COST_2, ATTACK_2, HEALTH_2, SHIELD_2, SHIELD_ORANGE,
+		COST_1, ATTACK_2, HEALTH_2, SHIELD_2, SHIELD_ORANGE,
 		{{PLAYER_SELF,PE_SET_CONSTRAINT,PC_TURN_CARDS_PICKED,2,1,NO_CASTER_NEEDED}},
 		"Allows you to draw one more card at the beginning of your next turn"
 	},
 	{
 		"Unbridled bear",
-		COST_3, ATTACK_3, HEALTH_4, SHIELD_0, SHIELD_NONE,
+		COST_2, ATTACK_3, HEALTH_4, SHIELD_1, SHIELD_NONE,
 		{{CREATURE_OPPO_TEAM,CE_CHANGE_SHIELD,-1}},
 		"Takes away 1 shield of each opposite creatures when placed"
 	},
@@ -46,25 +46,25 @@ const CreatureData ALL_CREATURES[] = {
 	},
 	{
 		"White dragon",
-		COST_10, ATTACK_9, HEALTH_10, SHIELD_0, SHIELD_NONE,
+		COST_10, ATTACK_9, HEALTH_10, SHIELD_1, SHIELD_NONE,
 		{{CREATURE_SELF_TEAM,CE_SET_CONSTRAINT,CC_TURN_ATTACK_CHANGE,1,UNLIMITED_TURNS,IF_CASTER_ALIVE}},
 		"All your friendly creatures gain 1 ATTACK each turn"
 	},
 	{
 		"Mecha spider",
-		COST_3, ATTACK_4, HEALTH_2, SHIELD_1, SHIELD_ORANGE,
+		COST_1, ATTACK_4, HEALTH_2, SHIELD_1, SHIELD_ORANGE,
 		{{CREATURE_OPPO_RAND,CE_RESET_ATTACK,1}},
 		"Reset the attack for a random opponent's creature"
 	},
 	{
 		"Mirage of happiness",
-		COST_3, ATTACK_0, HEALTH_5, SHIELD_3, SHIELD_BLUE,
+		COST_2, ATTACK_1, HEALTH_5, SHIELD_3, SHIELD_BLUE,
 		{{PLAYER_OPPO,PE_SET_CONSTRAINT,PC_TEMP_SPELL_CALL_LIMIT,2,UNLIMITED_TURNS,NO_CASTER_NEEDED}},
 		"Your opponent can't play more than 2 spells per turn."
 	}/*,
 	{
 		"Armored leprechaun",
-		COST_1, ATTACK_1, HEALTH_3, SHIELD_0, SHIELD_NONE,
+		COST_1, ATTACK_1, HEALTH_3, SHIELD_1, SHIELD_NONE,
 		{{PLAYER_SELF,PE_SET_CONSTRAINT,PC_TURN_CARDS_PICKED,1,1,NO_CASTER_NEEDED}},
 		"Allows you to draw one more card at the beginning of your next turn"
 	},
@@ -77,13 +77,13 @@ const CreatureData ALL_CREATURES[] = {
 	},
 	{
 		"Warrior apprentice",
-		COST_1, ATTACK_2, HEALTH_2, SHIELD_0, SHIELD_NONE,
+		COST_1, ATTACK_2, HEALTH_2, SHIELD_1, SHIELD_NONE,
 		{{}},
 		"No effect"
 	},
 	{
 		"Resurrected triceratops",
-		COST_0, ATTACK_0, HEALTH_1, SHIELD_0, SHIELD_NONE,
+		COST_0, ATTACK_0, HEALTH_1, SHIELD_1, SHIELD_NONE,
 		{{}},
 		"No effect"
 	},
@@ -101,13 +101,13 @@ const CreatureData ALL_CREATURES[] = {
 	},
 	{
 		"Silver wolf",
-		COST_4, ATTACK_6, HEALTH_5, SHIELD_0, SHIELD_NONE,
+		COST_4, ATTACK_6, HEALTH_5, SHIELD_1, SHIELD_NONE,
 		{{}},
 		"No effect."
 	},
 	{
 		"Kuriboh",
-		COST_1, ATTACK_2, HEALTH_2, SHIELD_0, SHIELD_NONE,
+		COST_1, ATTACK_2, HEALTH_2, SHIELD_1, SHIELD_NONE,
 		{{CREATURE_SELF_TEAM,CE_RESET_SHIELD,2}},
 		"Resets 2 friendly shields."
 	},
@@ -118,8 +118,8 @@ const CreatureData ALL_CREATURES[] = {
 		"Gains 1 HP and 1 ATTACK each turn."
 	},
 	{
-			"Humanoide maid",
-		COST_2, ATTACK_0, HEALTH_5, SHIELD_0, SHIELD_NONE,
+		"Humanoide maid",
+		COST_2, ATTACK_0, HEALTH_5, SHIELD_1, SHIELD_NONE,
 		{{CE_SET_CONSTRAINT,CREATURE_TEAM,CE_ADD_HEALTH,2},{PE_SET_CONSTRAINT,PLAYER_SELF,CE_ADD_HEALTH,2}},
 		"Gives a friendly creature and this creature owner 2 HP each turn."
 	}*/
@@ -141,7 +141,7 @@ const SpellData ALL_SPELLS[] = {
 	},
 	{
 		"Care",
-		COST_5,
+		COST_2,
 		{{CREATURE_SELF_INDX, CE_CHANGE_HEALTH, 2}},
 		"Increase a creature's health of 2 points"
 	},
@@ -153,13 +153,13 @@ const SpellData ALL_SPELLS[] = {
 	},
 	{
 		"Discard",
-		COST_4,
+		COST_2,
 		{{PLAYER_OPPO, PE_LOSE_HAND_CARDS, 1}},
 		"Your opponent loses a random card from his hand"
 	},
 	{
 		"Sickness",
-		COST_3,
+		COST_1,
 		{{CREATURE_OPPO_TEAM, CE_CHANGE_ATTACK, -1}},
 		"Decrease all your opponent's creatures' attack of 1 point"
 	},
@@ -177,15 +177,15 @@ const SpellData ALL_SPELLS[] = {
 	},
 	{
 		"Robbery",
-		COST_5,
+		COST_2,
 		{{CREATURE_OPPO_TEAM, CE_CHANGE_ATTACK, -1},{CREATURE_SELF_TEAM, CE_CHANGE_ATTACK, 1}},
 		"Decrease all your opponent's creatures' attack of 1 point and increase yours of 1 point"
 	},
 	{
-		"Exchange",
-		COST_4,
-		{{PLAYER_SELF, PE_EXCHG_HAND_CARD, 1}},
-		"You exchange a card of your choice with a random card from the opponent's hand"
+		"Grand Theft Card",
+		COST_1,
+		{{PLAYER_SELF, PE_STEAL_HAND_CARD}},
+		"You steal a random card from the opponent''s hand"
 	}/*,
 	// TODO: CE_SELF_HYPNOTIZED NOT CREATED YET
 	{
@@ -269,3 +269,7 @@ const SpellData ALL_SPELLS[] = {
 		"Deal 3 damage or summon two 1/1 snacks"
 	}*/
 };
+
+const std::size_t nbSpells{sizeof(ALL_SPELLS) / sizeof(SpellData)};
+
+const std::size_t nbCreatures{sizeof(ALL_CREATURES) / sizeof(CreatureData)};

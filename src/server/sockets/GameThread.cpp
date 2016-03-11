@@ -1,6 +1,9 @@
 // WizardPoker headers
 #include "server/GameThread.hpp"
 #include "common/sockets/TransferType.hpp"
+#include "common/sockets/PacketOverload.hpp"
+#include "server/Creature.hpp"
+#include "common/CardData.hpp"
 // SFML headers
 #include <SFML/Network/TcpListener.hpp>
 #include <SFML/Network/IpAddress.hpp>
@@ -9,6 +12,7 @@
 // std-C++ headers
 #include <iostream>
 #include <chrono>
+#include <cassert>
 
 constexpr std::chrono::seconds GameThread::_turnTime;
 
@@ -17,21 +21,40 @@ GameThread::GameThread(ServerDatabase& database, userId player1ID, userId player
 	_player1ID(player1ID),
 	_player2ID(player2ID),
 	_running(false),
-	_gameBoard(database, {player1ID, _socketPlayer1, _specialOutputSocketPlayer1}, {player2ID, _socketPlayer2, _specialOutputSocketPlayer2}),
-	_isSynchroWithBoard(_player1ID == _gameBoard.getCurrentPlayerID())
+	_player1(*this, database, _player1ID),
+	_player2(*this, database, _player2ID),
+	_database(database),
+	_winner{0},
+	_turn(0),
+	_turnCanEnd(false),
+	_turnSwap{false}
 {
-
+	createPlayers();
 }
 
+void GameThread::createPlayers()
+{
+	_activePlayer = &_player1;
+	_passivePlayer = &_player2;
+	std::random_device device;
+	if(std::bernoulli_distribution(0.5)(device))
+		std::swap(_activePlayer, _passivePlayer);
+	_activePlayer->setOpponent(_passivePlayer);
+	_passivePlayer->setOpponent(_activePlayer);
+}
+
+// \TODO: complete the function as a QuitGame
 void GameThread::interruptGame()
 {
 	_running.store(false);
+	//TODO: need identifier for player who quit
+	//NETWORK: PLAYER_QUIT_GAME
 }
 
 void GameThread::establishSockets(const ClientInformations& player1, const ClientInformations& player2)
 {
-	setSocket(_socketPlayer1, _specialOutputSocketPlayer1, player1);
-	setSocket(_socketPlayer2, _specialOutputSocketPlayer2, player2);
+	setSocket(_player1.getSocket(), _specialOutputSocketPlayer1, player1);
+	setSocket(_player2.getSocket(), _specialOutputSocketPlayer2, player2);
 }
 
 void GameThread::setSocket(sf::TcpSocket& socket, sf::TcpSocket& specialSocket, const ClientInformations& player)
@@ -52,92 +75,105 @@ void GameThread::setSocket(sf::TcpSocket& socket, sf::TcpSocket& specialSocket, 
 		std::cerr << "Error while creating game thread special socket\n";
 }
 
-/////////// ease of implementation
-
-GameThread::PlayerNumber GameThread::PlayerFromID(const userId ID)
-{
-	return ((ID == _player1ID && _isSynchroWithBoard) ||
-	        (ID == _player2ID && !_isSynchroWithBoard))
-	         ? PlayerNumber::PLAYER1
-	         : PlayerNumber::PLAYER2;
-}
-
-sf::TcpSocket& GameThread::getSocketFromID(const userId ID)
-{
-	return PlayerFromID(ID) == PlayerNumber::PLAYER1 ? _socketPlayer1 : _socketPlayer2;
-}
-
-sf::TcpSocket& GameThread::getSpecialSocketFromID(const userId ID)
-{
-	return PlayerFromID(ID) == PlayerNumber::PLAYER1 ? _specialOutputSocketPlayer1 : _specialOutputSocketPlayer2;
-}
-
-void GameThread::receiveDecks()
-{
-	std::cout << "waiting for decks\n";
-	sf::Packet deckPacket;
-	TransferType type;
-
-	_socketPlayer1.receive(deckPacket);
-	deckPacket >> type;
-	if(type != TransferType::GAME_PLAYER_GIVE_DECK_NAMES)
-		throw std::runtime_error("Unable to get player 1's deck");
-	deckPacket >> _player1DeckName;
-
-	_socketPlayer2.receive(deckPacket);
-	deckPacket >> type;
-	if(type != TransferType::GAME_PLAYER_GIVE_DECK_NAMES)
-		throw std::runtime_error("Unable to get player 2's deck");
-	deckPacket >> _player2DeckName;
-
-	if(_isSynchroWithBoard)
-		_gameBoard.givePlayersDecksNames(_player1DeckName, _player2DeckName);
-	else
-		_gameBoard.givePlayersDecksNames(_player2DeckName, _player1DeckName);
-}
-
-void GameThread::startGame(const ClientInformations& player1, const ClientInformations& player2)
+userId GameThread::startGame(const ClientInformations& player1, const ClientInformations& player2)
 {
 	establishSockets(player1, player2);
 	sf::Packet packet;
-	// get players decks
-	receiveDecks();
+	std::cout << "waiting for decks\n";
+	_player1.receiveDeck();
+	_player2.receiveDeck();
 
 	// send the game is starting
-	packet << TransferType::GAME_STARTING << TransferType::GAME_PLAYER_ENTER_TURN;
-	getSocketFromID(_gameBoard.getCurrentPlayerID()).send(packet);
-	packet.clear();
-	packet << TransferType::GAME_STARTING << TransferType::GAME_PLAYER_LEAVE_TURN;
-	getSocketFromID(_gameBoard.getWaitingPlayerID()).send(packet);
+	_activePlayer->beginGame(true);
+	_passivePlayer->beginGame(false);
 	_timerThread = std::thread(&GameThread::makeTimer, this);
-	// prepare data listening
-	sf::SocketSelector selector;
-	selector.add(_socketPlayer1);
-	selector.add(_socketPlayer2);
+
+	userId winnerId{runGame()};
+
+	// Send to the winner he wins and send his new card ID
+	packet.clear();
+	std::random_device device;
+	std::mt19937 generator{device()};
+	cardId earnedCardId{std::uniform_int_distribution<int>(0, static_cast<int>(nbSpells + nbCreatures))(generator)};
+	++earnedCardId;  // Card indices start to 1 because of SQLite
+	_database.addCard(winnerId, earnedCardId);
+	// \TODO: add earnedCardId to winner's card collection
+
+	// Send to the winner he won
+	// EndGame::applyToSelf indicate which player won the game: false mean that
+	// the player who receive this message has won.
+	packet << TransferType::GAME_OVER << EndGame{_endGamecause, false} << earnedCardId;
+	sf::TcpSocket& winnerSocket{winnerId == _player1ID ? _specialOutputSocketPlayer1 : _specialOutputSocketPlayer2};
+	winnerSocket.send(packet);
+
+	// Send to the loser he lost (do NOT send a card index thus)
+	packet.clear();
+	packet << TransferType::GAME_OVER << EndGame{_endGamecause, true};
+	sf::TcpSocket& loserSocket{winnerId == _player1ID ? _specialOutputSocketPlayer2 : _specialOutputSocketPlayer1};
+	loserSocket.send(packet);
+
+	return winnerId;
+}
+
+userId GameThread::runGame()
+{
 	while(_running.load())
 	{
-		GameThread::PlayerNumber sender;
-		if(!selector.wait(sf::milliseconds(50)))
-			continue;
-		if(selector.isReady(_socketPlayer1))
-			sender = PlayerNumber::PLAYER1;
-		else if(selector.isReady(_socketPlayer2))
-			sender = PlayerNumber::PLAYER2;
-		else
-			throw std::runtime_error("Error with selector while waiting for game data");
-		// get actions from playing client
-		sf::TcpSocket& modifiedSocket{sender == PlayerNumber::PLAYER1 ? _socketPlayer1 : _socketPlayer2};
-		modifiedSocket.receive(packet);
-		TransferType type;
-		packet >> type;
-		if(type == TransferType::GAME_PLAYER_LEAVE_TURN)
-			_turnSwap.store(true);
+		for(auto player : {_activePlayer, _passivePlayer})
+		{
+			sf::TcpSocket& specialSocket{player == &_player1 ? _specialOutputSocketPlayer1 : _specialOutputSocketPlayer2};
+
+			auto status{player->tryReceiveClientInput()};
+			if(status == sf::Socket::Disconnected)
+			{
+				std::cerr << "Lost connection with a player\n";
+				_winner = player->getID();
+				_running.store(false);
+				break;
+			}
+			// The player received some valid input from the client
+			else if(status == sf::Socket::Done)
+			{
+				// Send the changes to the client
+				if(player->thereAreBoardChanges())
+				{
+					sf::Packet boardChanges{player->getBoardChanges()};
+					specialSocket.send(boardChanges);
+				}
+
+				// Check if the player quitted the game
+				if(_winner != 0)
+				{
+					_running.store(false);
+					break;
+				}
+			}
+		}
+		sf::sleep(sf::milliseconds(250));
 	}
-	packet.clear();
-	packet << TransferType::GAME_OVER;
-	// same message is sent to both players: no need to find by ID
-	_specialOutputSocketPlayer1.send(packet);
-	_specialOutputSocketPlayer2.send(packet);
+	assert(_winner != 0);
+	return _winner;
+}
+
+void GameThread::endGame(userId winnerId, EndGame::Cause cause)
+{
+	std::cout << "Game is asked to end\n";
+	_winner = winnerId;
+	_endGamecause = cause;
+	_running.store(false);
+}
+
+void GameThread::endTurn()
+{
+	_turn++;  // turn counter (for both players)
+	_activePlayer->leaveTurn();
+	std::swap(_activePlayer, _passivePlayer);  // swap active and inactive
+	_activePlayer->enterTurn(_turn/2 +1);  // ALWAYS call active player
+}
+
+void GameThread::swapTurns()
+{
+	_turnSwap.store(true);
 }
 
 // Function only called by a new thread
@@ -152,13 +188,18 @@ void GameThread::makeTimer()
 		if(!_turnSwap.load() && std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - startOfTurnTime) < _turnTime)
 			continue;
 		// send to both players their turn swapped
+		// MAYBE TODO: store and maintain two pointers, _activeSpecialSocket and _passiveSpecialSocket as attributes
+		sf::TcpSocket& activeSpecialSocket{_activePlayer == &_player1 ? _specialOutputSocketPlayer1 : _specialOutputSocketPlayer2};
 		sf::Packet endOfTurn;
 		endOfTurn << TransferType::GAME_PLAYER_LEAVE_TURN;
-		getSpecialSocketFromID(_gameBoard.getCurrentPlayerID()).send(endOfTurn);
+		activeSpecialSocket.send(endOfTurn);
+
+		sf::TcpSocket& passiveSpecialSocket{_activePlayer == &_player1 ? _specialOutputSocketPlayer2 : _specialOutputSocketPlayer1};
 		sf::Packet startOfTurn;
 		startOfTurn << TransferType::GAME_PLAYER_ENTER_TURN;
-		getSpecialSocketFromID(_gameBoard.getWaitingPlayerID()).send(startOfTurn);
-		_gameBoard.endTurn();
+		passiveSpecialSocket.send(startOfTurn);
+
+		endTurn();
 		startOfTurnTime = std::chrono::high_resolution_clock::now();
 		_turnSwap.store(false);
 	}
@@ -167,5 +208,6 @@ void GameThread::makeTimer()
 GameThread::~GameThread()
 {
 	interruptGame();
-	_timerThread.join();
+	if(_timerThread.joinable())
+		_timerThread.join();
 }

@@ -3,16 +3,15 @@
 #include <string>
 #include <cstring>
 
-Database::Database(std::string filename)
+Database::Database(const std::string& filename)
 {
-	std::cout << filename.c_str() << std::endl;
 	sqliteThrowExcept(sqlite3_open(filename.c_str(), &_database));
 	sqliteThrowExcept(sqlite3_exec(_database, "PRAGMA foreign_keys = ON;", nullptr, nullptr, nullptr));
 }
 
 void Database::prepareStmt(Statement& statement)
 {
-	sqliteThrowExcept(sqlite3_prepare_v2(_database, statement.query(), std::strlen(statement.query()),
+	sqliteThrowExcept(sqlite3_prepare_v2(_database, statement.query(), static_cast<int>(std::strlen(statement.query())),
 	                                     statement.statement(), nullptr));
 }
 

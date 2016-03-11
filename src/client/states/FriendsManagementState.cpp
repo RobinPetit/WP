@@ -1,4 +1,6 @@
+// std-C++ headers
 #include <iostream>
+// WizardPoker headers
 #include "client/states/FriendsManagementState.hpp"
 
 enum

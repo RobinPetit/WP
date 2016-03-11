@@ -290,8 +290,8 @@ SELECT '-------';
 BEGIN;
 
 SELECT "Create testing accounts";
-INSERT INTO Account(login, password) VALUES('testing','bianrydatahere'); -- id = 1
-INSERT INTO Account(login, password) VALUES('testing2','bianrydatahere');-- id = 2
+INSERT INTO Account(login, password) VALUES('testing','t'); -- id = 1
+INSERT INTO Account(login, password) VALUES('testing2','t');-- id = 2
 INSERT INTO Account(login, password) VALUES('Alice','A');
 INSERT INTO Account(login, password) VALUES('Bob','B');
 INSERT INTO Account(login, password) VALUES('Eve','E');

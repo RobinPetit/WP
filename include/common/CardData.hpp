@@ -4,9 +4,7 @@
 #include <string>
 #include <vector>
 #include "common/Identifiers.hpp"
-
-
-#include "CardData.inc"
+#include "common/CardData.inc"
 
 constexpr int UNLIMITED_TURNS=100;
 
@@ -46,5 +44,9 @@ struct SpellData
 extern const CreatureData ALL_CREATURES[];
 
 extern const SpellData ALL_SPELLS[];
+
+extern const std::size_t nbSpells;
+
+extern const std::size_t nbCreatures;
 
 #endif  // _CARD_DATA_HPP

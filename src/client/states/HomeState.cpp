@@ -39,10 +39,28 @@ void HomeState::connect()
 		if(config.find("SERVER_PORT") == config.end() || config.find("SERVER_ADDRESS") == config.end())
 			throw std::runtime_error("Missing data in config file");
 		auto identifiers = askIdentifiers();
-		_client.connectToServer(identifiers.first,
-				identifiers.second,
-				config["SERVER_ADDRESS"],
-				static_cast<sf::Uint16>(std::stoi(config["SERVER_PORT"], nullptr, AUTO_BASE)));
+		sf::Uint16 serverPort{static_cast<sf::Uint16>(std::stoi(config["SERVER_PORT"], nullptr, AUTO_BASE))};
+		// The following code is created to handle the case of a crash during
+		// server execution and then finding an available port to connect to
+		// (associated code in the server)
+		bool tryToConnect{true};
+		int counter{0};
+		while(tryToConnect)
+		{
+			try
+			{
+				_client.connectToServer(identifiers.first, identifiers.second,
+						config["SERVER_ADDRESS"], serverPort);
+				tryToConnect = false;
+			}
+			catch(std::runtime_error&)
+			{
+				tryToConnect = (++counter) <= 10;
+				++serverPort;
+			}
+		}
+		if(counter > 10)
+			throw std::runtime_error("Unable to find server port");
 		stackPush<MainMenuState>();
 	}
 	catch(const std::runtime_error& e)

@@ -12,7 +12,7 @@
 #define AUTO_QUERY_LENGTH -1
 
 const char ServerDatabase::FILENAME[] = "../resources/server/database.db";
-ServerDatabase::ServerDatabase(std::string filename) : Database(filename), _cards()
+ServerDatabase::ServerDatabase(const std::string& filename) : Database(filename), _cards()
 {
 	for(size_t i = 0; i < _statements.size(); ++i)
 		prepareStmt(_statements[i]);
@@ -29,7 +29,7 @@ Card* ServerDatabase::getCard(cardId card)
 	return _cards.at(card).get();
 }
 
-userId ServerDatabase::getUserId(const std::string login)
+userId ServerDatabase::getUserId(const std::string& login)
 {
 	std::unique_lock<std::mutex> lock {_dbAccess};
 	sqlite3_reset(_userIdStmt);
@@ -55,7 +55,7 @@ std::string ServerDatabase::getLogin(userId id)
 
 std::vector<Deck> ServerDatabase::getDecks(userId id)
 {
-	std::unique_lock<std::mutex> lock {_dbAccess};
+	// std::unique_lock<std::mutex> lock {_dbAccess};
 	sqlite3_reset(_decksStmt);
 	sqliteThrowExcept(sqlite3_bind_int64(_decksStmt, 1, id));
 

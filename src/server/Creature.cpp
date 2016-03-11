@@ -1,4 +1,7 @@
+// WizardPoker headers
 #include "server/Creature.hpp"
+// std-C++ headers
+#include <iostream>
 
 std::function<void(Creature&, const EffectParamsCollection&)> Creature::_effectMethods[P_EFFECTS_COUNT] =
 {
@@ -102,7 +105,7 @@ void Creature::receiveAttack(Creature& attacker, int attack, int forced, int loo
 }
 
 /*--------------------------- GETTERS FOR EFFECTS */
-void Creature::applyEffect(EffectParamsCollection effectArgs)
+void Creature::applyEffectToSelf(EffectParamsCollection effectArgs)
 {
 	int method = effectArgs.front(); //what method is used
 	effectArgs.erase(effectArgs.begin());
@@ -156,10 +159,9 @@ void Creature::setConstraint(const EffectParamsCollection& args)
 		if (constraintID<0 or constraintID>=C_CONSTRAINTS_COUNT or turns<0)
 			throw std::out_of_range("");
 	}
-	catch (std::out_of_range)
+	catch (std::out_of_range&)
 	{
-		//SERVER: CARD_ERROR
-		return;
+		 throw std::runtime_error("Error with cards arguments");
 	}
 
 	switch (casterOptions)
@@ -169,6 +171,7 @@ void Creature::setConstraint(const EffectParamsCollection& args)
 			break;
 		default:
 			_constraints.setConstraint(constraintID, value, turns);
+			break;
 	}
 }
 
@@ -192,18 +195,16 @@ void Creature::resetShield(const EffectParamsCollection&)
 
 void Creature::changeAttack(const EffectParamsCollection& args)
 {
-	int points; //attack points to add
 	try //check the input
 	{
-		points=args.at(0);
+		_attack += args.at(0);
+		if(_attack < 0)
+			_attack = 0;
 	}
-	catch (std::out_of_range)
+	catch (std::out_of_range&)
 	{
-		//SERVER: CARD_ERROR
-		return;
+		throw std::runtime_error("Error with cards arguments");
 	}
-	_attack+=points;
-	if (_attack<0) _attack=0;
 }
 
 void Creature::changeHealth(const EffectParamsCollection& args)
@@ -213,10 +214,9 @@ void Creature::changeHealth(const EffectParamsCollection& args)
 	{
 		points=args.at(0);
 	}
-	catch (std::out_of_range)
+	catch (std::out_of_range&)
 	{
-		//SERVER: CARD_ERROR
-		return;
+		 throw std::runtime_error("Error with cards arguments");
 	}
 
 	//bool forced = args.at(1) : if attack is forced, shield does not count
@@ -224,14 +224,16 @@ void Creature::changeHealth(const EffectParamsCollection& args)
 	{
 		switch (_shieldType)
 		{
-			case 0:
+			case SHIELD_BLUE:
 				points+= _shield;	//Blue shield, can allow part of the attack to deal damage
-				if (points>0) points=0;
+				if (points>0)
+					points=0;
 				break;
-			case 1:
-				if (points <= _shield) points=0;	//Orange shield, only stronger attacks go through
+			case SHIELD_ORANGE:
+				if (points <= _shield)
+					points=0;	//Orange shield, only stronger attacks go through
 				break;
-			case 2:
+			case SHIELD_LEGENDARY:
 				points=0;	//Legendary shield, regular attacks don't go through
 				break;
 		}
@@ -247,16 +249,14 @@ void Creature::changeHealth(const EffectParamsCollection& args)
 
 void Creature::changeShield(const EffectParamsCollection& args)
 {
-	int points; //shield points to add
 	try //check the input
 	{
-		points=args.at(0);
+		_shield += args.at(0);
+		if(_shield < 0)
+			_shield = 0;
 	}
-	catch (std::out_of_range)
+	catch (std::out_of_range&)
 	{
-		//SERVER: CARD_ERROR
-		return;
+		 throw std::runtime_error("Error with cards arguments");
 	}
-	_shield += points;
-	if (_shield<0) _shield=0;
 }

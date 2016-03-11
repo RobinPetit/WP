@@ -12,7 +12,7 @@
 #include <atomic>
 // WizardPoker headers
 #include "common/Terminal.hpp"
-#include "common/Database.hpp"// FriendsList typedef
+#include "common/Database.hpp"  // FriendsList typedef
 #include "common/CardsCollection.hpp"
 #include "common/Deck.hpp"
 

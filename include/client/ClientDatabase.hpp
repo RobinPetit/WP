@@ -9,7 +9,7 @@ class ClientDatabase : public Database
 public:
 	/// Constructor
 	/// \param filename: relative path to sqlite3 file.
-	explicit ClientDatabase(const std::string filename = FILENAME);
+	explicit ClientDatabase(const std::string& filename = FILENAME);
 
 private:
 	/// Default relative path to sqlite3 file

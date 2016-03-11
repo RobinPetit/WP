@@ -54,7 +54,7 @@ class Database
 public:
 	/// Constructor
 	/// \param filename: relative path to sqlite3 file
-	explicit Database(std::string filename);
+	explicit Database(const std::string& filename);
 
 	/// Destructor
 	virtual ~Database();

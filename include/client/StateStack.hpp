@@ -1,13 +1,15 @@
 #ifndef _STATE_STACK_CLIENT_HPP
 #define _STATE_STACK_CLIENT_HPP
 
+// std-C++ headers
 #include <stack>
-#include <queue>
 #include <string>
 #include <memory>
 #include <functional>
 #include <typeinfo>
+// SFML headers
 #include <SFML/System.hpp>
+// WizardPoker headers
 #include "client/sockets/Client.hpp"
 
 //Forward declarations

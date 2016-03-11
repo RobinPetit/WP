@@ -196,7 +196,6 @@ int main(int argc, char **argv)
 	sf::Packet packet;  // used to exchange data (I/O)
 	sf::TcpSocket out, in;  // two separated sockets for IO operations
 	sf::TcpListener listener;  // listener helping to get the entring connection
-	sf::Uint16 calleeListeningPort;  // port which is asked by the out (alias `server`) socket
 	/* the listener is set as blocking because it is waiting for a precise
 	amount of connections that are well defined */
 	listener.setBlocking(true);
@@ -212,12 +211,17 @@ int main(int argc, char **argv)
 		out.send(packet);
 		// get back the other player's address
 		out.receive(packet);
+		TransferType type;
+		packet >> type;
+		if(type == TransferType::FAILURE)
+			throw std::runtime_error("Unable to start discussion");
 		sf::Uint32 calleeAddress;
 		packet >> calleeAddress;
 		// create the first socket (receiving data from the other player
 		listener.accept(in);
 		// get the port use to send data to the other player
 		in.receive(packet);
+		sf::Uint16 calleeListeningPort;  // port which is asked by the out (alias `server`) socket
 		packet >> calleeListeningPort;
 		// and finally create the second socket (sending data)
 		out.disconnect();
@@ -236,22 +240,19 @@ int main(int argc, char **argv)
 		std::cout << otherName << " wants to start a discussion with you" << std::endl;
 	}
 	else
-	{
-		std::cerr << "unknown role: " << role;
-		return EXIT_FAILURE;
-	}
+		throw std::runtime_error("unknown role: " + role);
 	std::atomic_bool presence(true);
 	restoreOldDiscussion(otherName, selfName);
 	// open the file in append mode only after it has been open in read-only mode
 	logFile.open(getDiscussionFileName(otherName, selfName), std::ios_base::out | std::ios_base::trunc | std::ios_base::app);
 	std::thread inputThread(input, &in, &running, otherName, &presence);
-	// Warning: the `in` socket may not be used in this thread anymore!
+	// Warning: the `in` socket shall not be used in this thread anymore!
 	output(out, selfName, presence);
 	// code to quit properly (frees the memory)
 	running.store(false);
-	inputThread.join();
+	if(inputThread.joinable())
+		inputThread.join();
 	// close the file when the input thread is over: be sure it does not need to log something anymore
 	logFile.close();
 	return EXIT_SUCCESS;
 }
-

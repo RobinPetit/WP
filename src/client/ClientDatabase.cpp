@@ -1,6 +1,5 @@
 #include "client/ClientDatabase.hpp"
 
-
-const char ServerDatabase::FILENAME[] = "../resources/server/database.db";
-ClientDatabase::ClientDatabase(std::string filename) : Database(filename)
+const char ClientDatabase::FILENAME[] = "../resources/client/database.db";
+ClientDatabase::ClientDatabase(const std::string& filename) : Database(filename)
 {}

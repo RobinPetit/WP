@@ -4,8 +4,8 @@
 #include "common/Identifiers.hpp"
 #include "common/CardData.hpp"
 
-/// These struct are used to communicate changes of the game data on the network (server->client).
-enum CardToSelect : int32_t
+/// These struct are used to communicate changes of the game data on the network (server => client).
+enum class CardToSelect : sf::Int32
 {
 	SELF_BOARD,
 	OPPO_BOARD,
@@ -31,8 +31,8 @@ struct CardData
 //TODO: use in transmission ?!
 struct PlayerData
 {
-    int health;
-    int energy;
+	int health;
+	int energy;
 };
 
 #endif// _GAME_DATA_COMMON_HPP

@@ -108,12 +108,12 @@ enum CONSTRAINT_CONDITIONS : int32_t
 /// Types used for card creation:
 enum CostValue : int32_t
 {
-    COST_0 = 1, COST_1, COST_2, COST_3, COST_4, COST_5, COST_6, COST_7, COST_8, COST_9, COST_10
+    COST_1=1, COST_2, COST_3, COST_4, COST_5, COST_6, COST_7, COST_8, COST_9, COST_10
 };
 
 enum AttackValue : int32_t
 {
-    ATTACK_0 = 1, ATTACK_1, ATTACK_2, ATTACK_3, ATTACK_4, ATTACK_5, ATTACK_6, ATTACK_7, ATTACK_8, ATTACK_9, ATTACK_10
+    ATTACK_1=1, ATTACK_2, ATTACK_3, ATTACK_4, ATTACK_5, ATTACK_6, ATTACK_7, ATTACK_8, ATTACK_9, ATTACK_10
 };
 
 enum HealthValue : int32_t
@@ -124,7 +124,7 @@ enum HealthValue : int32_t
 
 enum ShieldValue : int32_t
 {
-    SHIELD_0 = 1, SHIELD_1, SHIELD_2, SHIELD_3, SHIELD_4, SHIELD_5
+    SHIELD_1=1, SHIELD_2, SHIELD_3, SHIELD_4, SHIELD_5
 };
 
 enum ShieldType : int32_t

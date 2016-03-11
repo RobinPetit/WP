@@ -14,7 +14,6 @@
 
 Server::Server():
 	_clients(),
-	_listener(),
 	_socketSelector(),
 	_done(false),
 	_threadRunning(false),
@@ -28,31 +27,38 @@ Server::Server():
 
 int Server::start(const sf::Uint16 listenerPort)
 {
-	if(_listener.listen(listenerPort) != sf::Socket::Done)
+	sf::TcpListener listener;
+	if(listener.listen(listenerPort) != sf::Socket::Done)
 		return UNABLE_TO_LISTEN;
+
+	// Make sure the thread is not joinable before assigning it, an abort seems
+	// to occur in the assignment, this is caused because the thread is joinable
+	if(_quitThread.joinable())
+		_quitThread.join();
 	_quitThread = std::thread(&Server::waitQuit, this);
+
 	_threadRunning.store(true);
 	sf::sleep(SOCKET_TIME_SLEEP);
-	_socketSelector.add(_listener);
+	_socketSelector.add(listener);
 	while(!_done.load())
 	{
 		// if no socket is ready, wait again
 		if(!_socketSelector.wait(sf::milliseconds(50)))
 			continue;
 		// if listener is ready, then a new connection is incoming
-		if(_socketSelector.isReady(_listener))
-			takeConnection();
+		if(_socketSelector.isReady(listener))
+			takeConnection(listener);
 		else  // one of the client sockets has received something
 			receiveData();
 	}
 	return SUCCESS;
 }
 
-void Server::takeConnection()
+void Server::takeConnection(sf::TcpListener& listener)
 {
 	std::unique_ptr<sf::TcpSocket> newClient{new sf::TcpSocket()};
 	// if listener can't accept correctly, free the allocated socket
-	if(_listener.accept(*newClient) != sf::Socket::Done)
+	if(listener.accept(*newClient) != sf::Socket::Done)
 	{
 		std::cout << "Error when trying to accept a new client.\n";
 		return;
@@ -62,9 +68,9 @@ void Server::takeConnection()
 	newClient->receive(packet);
 	TransferType type;
 	packet >> type;
-	if(type == TransferType::GAME_CONNECTION)
+	if(type == TransferType::CONNECTION)
 		connectUser(packet, std::move(newClient));
-	else if(type == TransferType::GAME_REGISTERING)
+	else if(type == TransferType::REGISTERING)
 		registerUser(packet, std::move(newClient));
 	else if(type == TransferType::CHAT_PLAYER_IP)
 		handleChatRequest(packet, std::move(newClient));
@@ -83,14 +89,14 @@ void Server::connectUser(sf::Packet& connectionPacket, std::unique_ptr<sf::TcpSo
 		// Check if the user is not already connected
 		if(_clients.find(playerName) != _clients.end())
 		{
-			connectionPacket << TransferType::GAME_ALREADY_CONNECTED;
+			connectionPacket << TransferType::ALREADY_CONNECTED;
 			throw std::runtime_error(playerName + " tried to connect to the server but is already connected.");
 		}
 
 		// FIXME : this method call returns always false _database.areIdentifiersValid(playerName, password))
 		if(not _database.isRegistered(playerName))
 		{
-			connectionPacket << TransferType::GAME_WRONG_IDENTIFIERS;
+			connectionPacket << TransferType::WRONG_IDENTIFIERS;
 			throw std::runtime_error(playerName + " gives wrong identifiers when trying to connect.");
 		}
 		std::cout << "New player connected: " << playerName << std::endl;
@@ -127,7 +133,7 @@ void Server::registerUser(sf::Packet& registeringPacket, std::unique_ptr<sf::Tcp
 
 		if(_database.isRegistered(playerName))
 		{
-			registeringPacket << TransferType::GAME_USERNAME_NOT_AVAILABLE;
+			registeringPacket << TransferType::USERNAME_NOT_AVAILABLE;
 			throw std::runtime_error(playerName + " tried to register to the server but the name is not available.");
 		}
 		_database.registerUser(playerName, password);
@@ -138,7 +144,7 @@ void Server::registerUser(sf::Packet& registeringPacket, std::unique_ptr<sf::Tcp
 	{
 		// If Database::registerUser threw an exception, the packet is empty
 		if(registeringPacket.getDataSize() == 0)
-			registeringPacket << TransferType::GAME_FAILED_TO_REGISTER;
+			registeringPacket << TransferType::FAILED_TO_REGISTER;
 
 		std::cout << "registerUser error: " << e.what() << "\n";
 	}
@@ -170,27 +176,27 @@ void Server::receiveData()
 		packet >> type;
 		switch(type)
 		{
-		case TransferType::PLAYER_DISCONNECTION:
+		case TransferType::DISCONNECTION:
 			std::cout << "Player " + userToString(it) + " quits the game!" << std::endl;
 			removeClient(it);
 			break;
 		// Friendship management
-		case TransferType::PLAYER_CHECK_CONNECTION:
+		case TransferType::CHECK_PRESENCE:
 			checkPresence(it, packet);
 			break;
-		case TransferType::PLAYER_ASKS_FRIENDS:
+		case TransferType::ASK_FRIENDS:
 			sendFriends(it);
 			break;
-		case TransferType::PLAYER_NEW_FRIEND:
+		case TransferType::NEW_FRIEND:
 			handleFriendshipRequest(it, packet);
 			break;
-		case TransferType::PLAYER_REMOVE_FRIEND:
+		case TransferType::REMOVE_FRIEND:
 			handleRemoveFriend(it, packet);
 			break;
-		case TransferType::PLAYER_RESPONSE_FRIEND_REQUEST:
+		case TransferType::RESPONSE_FRIEND_REQUEST:
 			handleFriendshipRequestResponse(it, packet);
 			break;
-		case TransferType::PLAYER_GETTING_FRIEND_REQUESTS:
+		case TransferType::GET_FRIEND_REQUESTS:
 			sendFriendshipRequests(it);
 			break;
 		// Game management
@@ -201,23 +207,23 @@ void Server::receiveData()
 			clearLobby(it);
 			break;
 		// Cards management
-		case TransferType::PLAYER_ASKS_DECKS_LIST:
+		case TransferType::ASK_DECKS_LIST:
 			sendDecks(it);
 			break;
-		case TransferType::PLAYER_EDIT_DECK:
+		case TransferType::EDIT_DECK:
 			handleDeckEditing(it, packet);
 			break;
-		case TransferType::PLAYER_CREATE_DECK:
+		case TransferType::CREATE_DECK:
 			handleDeckCreation(it, packet);
 			break;
-		case TransferType::PLAYER_DELETE_DECK:
+		case TransferType::DELETE_DECK:
 			handleDeckDeletion(it, packet);
 			break;
-		case TransferType::PLAYER_ASKS_CARDS_COLLECTION:
+		case TransferType::ASK_CARDS_COLLECTION:
 			sendCardsCollection(it);
 			break;
 		// Others
-		case TransferType::PLAYER_ASKS_LADDER:
+		case TransferType::ASK_LADDER:
 			sendLadder(it);
 			break;
 		default:
@@ -247,7 +253,10 @@ void Server::checkPresence(const _iterator& it, sf::Packet& transmission)
 	sf::Packet packet;
 	std::string nameToCheck;
 	transmission >> nameToCheck;
-	packet << TransferType::PLAYER_CHECK_CONNECTION << (_clients.find(nameToCheck) != _clients.end());
+	if(_database.areFriend(it->second.id, _clients[nameToCheck].id))
+		packet << TransferType::ACKNOWLEDGE << (_clients.find(nameToCheck) != _clients.end());
+	else
+		packet << TransferType::FAILURE;
 	it->second.socket->send(packet);
 }
 
@@ -257,18 +266,18 @@ void Server::quit()
 	for(auto& gameThread: _runningGames)
 	{
 		gameThread->interruptGame();
-		gameThread->join();
-		delete gameThread;
+		// Avoid to throw an exception if not joinable, just in case
+		if(gameThread->joinable())
+			gameThread->join();
 	}
 	_runningGames.clear();
 	// in case the method is called even though server has not been manually ended
 	_done.store(true);
-	_quitThread.join();
+	if(_quitThread.joinable())
+		_quitThread.join();
 	_threadRunning.store(false);
 	_socketSelector.clear();
 	_clients.clear();
-	// leave listening port
-	_listener.close();
 }
 
 Server::~Server()
@@ -299,7 +308,7 @@ std::string Server::userToString(const _iterator& it)
 
 void Server::findOpponent(const _iterator& it)
 {
-	_lobbyMutex.lock();
+	std::lock_guard<std::mutex> lockLobby{_lobbyMutex};
 	if(!_isAPlayerWaiting)
 	{
 		_isAPlayerWaiting = true;
@@ -322,28 +331,28 @@ void Server::findOpponent(const _iterator& it)
 			createGame(waitingPlayer->second.id, it->second.id);
 		}
 	}
-	_lobbyMutex.unlock();
+	// _lobbyMutex is unlocked when lockLobby is destructed
 }
 
 void Server::clearLobby(const _iterator& it)
 {
-	_lobbyMutex.lock();
+	std::lock_guard<std::mutex> lockLobby{_lobbyMutex};
 	if(not _isAPlayerWaiting or _waitingPlayer != it->first)
-	{
-		std::cerr << "Trying to remove another player from lobby; ignored\n";
-		return;
-	}
-	else
-		_isAPlayerWaiting = false;
-	_lobbyMutex.unlock();
+		throw std::runtime_error("Trying to remove another player from lobby; ignored\n");
+	_isAPlayerWaiting = false;
+	// _lobbyMutex is unlocked when lockLobby is destructed
 }
 
 void Server::startGame(std::size_t idx)
 {
-	std::cout << "StartGame(" << idx << ")\n";
-	_accessRunningGames.lock();
-	GameThread& selfThread{*_runningGames[idx]};
-	_accessRunningGames.unlock();
+	// A unique lock also releases the mutex at destruction (just like
+	// std::lock_guard) but we can explicitly lock and unlock it, combining
+	// the benefits of manually lock mutexes and the benefits of a scoped lock
+	// Watch out: lock is performed by the constructor. Do not manually re-lock it
+	std::unique_lock<std::mutex> lockRunningGames{_accessRunningGames};
+	std::unique_ptr<GameThread>& selfThread{_runningGames.at(idx)};
+	// If the access did not throw, we can now release the mutex
+	lockRunningGames.unlock();
 	const auto& finderById = [](userId playerId)
 	{
 		return [playerId](const std::pair<const std::string, ClientInformations>& it)
@@ -351,17 +360,22 @@ void Server::startGame(std::size_t idx)
 			return it.second.id == playerId;
 		};
 	};
-	const auto& player1 = std::find_if(_clients.begin(), _clients.end(), finderById(selfThread._player1ID));
-	const auto& player2 = std::find_if(_clients.begin(), _clients.end(), finderById(selfThread._player2ID));
+
+	const auto& player1{std::find_if(_clients.begin(), _clients.end(), finderById(selfThread->_player1ID))};
+	const auto& player2{std::find_if(_clients.begin(), _clients.end(), finderById(selfThread->_player2ID))};
 	std::cout << "Game " << idx << " is starting: " + userToString(player1) + " vs. " + userToString(player2) + "\n";
-	selfThread.startGame(player1->second, player2->second);
+	userId winnerId{selfThread->startGame(player1->second, player2->second)};
+	// \TODO: change personnal scores
+	const auto& winner{winnerId == selfThread->_player1ID ? player1 : player2};
+	const auto& loser{winnerId == selfThread->_player1ID ? player2 : player1};
+	std::cout << winner->first << " won and " << loser->first << " lost\n";
 }
 
 void Server::createGame(userId ID1, userId ID2)
 {
-	_accessRunningGames.lock();
+	std::lock_guard<std::mutex> lockRunningGames{_accessRunningGames};
 	_runningGames.emplace_back(new GameThread(_database, ID1, ID2, &Server::startGame, this, _runningGames.size()));
-	_accessRunningGames.unlock();
+	// _accessRunningGames is unlocked when lockRunningGames is destructed
 }
 
 ///////////////////////// Friends management
@@ -374,21 +388,19 @@ void Server::handleChatRequest(sf::Packet& packet, std::unique_ptr<sf::TcpSocket
 	std::string callerName;
 	sf::Uint16 callerPort;
 	packet >> callerName >> calleeName >> callerPort;
-	std::cout << "start request\n";
 	// first of all, verify that player exist
 	// if it does, send his IP
 	auto callee = _clients.find(calleeName);
 	if(callee == _clients.end())
 	{
 		std::cout << "player does not exist!\n";
-		responseToCaller << static_cast<sf::Uint32>(0);
+		responseToCaller << TransferType::FAILURE;
 	}
 	else
 	{
-		responseToCaller << _clients[calleeName].socket->getRemoteAddress().toInteger();
+		responseToCaller << TransferType::ACKNOWLEDGE << _clients[calleeName].socket->getRemoteAddress().toInteger();
 		sf::Packet packetToCalle;
 		sf::TcpSocket toCallee;
-		std::cout << "address is " << _clients[calleeName].socket->getRemoteAddress() << " and port is " << _clients[calleeName].listeningPort << std::endl;
 		if(toCallee.connect(_clients[calleeName].socket->getRemoteAddress(), _clients[calleeName].listeningPort) != sf::Socket::Done)
 			std::cerr << "Unable to connect to callee (" << calleeName << ")\n";
 		else
@@ -629,7 +641,7 @@ void Server::sendLadder(const _iterator& it)
 	try
 	{
 		Ladder ladder{_database.getLadder()};
-		response << TransferType::PLAYER_ASKS_LADDER << ladder;
+		response << TransferType::ACKNOWLEDGE << ladder;
 	}
 	catch(const std::runtime_error& e)
 	{

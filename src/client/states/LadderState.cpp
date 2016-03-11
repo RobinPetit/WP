@@ -1,4 +1,6 @@
+// std-C++ headers
 #include <iostream>
+// WizardPoker headers
 #include "client/states/LadderState.hpp"
 
 LadderState::LadderState(StateStack& stateStack, Client& client):

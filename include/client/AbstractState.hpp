@@ -1,7 +1,6 @@
 #ifndef _ABSTRACT_STATE_CLIENT_HPP
 #define _ABSTRACT_STATE_CLIENT_HPP
 
-#include <memory>
 #include <vector>
 #include <utility>  // std::pair
 #include <string>

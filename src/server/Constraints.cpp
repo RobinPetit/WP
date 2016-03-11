@@ -86,7 +86,7 @@ int Constraints::getFirstTimedValue(int constraintID) const
 	{
 		//if the caster is not remembered, or is on the board
 		if (vectIt->caster==nullptr or vectIt->caster->isOnBoard() or vectIt->caster->getConstraint(CC_TEMP_IS_PARALYZED)==0)
-			return getValue(constraintID, vectIt - vect.begin());
+			return getValue(constraintID, static_cast<unsigned>(vectIt - vect.begin()));
 
 		//if caster is dead or paralyzed
 		else
@@ -102,7 +102,7 @@ int Constraints::getLastTimedValue(int constraintID) const
 	{
 		//if the caster is not remembered, or is on the board and active
 		if (vectIt->caster==nullptr or vectIt->caster->isOnBoard() or vectIt->caster->getConstraint(CC_TEMP_IS_PARALYZED)==0)
-			return getValue(constraintID, vectIt - vect.rbegin());
+			return getValue(constraintID, static_cast<unsigned>(vectIt - vect.rbegin()));
 
 		//if caster is dead or paralyzed
 		else
@@ -119,7 +119,7 @@ int Constraints::getSumTimedValues(int constraintID) const
 	{
 		//if the caster is not remembered, or is on the board and active
 		if (vectIt->caster==nullptr or vectIt->caster->isOnBoard() or vectIt->caster->getConstraint(CC_TEMP_IS_PARALYZED)==0)
-			value += getValue(constraintID, vectIt - vect.begin());
+			value += getValue(constraintID, static_cast<unsigned>(vectIt - vect.begin()));
 
 		//if caster is dead or paralyzed
 		else

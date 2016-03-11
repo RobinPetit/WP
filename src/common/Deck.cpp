@@ -31,7 +31,7 @@ const std::string& Deck::getName() const
 	return _name;
 }
 
-void Deck::setName(const std::string newName)
+void Deck::setName(const std::string& newName)
 {
 	_name = newName;
 }

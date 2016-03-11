@@ -39,7 +39,6 @@ private:
 
 	// attributes
 	std::unordered_map<std::string, ClientInformations> _clients;
-	sf::TcpListener _listener;
 	sf::SocketSelector _socketSelector;
 	std::atomic_bool _done;
 	std::atomic_bool _threadRunning;
@@ -49,16 +48,16 @@ private:
 	std::mutex _lobbyMutex;
 	const std::string _quitPrompt;
 	ServerDatabase _database;
-	std::vector<GameThread *> _runningGames;
+	std::vector<std::unique_ptr<GameThread>> _runningGames;
 	std::mutex _accessRunningGames;
 
 	// private methods
-	/// Used to handle a newconnection request (when the listener gets a packet)
-	void takeConnection();
+	/// Used to handle a new connection request (when the listener gets a packet)
+	void takeConnection(sf::TcpListener& listener);
 
 	/// Used to handle data sent by a logged user
-
 	void receiveData();
+
 	/// Used to receive packet when the user want to connect.
 	/// This functions takes the ownership of the socket, so that the responsability
 	/// of deleting the object is transferred. For example, if the connection
