@@ -114,6 +114,13 @@ void AbstractGame::useCard()
 		sf::Packet actionPacket;
 		actionPacket << TransferType::GAME_USE_CARD << static_cast<sf::Int32>(cardIndex);
 		_client.getGameSocket().send(actionPacket);
+		// receive amount of selection to make
+		_client.getGameSocket().receive(actionPacket);
+		std::vector<CardToSelect> requiredInputs;
+		actionPacket >> requiredInputs;
+		// ask and send the additionnal inputs to the server
+		treatAdditionnalInputs(requiredInputs);
+		// receive status of operation from server
 		_client.getGameSocket().receive(actionPacket);
 		TransferType responseHeader;
 		actionPacket >> responseHeader;
@@ -138,6 +145,35 @@ void AbstractGame::useCard()
 			break;
 		}
 	}
+}
+
+void AbstractGame::treatAdditionnalInputs(const std::vector<CardToSelect>& inputs)
+{
+	std::vector<sf::Uint32> indices{inputs.size()};
+	for(auto i{0U}; i < inputs.size(); ++i)
+	{
+		switch(inputs[i])
+		{
+		case CardToSelect::SELF_BOARD:
+			indices[i] = askSelfBoardIndex();
+			break;
+
+		case CardToSelect::OPPO_BOARD:
+			indices[i] = askOppoBoardIndex();
+			break;
+
+		case CardToSelect::SELF_HAND:
+			indices[i] = askSelfHandIndex();
+			break;
+
+		case CardToSelect::OPPO_HAND:
+			indices[i] = askOppoHandIndex();
+			break;
+		}
+	}
+	sf::Packet indicesPacket;
+	indicesPacket << indices;
+	_client.getGameSocket().send(indicesPacket);
 }
 
 void AbstractGame::attackWithCreature()

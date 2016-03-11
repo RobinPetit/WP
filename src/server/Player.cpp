@@ -259,7 +259,6 @@ void Player::useCard(int handIndex)
 		sendValueToClient(TransferType::FAILURE);
 		return;
 	}
-
 	Card* usedCard = _cardHand.at(handIndex);
 	//Check if we have enough energy to use this card
 	if (usedCard->getEnergyCost() > _energy)
@@ -899,10 +898,17 @@ std::vector<int>&& Player::askUserToSelectCards(const std::vector<CardToSelect>&
 	sf::Packet packet;
 	packet << selection;
 	_socketToClient.send(packet);
-	std::vector<int> indices(selection.size());
+	std::vector<sf::Uint32> indices(selection.size());
+	// have the socket blocking because the answer is expected at this very moment
+	_socketToClient.setBlocking(true);
 	_socketToClient.receive(packet);
+	_socketToClient.setBlocking(false);
 	packet >> indices;
-	return std::move(indices);
+	// covnert the sf::Uint32 received on the network by implementation-defined integers
+	std::vector<int> ret(selection.size());
+	for(auto i{0U}; i < selection.size(); ++i)
+		ret[i] = static_cast<int>(indices[i]);
+	return std::move(ret);
 }
 
 std::vector<int>&& Player::getRandomBoardIndexes(const std::vector<CardToSelect>& selection)

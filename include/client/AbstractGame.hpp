@@ -100,6 +100,8 @@ class AbstractGame
 
 		virtual void receiveCard(cardId id) = 0;
 
+		void treatAdditionnalInputs(const std::vector<CardToSelect>& inputs);
+
 		//////////// static member
 
 		template <typename FixedSizeIntegerType>
