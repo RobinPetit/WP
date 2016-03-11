@@ -55,6 +55,7 @@ bin/
 
 # Do not track database files
 *.db
+**/*.db
 
 # Add your IDE's temporary files extension here
 	# code::blocks

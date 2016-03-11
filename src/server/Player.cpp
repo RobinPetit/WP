@@ -642,7 +642,7 @@ void Player::changeHealth(const EffectParamsCollection& args)
 }
 
 
-///////// logers
+///////// loggers
 
 void Player::logCurrentEnergy()
 {
