@@ -56,7 +56,7 @@ int Database::sqliteThrowExcept(int errcode)
 		throw std::runtime_error("IO error");
 
 	case SQLITE_CANTOPEN:
-		throw std::runtime_error("Database MS unable to open file");
+		throw std::runtime_error("Database unable to open file");
 
 	case SQLITE_SCHEMA:
 		throw std::runtime_error("Database schema has changed, need reinstall or update");
@@ -68,4 +68,3 @@ int Database::sqliteThrowExcept(int errcode)
 
 	return errcode;
 }
-
