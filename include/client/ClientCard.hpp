@@ -17,7 +17,7 @@ private:
 
 public:
 	/// Constructor
-	Card(cardId cardIdentifier, const std::string& name, int cost, const std::string& description);
+	ClientCard(cardId cardIdentifier, const std::string& name, int cost, const std::string& description);
 
 	/// Getters
 	cardId getID() const;

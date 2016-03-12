@@ -1,6 +1,6 @@
 #include "client/ClientCard.hpp"
 
-ClientCard::Card(cardId cardIdentifier, const std::string& name, int cost, const std::string& description) :
+ClientCard::ClientCard(cardId cardIdentifier, const std::string& name, int cost, const std::string& description) :
 	_cardId(cardIdentifier), _name(name), _cost(cost), _description(description) {}
 
 cardId ClientCard::getID() const
