@@ -4,6 +4,7 @@
 #include <SFML/Network/IpAddress.hpp>
 // WizardPoker headers
 #include "common/constants.hpp"
+#include "common/UnableToConnectException.hpp"
 #include "client/ErrorCode.hpp"
 #include "client/sockets/Client.hpp"
 #include "common/ini/IniFile.hpp"
@@ -53,14 +54,15 @@ void HomeState::connect()
 						config["SERVER_ADDRESS"], serverPort);
 				tryToConnect = false;
 			}
-			catch(std::runtime_error&)
+			catch(const UnableToConnectException& e)
 			{
 				tryToConnect = (++counter) <= 10;
 				++serverPort;
+				// Manually break by rethrowing the exception e
+				if(not tryToConnect)
+					throw;
 			}
 		}
-		if(counter > 10)
-			throw std::runtime_error("Unable to find server port");
 		stackPush<MainMenuState>();
 	}
 	catch(const std::runtime_error& e)

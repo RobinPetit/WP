@@ -135,7 +135,8 @@ private:
 	sf::TcpSocket _socket;
 	/// The port the client is waiting for chat connections on
 	sf::Uint16 _chatListenerPort;
-	/// Stores whether the client is already connected to the server or not
+	/// Stores whether the client is already connected to the server or not.
+	/// We talk here about a socket connexion, not the authentication.
 	bool _isConnected;
 	/// The client's name
 	std::string _name;
