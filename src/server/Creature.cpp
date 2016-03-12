@@ -106,7 +106,7 @@ void Creature::receiveAttack(Creature& attacker, int attack, int forced, int loo
 }
 
 /*--------------------------- GETTERS FOR EFFECTS */
-void Creature::applyEffectToSelf(EffectParamsCollection effectArgs)
+void Creature::applyEffectToSelf(EffectParamsCollection& effectArgs)
 {
 	int method = effectArgs.front(); //what method is used
 	effectArgs.erase(effectArgs.begin());

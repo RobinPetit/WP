@@ -334,7 +334,10 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 	else
 	{
 		if (victimIndex<0)
-			_opponent->applyEffectToSelf(attacker, {PE_CHANGE_HEALTH, -attacker->getAttack()}); //no forced attacks on opponent
+		{
+			std::vector<int> params{{PE_CHANGE_HEALTH, -attacker->getAttack()}};
+			_opponent->applyEffectToSelf(attacker, params);  //no forced attacks on opponent
+		}
 		else
 			attacker->makeAttack(*_opponent->_cardBoard.at(victimIndex));
 		sendValueToClient(TransferType::ACKNOWLEDGE);
@@ -412,7 +415,7 @@ void Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 	}
 }
 
-void Player::applyEffectToSelf(const Card* usedCard, EffectParamsCollection effectArgs)
+void Player::applyEffectToSelf(const Card* usedCard, EffectParamsCollection& effectArgs)
 {
 	_lastCasterCard = usedCard; //remember last used card
 
@@ -422,19 +425,19 @@ void Player::applyEffectToSelf(const Card* usedCard, EffectParamsCollection effe
 	_effectMethods[method](*this, effectArgs); //call method on self
 }
 
-void Player::applyEffectToCreature(Creature* casterAndSubject, EffectParamsCollection effectArgs)
+void Player::applyEffectToCreature(Creature* casterAndSubject, EffectParamsCollection& effectArgs)
 {
 	_lastCasterCard = casterAndSubject; //remember last used card
 	casterAndSubject->applyEffectToSelf(effectArgs); //call method on effect subject (same as caster)
 }
 
-void Player::applyEffectToCreature(const Card* usedCard, EffectParamsCollection effectArgs, std::vector<int> boardIndexes)
+void Player::applyEffectToCreature(const Card* usedCard, EffectParamsCollection& effectArgs, const std::vector<int>& boardIndexes)
 {
 	_lastCasterCard = usedCard; //remember last used card
 	_cardBoard.at(boardIndexes.at(0))->applyEffectToSelf(effectArgs);
 }
 
-void Player::applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollection effectArgs)
+void Player::applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollection& effectArgs)
 {
 	_lastCasterCard = usedCard;
 

@@ -17,11 +17,11 @@ private:
 
 public:
 	/// Constructor
-	Card(cardId cardIdentifier, int cost, std::vector<EffectParamsCollection> effects);
+	Card(cardId cardIdentifier, int cost, const std::vector<EffectParamsCollection>& effects);
 
 	/// Getters
 	int getEnergyCost();
-	std::vector<EffectParamsCollection> getEffects();
+	const std::vector<EffectParamsCollection>& getEffects();
 	cardId getID();
 
 

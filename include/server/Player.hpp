@@ -56,12 +56,12 @@ public:
 	/// Interface for applying effects
 	void applyEffect(Card* usedCard, EffectParamsCollection effect);
 	//to itself
-	void applyEffectToSelf(const Card* usedCard, EffectParamsCollection effectArgs);
+	void applyEffectToSelf(const Card* usedCard, EffectParamsCollection& effectArgs);
 	//to one of its Creatures
-	void applyEffectToCreature(Creature* casterAndSubject, EffectParamsCollection effectArgs); //With ref. to creature
-	void applyEffectToCreature(const Card* usedCard, EffectParamsCollection effectArgs, std::vector<int> boardIndexes); //With creature index
+	void applyEffectToCreature(Creature* casterAndSubject, EffectParamsCollection& effectArgs); //With ref. to creature
+	void applyEffectToCreature(const Card* usedCard, EffectParamsCollection& effectArgs, const std::vector<int>& boardIndexes); //With creature index
 	//to all of its Creatures
-	void applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollection effectArgs);
+	void applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollection& effectArgs);
 
 	/// Getters
 	int getCreatureConstraint(const Creature& subject, int constraintID) const;

@@ -9,7 +9,7 @@ class Spell: public Card
 {
 public:
 	/// Constructor
-	Spell(cardId cardIdentifier, int cost, std::vector<EffectParamsCollection> effects);
+	Spell(cardId cardIdentifier, int cost, const std::vector<EffectParamsCollection>& effects);
 
 	virtual inline bool isCreature() override;
 	virtual inline bool isSpell() override;
