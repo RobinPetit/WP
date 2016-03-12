@@ -14,6 +14,16 @@ public:
 private:
 	/// Default relative path to sqlite3 file
 	static const char FILENAME[];
+
+	sqlite3_stmt * _getCardStmt;
+	Statement _getCardFullStmt
+	{
+		&_getCardStmt,
+		"SELECT name, cost, description,"
+		"		attack, health, shield, shieldType "
+		"	FROM FullCard "
+		"	WHERE id == ?1;"
+	};
 };
 
 #endif // _CLIENT_DATABASE_CLIENT_HPP
