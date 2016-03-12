@@ -4,6 +4,7 @@
 #include <SFML/Network/SocketSelector.hpp>
 // WizardPoker headers
 #include "client/sockets/Client.hpp"
+#include "client/ClientDatabase.hpp"
 #include "client/ErrorCode.hpp"
 #include "client/NonBlockingInput.hpp"
 #include "common/constants.hpp"
@@ -35,7 +36,6 @@ Client::Client():
 	_inGameOpponentName(),
 	_readyToPlay(false)
 {
-
 }
 
 void Client::connectToServer(const std::string& name, const std::string& password, const sf::IpAddress& address, sf::Uint16 port)
