@@ -21,8 +21,8 @@ public:
 	int getShield() const;
 	int getShieldType() const;
 
-	virtual inline bool isCreature() override;
-	virtual inline bool isSpell() override;
+	virtual bool isCreature() const override { return true; }
+	virtual bool isSpell() const override {return false; }
 };
 
 #endif // _CLIENT_CREATURE_CLIENT_HPP

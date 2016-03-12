@@ -10,8 +10,8 @@ public:
 	/// Constructor
 	ClientSpell(cardId cardIdentifier, const std::string& name, int cost, const std::string& description);
 
-	virtual inline bool isCreature() override;
-	virtual inline bool isSpell() override;
+	virtual bool isCreature() const override { return false; };
+	virtual bool isSpell() const override { return true; };
 };
 
 #endif // _CLIENT_SPELL_CLIENT_HPP

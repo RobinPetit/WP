@@ -26,8 +26,8 @@ public:
 	const std::string& getDescription() const;
 
 	/// Methods
-	virtual bool isCreature() = 0;
-	virtual bool isSpell() = 0;
+	virtual inline bool isCreature() const = 0;
+	virtual inline bool isSpell() const = 0;
 
 	virtual ~ClientCard() = default;
 };

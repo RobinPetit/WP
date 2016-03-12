@@ -8,16 +8,6 @@ ClientCreature::ClientCreature(cardId cardIdentifier, const std::string& name, i
 
 }
 
-bool ClientCreature::isCreature()
-{
-	return true;
-}
-
-bool ClientCreature::isSpell()
-{
-	return false;
-}
-
 int ClientCreature::getAttack() const
 {
 	return _attack;
