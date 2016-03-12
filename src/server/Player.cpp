@@ -88,7 +88,7 @@ void Player::setDeck(const Deck& newDeck)
 		if(card <= 10)
 		{
 			CreatureData creat = ALL_CREATURES[card-1];
-			loadedCards[i] = new Creature(card, creat.cost, creat.attack, creat.health, creat.shield, creat.shieldType, creat.effects);
+			loadedCards[i] = new Creature(card, *this, creat.cost, creat.attack, creat.health, creat.shield, creat.shieldType, creat.effects);
 		}
 		else
 		{
@@ -231,8 +231,8 @@ sf::Socket::Status Player::tryReceiveClientInput()
 			}
 
 			default:
-				std::cout << "Player::tryReceiveClientInput error: wrong packet header, "
-				             "expected in-game action header.\n";
+				std::cerr << "Player::tryReceiveClientInput error: wrong packet header ("
+				          << static_cast<sf::Uint32>(type) << "), expected in-game action header.\n";
 				break;
 		}
 	}
@@ -361,6 +361,8 @@ void Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 	{
 		throw std::runtime_error("Error with cards arguments");
 	}
+
+	std::cout << "[type == " << subject << "]\n";
 
 	switch (subject)
 	{
@@ -732,7 +734,7 @@ void Player::cardHandToBoard(int handIndex)
 {
 	const auto& handIt = std::find(_cardHand.begin(), _cardHand.end(), _cardHand[handIndex]);
 	_cardBoard.push_back(dynamic_cast<Creature*>(_cardHand.at(handIndex)));
-	_cardBoard.back()->movedToBoard();
+	_cardBoard.back()->moveToBoard();
 	_cardHand.erase(handIt);
 	logHandState();
 	_opponent->logOpponentHandState();
@@ -753,7 +755,7 @@ void Player::cardHandToGraveyard(int handIndex)
 void Player::cardBoardToGraveyard(int boardIndex)
 {
 	const auto& boardIt = std::find(_cardBoard.begin(), _cardBoard.end(), _cardBoard[boardIndex]);
-	_cardBoard.at(boardIndex)->removedFromBoard();
+	_cardBoard.at(boardIndex)->removeFromBoard();
 	_cardGraveyard.push_back(_cardBoard.at(boardIndex));
 	_cardBoard.erase(boardIt);
 	logBoardState();

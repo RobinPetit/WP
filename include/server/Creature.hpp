@@ -16,7 +16,7 @@ private:
 	int _shield, _shieldInit;
 	int _shieldType;
 
-	Player* _owner;
+	Player& _owner;
 	bool _isOnBoard;
 
 	//Constraints
@@ -36,14 +36,14 @@ private:
 
 public:
 	/// Constructors
-	Creature(cardId cardIdentifier, int cost, int attack, int health, int shield, int shieldType,
+	Creature(cardId cardIdentifier, Player& owner, int cost, int attack, int health, int shield, int shieldType,
 			std::vector<EffectParamsCollection> effects);
 
 	/// Player interface
 	virtual bool isCreature() override;
 	virtual bool isSpell() override;
-	void movedToBoard();
-	void removedFromBoard();
+	void moveToBoard();
+	void removeFromBoard();
 	bool isOnBoard() const;
 
 	void enterTurn();
