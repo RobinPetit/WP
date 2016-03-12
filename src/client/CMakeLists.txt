@@ -1,4 +1,7 @@
 set(SOURCES	"client.cpp"
+		"ClientCard.cpp"
+		"ClientCreature.cpp"
+		"ClientSpell.cpp"
 		"ClientDatabase.cpp"
 		# sockets
 		"sockets/Client.cpp"
