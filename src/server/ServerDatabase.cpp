@@ -17,11 +17,12 @@ ServerDatabase::ServerDatabase(const std::string& filename) : Database(filename)
 	for(size_t i = 0; i < _statements.size(); ++i)
 		prepareStmt(_statements[i]);
 
+	// The server will need all cards. So we create all at startup and keep its in a map.
 	createSpellCards();
 	createCreatureCards();
 }
 
-Card* ServerDatabase::getCard(cardId card)
+const Card* ServerDatabase::getCard(cardId card)
 {
 	if(_cards.count(card) == 0)
 		throw std::runtime_error("The requested card (" + std::to_string(card) + ") does not exist.");

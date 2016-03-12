@@ -21,7 +21,7 @@ public:
 	/// \param filename: relative path to sqlite3 file.
 	explicit ServerDatabase(const std::string& filename = FILENAME);
 
-	Card* getCard(cardId card);
+	const Card* getCard(cardId card);
 
 	userId getUserId(const std::string& login);
 	std::string getLogin(userId id);
@@ -63,7 +63,7 @@ public:
 private:
 	/// Default relative path to sqlite3 file
 	static const char FILENAME[];
-	std::map<cardId, std::unique_ptr<Card> > _cards;
+	std::map<const cardId, const std::unique_ptr<const Card> > _cards;
 
 	FriendsList getAnyFriendsList(userId id, sqlite3_stmt * stmt);
 	/// Add a card to _cards;
