@@ -19,6 +19,7 @@ void Constraints::setConstraint(int constraintID, int value, int turns, const Cr
 
 int Constraints::getConstraint(int constraintID) const
 {
+	--constraintID;
 	switch (_defaultValues[constraintID].orderOption)
 	{
 		case ConstraintOrderOption::GET_FIRST:
