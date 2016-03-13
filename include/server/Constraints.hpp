@@ -7,7 +7,7 @@
 class Creature;
 
 /// Constraint Rules
-enum ConstraintValueOption : int
+enum class ConstraintValueOption : int
 {
 	VALUE_FIXED,
 	VALUE_GET_DECREMENT,
@@ -16,7 +16,7 @@ enum ConstraintValueOption : int
 	VALUE_TURN_INCREMENT
 };
 
-enum ConstraintOrderOption : int
+enum class ConstraintOrderOption : int
 {
 	GET_FIRST,
 	GET_LAST,
@@ -40,36 +40,36 @@ struct ConstraintTimedValue
 constexpr ConstraintDefaultValue playerDefaultConstraints[P_CONSTRAINTS_COUNT] =
 {
 	//turn-based constraints
-	{1, VALUE_FIXED, GET_LAST},		//PC_TURN_CARDS_PICKED
-	{1, VALUE_FIXED, GET_LAST},		//PC_TURN_ENERGY_INIT_CHANGE
-	{1, VALUE_FIXED, GET_SUM},		//PC_TURN_ENERGY_CHANGE
-	{0, VALUE_FIXED, GET_SUM}, 		//PC_TURN_HEALTH_CHANGE
-	{-5, VALUE_FIXED, GET_SUM}, 	//PC_TURN_HEALTH_CHANGE_DECK_EMPTY
+	{1, ConstraintValueOption::VALUE_FIXED, ConstraintOrderOption::GET_LAST},	//PC_TURN_CARDS_PICKED
+	{1, ConstraintValueOption::VALUE_FIXED, ConstraintOrderOption::GET_LAST},	//PC_TURN_ENERGY_INIT_CHANGE
+	{1, ConstraintValueOption::VALUE_FIXED, ConstraintOrderOption::GET_SUM},	//PC_TURN_ENERGY_CHANGE
+	{0, ConstraintValueOption::VALUE_FIXED, ConstraintOrderOption::GET_SUM}, 	//PC_TURN_HEALTH_CHANGE
+	{-5, ConstraintValueOption::VALUE_FIXED, ConstraintOrderOption::GET_SUM}, 	//PC_TURN_HEALTH_CHANGE_DECK_EMPTY
 	//passive constraints
-	{100, VALUE_FIXED, GET_LAST},	//PC_TEMP_CARD_USE_LIMIT
-	{100, VALUE_FIXED, GET_LAST},	//PC_TEMP_SPELL_CALL_LIMIT
-	{100, VALUE_FIXED, GET_LAST}, 	//PC_TEMP_CREATURE_ATTACK_LIMIT
-	{6, VALUE_FIXED, GET_LAST},		//PC_TEMP_CREATURE_PLACING_LIMIT
-	{6, VALUE_FIXED, GET_LAST}		//PC_TEMP_CREATURE_BOARD_LIMIT
+	{100, ConstraintValueOption::VALUE_FIXED, ConstraintOrderOption::GET_LAST},	//PC_TEMP_CARD_USE_LIMIT
+	{100, ConstraintValueOption::VALUE_FIXED, ConstraintOrderOption::GET_LAST},	//PC_TEMP_SPELL_CALL_LIMIT
+	{100, ConstraintValueOption::VALUE_FIXED, ConstraintOrderOption::GET_LAST}, //PC_TEMP_CREATURE_ATTACK_LIMIT
+	{6, ConstraintValueOption::VALUE_FIXED, ConstraintOrderOption::GET_LAST},	//PC_TEMP_CREATURE_PLACING_LIMIT
+	{6, ConstraintValueOption::VALUE_FIXED, ConstraintOrderOption::GET_LAST}	//PC_TEMP_CREATURE_BOARD_LIMIT
 };
 
 constexpr ConstraintDefaultValue creatureDefaultConstraints[C_CONSTRAINTS_COUNT] =
 {
 	//turn-based constraints: all default to 0
-	{0, VALUE_FIXED, GET_SUM},			//CC_TURN_ATTACK_CHANGE
-	{0, VALUE_FIXED, GET_SUM},			//CC_TURN_HEALTH_CHANGE
-	{0, VALUE_FIXED, GET_SUM}, 			//CC_TURN_SHIELD_CHANGE
+	{0, ConstraintValueOption::VALUE_FIXED, ConstraintOrderOption::GET_SUM},			//CC_TURN_ATTACK_CHANGE
+	{0, ConstraintValueOption::VALUE_FIXED, ConstraintOrderOption::GET_SUM},			//CC_TURN_HEALTH_CHANGE
+	{0, ConstraintValueOption::VALUE_FIXED, ConstraintOrderOption::GET_SUM}, 			//CC_TURN_SHIELD_CHANGE
 	//passive
-	{0, VALUE_GET_DECREMENT, GET_LAST},	//CC_TEMP_FORCE_ATTACKS
-	{0, VALUE_GET_DECREMENT, GET_LAST},	//CC_TEMP_BLOCK_ATTACKS
-	{0, VALUE_GET_DECREMENT, GET_LAST},	//CC_TEMP_MIRROR_ATTACKS
-	{0, VALUE_GET_DECREMENT, GET_LAST},	//CC_TEMP_BACKFIRE_ATTACKS
-	{0, VALUE_FIXED, GET_LAST},			//CC_TEMP_DISABLE_ATTACKS
-	{0, VALUE_FIXED, GET_LAST},			//CC_TEMP_IS_PARALYZED
+	{0, ConstraintValueOption::VALUE_GET_DECREMENT, ConstraintOrderOption::GET_LAST},	//CC_TEMP_FORCE_ATTACKS
+	{0, ConstraintValueOption::VALUE_GET_DECREMENT, ConstraintOrderOption::GET_LAST},	//CC_TEMP_BLOCK_ATTACKS
+	{0, ConstraintValueOption::VALUE_GET_DECREMENT, ConstraintOrderOption::GET_LAST},	//CC_TEMP_MIRROR_ATTACKS
+	{0, ConstraintValueOption::VALUE_GET_DECREMENT, ConstraintOrderOption::GET_LAST},	//CC_TEMP_BACKFIRE_ATTACKS
+	{0, ConstraintValueOption::VALUE_FIXED, ConstraintOrderOption::GET_LAST},			//CC_TEMP_DISABLE_ATTACKS
+	{0, ConstraintValueOption::VALUE_FIXED, ConstraintOrderOption::GET_LAST},			//CC_TEMP_IS_PARALYZED
 	//on creature death
-	{0, VALUE_FIXED, GET_SUM},			//CC_DEATH_TEAM_HEALTH_GAIN
-	{0, VALUE_FIXED, GET_SUM},			//CC_DEATH_TEAM_ATTACK_LOSS
-	{0, VALUE_FIXED, GET_SUM}			//CC_DEATH_TEAM_SHIELD_LOSS
+	{0, ConstraintValueOption::VALUE_FIXED, ConstraintOrderOption::GET_SUM},			//CC_DEATH_TEAM_HEALTH_GAIN
+	{0, ConstraintValueOption::VALUE_FIXED, ConstraintOrderOption::GET_SUM},			//CC_DEATH_TEAM_ATTACK_LOSS
+	{0, ConstraintValueOption::VALUE_FIXED, ConstraintOrderOption::GET_SUM}			//CC_DEATH_TEAM_SHIELD_LOSS
 };
 
 class Constraints
