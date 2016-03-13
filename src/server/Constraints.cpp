@@ -22,7 +22,7 @@ int Constraints::getConstraint(int constraintId) const
 {
 	--constraintId;
 	assert(constraintId < static_cast<int>(_defaultValues.size()) and constraintId >= 0);
-	switch (_defaultValues[constraintId].orderOption)
+	switch(_defaultValues[constraintId].orderOption)
 	{
 		case ConstraintOrderOption::GET_FIRST:
 			return getFirstTimedValue(constraintId);
@@ -38,15 +38,15 @@ int Constraints::getOverallConstraint(int constraintId, int otherValue) const
 {
 	--constraintId;
 	assert(constraintId < static_cast<int>(_defaultValues.size()) and constraintId >= 0);
-	switch (_defaultValues[constraintId].orderOption)
+	switch(_defaultValues[constraintId].orderOption)
 	{
 		case ConstraintOrderOption::GET_FIRST:
-			if (otherValue == _defaultValues[constraintId].value)
+			if(otherValue == _defaultValues[constraintId].value)
 				return getFirstTimedValue(constraintId);
 			else
 				return otherValue;
 		case ConstraintOrderOption::GET_LAST:
-			if (otherValue == _defaultValues[constraintId].value)
+			if(otherValue == _defaultValues[constraintId].value)
 				return getLastTimedValue(constraintId);
 			else
 				return otherValue;
@@ -60,7 +60,7 @@ int Constraints::getOverallConstraint(int constraintId, int otherValue) const
 int Constraints::getValue(int constraintId, unsigned valueIndex) const
 {
 	assert(constraintId < static_cast<int>(_defaultValues.size()) and constraintId >= 0);
-	int value = _timedValues[constraintId].at(valueIndex).value;
+	int value{_timedValues[constraintId].at(valueIndex).value};
 	switch(_defaultValues[constraintId].valueOption) //rules
 	{
 		case ConstraintValueOption::VALUE_GET_INCREMENT:
@@ -79,16 +79,13 @@ int Constraints::getValue(int constraintId, unsigned valueIndex) const
 int Constraints::getFirstTimedValue(int constraintId) const
 {
 	assert(constraintId < static_cast<int>(_defaultValues.size()) and constraintId >= 0);
-	std::vector<ConstraintTimedValue>& vect = _timedValues[constraintId]; //value, turns left, caster
-	for (auto vectIt=vect.begin(); vectIt!=vect.end();)
+	std::vector<ConstraintTimedValue>& vect(_timedValues[constraintId]); //value, turns left, caster
+	for(auto vectIt(vect.begin()); vectIt != vect.end(); vectIt++)
 	{
 		//if the caster is not remembered, or is on the board
-		if (vectIt->caster==nullptr or vectIt->caster->isOnBoard() or vectIt->caster->getConstraint(CC_TEMP_IS_PARALYZED)==0)
+		if(vectIt->caster == nullptr or vectIt->caster->isOnBoard() or vectIt->caster->getConstraint(CC_TEMP_IS_PARALYZED) == 0)
 			return getValue(constraintId, static_cast<unsigned>(vectIt - vect.begin()));
 
-		//if caster is dead or paralyzed
-		else
-			vectIt++;
 	}
 	return _defaultValues[constraintId].value;
 }
@@ -97,15 +94,12 @@ int Constraints::getLastTimedValue(int constraintId) const
 {
 	assert(constraintId < static_cast<int>(_defaultValues.size()) and constraintId >= 0);
 	std::vector<ConstraintTimedValue>& vect = _timedValues[constraintId]; //value, turns left, caster
-	for (auto vectIt=vect.rbegin(); vectIt!=vect.rend();)
+	for(auto vectIt(vect.rbegin()); vectIt != vect.rend(); vectIt++)
 	{
 		//if the caster is not remembered, or is on the board and active
-		if (vectIt->caster==nullptr or vectIt->caster->isOnBoard() or vectIt->caster->getConstraint(CC_TEMP_IS_PARALYZED)==0)
+		if(vectIt->caster == nullptr or vectIt->caster->isOnBoard() or vectIt->caster->getConstraint(CC_TEMP_IS_PARALYZED) == 0)
 			return getValue(constraintId, static_cast<unsigned>(vectIt - vect.rbegin()));
 
-		//if caster is dead or paralyzed
-		else
-			vectIt++;
 	}
 	return _defaultValues[constraintId].value;
 }
@@ -115,33 +109,29 @@ int Constraints::getSumTimedValues(int constraintId) const
 	assert(constraintId < static_cast<int>(_defaultValues.size()) and constraintId >= 0);
 	int value = _defaultValues[constraintId].value;
 	std::vector<ConstraintTimedValue>& vect = _timedValues[constraintId]; //value, turns left, caster
-	for (auto vectIt=vect.begin(); vectIt!=vect.end();)
+	for(auto vectIt(vect.begin()); vectIt != vect.end(); vectIt++)
 	{
 		//if the caster is not remembered, or is on the board and active
-		if (vectIt->caster==nullptr or vectIt->caster->isOnBoard() or vectIt->caster->getConstraint(CC_TEMP_IS_PARALYZED)==0)
+		if(vectIt->caster == nullptr or vectIt->caster->isOnBoard() or vectIt->caster->getConstraint(CC_TEMP_IS_PARALYZED) == 0)
 			value += getValue(constraintId, static_cast<unsigned>(vectIt - vect.begin()));
-
-		//if caster is dead or paralyzed
-		else
-			vectIt++;
 	}
 	return value;
 }
 
 void Constraints::timeOutConstraints()
 {
-	for (unsigned i=0; i < _defaultValues.size(); i++)
+	for (unsigned i{0}; i < _defaultValues.size(); i++)
 	{
-		std::vector<ConstraintTimedValue>& vect = _timedValues[i]; //value, turns left, caster
-		for (auto vectIt=vect.begin(); vectIt!=vect.end();)
+		std::vector<ConstraintTimedValue>& vect(_timedValues[i]); //value, turns left, caster
+		for(auto vectIt(vect.begin()); vectIt != vect.end();)
 		{
 			//if the constraint has run our of turns or if its caster has died
-			if (vectIt->turns==1 or not(vectIt->caster==nullptr or vectIt->caster->isOnBoard()))
+			if(vectIt->turns == 1 or not (vectIt->caster == nullptr or vectIt->caster->isOnBoard()))
 				vectIt = vect.erase(vectIt); //returns iterator to following object
 			else
 			{
 				vectIt->turns--;
-				switch (_defaultValues[i].valueOption)  // rules
+				switch(_defaultValues[i].valueOption)  // rules
 				{
 					case ConstraintValueOption::VALUE_TURN_INCREMENT:
 						vectIt->value++;
