@@ -76,7 +76,7 @@ class Constraints
 {
 private:
 	const std::vector<ConstraintDefaultValue>& _defaultValues;
-	mutable std::vector<ConstraintTimedValue>* _timedValues;
+	mutable std::vector<std::vector<ConstraintTimedValue>> _timedValues;
 
 	int getValue(int constraintID, unsigned valueIndex) const;
 	int getFirstTimedValue(int constraintID) const;

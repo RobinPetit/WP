@@ -1,20 +1,27 @@
+// WizardPoker headers
 #include "server/Constraints.hpp"
 #include "server/Creature.hpp"
+// std-C++ headers
+#include <cassert>
 
 Constraints::Constraints(const std::vector<ConstraintDefaultValue>& defaultValues):
-	_defaultValues(defaultValues)
+	_defaultValues(defaultValues),
+	_timedValues(defaultValues.size())  // creates a vector of size `defaultValues.size()`
 {
-	_timedValues = new std::vector<ConstraintTimedValue>[defaultValues.size()];
+
 }
 
 void Constraints::setConstraint(int constraintID, int value, int turns, const Creature* caster)
 {
-	_timedValues[constraintID-1].push_back({value, turns, caster});
+	--constraintID;
+	assert(constraintID < static_cast<int>(_defaultValues.size()));
+	_timedValues[constraintID].push_back({value, turns, caster});
 }
 
 int Constraints::getConstraint(int constraintID) const
 {
 	--constraintID;
+	assert(constraintID < static_cast<int>(_defaultValues.size()));
 	switch (_defaultValues[constraintID].orderOption)
 	{
 		case ConstraintOrderOption::GET_FIRST:
@@ -29,36 +36,31 @@ int Constraints::getConstraint(int constraintID) const
 
 int Constraints::getOverallConstraint(int constraintID, int otherValue) const
 {
+	--constraintID;
+	assert(constraintID < static_cast<int>(_defaultValues.size()));
 	switch (_defaultValues[constraintID].orderOption)
 	{
 		case ConstraintOrderOption::GET_FIRST:
-			{
-				if (otherValue == _defaultValues[constraintID].value)
-					return getFirstTimedValue(constraintID);
-				else
-					return otherValue;
-			}
-			break;
-		case ConstraintOrderOption::GET_LAST:
-			{
-				if (otherValue == _defaultValues[constraintID].value)
-					return getLastTimedValue(constraintID);
-				else
-					return otherValue;
-			}
-			break;
-		case ConstraintOrderOption::GET_SUM:
-			{
-				otherValue += getSumTimedValues(constraintID);
+			if (otherValue == _defaultValues[constraintID].value)
+				return getFirstTimedValue(constraintID);
+			else
 				return otherValue;
-			}
-			break;
+		case ConstraintOrderOption::GET_LAST:
+			if (otherValue == _defaultValues[constraintID].value)
+				return getLastTimedValue(constraintID);
+			else
+				return otherValue;
+		case ConstraintOrderOption::GET_SUM:
+			otherValue += getSumTimedValues(constraintID);
+			return otherValue;
 	}
 	throw std::runtime_error("Order option not valid");
 }
 
 int Constraints::getValue(int constraintID, unsigned valueIndex) const
 {
+	--constraintID;
+	assert(constraintID < static_cast<int>(_defaultValues.size()));
 	int value = _timedValues[constraintID].at(valueIndex).value;
 	switch(_defaultValues[constraintID].valueOption) //rules
 	{
@@ -77,6 +79,8 @@ int Constraints::getValue(int constraintID, unsigned valueIndex) const
 
 int Constraints::getFirstTimedValue(int constraintID) const
 {
+	--constraintID;
+	assert(constraintID < static_cast<int>(_defaultValues.size()));
 	std::vector<ConstraintTimedValue>& vect = _timedValues[constraintID]; //value, turns left, caster
 	for (auto vectIt=vect.begin(); vectIt!=vect.end();)
 	{
@@ -93,6 +97,8 @@ int Constraints::getFirstTimedValue(int constraintID) const
 
 int Constraints::getLastTimedValue(int constraintID) const
 {
+	--constraintID;
+	assert(constraintID < static_cast<int>(_defaultValues.size()));
 	std::vector<ConstraintTimedValue>& vect = _timedValues[constraintID]; //value, turns left, caster
 	for (auto vectIt=vect.rbegin(); vectIt!=vect.rend();)
 	{
@@ -109,6 +115,8 @@ int Constraints::getLastTimedValue(int constraintID) const
 
 int Constraints::getSumTimedValues(int constraintID) const
 {
+	--constraintID;
+	assert(constraintID < static_cast<int>(_defaultValues.size()));
 	int value = _defaultValues[constraintID].value;
 	std::vector<ConstraintTimedValue>& vect = _timedValues[constraintID]; //value, turns left, caster
 	for (auto vectIt=vect.begin(); vectIt!=vect.end();)
