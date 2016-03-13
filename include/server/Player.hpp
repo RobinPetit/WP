@@ -121,8 +121,8 @@ private:
 	TurnData _turnData;
 
 	// Constraints
-	Constraints _constraints = Constraints(playerDefaultConstraints, P_CONSTRAINTS_COUNT);
-	Constraints _teamConstraints = Constraints(creatureDefaultConstraints, C_CONSTRAINTS_COUNT);
+	Constraints _constraints = Constraints(playerDefaultConstraints);
+	Constraints _teamConstraints = Constraints(creatureDefaultConstraints);
 
 	// Card holders
 	// The sum of the lengths of these std::vectors/std::stacks is **always** 20

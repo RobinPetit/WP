@@ -37,7 +37,7 @@ struct ConstraintTimedValue
 	const Creature* caster;
 };
 
-constexpr ConstraintDefaultValue playerDefaultConstraints[P_CONSTRAINTS_COUNT] =
+const std::vector<ConstraintDefaultValue> playerDefaultConstraints =
 {
 	//turn-based constraints
 	{1, ConstraintValueOption::VALUE_FIXED, ConstraintOrderOption::GET_LAST},	//PC_TURN_CARDS_PICKED
@@ -53,7 +53,7 @@ constexpr ConstraintDefaultValue playerDefaultConstraints[P_CONSTRAINTS_COUNT] =
 	{6, ConstraintValueOption::VALUE_FIXED, ConstraintOrderOption::GET_LAST}	//PC_TEMP_CREATURE_BOARD_LIMIT
 };
 
-constexpr ConstraintDefaultValue creatureDefaultConstraints[C_CONSTRAINTS_COUNT] =
+const std::vector<ConstraintDefaultValue> creatureDefaultConstraints =
 {
 	//turn-based constraints: all default to 0
 	{0, ConstraintValueOption::VALUE_FIXED, ConstraintOrderOption::GET_SUM},			//CC_TURN_ATTACK_CHANGE
@@ -75,8 +75,7 @@ constexpr ConstraintDefaultValue creatureDefaultConstraints[C_CONSTRAINTS_COUNT]
 class Constraints
 {
 private:
-	const unsigned _size;
-	const ConstraintDefaultValue* _defaultValues;
+	const std::vector<ConstraintDefaultValue>& _defaultValues;
 	mutable std::vector<ConstraintTimedValue>* _timedValues;
 
 	int getValue(int constraintID, unsigned valueIndex) const;
@@ -85,7 +84,7 @@ private:
 	int getSumTimedValues(int constraintID) const;
 
 public:
-	Constraints(const ConstraintDefaultValue* defaultValues, const int arraySize);
+	Constraints(const std::vector<ConstraintDefaultValue>& defaultValues);
 	void setConstraint(int constraintID, int value, int turns);
 	void setConstraint(int constraintID, int value, int turns, const Creature* caster);
 	int getConstraint(int constraintID) const;

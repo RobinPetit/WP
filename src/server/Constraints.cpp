@@ -1,10 +1,10 @@
 #include "server/Constraints.hpp"
 #include "server/Creature.hpp"
 
-Constraints::Constraints(const ConstraintDefaultValue* defaultValues, const int arraySize):
-	_size(arraySize), _defaultValues(defaultValues)
+Constraints::Constraints(const std::vector<ConstraintDefaultValue>& defaultValues):
+	_defaultValues(defaultValues)
 {
-	_timedValues = new std::vector<ConstraintTimedValue>[_size];
+	_timedValues = new std::vector<ConstraintTimedValue>[defaultValues.size()];
 }
 
 void Constraints::setConstraint(int constraintID, int value, int turns)
@@ -130,7 +130,7 @@ int Constraints::getSumTimedValues(int constraintID) const
 
 void Constraints::timeOutConstraints()
 {
-	for (unsigned i=0; i<_size; i++)
+	for (unsigned i=0; i < _defaultValues.size(); i++)
 	{
 		std::vector<ConstraintTimedValue>& vect = _timedValues[i]; //value, turns left, caster
 		for (auto vectIt=vect.begin(); vectIt!=vect.end();)
