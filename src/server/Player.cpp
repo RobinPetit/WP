@@ -272,6 +272,7 @@ void Player::useCard(int handIndex)
 	(*this.*(usedCard->isCreature() ? &Player::useCreature : &Player::useSpell))(handIndex, usedCard);
 	logHandState();
 	_opponent->logOpponentHandState();
+	logCurrentEnergy();
 }
 
 ////////////////////// specialized card cases
@@ -337,9 +338,14 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 		{
 			std::vector<int> params{{PE_CHANGE_HEALTH, -attacker->getAttack()}};
 			_opponent->applyEffectToSelf(attacker, params);  //no forced attacks on opponent
+			logOpponentHealth();
 		}
 		else
+		{
 			attacker->makeAttack(*_opponent->_cardBoard.at(victimIndex));
+			logOpponentBoardState();
+			logBoardState();  // If an attack is returned to the attacker, the board change
+		}
 		sendValueToClient(TransferType::ACKNOWLEDGE);
 	}
 }

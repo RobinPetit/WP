@@ -14,14 +14,14 @@ Constraints::Constraints(const std::vector<ConstraintDefaultValue>& defaultValue
 void Constraints::setConstraint(int constraintId, int value, int turns, const Creature* caster)
 {
 	--constraintId;
-	assert(constraintId < static_cast<int>(_defaultValues.size()) and constraintId > 0);
+	assert(constraintId < static_cast<int>(_defaultValues.size()) and constraintId >= 0);
 	_timedValues[constraintId].push_back({value, turns, caster});
 }
 
 int Constraints::getConstraint(int constraintId) const
 {
 	--constraintId;
-	assert(constraintId < static_cast<int>(_defaultValues.size()) and constraintId > 0);
+	assert(constraintId < static_cast<int>(_defaultValues.size()) and constraintId >= 0);
 	switch (_defaultValues[constraintId].orderOption)
 	{
 		case ConstraintOrderOption::GET_FIRST:
@@ -37,7 +37,7 @@ int Constraints::getConstraint(int constraintId) const
 int Constraints::getOverallConstraint(int constraintId, int otherValue) const
 {
 	--constraintId;
-	assert(constraintId < static_cast<int>(_defaultValues.size()) and constraintId > 0);
+	assert(constraintId < static_cast<int>(_defaultValues.size()) and constraintId >= 0);
 	switch (_defaultValues[constraintId].orderOption)
 	{
 		case ConstraintOrderOption::GET_FIRST:
@@ -59,7 +59,7 @@ int Constraints::getOverallConstraint(int constraintId, int otherValue) const
 
 int Constraints::getValue(int constraintId, unsigned valueIndex) const
 {
-	assert(constraintId < static_cast<int>(_defaultValues.size()) and constraintId > 0);
+	assert(constraintId < static_cast<int>(_defaultValues.size()) and constraintId >= 0);
 	int value = _timedValues[constraintId].at(valueIndex).value;
 	switch(_defaultValues[constraintId].valueOption) //rules
 	{
@@ -78,7 +78,7 @@ int Constraints::getValue(int constraintId, unsigned valueIndex) const
 
 int Constraints::getFirstTimedValue(int constraintId) const
 {
-	assert(constraintId < static_cast<int>(_defaultValues.size()) and constraintId > 0);
+	assert(constraintId < static_cast<int>(_defaultValues.size()) and constraintId >= 0);
 	std::vector<ConstraintTimedValue>& vect = _timedValues[constraintId]; //value, turns left, caster
 	for (auto vectIt=vect.begin(); vectIt!=vect.end();)
 	{
@@ -95,7 +95,7 @@ int Constraints::getFirstTimedValue(int constraintId) const
 
 int Constraints::getLastTimedValue(int constraintId) const
 {
-	assert(constraintId < static_cast<int>(_defaultValues.size()) and constraintId > 0);
+	assert(constraintId < static_cast<int>(_defaultValues.size()) and constraintId >= 0);
 	std::vector<ConstraintTimedValue>& vect = _timedValues[constraintId]; //value, turns left, caster
 	for (auto vectIt=vect.rbegin(); vectIt!=vect.rend();)
 	{
@@ -112,7 +112,7 @@ int Constraints::getLastTimedValue(int constraintId) const
 
 int Constraints::getSumTimedValues(int constraintId) const
 {
-	assert(constraintId < static_cast<int>(_defaultValues.size()) and constraintId > 0);
+	assert(constraintId < static_cast<int>(_defaultValues.size()) and constraintId >= 0);
 	int value = _defaultValues[constraintId].value;
 	std::vector<ConstraintTimedValue>& vect = _timedValues[constraintId]; //value, turns left, caster
 	for (auto vectIt=vect.begin(); vectIt!=vect.end();)
