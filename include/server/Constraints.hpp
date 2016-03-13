@@ -7,7 +7,7 @@
 class Creature;
 
 /// Constraint Rules
-enum CONSTRAINT_VALUE_OPTIONS : int
+enum ConstraintValueOption : int
 {
 	VALUE_FIXED,
 	VALUE_GET_DECREMENT,
@@ -16,7 +16,7 @@ enum CONSTRAINT_VALUE_OPTIONS : int
 	VALUE_TURN_INCREMENT
 };
 
-enum CONSTRAINT_ORDER_OPTIONS : int
+enum ConstraintOrderOption : int
 {
 	GET_FIRST,
 	GET_LAST,
@@ -26,8 +26,8 @@ enum CONSTRAINT_ORDER_OPTIONS : int
 struct ConstraintDefaultValue
 {
 	int value;
-	CONSTRAINT_VALUE_OPTIONS valueOption;
-	CONSTRAINT_ORDER_OPTIONS orderOption;
+	ConstraintValueOption valueOption;
+	ConstraintOrderOption orderOption;
 };
 
 struct ConstraintTimedValue
@@ -37,7 +37,7 @@ struct ConstraintTimedValue
 	const Creature* caster;
 };
 
-constexpr ConstraintDefaultValue P_CONSTRAINT_DEFAULTS[P_CONSTRAINTS_COUNT] =
+constexpr ConstraintDefaultValue playerDefaultConstraints[P_CONSTRAINTS_COUNT] =
 {
 	//turn-based constraints
 	{1,VALUE_FIXED,GET_LAST},		//PC_TURN_CARDS_PICKED
@@ -53,7 +53,7 @@ constexpr ConstraintDefaultValue P_CONSTRAINT_DEFAULTS[P_CONSTRAINTS_COUNT] =
 	{6,VALUE_FIXED,GET_LAST}		//PC_TEMP_CREATURE_BOARD_LIMIT
 };
 
-constexpr ConstraintDefaultValue C_CONSTRAINT_DEFAULTS[C_CONSTRAINTS_COUNT] =
+constexpr ConstraintDefaultValue creatureDefaultConstraints[C_CONSTRAINTS_COUNT] =
 {
 	//turn-based constraints: all default to 0
 	{0,VALUE_FIXED,GET_SUM},		//CC_TURN_ATTACK_CHANGE

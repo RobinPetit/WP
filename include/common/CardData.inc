@@ -9,7 +9,7 @@
 //  - enum NAME : int32_t (<space><colon><space>int32_t<newline>)
 
 /// Subject of the effect
-enum EFFECT_SUBJECTS : int32_t
+enum EffectSubject : int32_t
 {
     PLAYER_SELF = 1, // This is needed because of: ROWID >= 1 in sqlite
     PLAYER_OPPO,
@@ -25,7 +25,7 @@ enum EFFECT_SUBJECTS : int32_t
 };
 
 /// Player effects
-enum PLAYER_EFFECTS : int32_t
+enum PlayerEffect : int32_t
 {
     //constraints
     PE_SET_CONSTRAINT = 1,
@@ -43,7 +43,7 @@ enum PLAYER_EFFECTS : int32_t
 };
 
 /// Player constraints
-enum PLAYER_CONSTRAINTS : int32_t
+enum PlayerConstraint : int32_t
 {
     //turn-by-turn
     PC_TURN_CARDS_PICKED = 1, 			//amount of cards to pick each turn
@@ -62,7 +62,7 @@ enum PLAYER_CONSTRAINTS : int32_t
 };
 
 /// Creature effects
-enum CREATURE_EFFECTS : int32_t
+enum CreatureEffect : int32_t
 {
     //constraints
     CE_SET_CONSTRAINT = 1,
@@ -78,7 +78,7 @@ enum CREATURE_EFFECTS : int32_t
 };
 
 /// Creature constraints
-enum CREATURE_CONSTRAINTS : int32_t
+enum CreatureConstraint : int32_t
 {
     //turn-by-turn
     CC_TURN_ATTACK_CHANGE = 1,			//Attack points added each turn
@@ -99,7 +99,7 @@ enum CREATURE_CONSTRAINTS : int32_t
     C_CONSTRAINTS_COUNT
 };
 
-enum CONSTRAINT_CONDITIONS : int32_t
+enum ConstraintCondition : int32_t
 {
     NO_CASTER_NEEDED = 1,	//Constraint does not care about the caster's state
     IF_CASTER_ALIVE		//Constraint applies only if CREATURE who cast it is alive AND not paralyzed

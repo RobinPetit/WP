@@ -20,7 +20,7 @@ private:
 	bool _isOnBoard;
 
 	//Constraints
-	Constraints _constraints = Constraints(C_CONSTRAINT_DEFAULTS, C_CONSTRAINTS_COUNT);
+	Constraints _constraints = Constraints(creatureDefaultConstraints, C_CONSTRAINTS_COUNT);
 
 	//Effects
 	static std::function<void(Creature&, const EffectParamsCollection&)> _effectMethods[P_EFFECTS_COUNT];
