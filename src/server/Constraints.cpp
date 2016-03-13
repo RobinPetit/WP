@@ -7,14 +7,9 @@ Constraints::Constraints(const std::vector<ConstraintDefaultValue>& defaultValue
 	_timedValues = new std::vector<ConstraintTimedValue>[defaultValues.size()];
 }
 
-void Constraints::setConstraint(int constraintID, int value, int turns)
-{
-	_timedValues[constraintID].push_back({value, turns, nullptr});
-}
-
 void Constraints::setConstraint(int constraintID, int value, int turns, const Creature* caster)
 {
-	_timedValues[constraintID].push_back({value, turns, caster});
+	_timedValues[constraintID-1].push_back({value, turns, caster});
 }
 
 int Constraints::getConstraint(int constraintID) const
