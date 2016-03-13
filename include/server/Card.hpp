@@ -12,7 +12,7 @@ class Card
 {
 private:
 	int _cost;
-	cardId _cardID;  //Will be needed for communicating modification to player's hand/deck/...
+	cardId _cardId;  //Will be needed for communicating modification to player's hand/deck/...
 	std::vector<EffectParamsCollection> _effects;	//Effects
 
 public:
@@ -22,7 +22,7 @@ public:
 	/// Getters
 	int getEnergyCost();
 	const std::vector<EffectParamsCollection>& getEffects();
-	cardId getID();
+	cardId getId();
 
 
 	/// Methods

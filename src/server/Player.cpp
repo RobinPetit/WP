@@ -55,7 +55,7 @@ std::vector<Card *>::size_type Player::getHandSize() const
 	return _cardHand.size();
 }
 
-userId Player::getID() const
+userId Player::getId() const
 {
 	return _id;
 }
@@ -115,10 +115,10 @@ void Player::receiveDeck()
 	_socketToClient.setBlocking(false);
 	deckPacket >> type;
 	if(type != TransferType::GAME_PLAYER_GIVE_DECK_NAMES)
-		throw std::runtime_error("Unable to get player " + std::to_string(getID()) + " deck");
+		throw std::runtime_error("Unable to get player " + std::to_string(getId()) + " deck");
 	deckPacket >> deckName;
 
-	setDeck(_database.getDeckByName(getID(), deckName));
+	setDeck(_database.getDeckByName(getId(), deckName));
 }
 
 void Player::beginGame(bool isActivePlayer)
@@ -185,7 +185,7 @@ void Player::leaveTurn()
 
 void Player::finishGame(bool hasWon, EndGame::Cause cause)
 {
-	_gameThread.endGame(hasWon ? getID() : _opponent->getID(), cause);
+	_gameThread.endGame(hasWon ? getId() : _opponent->getId(), cause);
 }
 
 
@@ -453,11 +453,11 @@ void Player::applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollect
 }
 
 /*------------------------------ GETTERS */
-int Player::getCreatureConstraint(const Creature& subject, int constraintID) const
+int Player::getCreatureConstraint(const Creature& subject, int constraintId) const
 {
 	//returns the value respecting both the creature and the whole team's constraints
-	int creatureValue = subject.getPersonalConstraint(constraintID);
-	return _teamConstraints.getOverallConstraint(constraintID, creatureValue);
+	int creatureValue = subject.getPersonalConstraint(constraintId);
+	return _teamConstraints.getOverallConstraint(constraintId, creatureValue);
 }
 
 const Card* Player::getLastCaster() const
@@ -473,17 +473,17 @@ sf::TcpSocket& Player::getSocket()
 /*------------------------------ EFFECTS (PRIVATE) */
 void Player::setConstraint(const EffectParamsCollection& args)
 {
-	int constraintID; //constraint to set
+	int constraintId; //constraint to set
 	int value; //value to give to it
 	int turns; //for how many turns
 	int casterOptions; //whether the constraint depends on its caster being alive
 	try //check the input
 	{
-		constraintID=args.at(0);
+		constraintId=args.at(0);
 		value=args.at(1);
 		turns=args.at(2);
 		casterOptions=args.at(3);
-		if (constraintID<0 or constraintID>=P_CONSTRAINTS_COUNT or turns<0)
+		if (constraintId<0 or constraintId>=P_CONSTRAINTS_COUNT or turns<0)
 			throw std::out_of_range("");
 	}
 	catch (std::out_of_range&)
@@ -494,10 +494,10 @@ void Player::setConstraint(const EffectParamsCollection& args)
 	switch (casterOptions)
 	{
 		case IF_CASTER_ALIVE:
-			_constraints.setConstraint(constraintID, value, turns, dynamic_cast<const Creature*>(getLastCaster()));
+			_constraints.setConstraint(constraintId, value, turns, dynamic_cast<const Creature*>(getLastCaster()));
 			break;
 		default:
-			_constraints.setConstraint(constraintID, value, turns);
+			_constraints.setConstraint(constraintId, value, turns);
 	}
 }
 
@@ -689,17 +689,17 @@ void Player::exploitCardEffects(Card* usedCard)
 
 void Player::setTeamConstraint(const Card* /* usedCard */, const EffectParamsCollection& args)
 {
-	int constraintID; //constraint to set
+	int constraintId; //constraint to set
 	int value; //value to give to it
 	int turns; //for how many turns
 	int casterOptions; //whether the constraint depends on its caster being alive
 	try //check the input
 	{
-		constraintID=args.at(0);
+		constraintId=args.at(0);
 		value=args.at(1);
 		turns=args.at(2);
 		casterOptions=args.at(3);
-		if (constraintID<0 or constraintID>=C_CONSTRAINTS_COUNT or turns<0)
+		if (constraintId<0 or constraintId>=C_CONSTRAINTS_COUNT or turns<0)
 			throw std::out_of_range("");
 	}
 	catch (std::out_of_range&)
@@ -710,10 +710,10 @@ void Player::setTeamConstraint(const Card* /* usedCard */, const EffectParamsCol
 	switch (casterOptions)
 	{
 		case IF_CASTER_ALIVE:
-			_constraints.setConstraint(constraintID, value, turns, dynamic_cast<const Creature*>(getLastCaster()));
+			_constraints.setConstraint(constraintId, value, turns, dynamic_cast<const Creature*>(getLastCaster()));
 			break;
 		default:
-			_constraints.setConstraint(constraintID, value, turns);
+			_constraints.setConstraint(constraintId, value, turns);
 			break;
 	}
 }
@@ -840,7 +840,7 @@ void Player::logIdsFromVector(TransferType type, const std::vector<CardType *>& 
 {
 	std::vector<sf::Uint32> cardIds{static_cast<sf::Uint32>(vect.size())};
 	for(typename std::vector<CardType *>::size_type i{0}; i < vect.size(); ++i)
-		cardIds[i] = vect[i]->getID();
+		cardIds[i] = vect[i]->getId();
 
 	_pendingBoardChanges << type << cardIds;
 }
@@ -851,7 +851,7 @@ void Player::logCardDataFromVector(TransferType type, const std::vector<Card*>& 
 	for(auto i=0U; i < vect.size(); ++i)
 	{
 		CardData data;
-		data.id = vect.at(i)->getID();
+		data.id = vect.at(i)->getId();
 		cards.push_back(data);
 	}
 	_pendingBoardChanges << type << cards;
@@ -864,7 +864,7 @@ void Player::logBoardCreatureDataFromVector(TransferType type, const std::vector
 	{
 		BoardCreatureData data;
 		Creature& creat = *vect.at(i);
-		data.id 	= creat.getID();
+		data.id 	= creat.getId();
 		data.attack = creat.getAttack();
 		data.health = creat.getHealth();
 		data.shield = creat.getShield();

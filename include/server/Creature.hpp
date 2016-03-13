@@ -59,8 +59,8 @@ public:
 	int getHealth();
 	int getShield();
 	int getShieldType();
-	int getPersonalConstraint(int constraintID) const;
-	int getConstraint(int constraintID) const;
+	int getPersonalConstraint(int constraintId) const;
+	int getConstraint(int constraintId) const;
 };
 
 #endif // CREATURE_SERVER_HPP

@@ -117,7 +117,7 @@ private:
 	void startGame(std::size_t idx);
 
 	/// Starts the new thread for the new game
-	void createGame(userId ID1, userId ID2);
+	void createGame(userId Id1, userId Id2);
 
 	//////////// Cards management
 

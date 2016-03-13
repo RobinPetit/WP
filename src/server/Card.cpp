@@ -2,7 +2,7 @@
 
 Card::Card(cardId cardIdentifier, int cost, const std::vector<EffectParamsCollection>& effects):
 	_cost(cost),
-	_cardID(cardIdentifier),
+	_cardId(cardIdentifier),
 	_effects(effects)
 {
 
@@ -18,7 +18,7 @@ int Card::getEnergyCost()
 	return _cost;
 }
 
-cardId Card::getID()
+cardId Card::getId()
 {
-	return _cardID;
+	return _cardId;
 }

@@ -64,9 +64,9 @@ public:
 	void applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollection& effectArgs);
 
 	/// Getters
-	int getCreatureConstraint(const Creature& subject, int constraintID) const;
+	int getCreatureConstraint(const Creature& subject, int constraintId) const;
 	const Card* getLastCaster() const;
-	userId getID() const;
+	userId getId() const;
 	sf::TcpSocket& getSocket();
 	const std::vector<Creature *>& getBoard() const;
 	int getHealth() const;

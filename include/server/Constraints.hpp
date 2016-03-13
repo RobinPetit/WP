@@ -78,16 +78,16 @@ private:
 	const std::vector<ConstraintDefaultValue>& _defaultValues;
 	mutable std::vector<std::vector<ConstraintTimedValue>> _timedValues;
 
-	int getValue(int constraintID, unsigned valueIndex) const;
-	int getFirstTimedValue(int constraintID) const;
-	int getLastTimedValue(int constraintID) const;
-	int getSumTimedValues(int constraintID) const;
+	int getValue(int constraintId, unsigned valueIndex) const;
+	int getFirstTimedValue(int constraintId) const;
+	int getLastTimedValue(int constraintId) const;
+	int getSumTimedValues(int constraintId) const;
 
 public:
 	Constraints(const std::vector<ConstraintDefaultValue>& defaultValues);
-	void setConstraint(int constraintID, int value, int turns, const Creature* caster=nullptr);
-	int getConstraint(int constraintID) const;
-	int getOverallConstraint(int constraintID, int otherValue) const;
+	void setConstraint(int constraintId, int value, int turns, const Creature* caster=nullptr);
+	int getConstraint(int constraintId) const;
+	int getOverallConstraint(int constraintId, int otherValue) const;
 	void timeOutConstraints();
 };
 
