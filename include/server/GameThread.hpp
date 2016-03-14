@@ -16,6 +16,11 @@
 class GameThread final : public std::thread
 {
 public:
+	/*------------------------------ Attributes */
+	const userId _player1Id;
+	const userId _player2Id;
+
+	/*------------------------------ Methods */
 	/// Constructor
 	GameThread(ServerDatabase& database, userId player1Id, userId player2Id);
 
@@ -37,12 +42,8 @@ public:
 	/// Destructor
 	~GameThread();
 
-	// Public attributes
-	const userId _player1Id;
-	const userId _player2Id;
-
 private:
-	//////////// Attributes
+	/*------------------------------ Attributes */
 	std::atomic_bool _running;
 	sf::TcpSocket _specialOutputSocketPlayer1;
 	sf::TcpSocket _specialOutputSocketPlayer2;
@@ -59,10 +60,12 @@ private:
 	bool _turnCanEnd;
 	std::thread _timerThread;
 	std::atomic_bool _turnSwap;
-	// Currently low for tests
-	static constexpr std::chrono::seconds _turnTime{120};  // arbitrary, need more time nor for testing
 
-	//////////// Private methods
+	/*------------------------------ Static variables */
+	/// Currently low for tests, arbitrary, need more time now for testing
+	static constexpr std::chrono::seconds _turnTime{120};
+
+	/*------------------------------ Methods */
 	userId runGame();
 
 	void setSocket(sf::TcpSocket& socket, sf::TcpSocket& specialSocket, const ClientInformations& player);
@@ -76,7 +79,7 @@ private:
 	void attackWithCreature(int attackerIndex, int victimIndex);
 };
 
-///////// template code
+/*------------------------------ Template code */
 
 template <typename Function, class... Args>
 GameThread::GameThread(ServerDatabase& database, userId player1Id, userId player2Id, Function&& function, Args&&... args):
