@@ -6,6 +6,7 @@
 // std-C++ headers
 #include <iostream>
 #include <algorithm>
+#include <cassert>
 // SFML headers
 #include <SFML/Network/Packet.hpp>
 
@@ -370,19 +371,21 @@ void Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 		throw std::runtime_error("Error with cards arguments");
 	}
 
+
+
 	switch(subject)
 	{
-		case PLAYER_SELF:	//passive player
+		case PLAYER_SELF:  //passive player
 			askUserToSelectCards({});
 			applyEffectToSelf(usedCard, effectArgs);
 			break;
 
-		case PLAYER_OPPO:	//active player
+		case PLAYER_OPPO:  //active player
 			askUserToSelectCards({});
 			_opponent->applyEffectToSelf(usedCard, effectArgs);
 			break;
 
-		case CREATURE_SELF_THIS:	//active player's creature that was used
+		case CREATURE_SELF_THIS:  //active player's creature that was used
 		{
 			askUserToSelectCards({});
 			Creature* usedCreature = dynamic_cast<Creature*>(usedCard);
@@ -390,33 +393,38 @@ void Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 		}
 			break;
 
-		case CREATURE_SELF_INDX:	//active player's creature at given index
-			applyEffectToCreature(usedCard, effectArgs, askUserToSelectCards({CardToSelect::SELF_BOARD}));
+		case CREATURE_SELF_INDX:  //active player's creature at given index
+			if(not _cardBoard.empty())
+				applyEffectToCreature(usedCard, effectArgs, askUserToSelectCards({CardToSelect::SELF_BOARD}));
 			break;
 
-		case CREATURE_SELF_RAND:	//active player's creature at random index
+		case CREATURE_SELF_RAND:  //active player's creature at random index
 			askUserToSelectCards({});
-			applyEffectToCreature(usedCard, effectArgs, getRandomBoardIndexes({CardToSelect::SELF_BOARD}));
+			if(not _cardBoard.empty())
+				applyEffectToCreature(usedCard, effectArgs, getRandomBoardIndexes({CardToSelect::SELF_BOARD}));
 			break;
 
-		case CREATURE_SELF_TEAM:	//active player's team of creatures
+		case CREATURE_SELF_TEAM:  //active player's team of creatures
 			askUserToSelectCards({});
 			applyEffectToCreatureTeam(usedCard, effectArgs);
 			break;
 
 		case CREATURE_OPPO_INDX:	//passive player's creature at given index
-			_opponent->applyEffectToCreature(usedCard, effectArgs, askUserToSelectCards({CardToSelect::OPPO_BOARD}));
+			if(not _opponent->_cardBoard.empty())
+				_opponent->applyEffectToCreature(usedCard, effectArgs, askUserToSelectCards({CardToSelect::OPPO_BOARD}));
 			break;
 
 		case CREATURE_OPPO_RAND:	//passive player's creature at random index
 			askUserToSelectCards({});
-			_opponent->applyEffectToCreature(usedCard, effectArgs, getRandomBoardIndexes({CardToSelect::OPPO_BOARD}));
+			if(not _opponent->_cardBoard.empty())
+				_opponent->applyEffectToCreature(usedCard, effectArgs, getRandomBoardIndexes({CardToSelect::OPPO_BOARD}));
 			break;
 
 		case CREATURE_OPPO_TEAM:	//passive player's team of creatures
 			askUserToSelectCards({});
 			_opponent->applyEffectToCreatureTeam(usedCard, effectArgs);
 			break;
+
 		default:
 			throw std::runtime_error("Effect subject not valid");
 	}
@@ -912,9 +920,10 @@ std::vector<int> Player::askUserToSelectCards(const std::vector<CardToSelect>& s
 	_socketToClient.receive(packet);
 	_socketToClient.setBlocking(false);
 	packet >> indices;
-	// covnert the sf::Uint32 received on the network by implementation-defined integers
+	assert(indices.size() == selection.size());
+	// convert the sf::Uint32 received on the network by implementation-defined integers
 	std::vector<int> ret(selection.size());
-	for(std::size_t i{0U}; i < selection.size(); ++i)
+	for(std::size_t i{0U}; i < indices.size(); ++i)
 		ret[i] = static_cast<int>(indices[i]);
 	return ret;
 }
