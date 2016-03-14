@@ -3,6 +3,7 @@
 #include "server/GameThread.hpp"
 #include "common/sockets/TransferType.hpp"
 #include "common/sockets/PacketOverload.hpp"
+#include "common/random/RandomInteger.hpp"
 // std-C++ headers
 #include <iostream>
 #include <algorithm>
@@ -541,7 +542,7 @@ void Player::loseHandCards(const EffectParamsCollection& args)
 	while(not _cardHand.empty() and amount > 0)
 	{
 		amount--;
-		int handIndex = (std::uniform_int_distribution<int>(0, static_cast<int>(_cardHand.size())))(_engine);
+		int handIndex = _gameThread.getGenerator().next(_cardHand.size());
 		cardHandToGraveyard(handIndex);
 	}
 }
@@ -802,7 +803,7 @@ std::unique_ptr<Card> Player::cardRemoveFromHand()
 {
 	if(_cardHand.empty())
 		return nullptr;
-	int handIndex = (std::uniform_int_distribution<int>(0, static_cast<int>(_cardHand.size())))(_engine);
+	int handIndex = _gameThread.getGenerator().next(_cardHand.size());
 	std::unique_ptr<Card> stolenCard(std::move(_cardHand[handIndex]));
 	_cardHand.erase(_cardHand.begin() + handIndex);
 	logHandState();
@@ -812,7 +813,7 @@ std::unique_ptr<Card> Player::cardRemoveFromHand()
 
 std::unique_ptr<Card> Player::cardExchangeFromHand(std::unique_ptr<Card> givenCard)
 {
-	int handIndex = (std::uniform_int_distribution<int>(0, static_cast<int>(_cardHand.size())))(_engine);
+	int handIndex = _gameThread.getGenerator().next(_cardHand.size());
 	return std::move(cardExchangeFromHand(std::move(givenCard), handIndex));
 }
 
@@ -934,19 +935,19 @@ std::vector<int> Player::getRandomBoardIndexes(const std::vector<CardToSelect>& 
 		switch(selection.at(i))
 		{
 			case CardToSelect::SELF_BOARD:
-				indices[i] = std::uniform_int_distribution<int>(0, static_cast<int>(_cardBoard.size())-1)(_engine);
+				indices[i] = _gameThread.getGenerator().next(_cardBoard.size());
 				break;
 
 			case CardToSelect::SELF_HAND:
-				indices[i] = std::uniform_int_distribution<int>(0, static_cast<int>(_cardHand.size())-1)(_engine);
+				indices[i] = _gameThread.getGenerator().next(_cardHand.size());
 				break;
 
 			case CardToSelect::OPPO_BOARD:
-				indices[i] = std::uniform_int_distribution<int>(0, static_cast<int>(_opponent->_cardBoard.size())-1)(_engine);
+				indices[i] = _gameThread.getGenerator().next(_opponent->_cardBoard.size());
 				break;
 
 			case CardToSelect::OPPO_HAND:
-				indices[i] = std::uniform_int_distribution<int>(0, static_cast<int>(_opponent->_cardHand.size())-1)(_engine);
+				indices[i] = _gameThread.getGenerator().next(_opponent->_cardHand.size());
 				break;
 		}
 	}

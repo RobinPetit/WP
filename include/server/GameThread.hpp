@@ -10,6 +10,7 @@
 #include "common/Identifiers.hpp"  // userId
 #include "server/ServerDatabase.hpp"
 #include "common/sockets/EndGame.hpp"
+#include "common/random/RandomInteger.hpp"
 // SFML headers
 #include <SFML/Network/TcpSocket.hpp>
 
@@ -39,6 +40,8 @@ public:
 
 	void swapTurns();
 
+	RandomInteger& getGenerator();
+
 	/// Destructor
 	~GameThread();
 
@@ -60,6 +63,8 @@ private:
 	bool _turnCanEnd;
 	std::thread _timerThread;
 	std::atomic_bool _turnSwap;
+
+	RandomInteger _intGenerator;
 
 	/*------------------------------ Static variables */
 	/// Currently low for tests, arbitrary, need more time now for testing
