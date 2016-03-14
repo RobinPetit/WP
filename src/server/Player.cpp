@@ -696,11 +696,9 @@ void Player::logOpponentHandState()
 
 void Player::exploitCardEffects(Card* usedCard)
 {
-	std::vector<EffectParamsCollection> effects = usedCard->getEffects();
-	for (unsigned i=0; i<effects.size(); i++) //for each effect of the card
-	{
-		applyEffect(usedCard, effects.at(i)); //apply it
-	}
+	const std::vector<EffectParamsCollection>& effects(usedCard->getEffects());
+	for(const auto& effectArgs: effects) //for each effect of the card
+		applyEffect(usedCard, effectArgs); //apply it
 }
 
 void Player::setTeamConstraint(const Card* /* usedCard */, const EffectParamsCollection& args)
