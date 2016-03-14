@@ -12,7 +12,7 @@ constexpr int UNLIMITED_TURNS = 100;
 enum PLAYER_CONSTRAINTS : int32_t
 {
   //turn-by-turn
-  PC_TURN_CARDS_PICKED = 0,          //amount of cards to pick each turn
+  PC_TURN_CARDS_PICKED = 1,          //amount of cards to pick each turn
   PC_TURN_ENERGY_INIT_CHANGE,        //amount of points added to init value each turn
   PC_TURN_ENERGY_CHANGE,             //amount of energy points added each turn
   PC_TURN_HEALTH_CHANGE,             //amount of health points added each turn
