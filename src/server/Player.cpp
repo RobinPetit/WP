@@ -7,6 +7,7 @@
 // std-C++ headers
 #include <iostream>
 #include <algorithm>
+#include <cassert>
 // SFML headers
 #include <SFML/Network/Packet.hpp>
 
@@ -371,19 +372,21 @@ void Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 		throw std::runtime_error("Error with cards arguments");
 	}
 
+
+
 	switch(subject)
 	{
-		case PLAYER_SELF:	//passive player
+		case PLAYER_SELF:  //passive player
 			askUserToSelectCards({});
 			applyEffectToSelf(usedCard, effectArgs);
 			break;
 
-		case PLAYER_OPPO:	//active player
+		case PLAYER_OPPO:  //active player
 			askUserToSelectCards({});
 			_opponent->applyEffectToSelf(usedCard, effectArgs);
 			break;
 
-		case CREATURE_SELF_THIS:	//active player's creature that was used
+		case CREATURE_SELF_THIS:  //active player's creature that was used
 		{
 			askUserToSelectCards({});
 			Creature* usedCreature = dynamic_cast<Creature*>(usedCard);
@@ -391,33 +394,38 @@ void Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 		}
 			break;
 
-		case CREATURE_SELF_INDX:	//active player's creature at given index
-			applyEffectToCreature(usedCard, effectArgs, askUserToSelectCards({CardToSelect::SELF_BOARD}));
+		case CREATURE_SELF_INDX:  //active player's creature at given index
+			if(not _cardBoard.empty())
+				applyEffectToCreature(usedCard, effectArgs, askUserToSelectCards({CardToSelect::SELF_BOARD}));
 			break;
 
-		case CREATURE_SELF_RAND:	//active player's creature at random index
+		case CREATURE_SELF_RAND:  //active player's creature at random index
 			askUserToSelectCards({});
-			applyEffectToCreature(usedCard, effectArgs, getRandomBoardIndexes({CardToSelect::SELF_BOARD}));
+			if(not _cardBoard.empty())
+				applyEffectToCreature(usedCard, effectArgs, getRandomBoardIndexes({CardToSelect::SELF_BOARD}));
 			break;
 
-		case CREATURE_SELF_TEAM:	//active player's team of creatures
+		case CREATURE_SELF_TEAM:  //active player's team of creatures
 			askUserToSelectCards({});
 			applyEffectToCreatureTeam(usedCard, effectArgs);
 			break;
 
 		case CREATURE_OPPO_INDX:	//passive player's creature at given index
-			_opponent->applyEffectToCreature(usedCard, effectArgs, askUserToSelectCards({CardToSelect::OPPO_BOARD}));
+			if(not _opponent->_cardBoard.empty())
+				_opponent->applyEffectToCreature(usedCard, effectArgs, askUserToSelectCards({CardToSelect::OPPO_BOARD}));
 			break;
 
 		case CREATURE_OPPO_RAND:	//passive player's creature at random index
 			askUserToSelectCards({});
-			_opponent->applyEffectToCreature(usedCard, effectArgs, getRandomBoardIndexes({CardToSelect::OPPO_BOARD}));
+			if(not _opponent->_cardBoard.empty())
+				_opponent->applyEffectToCreature(usedCard, effectArgs, getRandomBoardIndexes({CardToSelect::OPPO_BOARD}));
 			break;
 
 		case CREATURE_OPPO_TEAM:	//passive player's team of creatures
 			askUserToSelectCards({});
 			_opponent->applyEffectToCreatureTeam(usedCard, effectArgs);
 			break;
+
 		default:
 			throw std::runtime_error("Effect subject not valid");
 	}
@@ -529,21 +537,14 @@ void Player::pickDeckCards(const EffectParamsCollection& args)
 
 void Player::loseHandCards(const EffectParamsCollection& args)
 {
-	int amount;  //amount of cards to lose
 	try  //check the input
 	{
-		amount=args.at(0);
+		for(int amount{args.at(0)}; not _cardHand.empty() and amount > 0; amount--)
+			cardHandToGraveyard(getRandomIndex(_cardHand));
 	}
 	catch(std::out_of_range&)
 	{
 		throw std::runtime_error("Error with cards arguments");
-	}
-
-	while(not _cardHand.empty() and amount > 0)
-	{
-		amount--;
-		int handIndex = _gameThread.getGenerator().next(_cardHand.size());
-		cardHandToGraveyard(handIndex);
 	}
 }
 
@@ -803,7 +804,7 @@ std::unique_ptr<Card> Player::cardRemoveFromHand()
 {
 	if(_cardHand.empty())
 		return nullptr;
-	int handIndex = _gameThread.getGenerator().next(_cardHand.size());
+	int handIndex = getRandomIndex(_cardHand);
 	std::unique_ptr<Card> stolenCard(std::move(_cardHand[handIndex]));
 	_cardHand.erase(_cardHand.begin() + handIndex);
 	logHandState();
@@ -813,7 +814,7 @@ std::unique_ptr<Card> Player::cardRemoveFromHand()
 
 std::unique_ptr<Card> Player::cardExchangeFromHand(std::unique_ptr<Card> givenCard)
 {
-	int handIndex = _gameThread.getGenerator().next(_cardHand.size());
+	int handIndex = getRandomIndex(_cardHand);
 	return std::move(cardExchangeFromHand(std::move(givenCard), handIndex));
 }
 
@@ -920,11 +921,20 @@ std::vector<int> Player::askUserToSelectCards(const std::vector<CardToSelect>& s
 	_socketToClient.receive(packet);
 	_socketToClient.setBlocking(false);
 	packet >> indices;
-	// covnert the sf::Uint32 received on the network by implementation-defined integers
+	assert(indices.size() == selection.size());
+	// convert the sf::Uint32 received on the network by implementation-defined integers
 	std::vector<int> ret(selection.size());
-	for(std::size_t i{0U}; i < selection.size(); ++i)
+	for(std::size_t i{0U}; i < indices.size(); ++i)
 		ret[i] = static_cast<int>(indices[i]);
 	return ret;
+}
+
+template <typename T>
+inline int Player::getRandomIndex(const std::vector<T>& vector)
+{
+	if(vector.empty())
+		throw std::out_of_range("Cannot generate a random index for an empty vector.");
+	return _gameThread.getGenerator().next(vector.size());
 }
 
 std::vector<int> Player::getRandomBoardIndexes(const std::vector<CardToSelect>& selection)
@@ -935,19 +945,19 @@ std::vector<int> Player::getRandomBoardIndexes(const std::vector<CardToSelect>& 
 		switch(selection.at(i))
 		{
 			case CardToSelect::SELF_BOARD:
-				indices[i] = _gameThread.getGenerator().next(_cardBoard.size());
+				indices[i] = getRandomIndex(_cardBoard);
 				break;
 
 			case CardToSelect::SELF_HAND:
-				indices[i] = _gameThread.getGenerator().next(_cardHand.size());
+				indices[i] = getRandomIndex(_cardHand);
 				break;
 
 			case CardToSelect::OPPO_BOARD:
-				indices[i] = _gameThread.getGenerator().next(_opponent->_cardBoard.size());
+				indices[i] = getRandomIndex(_opponent->_cardBoard);
 				break;
 
 			case CardToSelect::OPPO_HAND:
-				indices[i] = _gameThread.getGenerator().next(_opponent->_cardHand.size());
+				indices[i] = getRandomIndex(_opponent->_cardHand);
 				break;
 		}
 	}
