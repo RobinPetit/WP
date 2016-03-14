@@ -1,4 +1,5 @@
 // WizardPoker headers
+#include "server/Player.hpp"
 #include "server/Creature.hpp"
 // std-C++ headers
 #include <iostream>

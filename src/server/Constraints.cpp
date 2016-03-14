@@ -3,6 +3,7 @@
 #include "server/Creature.hpp"
 // std-C++ headers
 #include <cassert>
+#include <stdexcept>
 
 Constraints::Constraints(const std::vector<ConstraintDefaultValue>& defaultValues):
 	_defaultValues(defaultValues),

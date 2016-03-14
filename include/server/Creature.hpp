@@ -1,11 +1,16 @@
 #ifndef CREATURE_SERVER_HPP
 #define CREATURE_SERVER_HPP
 
+// Standard header
+#include <vector>
+#include <functional>
 // WizardPoker headers
 #include "server/Card.hpp"
-#include "server/Player.hpp"
 #include "server/Constraints.hpp"
 #include "common/CardData.hpp"
+
+// Forward declarations
+class Player;
 
 ///Creature card : One of the 2 playables card
 class Creature : public Card
