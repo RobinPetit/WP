@@ -3,6 +3,7 @@
 #include "server/GameThread.hpp"
 #include "common/sockets/TransferType.hpp"
 #include "common/sockets/PacketOverload.hpp"
+#include "common/random/RandomInteger.hpp"
 // std-C++ headers
 #include <iostream>
 #include <algorithm>
@@ -931,7 +932,7 @@ inline int Player::getRandomIndex(const std::vector<T>& vector)
 {
 	if(vector.empty())
 		throw std::out_of_range("Cannot generate a random index for an empty vector.");
-	return std::uniform_int_distribution<int>(0, static_cast<int>(vector.size()) - 1)(_engine);
+	return _gameThread.getGenerator().next(vector.size());
 }
 
 std::vector<int> Player::getRandomBoardIndexes(const std::vector<CardToSelect>& selection)

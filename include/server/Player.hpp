@@ -132,10 +132,6 @@ private:
 	/// This is not a smart pointer because it points to an already allocated card.
 	const Card* _lastCasterCard = nullptr;
 
-	// Random management
-	/// Used for uniformly distributed integer generation
-	std::default_random_engine _engine;
-
 	// Effects container
 	static std::function<void(Player&, const EffectParamsCollection&)> _effectMethods[P_EFFECTS_COUNT];
 

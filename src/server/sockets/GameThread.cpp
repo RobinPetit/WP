@@ -14,6 +14,8 @@
 #include <chrono>
 #include <cassert>
 
+extern RandomInteger intGenerator;
+
 constexpr std::chrono::seconds GameThread::_turnTime;
 
 GameThread::GameThread(ServerDatabase& database, userId player1Id, userId player2Id):
@@ -41,6 +43,11 @@ void GameThread::createPlayers()
 		std::swap(_activePlayer, _passivePlayer);
 	_activePlayer->setOpponent(_passivePlayer);
 	_passivePlayer->setOpponent(_activePlayer);
+}
+
+RandomInteger& GameThread::getGenerator()
+{
+	return _intGenerator;
 }
 
 // \TODO: complete the function as a QuitGame
@@ -90,9 +97,7 @@ userId GameThread::startGame(const ClientInformations& player1, const ClientInfo
 
 	// Send to the winner he wins and send his new card ID
 	sf::Packet packet;
-	std::random_device device;
-	std::mt19937 generator{device()};
-	cardId earnedCardId{std::uniform_int_distribution<int>(0, static_cast<int>(nbSpells + nbCreatures))(generator)};
+	cardId earnedCardId{_intGenerator.next(nbSpells + nbCreatures)};
 	++earnedCardId;  // Card indices start to 1 because of SQLite
 	_database.addCard(winnerId, earnedCardId);
 
