@@ -184,6 +184,8 @@ void Player::leaveTurn()
 	//Time out player's creature's constraints
 	for(unsigned i = 0; i < _cardBoard.size(); i++)
 		_cardBoard.at(i)->leaveTurn();
+
+	changeEnergy({0});  // at the end of the turn, set the energy to 0
 }
 
 void Player::finishGame(bool hasWon, EndGame::Cause cause)
