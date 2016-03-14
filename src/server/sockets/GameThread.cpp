@@ -39,7 +39,7 @@ void GameThread::createPlayers()
 	_activePlayer = &_player1;
 	_passivePlayer = &_player2;
 	std::random_device device;
-	if(std::bernoulli_distribution(0.5)(device))
+	if(std::bernoulli_distribution(0.5)(device)) //Choose which player starts
 		std::swap(_activePlayer, _passivePlayer);
 	_activePlayer->setOpponent(_passivePlayer);
 	_passivePlayer->setOpponent(_activePlayer);
@@ -51,6 +51,7 @@ RandomInteger& GameThread::getGenerator()
 }
 
 // \TODO: complete the function as a QuitGame
+// \TODO: is the function useful at all ?
 void GameThread::interruptGame()
 {
 	_running.store(false);
@@ -105,6 +106,7 @@ userId GameThread::startGame(const ClientInformations& player1, const ClientInfo
 	cardId earnedCardId{_intGenerator.next(nbSpells + nbCreatures)};
 	++earnedCardId;  // Card indices start to 1 because of SQLite
 	_database.addCard(winnerId, earnedCardId);
+	// \TODO: change by cardId earnedCardId = _database.unlockNewCard(winnerId) ?
 
 	// Send to the winner he won
 	// EndGame::applyToSelf indicate which player won the game: false mean that
@@ -134,7 +136,7 @@ userId GameThread::runGame()
 			if(status == sf::Socket::Disconnected)
 			{
 				std::cerr << "Lost connection with a player\n";
-				_winner = player->getId();
+				_winner = player->getId(); // \TODO: shouldn't it be the loser ?
 				_running.store(false);
 				break;
 			}

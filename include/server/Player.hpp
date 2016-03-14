@@ -59,8 +59,8 @@ public:
 	/// action, false otherwise.
 	bool thereAreBoardChanges();
 
-	/// This method clear the pending board changes and return them.
-	/// \return the changes that occured on the board if therAreBoardChanges(),
+	/// This method clears the pending board changes and returns them.
+	/// \return the changes that occured on the board if thereAreBoardChanges(),
 	/// an empty sf::Packet otherwise.
 	/// \post !thereAreBoardChanges();
 	sf::Packet getBoardChanges();
@@ -92,9 +92,9 @@ private:
 
 	/// Pointer responsability is not given to this Player:
 	/// it is not an allocated-attribute
-	Player* _opponent = nullptr;
+	Player* _opponent = nullptr; // \TODO: use reference ?
 	userId _id;
-	std::atomic_bool _isActive;
+	std::atomic_bool _isActive; // Blocks functions that are only allowed for active player
 
 	// Client communication
 	sf::TcpSocket _socketToClient;
@@ -128,16 +128,15 @@ private:
 	/// Cards that are discarded (dead creatures, used spells)
 	std::vector<std::unique_ptr<Card>> _cardGraveyard;
 
-	/// Last card that was used to cast an effect (his or opponent's)
+	/// Last card that was used to cast an effect (his or his opponent's)
 	/// This is not a smart pointer because it points to an already allocated card.
-	const Card* _lastCasterCard = nullptr;
+	const Card* _lastCasterCard = nullptr; // \TODO: use a reference ?
 
 	// Effects container
 	static std::function<void(Player&, const EffectParamsCollection&)> _effectMethods[P_EFFECTS_COUNT];
 
 	/*------------------------------ Methods */
-	/// User actions
-	//TODO: check for each function if Player is the active player, and lock changes to _isActive until end of function
+	// User actions
 	/// Use a card
 	void useCard(int handIndex);
 
