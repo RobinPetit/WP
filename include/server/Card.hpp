@@ -12,8 +12,8 @@ class Card
 {
 private:
 	int _cost;
-	cardId _cardId;  //Will be needed for communicating modification to player's hand/deck/...
-	std::vector<EffectParamsCollection> _effects;	//Effects
+	cardId _cardId;  // Will be needed for communicating modification to player's hand/deck/...
+	std::vector<EffectParamsCollection> _effects;  // Effects
 
 public:
 	/// Constructor
