@@ -206,9 +206,16 @@ sf::Socket::Status Player::tryReceiveClientInput()
 
 	if(type == TransferType::GAME_QUIT_GAME)
 		finishGame(false, EndGame::Cause::QUITTED);
-	// Be sure this is the active player that sent input
-	else if(_isActive.load())
+
+	else
 	{
+		// These methods are not allowed for passive player
+		if (_isActive.load() == false)
+		{
+			std::cout << "Passive player tried to cheat, perma ban ?\n";
+			return status;
+		}
+
 		switch(type)
 		{
 			case TransferType::GAME_PLAYER_LEAVE_TURN:
