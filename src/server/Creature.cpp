@@ -103,7 +103,7 @@ void Creature::receiveAttack(Creature& attacker, int attack, int forced, int loo
 	if (attackBlocked==1) //If attacks are blocked
 		return;
 
-	changeHealth({attack, forced});
+	changeHealth({-attack, forced});
 }
 
 /*--------------------------- GETTERS FOR EFFECTS */
