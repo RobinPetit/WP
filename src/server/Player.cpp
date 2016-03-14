@@ -461,7 +461,6 @@ void Player::applyEffectToSelf(EffectParamsCollection& effectArgs)
 {
 	int method = effectArgs.front();  //what method is used
 	effectArgs.erase(effectArgs.begin());
-
 	_effectMethods[method](*this, effectArgs);  //call method on self
 }
 
@@ -590,7 +589,7 @@ void Player::stealHandCard(const EffectParamsCollection& /* args */)
 /// \network sends to user one of the following:
 ///	 + FAILURE if opponent has no card in his hand
 ///	 + ACKNOWLEDGE if card has been swapped
-void Player::exchgHandCard(const EffectParamsCollection& args)
+void Player::exchgHandCard(const EffectParamsCollection& /* args */)
 {
 	int myCardIndex; //card to exchange
 	sf::Packet packet;
@@ -598,7 +597,7 @@ void Player::exchgHandCard(const EffectParamsCollection& args)
 
 	try //check the input
 	{
-		myCardIndex = args.at(0);
+		myCardIndex = getRandomIndex(_cardHand);
 		myCard = std::move(_cardHand.at(myCardIndex));
 	}
 	catch(std::out_of_range&)
