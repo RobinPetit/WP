@@ -8,8 +8,6 @@
 # Build
 build/*
 build/*/
-# Keep prebuild scripts
-!build/initdatabase/
 # Compiled Static libraries
 *.lai
 *.la
