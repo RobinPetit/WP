@@ -51,27 +51,11 @@ public:
 	/// \return the status of the socket after the receiving
 	sf::Socket::Status tryReceiveClientInput();
 
-	/// Interface for applying effects
-	// TODO make these methods private
-	void applyEffect(Card* usedCard, EffectParamsCollection effect);
-	//to itself
-	void applyEffectToSelf(const Card* usedCard, EffectParamsCollection& effectArgs);
-	//to one of its Creatures
-	void applyEffectToCreature(Creature* casterAndSubject, EffectParamsCollection& effectArgs); //With ref. to creature
-	void applyEffectToCreature(const Card* usedCard, EffectParamsCollection& effectArgs, const std::vector<int>& boardIndexes); //With creature index
-	//to all of its Creatures
-	void applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollection& effectArgs);
-
 	/// Getters
 	int getCreatureConstraint(const Creature& subject, int constraintId) const;
 	const Card* getLastCaster() const;
 	userId getId() const;
 	sf::TcpSocket& getSocket();
-
-	// TODO make these getters private
-	const std::vector<std::unique_ptr<Creature>>& getBoard() const;
-	int getHealth() const;
-	std::vector<std::unique_ptr<Card>>::size_type getHandSize() const;
 
 	/// \return true if some changes has been logged since the last player's
 	/// action, false otherwise.
@@ -82,11 +66,6 @@ public:
 	/// an empty sf::Packet otherwise.
 	/// \post !thereAreBoardChanges();
 	sf::Packet getBoardChanges();
-
-	/// \return a vector of indices selected
-	/// \param selection a vector of values telling whether the choice must be in player's cards or opponent's cards
-	std::vector<int>&& getRandomBoardIndexes(const std::vector<CardToSelect>& selection);
-	std::vector<int>&& askUserToSelectCards(const std::vector<CardToSelect>& selection);
 
 private:
 	/// Types
@@ -155,6 +134,21 @@ private:
 	/// The game has ended because of some reason (maybe because the user want to quit the game)
 	void finishGame(bool hasWon, EndGame::Cause cause);
 
+	/// Interface for applying effects
+	void applyEffect(Card* usedCard, EffectParamsCollection effect);
+	//to itself
+	void applyEffectToSelf(const Card* usedCard, EffectParamsCollection& effectArgs);
+	//to one of its Creatures
+	void applyEffectToCreature(Creature* casterAndSubject, EffectParamsCollection& effectArgs); //With ref. to creature
+	void applyEffectToCreature(const Card* usedCard, EffectParamsCollection& effectArgs, const std::vector<int>& boardIndexes); //With creature index
+	//to all of its Creatures
+	void applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollection& effectArgs);
+
+	/// \param selection a vector of values telling whether the choice must be in player's cards or opponent's cards
+	/// \return a vector of indices selected
+	std::vector<int>&& getRandomBoardIndexes(const std::vector<CardToSelect>& selection);
+	std::vector<int>&& askUserToSelectCards(const std::vector<CardToSelect>& selection);
+
 	/// Effects (private)
 	void setConstraint(const EffectParamsCollection& args);
 	void pickDeckCards(const EffectParamsCollection& args);
@@ -200,6 +194,11 @@ private:
 	void logCardDataFromVector(TransferType type, const std::vector<std::unique_ptr<Card>>& vect);
 	void logBoardCreatureDataFromVector(TransferType type, const std::vector<std::unique_ptr<Creature>>& vect);
 	void sendValueToClient(TransferType value);
+
+	// Some getters
+	const std::vector<std::unique_ptr<Creature>>& getBoard() const;
+	int getHealth() const;
+	std::vector<std::unique_ptr<Card>>::size_type getHandSize() const;
 };
 
 
