@@ -118,9 +118,6 @@ void TerminalGame::displayBoardCreatureVector(const std::vector<BoardCreatureDat
 		             ", health: " << thisCreature.health <<
 		             ", shield: " << thisCreature.shield << "-" << thisCreature.shieldType << ")"
 		             << (displayDescription ? "\n\t" + getCardDescription(id) : "") << "\n";
-		//TODO use card names instead of card IDs ?
-		if (i!=cardVector.size()-1)
-			std::cout << ", ";
 	}
 	std::cout << std::endl;
 }
