@@ -60,6 +60,7 @@ bin/
 	# CodeLite
 *.workspace
 *.project
+.codelite
 	# vim
 *.swp
 
