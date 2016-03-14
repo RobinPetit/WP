@@ -26,9 +26,4 @@ add_executable(${CLIENT_NAME} ${SOURCES})
 # Link the executable to the libraries
 target_link_libraries(${CLIENT_NAME} ${COMMON_NAME} ${EXTERNAL_LIBRARIES})
 
-add_custom_command(
-	TARGET ${CLIENT_NAME}
-		PRE_BUILD
-		COMMAND ./initdatabase.sh
-		WORKING_DIRECTORY ../../../prebuildscript/
-	)
+
