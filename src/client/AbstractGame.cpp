@@ -53,7 +53,7 @@ void AbstractGame::init()
 	else if(type == TransferType::GAME_PLAYER_LEAVE_TURN)
 	{
 		_myTurn.store(false);
-		std::cout << "Your opponent begins, wait for your turn...\n";
+		displayMessage("Your opponent begins, wait for your turn...");
 	}
 	else
 		throw std::runtime_error("Wrong turn information: " + std::to_string(static_cast<sf::Uint32>(type)));
@@ -341,12 +341,12 @@ void AbstractGame::handlePacket(sf::Packet& transmission)
 			break;
 
 		case TransferType::GAME_PLAYER_ENTER_TURN:
-			std::cout << "You got the turn" << std::endl;
+			displayMessage("You got the turn");
 			_myTurn.store(true);
 			break;
 
 		case TransferType::GAME_PLAYER_LEAVE_TURN:
-			std::cout << "You lost the turn" << std::endl;
+			displayMessage("You lost the turn");
 			_myTurn.store(false);
 			break;
 
