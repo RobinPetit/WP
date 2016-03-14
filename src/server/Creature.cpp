@@ -165,7 +165,7 @@ void Creature::setConstraint(const EffectParamsCollection& args)
 	}
 	catch(std::out_of_range&)
 	{
-		 throw std::runtime_error("Error with cards arguments");
+		 throw std::runtime_error("Creature::setConstraint error with cards arguments");
 	}
 
 	switch(casterOptions)
@@ -208,7 +208,7 @@ void Creature::changeAttack(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range&)
 	{
-		throw std::runtime_error("Error with cards arguments");
+		throw std::runtime_error("changeAttack error with cards arguments");
 	}
 }
 
@@ -221,7 +221,7 @@ void Creature::changeHealth(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range&)
 	{
-		 throw std::runtime_error("Error with cards arguments");
+		 throw std::runtime_error("changeHealth error with cards arguments");
 	}
 
 	// bool forced = args.at(1) : if attack is forced, shield does not count
@@ -263,7 +263,7 @@ void Creature::changeShield(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range&)
 	{
-		 throw std::runtime_error("Error with cards arguments");
+		 throw std::runtime_error("changeShield error with cards arguments");
 	}
 }
 

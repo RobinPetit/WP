@@ -394,7 +394,7 @@ void Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 	}
 	catch(std::out_of_range&)
 	{
-		throw std::runtime_error("Error with cards arguments");
+		throw std::runtime_error("applyEffect error with cards arguments");
 	}
 
 	_lastCasterCard = usedCard;  // remember last used card
@@ -524,7 +524,7 @@ void Player::setConstraint(const EffectParamsCollection& args)
 	}
 	catch(std::out_of_range&)
 	{
-		throw std::runtime_error("Error with cards arguments");
+		throw std::runtime_error("Player::setConstraint error with cards arguments");
 	}
 
 	switch(casterOptions)
@@ -548,7 +548,7 @@ void Player::pickDeckCards(const EffectParamsCollection& args)
 	}
 	catch(std::out_of_range&)
 	{
-		throw std::runtime_error("Error with cards arguments");
+		throw std::runtime_error("picDeckCards error with cards arguments");
 	}
 	cardDeckToHand(amount);
 }
@@ -562,7 +562,7 @@ void Player::loseHandCards(const EffectParamsCollection& args)
 	}
 	catch(std::out_of_range&)
 	{
-		throw std::runtime_error("Error with cards arguments");
+		throw std::runtime_error("loseHandCards error with cards arguments");
 	}
 }
 
@@ -576,7 +576,7 @@ void Player::reviveGraveyardCard(const EffectParamsCollection& args)
 	}
 	catch(std::out_of_range&)
 	{
-		throw std::runtime_error("Error with cards arguments");
+		throw std::runtime_error("receiveGraveyardCard error with cards arguments");
 	}
 	cardGraveyardToHand(binIndex);
 }
@@ -603,7 +603,7 @@ void Player::exchgHandCard(const EffectParamsCollection& args)
 	}
 	catch(std::out_of_range&)
 	{
-		throw std::runtime_error("Error with cards arguments");
+		throw std::runtime_error("exchgCard error with cards arguments");
 	}
 
 	std::unique_ptr<Card> hisCard(_opponent->cardExchangeFromHand(std::move(myCard)));
@@ -630,13 +630,12 @@ void Player::resetEnergy(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range&)
 	{
-		throw std::runtime_error("Error with cards arguments");
+		throw std::runtime_error("resetEnergy error with cards arguments");
 	}
 	if(_energyInit < 0)
 		_energyInit = 0;
 	else if(_energyInit > _maxEnergy)
 		_energyInit = _maxEnergy;
-	logCurrentEnergy();
 }
 
 void Player::changeEnergy(const EffectParamsCollection& args)
@@ -647,7 +646,7 @@ void Player::changeEnergy(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range&)
 	{
-		throw std::runtime_error("Error with cards arguments");
+		throw std::runtime_error("changeEnergy error with cards arguments");
 	}
 	if(_energy < 0)
 		_energy = 0;
@@ -675,7 +674,7 @@ void Player::changeHealth(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range&)
 	{
-		throw std::runtime_error("Error with cards arguments");
+		throw std::runtime_error("changeHealth error with cards arguments");
 	}
 
 }
@@ -736,7 +735,7 @@ void Player::setTeamConstraint(const EffectParamsCollection& args)
 	}
 	catch(std::out_of_range&)
 	{
-		throw std::runtime_error("Error with cards arguments");
+		throw std::runtime_error("setTeamConstraint error with cards arguments");
 	}
 
 	switch(casterOptions)
