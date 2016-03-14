@@ -133,25 +133,26 @@ void AbstractGame::useCard()
 
 void AbstractGame::treatAdditionnalInputs(const std::vector<CardToSelect>& inputs)
 {
-	std::vector<sf::Uint32> indices(inputs.size());
-	for(auto i{0U}; i < inputs.size(); ++i)
+	std::vector<sf::Uint32> indices;
+	indices.reserve(inputs.size());
+	for(const auto& input : inputs)
 	{
-		switch(inputs[i])
+		switch(input)
 		{
 		case CardToSelect::SELF_BOARD:
-			indices[i] = askSelfBoardIndex();
+			indices.push_back(askSelfBoardIndex());
 			break;
 
 		case CardToSelect::OPPO_BOARD:
-			indices[i] = askOppoBoardIndex();
+			indices.push_back(askOppoBoardIndex());
 			break;
 
 		case CardToSelect::SELF_HAND:
-			indices[i] = askSelfHandIndex();
+			indices.push_back(askSelfHandIndex());
 			break;
 
 		case CardToSelect::OPPO_HAND:
-			indices[i] = askOppoHandIndex();
+			indices.push_back(askOppoHandIndex());
 			break;
 		}
 	}
@@ -431,6 +432,11 @@ const std::string& AbstractGame::getCardDescription(cardId id)
 		return ALL_CREATURES[id-1].description;
 	else
 		return ALL_SPELLS[id-11].description;
+}
+
+bool AbstractGame::isSpell(cardId id)
+{
+	return id > 10;
 }
 
 template <typename FixedSizeIntegerType>

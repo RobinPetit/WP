@@ -81,11 +81,11 @@ void TerminalGame::displayGame()
 	std::cout << "Cards in your graveyard:" << std::endl;
 	displayCardVector(_selfGraveCards);
 	std::cout << "Cards on your opponent's board:" << std::endl;
-	displayBoardCreatureVector(_oppoBoardCreatures);
+	displayBoardCreatureVector(_oppoBoardCreatures, true);
 	std::cout << "Cards on your board:" << std::endl;
-	displayBoardCreatureVector(_selfBoardCreatures);
+	displayBoardCreatureVector(_selfBoardCreatures, true);
 	std::cout << "Cards in your hand:" << std::endl;
-	displayCardVector(_selfHandCards);
+	displayCardVector(_selfHandCards, true);
 
 	std::cout << "-----HEALTH & ENERGY-----" << std::endl;
 	std::cout << "Your opponent has " << _oppoHealth << " life points left." << std::endl;
@@ -99,9 +99,10 @@ void TerminalGame::displayCardVector(const std::vector<CardData>& cardVector, bo
 	for (auto i=0U; i<cardVector.size(); i++)
 	{
 		cardId id = cardVector.at(i).id;
-		std::cout << "  * " << i << " : " << getCardName(id) << " (cost: " << getCardCost(id)
-		          << ")" << (i < cardVector.size()-1 ? ", " : "")
-		          << (displayDescription ? "\n\t" + getCardDescription(id) : "") << "\n";
+		std::cout << "  * " << i << " : " << getCardName(id)
+		          << " (cost: " << getCardCost(id) << ", "
+		          << (isSpell(id) ? "spell" : "creature") << ")"
+		          << (displayDescription ? "\n\t" + getCardDescription(id) : ",") << "\n";
 	}
 }
 
