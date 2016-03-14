@@ -77,27 +77,8 @@ void AbstractGame::play()
 
 void AbstractGame::startTurn()
 {
-	NonBlockingInput input;
 	_myTurn.store(true);
-	display();
-	std::cout << "It is now your turn, what do you want to do? ";
-	while(_myTurn.load())
-	{
-		if(not input.waitForData(0.1))
-			continue;
-		std::string command{input.receiveStdinData()};
-		try
-		{
-			(this->*(_actions.at(std::stoi(command)).second))();
-		}
-		catch(std::exception&)
-		{
-			std::cout << "Your input should be in the range [" << 0 << ", " << _actions.size() << "[\n";
-			continue;
-		}
-		display();
-		std::cout << "What do you want to do next? ";
-	}
+	displayGame();
 }
 
 

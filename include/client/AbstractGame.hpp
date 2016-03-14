@@ -23,7 +23,7 @@ class AbstractGame
 
 		void init();
 		void play();
-		void startTurn();
+		virtual void startTurn();
 
 		virtual ~AbstractGame();
 
@@ -78,7 +78,6 @@ class AbstractGame
 		void endGame(sf::Packet& transmission);  // only used to lighten handlePacket
 
 		// Game display
-		virtual void display() = 0;
 		virtual void displayGame() = 0;
 
 		virtual void displayMessage(const std::string& message) = 0;
