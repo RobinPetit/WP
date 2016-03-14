@@ -781,6 +781,13 @@ void Player::cardBoardToGraveyard(int boardIndex)
 	logGraveyardState();
 }
 
+void Player::cardBoardToGraveyard(const Creature *card)
+{
+	const auto& lambdaCheck{[card](const auto& it){return it.get() == card;}};
+	const auto& cardIterator{std::find_if(_cardBoard.begin(), _cardBoard.end(), lambdaCheck)};
+	cardBoardToGraveyard(static_cast<int>(cardIterator - _cardBoard.begin()));
+}
+
 void Player::cardGraveyardToHand(int binIndex)
 {
 	_cardHand.push_back(std::move(_cardGraveyard.at(binIndex)));
