@@ -528,21 +528,14 @@ void Player::pickDeckCards(const EffectParamsCollection& args)
 
 void Player::loseHandCards(const EffectParamsCollection& args)
 {
-	int amount;  //amount of cards to lose
 	try  //check the input
 	{
-		amount=args.at(0);
+		for(int amount{args.at(0)}; not _cardHand.empty() and amount > 0; amount--)
+			cardHandToGraveyard(getRandomIndex(_cardHand));
 	}
 	catch(std::out_of_range&)
 	{
 		throw std::runtime_error("Error with cards arguments");
-	}
-
-	while(not _cardHand.empty() and amount > 0)
-	{
-		amount--;
-		int handIndex = (std::uniform_int_distribution<int>(0, static_cast<int>(_cardHand.size())))(_engine);
-		cardHandToGraveyard(handIndex);
 	}
 }
 
@@ -802,7 +795,7 @@ std::unique_ptr<Card> Player::cardRemoveFromHand()
 {
 	if(_cardHand.empty())
 		return nullptr;
-	int handIndex = (std::uniform_int_distribution<int>(0, static_cast<int>(_cardHand.size())))(_engine);
+	int handIndex = getRandomIndex(_cardHand);
 	std::unique_ptr<Card> stolenCard(std::move(_cardHand[handIndex]));
 	_cardHand.erase(_cardHand.begin() + handIndex);
 	logHandState();
@@ -812,7 +805,7 @@ std::unique_ptr<Card> Player::cardRemoveFromHand()
 
 std::unique_ptr<Card> Player::cardExchangeFromHand(std::unique_ptr<Card> givenCard)
 {
-	int handIndex = (std::uniform_int_distribution<int>(0, static_cast<int>(_cardHand.size())))(_engine);
+	int handIndex = getRandomIndex(_cardHand);
 	return std::move(cardExchangeFromHand(std::move(givenCard), handIndex));
 }
 
@@ -926,6 +919,14 @@ std::vector<int> Player::askUserToSelectCards(const std::vector<CardToSelect>& s
 	return ret;
 }
 
+template <typename T>
+inline int Player::getRandomIndex(const std::vector<T>& vector)
+{
+	if(vector.empty())
+		throw std::out_of_range("Cannot generate a random index for an empty vector.");
+	return std::uniform_int_distribution<int>(0, static_cast<int>(vector.size()) - 1)(_engine);
+}
+
 std::vector<int> Player::getRandomBoardIndexes(const std::vector<CardToSelect>& selection)
 {
 	std::vector<int> indices(selection.size());
@@ -934,19 +935,19 @@ std::vector<int> Player::getRandomBoardIndexes(const std::vector<CardToSelect>& 
 		switch(selection.at(i))
 		{
 			case CardToSelect::SELF_BOARD:
-				indices[i] = std::uniform_int_distribution<int>(0, static_cast<int>(_cardBoard.size())-1)(_engine);
+				indices[i] = getRandomIndex(_cardBoard);
 				break;
 
 			case CardToSelect::SELF_HAND:
-				indices[i] = std::uniform_int_distribution<int>(0, static_cast<int>(_cardHand.size())-1)(_engine);
+				indices[i] = getRandomIndex(_cardHand);
 				break;
 
 			case CardToSelect::OPPO_BOARD:
-				indices[i] = std::uniform_int_distribution<int>(0, static_cast<int>(_opponent->_cardBoard.size())-1)(_engine);
+				indices[i] = getRandomIndex(_opponent->_cardBoard);
 				break;
 
 			case CardToSelect::OPPO_HAND:
-				indices[i] = std::uniform_int_distribution<int>(0, static_cast<int>(_opponent->_cardHand.size())-1)(_engine);
+				indices[i] = getRandomIndex(_opponent->_cardHand);
 				break;
 		}
 	}
