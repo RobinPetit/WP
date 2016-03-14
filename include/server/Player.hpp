@@ -84,7 +84,7 @@ private:
 
 	/*------------------------------ Static variables */
 	constexpr static TurnData _emptyTurnData = {0, 0, 0, 0, 0};
-	constexpr static unsigned _initialAmountOfCards{4};
+	constexpr static unsigned _initialAmountOfCards{5};
 
 	/*------------------------------ Attributes */
 	GameThread& _gameThread;

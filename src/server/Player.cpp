@@ -159,7 +159,9 @@ void Player::enterTurn(int turn)
 	}
 
 	//Player's turn-based constraints
-	cardDeckToHand(_constraints.getConstraint(PC_TURN_CARDS_PICKED));
+	// do not pick a card at first turn
+	if(turn != 1)
+		cardDeckToHand(_constraints.getConstraint(PC_TURN_CARDS_PICKED));
 	resetEnergy({_constraints.getConstraint(PC_TURN_ENERGY_INIT_CHANGE)});
 	changeEnergy({_constraints.getConstraint(PC_TURN_ENERGY_CHANGE)});
 	changeHealth({_constraints.getConstraint(PC_TURN_HEALTH_CHANGE)});
