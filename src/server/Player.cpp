@@ -881,35 +881,8 @@ void Player::logCardDataFromVector(TransferType type, const std::vector<std::uni
 void Player::logBoardCreatureDataFromVector(TransferType type, const std::vector<std::unique_ptr<Creature>>& vect)
 {
 	std::vector<BoardCreatureData> boardCreatures;
-	for (std::size_t i = 0U; i<vect.size(); i++)
-	{
-		BoardCreatureData data;
-		Creature& creat = *vect.at(i);
-		data.id = creat.getId();
-		data.attack = creat.getAttack();
-		data.health = creat.getHealth();
-		data.shield = creat.getShield();
-		int shieldType = creat.getShieldType();
-		switch(shieldType)
-		{
-			case SHIELD_NONE:
-				data.shieldType = "none";
-				break;
-
-			case SHIELD_BLUE:
-				data.shieldType = "blue";
-				break;
-
-			case SHIELD_ORANGE:
-				data.shieldType = "orange";
-				break;
-
-			case SHIELD_LEGENDARY:
-				data.shieldType = "legendary";
-				break;
-		}
-		boardCreatures.push_back(data);
-	}
+	for(const auto& creature : vect)
+		boardCreatures.push_back(static_cast<BoardCreatureData>(*creature));
 	// std::vector transmission in packet is defined in common/sockets/PacketOverload.hpp
 	_pendingBoardChanges << type << boardCreatures;
 }

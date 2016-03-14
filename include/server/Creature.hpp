@@ -8,6 +8,7 @@
 #include "server/Card.hpp"
 #include "server/Constraints.hpp"
 #include "common/CardData.hpp"
+#include "common/GameData.hpp"
 
 // Forward declarations
 class Player;
@@ -60,12 +61,14 @@ public:
 	/// Effects interface
 	void applyEffectToSelf(EffectParamsCollection& effectArgs);
 
-	int getAttack();
-	int getHealth();
-	int getShield();
-	int getShieldType();
+	int getAttack() const;
+	int getHealth() const;
+	int getShield() const;
+	int getShieldType() const;
 	int getPersonalConstraint(int constraintId) const;
 	int getConstraint(int constraintId) const;
+
+	explicit operator BoardCreatureData() const;
 };
 
 #endif // CREATURE_SERVER_HPP

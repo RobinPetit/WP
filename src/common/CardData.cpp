@@ -1,4 +1,8 @@
+// WizardPoker headers
+#include "common/GameData.hpp"
 #include "common/CardData.hpp"
+
+constexpr std::array<const char *, 4> BoardCreatureData::shieldTypes;
 
 ///CREATURES
 const CreatureData ALL_CREATURES[] = {

@@ -117,22 +117,22 @@ void Creature::applyEffectToSelf(EffectParamsCollection& effectArgs)
 	_effectMethods[method](*this, effectArgs);  // Call the method
 }
 
-int Creature::getAttack()
+int Creature::getAttack() const
 {
 	return _attack;
 }
 
-int Creature::getHealth()
+int Creature::getHealth() const
 {
 	return _health;
 }
 
-int Creature::getShield()
+int Creature::getShield() const
 {
 	return _shield;
 }
 
-int Creature::getShieldType()
+int Creature::getShieldType() const
 {
 	return _shieldType;
 }
@@ -265,4 +265,11 @@ void Creature::changeShield(const EffectParamsCollection& args)
 	{
 		 throw std::runtime_error("Error with cards arguments");
 	}
+}
+
+Creature::operator BoardCreatureData() const
+{
+	BoardCreatureData data {getId(), getHealth(), getAttack(), getShield(),
+			BoardCreatureData::shieldTypes[getShieldType()-1]};
+	return data;
 }

@@ -20,9 +20,9 @@ public:
 	Card(cardId cardIdentifier, int cost, const std::vector<EffectParamsCollection>& effects);
 
 	/// Getters
-	int getEnergyCost();
-	const std::vector<EffectParamsCollection>& getEffects();
-	cardId getId();
+	int getEnergyCost() const;
+	const std::vector<EffectParamsCollection>& getEffects() const;
+	cardId getId() const;
 
 
 	/// Methods

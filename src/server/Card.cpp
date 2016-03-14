@@ -8,17 +8,17 @@ Card::Card(cardId cardIdentifier, int cost, const std::vector<EffectParamsCollec
 
 }
 
-const std::vector<EffectParamsCollection>& Card::getEffects()
+const std::vector<EffectParamsCollection>& Card::getEffects() const
 {
 	return _effects;
 }
 
-int Card::getEnergyCost()
+int Card::getEnergyCost() const
 {
 	return _cost;
 }
 
-cardId Card::getId()
+cardId Card::getId() const
 {
 	return _cardId;
 }
