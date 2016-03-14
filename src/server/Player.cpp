@@ -243,16 +243,16 @@ sf::Socket::Status Player::tryReceiveClientInput()
 ///	 + FAILURE  if the specialized type of the card (spell/creature) cannot be played anymore for this turn
 void Player::useCard(int handIndex)
 {
+	Card* usedCard;
 	try //check the input
 	{
-		_cardHand.at(handIndex);
-	}
+		 usedCard = _cardHand.at(handIndex).get();
+	 }
 	catch(std::out_of_range&)
 	{
 		sendValueToClient(TransferType::FAILURE);
 		return;
 	}
-	Card* usedCard = _cardHand.at(handIndex).get();
 	//Check if we have enough energy to use this card
 	if(usedCard->getEnergyCost() > _energy)
 	{
@@ -309,10 +309,13 @@ void Player::useSpell(int handIndex, Card* usedCard)
 
 void Player::attackWithCreature(int attackerIndex, int victimIndex)
 {
+	Creature* attacker;
+	Creature* victim;
 	try //check the input
 	{
-		_cardHand.at(attackerIndex);
-		_opponent->_cardHand.at(victimIndex);
+		attacker = _cardBoard.at(attackerIndex).get();
+		if(victimIndex >= 0)
+			victim = _opponent->_cardBoard.at(victimIndex).get();
 	}
 	catch (std::out_of_range&)
 	{
@@ -321,7 +324,6 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 	}
 
 	//Check if we have enough energy to use this card
-	Creature* attacker = _cardBoard.at(attackerIndex).get();
 	if(attacker->getEnergyCost() > _energy)
 	{
 		sendValueToClient(TransferType::GAME_NOT_ENOUGH_ENERGY);
@@ -335,13 +337,13 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 	{
 		if(victimIndex < 0)
 		{
-			std::vector<int> params{{PE_CHANGE_HEALTH, -attacker->getAttack()}};
+			std::vector<int> params{{PE_CHANGE_HEALTH, -(attacker->getAttack())}};
 			_opponent->applyEffectToSelf(attacker, params);  //no forced attacks on opponent
 			logOpponentHealth();
 		}
 		else
 		{
-			attacker->makeAttack(*(_opponent->_cardBoard.at(victimIndex)));
+			attacker->makeAttack(*victim);
 			logOpponentBoardState();
 			logBoardState();  // If an attack is returned to the attacker, the board change
 		}
