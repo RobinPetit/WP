@@ -154,16 +154,16 @@ private:
 	void applyEffect(Card* usedCard, EffectParamsCollection effect);
 
 	/// Apply an effect to itself
-	void applyEffectToSelf(const Card* usedCard, EffectParamsCollection& effectArgs);
+	void applyEffectToSelf(EffectParamsCollection& effectArgs);
 
 	/// Apply an effect to one of its Creatures, with reference to creature
 	void applyEffectToCreature(Creature* casterAndSubject, EffectParamsCollection& effectArgs);
 
 	/// Apply an effect to one of its Creatures, with creature index
-	void applyEffectToCreature(const Card* usedCard, EffectParamsCollection& effectArgs, const std::vector<int>& boardIndexes);
+	void applyEffectToCreature(EffectParamsCollection& effectArgs, const std::vector<int>& boardIndexes);
 
 	/// Apply an effect to all of its Creatures
-	void applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollection& effectArgs);
+	void applyEffectToCreatureTeam(EffectParamsCollection& effectArgs);
 
 	/// Generate a ramdom number in the interval [0, vector.size()[. This is a
 	/// convenience function used only to lightweight the code.
@@ -196,7 +196,7 @@ private:
 
 	// Other private methods
 	void exploitCardEffects(Card* usedCard);
-	void setTeamConstraint(const Card* usedCard, const EffectParamsCollection& effectArgs);
+	void setTeamConstraint(const EffectParamsCollection& effectArgs);
 	void setDeck(const Deck& newDeck);
 
 	void cardDeckToHand(int amount);
