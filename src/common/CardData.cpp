@@ -185,7 +185,7 @@ const SpellData ALL_SPELLS[] = {
 		"Grand Theft Card",
 		COST_1,
 		{{PLAYER_SELF, PE_STEAL_HAND_CARD}},
-		"You steal a random card from the opponent''s hand"
+		"You steal a random card from the opponent's hand"
 	}/*,
 	// TODO: CE_SELF_HYPNOTIZED NOT CREATED YET
 	{

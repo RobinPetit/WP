@@ -45,11 +45,11 @@ void Creature::moveToBoard()
 
 void Creature::removeFromBoard()
 {
+	_isOnBoard = false;
 	//Creature's death-based constraints
 	changeAttack({getConstraint(CC_DEATH_ATTACK_CHANGE)});
 	changeHealth({getConstraint(CC_DEATH_HEALTH_CHANGE)});
 	changeShield({getConstraint(CC_DEATH_ATTACK_CHANGE)});
-	_isOnBoard = false;
 }
 
 bool Creature::isOnBoard() const
@@ -235,7 +235,7 @@ void Creature::changeHealth(const EffectParamsCollection& args)
 					points = 0;
 				break;
 			case SHIELD_ORANGE:
-				if(points <= _shield)
+				if(-points <= _shield)
 					points = 0;  // Orange shield, only stronger attacks go through
 				break;
 			case SHIELD_LEGENDARY:
@@ -248,7 +248,8 @@ void Creature::changeHealth(const EffectParamsCollection& args)
 	if(_health <= 0)
 	{
 		_health = 0;
-		// Creature died
+		if(_isOnBoard)
+			_owner.cardBoardToGraveyard(this);
 	}
 }
 

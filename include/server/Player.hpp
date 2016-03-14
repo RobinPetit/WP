@@ -65,6 +65,10 @@ public:
 	/// \post !thereAreBoardChanges();
 	sf::Packet getBoardChanges();
 
+	/// This method is called by a creature when it dies to be remvoed from
+	/// the board and to be placed in the graveyard
+	void cardBoardToGraveyard(const Creature *card);
+
 	// Getters
 	int getCreatureConstraint(const Creature& subject, int constraintId) const;
 	const Card* getLastCaster() const;
