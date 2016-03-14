@@ -12,7 +12,7 @@
 #include <SFML/Network/Packet.hpp>
 
 /*------------------------------ CONSTRUCTOR AND INIT */
-std::function<void(Player&, const EffectParamsCollection&)> Player::_effectMethods[P_EFFECTS_COUNT] =
+std::array<std::function<void(Player&, const EffectParamsCollection&)>, P_EFFECTS_COUNT> Player::_effectMethods =
 {
 	&Player::setConstraint,
 	&Player::pickDeckCards,
@@ -461,7 +461,7 @@ void Player::applyEffectToSelf(EffectParamsCollection& effectArgs)
 {
 	int method = effectArgs.front();  //what method is used
 	effectArgs.erase(effectArgs.begin());
-	_effectMethods[method](*this, effectArgs);  //call method on self
+	_effectMethods.at(method-1)(*this, effectArgs);  //call method on self
 }
 
 void Player::applyEffectToCreature(Creature* casterAndSubject, EffectParamsCollection& effectArgs)

@@ -137,7 +137,7 @@ private:
 	const Card* _lastCasterCard = nullptr; // \TODO: use a reference ?
 
 	// Effects container
-	static std::function<void(Player&, const EffectParamsCollection&)> _effectMethods[P_EFFECTS_COUNT];
+	static std::array<std::function<void(Player&, const EffectParamsCollection&)>, P_EFFECTS_COUNT> _effectMethods;
 
 	/*------------------------------ Methods */
 	// User actions
