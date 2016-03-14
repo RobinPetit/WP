@@ -5,7 +5,7 @@
 #include <iostream>
 #include <cassert>
 
-std::function<void(Creature&, const EffectParamsCollection&)> Creature::_effectMethods[P_EFFECTS_COUNT] =
+std::array<std::function<void(Creature&, const EffectParamsCollection&)>, P_EFFECTS_COUNT> Creature::_effectMethods =
 {
 	&Creature::setConstraint,
 	&Creature::resetAttack,
@@ -114,7 +114,8 @@ void Creature::applyEffectToSelf(EffectParamsCollection& effectArgs)
 	const int method{effectArgs.front()};  // What method is used
 	effectArgs.erase(effectArgs.begin());
 
-	_effectMethods[method](*this, effectArgs);  // Call the method
+	// remove 1 because enums start at 1 (because of SQLite)
+	_effectMethods.at(method-1)(*this, effectArgs);  // Call the method
 }
 
 int Creature::getAttack() const
