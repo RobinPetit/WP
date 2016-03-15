@@ -1,13 +1,13 @@
 #ifndef _TERMINAL_LOBBY_STATE_CLIENT_HPP
 #define _TERMINAL_LOBBY_STATE_CLIENT_HPP
 
-// Standard headers
+// std-C++ headers
 #include <string>
-// Wizard Poker headers
+// WizardPoker headers
 #include "client/Terminal/TerminalAbstractState.hpp"
 #include "client/states/AbstractLobbyState.hpp"
 
-/// Cannot be more explicit.
+/// Final class for the lobby in the terminal.
 class TerminalLobbyState : public TerminalAbstractState, public AbstractLobbyState
 {
 	public:

@@ -1,7 +1,7 @@
 #ifndef _ABSTRACT_LADDER_STATE_CLIENT_HPP
 #define _ABSTRACT_LADDER_STATE_CLIENT_HPP
 
-// Wizard Poker headers
+// WizardPoker headers
 #include "common/Database.hpp"  // Ladder
 #include "client/AbstractState.hpp"
 

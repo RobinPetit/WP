@@ -1,12 +1,12 @@
 #ifndef _TERMINAL_LADDER_STATE_CLIENT_HPP
 #define _TERMINAL_LADDER_STATE_CLIENT_HPP
 
-// Wizard Poker headers
+// WizardPoker headers
 #include "common/Database.hpp"  // Ladder
 #include "client/Terminal/TerminalAbstractState.hpp"
 #include "client/states/AbstractLadderState.hpp"
 
-/// Cannot be more explicit.
+/// Final class for the ladder in the terminal.
 class TerminalLadderState : public TerminalAbstractState, public AbstractLadderState
 {
 	public:

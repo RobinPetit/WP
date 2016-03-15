@@ -1,10 +1,11 @@
 #ifndef _TERMINAL_FRIENDS_MANAGEMENT_STATE_CLIENT_HPP
 #define _TERMINAL_FRIENDS_MANAGEMENT_STATE_CLIENT_HPP
 
+// WizardPoker headers
 #include "client/Terminal/TerminalAbstractState.hpp"
 #include "client/states/AbstractFriendsManagementState.hpp"
 
-/// Cannot be more explicit.
+/// Final class for the friends management in the terminal.
 class TerminalFriendsManagementState : public TerminalAbstractState, public AbstractFriendsManagementState
 {
 	public:

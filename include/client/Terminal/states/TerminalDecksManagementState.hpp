@@ -1,12 +1,13 @@
 #ifndef _TERMINAL_DECKS_MANAGEMENT_STATE_CLIENT_HPP
 #define _TERMINAL_DECKS_MANAGEMENT_STATE_CLIENT_HPP
 
+// WizardPoker headers
 #include "client/Terminal/TerminalAbstractState.hpp"
 #include "client/states/AbstractDecksManagementState.hpp"
 #include "common/Deck.hpp"
 #include "common/CardsCollection.hpp"
 
-/// Cannot be more explicit.
+/// Final class for decks management in the terminal.
 class TerminalDecksManagementState : public TerminalAbstractState, public AbstractDecksManagementState
 {
 	public:
