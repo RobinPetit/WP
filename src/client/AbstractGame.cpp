@@ -293,51 +293,35 @@ void AbstractGame::endGame(sf::Packet& transmission)
 {
 	EndGame endGameInfo;
 	transmission >> endGameInfo;
-	if(endGameInfo.applyToSelf)
+	if(endGameInfo.cause == EndGame::Cause::ENDING_SERVER)
 	{
-		switch(endGameInfo.cause)
-		{
-		case EndGame::Cause::TEN_TURNS_WITH_EMPTY_DECK:
-			displayMessage("You lost because you played 10 turns with an empty deck!");
-			break;
-
-		case EndGame::Cause::OUT_OF_HEALTH:
-			displayMessage("You lost because you ran out of health!");
-			break;
-
-		case EndGame::Cause::QUITTED:
-			displayMessage("You quitted the game.");
-			break;
-
-		case EndGame::Cause::LOST_CONNECTION:
-			displayMessage("You lost connection with the server.");
-			break;
-		}
+		displayMessage("Server is ending, game is aborted.\n");
+		_client.connectionLost();
+		displayMessage("Connection is lost, let's try to reconnect properly.");
 	}
 	else
 	{
-		switch(endGameInfo.cause)
+		std::string endMessage{(endGameInfo.applyToSelf ? "You lost because you" : "You won because your opponent")};
+		if(endGameInfo.cause == EndGame::Cause::TEN_TURNS_WITH_EMPTY_DECK)
+			endMessage += " played 10 turns with an empty deck!";
+		else if(endGameInfo.cause == EndGame::Cause::OUT_OF_HEALTH)
+			endMessage += " ran out of health";
+		else if(endGameInfo.cause == EndGame::Cause::QUITTED)
+			endMessage += " quitted the game";
+		else  // if cause is Cause::LOST_CONNECTION
 		{
-		case EndGame::Cause::TEN_TURNS_WITH_EMPTY_DECK:
-			displayMessage("You won because your opponent played 10 turns with an empty deck!");
-			break;
-
-		case EndGame::Cause::OUT_OF_HEALTH:
-			displayMessage("You won because your opponent ran out of health!");
-			break;
-
-		case EndGame::Cause::QUITTED:
-			displayMessage("You won because your opponent quitted the game!");
-			break;
-
-		case EndGame::Cause::LOST_CONNECTION:
-			displayMessage("You won because your opponent has been disconnected from the server.");
-			break;
+			endMessage += " lost connection with the server";
+			_client.connectionLost();
+			displayMessage("Connection is lost, let's try to reconnect properly.");
 		}
-		// Get the won card
-		cardId newCard;
-		transmission >> newCard;
-		receiveCard(newCard);
+		displayMessage(endMessage);
+		if(not endGameInfo.applyToSelf)
+		{
+			// Get the won card
+			cardId newCard;
+			transmission >> newCard;
+			receiveCard(newCard);
+		}
 	}
 	_playing.store(false);
 	_myTurn.store(!_myTurn.load());

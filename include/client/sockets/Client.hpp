@@ -46,6 +46,10 @@ public:
 	/// \param port The port the server occupies
 	static void registerToServer(const std::string& name, const std::string& password, const sf::IpAddress& address, sf::Uint16 port);
 
+	/// The function called at the end of the game if the connection to
+	/// the server has been lost.
+	void connectionLost();
+
 	/////////// Friends management
 
 	/// The function used to start the process of making a new discussion with the chat program

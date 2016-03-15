@@ -55,7 +55,7 @@ private:
 	ServerDatabase& _database;
 
 	userId _winner;
-	EndGame::Cause _endGamecause;
+	EndGame::Cause _endGameCause;
 
 	Player *_activePlayer;
 	Player *_passivePlayer;
