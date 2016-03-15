@@ -27,10 +27,11 @@ std::array<std::function<void(Player&, const EffectParamsCollection&)>, P_EFFECT
 	&Player::changeHealth,
 };
 
-Player::Player(GameThread& gameThread, ServerDatabase& database, userId id):
+Player::Player(GameThread& gameThread, ServerDatabase& database, userId id, Player& opponent):
 	_gameThread(gameThread),
 	_database(database),
 	_id(id),
+	_opponent(opponent),
 	_isActive(false)
 {
 	// Input sockets are non-blocking, this is easier since the sockets of the
@@ -38,11 +39,6 @@ Player::Player(GameThread& gameThread, ServerDatabase& database, userId id):
 	// packet is received, the packet is handled, rather than waiting that the
 	// other Player instance receives a packet from the other client.
 	_socketToClient.setBlocking(false);
-}
-
-void Player::setOpponent(Player* opponent)
-{
-	_opponent = opponent;
 }
 
 int Player::getHealth() const
@@ -189,7 +185,7 @@ void Player::leaveTurn()
 
 void Player::finishGame(bool hasWon, EndGame::Cause cause)
 {
-	_gameThread.endGame(hasWon ? getId() : _opponent->getId(), cause);
+	_gameThread.endGame(hasWon ? getId() : _opponent.getId(), cause);
 }
 
 
@@ -280,11 +276,11 @@ void Player::useCard(int handIndex)
 	}
 
 	_lastCasterCard = usedCard;
-	_opponent->_lastCasterCard = usedCard;
+	_opponent._lastCasterCard = usedCard;
 
 	(this->*(usedCard->isCreature() ? &Player::useCreature : &Player::useSpell))(handIndex, usedCard);
 	logHandState();
-	_opponent->logOpponentHandState();
+	_opponent.logOpponentHandState();
 	logCurrentEnergy();
 }
 
@@ -308,8 +304,8 @@ void Player::useCreature(int handIndex, Card* usedCard)
 	sendValueToClient(TransferType::ACKNOWLEDGE);
 	logBoardState();
 	logOpponentBoardState();
-	_opponent->logBoardState();
-	_opponent->logOpponentBoardState();
+	_opponent.logBoardState();
+	_opponent.logOpponentBoardState();
 }
 
 void Player::useSpell(int handIndex, Card* usedCard)
@@ -339,7 +335,7 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 	{
 		attacker = _cardBoard.at(attackerIndex).get();
 		if(victimIndex >= 0)
-			victim = _opponent->_cardBoard.at(victimIndex).get();
+			victim = _opponent._cardBoard.at(victimIndex).get();
 	}
 	catch (std::out_of_range&)
 	{
@@ -367,7 +363,7 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 	if(victimIndex < 0)
 	{
 		std::vector<int> params{{PE_CHANGE_HEALTH, -(attacker->getAttack())}}; // \TODO: I don't think we should use effects this way
-		_opponent->applyEffectToSelf(params);  //no forced attacks on opponent
+		_opponent.applyEffectToSelf(params);  //no forced attacks on opponent
 		logOpponentHealth();
 	}
 	else
@@ -376,8 +372,8 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 		victim->makeAttack(*attacker);
 		logOpponentBoardState();
 		logBoardState();  // If an attack is returned to the attacker, the board changes
-		_opponent->logOpponentBoardState();
-		_opponent->logBoardState();
+		_opponent.logOpponentBoardState();
+		_opponent.logBoardState();
 	}
 	sendValueToClient(TransferType::ACKNOWLEDGE);
 }
@@ -402,7 +398,7 @@ void Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 	}
 
 	_lastCasterCard = usedCard;  // remember last used card
-	_opponent->_lastCasterCard = usedCard; // same for opponent
+	_opponent._lastCasterCard = usedCard; // same for opponent
 
 	switch(subject)
 	{
@@ -413,7 +409,7 @@ void Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 
 		case PLAYER_OPPO:  //active player
 			askUserToSelectCards({});
-			_opponent->applyEffectToSelf(effectArgs);
+			_opponent.applyEffectToSelf(effectArgs);
 			break;
 
 		case CREATURE_SELF_THIS:  //active player's creature that was used
@@ -441,19 +437,19 @@ void Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 			break;
 
 		case CREATURE_OPPO_INDX:	//passive player's creature at given index
-			if(not _opponent->_cardBoard.empty())
-				_opponent->applyEffectToCreature(effectArgs, askUserToSelectCards({CardToSelect::OPPO_BOARD}));
+			if(not _opponent._cardBoard.empty())
+				_opponent.applyEffectToCreature(effectArgs, askUserToSelectCards({CardToSelect::OPPO_BOARD}));
 			break;
 
 		case CREATURE_OPPO_RAND:	//passive player's creature at random index
 			askUserToSelectCards({});
-			if(not _opponent->_cardBoard.empty())
-				_opponent->applyEffectToCreature(effectArgs, getRandomBoardIndexes({CardToSelect::OPPO_BOARD}));
+			if(not _opponent._cardBoard.empty())
+				_opponent.applyEffectToCreature(effectArgs, getRandomBoardIndexes({CardToSelect::OPPO_BOARD}));
 			break;
 
 		case CREATURE_OPPO_TEAM:	//passive player's team of creatures
 			askUserToSelectCards({});
-			_opponent->applyEffectToCreatureTeam(effectArgs);
+			_opponent.applyEffectToCreatureTeam(effectArgs);
 			break;
 
 		default:
@@ -587,7 +583,7 @@ void Player::reviveGraveyardCard(const EffectParamsCollection& args)
 void Player::stealHandCard(const EffectParamsCollection& /* args */)
 {
 	//no arguments
-	cardAddToHand(_opponent->cardRemoveFromHand());
+	cardAddToHand(_opponent.cardRemoveFromHand());
 }
 
 /// \network sends to user one of the following:
@@ -609,7 +605,7 @@ void Player::exchgHandCard(const EffectParamsCollection& /* args */)
 		throw std::runtime_error("exchgCard error with cards arguments");
 	}
 
-	std::unique_ptr<Card> hisCard(_opponent->cardExchangeFromHand(std::move(myCard)));
+	std::unique_ptr<Card> hisCard(_opponent.cardExchangeFromHand(std::move(myCard)));
 
 	if(hisCard == nullptr)
 	{
@@ -672,7 +668,7 @@ void Player::changeHealth(const EffectParamsCollection& args)
 		{
 			_health = _maxHealth;
 			logCurrentHealth();
-			_opponent->logOpponentHealth();
+			_opponent.logOpponentHealth();
 		}
 	}
 	catch (std::out_of_range&)
@@ -699,7 +695,7 @@ void Player::logCurrentHealth()
 
 void Player::logOpponentHealth()
 {
-	_pendingBoardChanges << TransferType::GAME_OPPONENT_HEALTH_UPDATED << static_cast<sf::Uint32>(_opponent->getHealth());
+	_pendingBoardChanges << TransferType::GAME_OPPONENT_HEALTH_UPDATED << static_cast<sf::Uint32>(_opponent.getHealth());
 }
 
 void Player::logCurrentDeck()
@@ -709,7 +705,7 @@ void Player::logCurrentDeck()
 
 void Player::logOpponentHandState()
 {
-	_pendingBoardChanges << TransferType::GAME_OPPONENT_HAND_UPDATED << static_cast<sf::Uint32>(_opponent->getHandSize());
+	_pendingBoardChanges << TransferType::GAME_OPPONENT_HAND_UPDATED << static_cast<sf::Uint32>(_opponent.getHandSize());
 }
 
 /*--------------------------- PRIVATE */
@@ -762,7 +758,7 @@ void Player::cardDeckToHand(int amount)
 		_cardDeck.pop();
 	}
 	logHandState();
-	_opponent->logOpponentHandState();
+	_opponent.logOpponentHandState();
 	logCurrentDeck();
 }
 
@@ -773,9 +769,9 @@ void Player::cardHandToBoard(int handIndex)
 	_cardBoard.back()->moveToBoard();
 	_cardHand.erase(_cardHand.begin() + handIndex);
 	logHandState();
-	_opponent->logOpponentHandState();
+	_opponent.logOpponentHandState();
 	logBoardState();
-	_opponent->logOpponentBoardState();
+	_opponent.logOpponentBoardState();
 }
 
 void Player::cardHandToGraveyard(int handIndex)
@@ -783,7 +779,7 @@ void Player::cardHandToGraveyard(int handIndex)
 	_cardGraveyard.push_back(std::move(_cardHand.at(handIndex)));
 	_cardHand.erase(_cardHand.begin() + handIndex);
 	logHandState();
-	_opponent->logOpponentHandState();
+	_opponent.logOpponentHandState();
 	logGraveyardState();
 }
 
@@ -794,7 +790,7 @@ void Player::cardBoardToGraveyard(int boardIndex)
 	_cardGraveyard.push_back(std::unique_ptr<Card>(static_cast<Card*>(_cardBoard.at(boardIndex).release())));
 	_cardBoard.erase(_cardBoard.begin() + boardIndex);
 	logBoardState();
-	_opponent->logOpponentBoardState();
+	_opponent.logOpponentBoardState();
 	logGraveyardState();
 }
 
@@ -811,7 +807,7 @@ void Player::cardGraveyardToHand(int binIndex)
 	_cardGraveyard.erase(_cardGraveyard.begin() + binIndex);
 	logGraveyardState();
 	logHandState();
-	_opponent->logOpponentHandState();
+	_opponent.logOpponentHandState();
 }
 
 void Player::cardAddToHand(std::unique_ptr<Card> givenCard)
@@ -820,7 +816,7 @@ void Player::cardAddToHand(std::unique_ptr<Card> givenCard)
 	{
 		_cardHand.push_back(std::move(givenCard));
 		logHandState();
-		_opponent->logOpponentHandState();
+		_opponent.logOpponentHandState();
 	}
 }
 
@@ -832,7 +828,7 @@ std::unique_ptr<Card> Player::cardRemoveFromHand()
 	std::unique_ptr<Card> stolenCard(std::move(_cardHand[handIndex]));
 	_cardHand.erase(_cardHand.begin() + handIndex);
 	logHandState();
-	_opponent->logOpponentHandState();
+	_opponent.logOpponentHandState();
 	return std::move(stolenCard);
 }
 
@@ -848,7 +844,7 @@ std::unique_ptr<Card> Player::cardExchangeFromHand(std::unique_ptr<Card> givenCa
 		return nullptr;
 	std::swap(givenCard, _cardHand[handIndex]);
 	logHandState();
-	_opponent->logOpponentHandState();
+	_opponent.logOpponentHandState();
 	return std::move(givenCard);
 }
 
@@ -864,7 +860,7 @@ void Player::logBoardState()
 
 void Player::logOpponentBoardState()
 {
-	logBoardCreatureDataFromVector(TransferType::GAME_OPPONENT_BOARD_UPDATED, _opponent->getBoard());
+	logBoardCreatureDataFromVector(TransferType::GAME_OPPONENT_BOARD_UPDATED, _opponent.getBoard());
 }
 
 void Player::logGraveyardState()
@@ -950,11 +946,11 @@ std::vector<int> Player::getRandomBoardIndexes(const std::vector<CardToSelect>& 
 				break;
 
 			case CardToSelect::OPPO_BOARD:
-				indices[i] = getRandomIndex(_opponent->_cardBoard);
+				indices[i] = getRandomIndex(_opponent._cardBoard);
 				break;
 
 			case CardToSelect::OPPO_HAND:
-				indices[i] = getRandomIndex(_opponent->_cardHand);
+				indices[i] = getRandomIndex(_opponent._cardHand);
 				break;
 		}
 	}

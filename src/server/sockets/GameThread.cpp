@@ -23,8 +23,8 @@ GameThread::GameThread(ServerDatabase& database, userId player1Id, userId player
 	_player1Id(player1Id),
 	_player2Id(player2Id),
 	_running(false),
-	_player1(*this, database, _player1Id),
-	_player2(*this, database, _player2Id),
+	_player1(*this, database, _player1Id, _player2),
+	_player2(*this, database, _player2Id, _player1),
 	_database(database),
 	_winner{0},
 	_turn(0),
@@ -41,8 +41,6 @@ void GameThread::createPlayers()
 	std::random_device device;
 	if(std::bernoulli_distribution(0.5)(device)) //Choose which player starts
 		std::swap(_activePlayer, _passivePlayer);
-	_activePlayer->setOpponent(_passivePlayer);
-	_passivePlayer->setOpponent(_activePlayer);
 }
 
 RandomInteger& GameThread::getGenerator()

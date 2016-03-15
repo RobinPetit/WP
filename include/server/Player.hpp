@@ -32,9 +32,7 @@ class Player
 public:
 	/*------------------------------ Methods */
 	/// Constructor
-	Player(GameThread& gameThread, ServerDatabase& database, userId id);
-
-	void setOpponent(Player* opponent);  // Complementary
+	Player(GameThread& gameThread, ServerDatabase& database, userId id, Player& opponent);
 
 	// Interface for basic gameplay
 	/// Receive the deck sent by the client and put it in the game
@@ -94,9 +92,7 @@ private:
 	GameThread& _gameThread;
 	ServerDatabase& _database;
 
-	/// Pointer responsability is not given to this Player:
-	/// it is not an allocated-attribute
-	Player* _opponent = nullptr; // pointer is required because attribute is initialized after constructor
+	Player& _opponent;
 	userId _id;
 	std::atomic_bool _isActive; // blocks functions that are only allowed for active player
 
