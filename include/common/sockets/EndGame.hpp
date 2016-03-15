@@ -25,6 +25,7 @@ struct EndGame
 		TEN_TURNS_WITH_EMPTY_DECK,
 		OUT_OF_HEALTH,
 		QUITTED,
+		LOST_CONNECTION,
 	};
 
 	/// \see Cause
