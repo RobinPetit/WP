@@ -636,6 +636,7 @@ void Player::resetEnergy(const EffectParamsCollection& args)
 		_energyInit = 0;
 	else if(_energyInit > _maxEnergy)
 		_energyInit = _maxEnergy;
+	_energy = _energyInit;
 }
 
 void Player::changeEnergy(const EffectParamsCollection& args)
