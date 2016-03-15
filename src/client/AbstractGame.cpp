@@ -308,6 +308,10 @@ void AbstractGame::endGame(sf::Packet& transmission)
 		case EndGame::Cause::QUITTED:
 			displayMessage("You quitted the game.");
 			break;
+
+		case EndGame::Cause::LOST_CONNECTION:
+			displayMessage("You lost connection with the server.");
+			break;
 		}
 	}
 	else
@@ -324,6 +328,10 @@ void AbstractGame::endGame(sf::Packet& transmission)
 
 		case EndGame::Cause::QUITTED:
 			displayMessage("You won because your opponent quitted the game!");
+			break;
+
+		case EndGame::Cause::LOST_CONNECTION:
+			displayMessage("You won because your opponent has been disconnected from the server.");
 			break;
 		}
 		// Get the won card

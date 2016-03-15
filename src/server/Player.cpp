@@ -30,8 +30,8 @@ std::array<std::function<void(Player&, const EffectParamsCollection&)>, P_EFFECT
 Player::Player(GameThread& gameThread, ServerDatabase& database, userId id, Player& opponent):
 	_gameThread(gameThread),
 	_database(database),
-	_id(id),
 	_opponent(opponent),
+	_id(id),
 	_isActive(false)
 {
 	// Input sockets are non-blocking, this is easier since the sockets of the
