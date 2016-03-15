@@ -1,6 +1,7 @@
 #ifndef TERMINAL_GAME_HPP
 #define TERMINAL_GAME_HPP
 
+// WizardPoker headers
 #include "client/AbstractGame.hpp"
 
 class TerminalGame : public AbstractGame

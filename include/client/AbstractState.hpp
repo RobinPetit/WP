@@ -1,7 +1,7 @@
 #ifndef _ABSTRACT_STATE_CLIENT_HPP
 #define _ABSTRACT_STATE_CLIENT_HPP
 
-// Wizard Poker headers
+// WizardPoker headers
 #include "client/StateStack.hpp"
 #include "client/sockets/Client.hpp"
 
@@ -12,6 +12,29 @@
 /// In order to make a state, you must inherit from this class
 /// and implement the pure virtual members.
 /// Do not instanciate yourself a state, use AbstactState::statePush() instead.
+///
+/// The design of the various state classes works as follow:
+/// * We have a base class, AbstractState;
+/// * Then we have TerminalAbstractState and GuiAbstractState that inherits
+/// from AbstractState;
+/// * And we have an abstract class for each state, such as AbstractHomeState;
+/// * Each state has also two concrete classes: TerminalHomeState that inherits
+/// from TerminalAbstractState and AbstractHomeState, and the corresponding
+/// class for the GUI;
+///
+///
+/// TerminalAbstractState does all the work that is not specific to a state, but
+/// that is common to all terminal states.
+/// GuiAbstractState does all the work that is not specific to a state, but that
+/// is common to all GUI states.
+///
+/// Each abstract state for a menu (such as AbstractHomeState) holds information
+/// and do things that is not related to the interface, but that is related
+/// to its menu entry.
+///
+/// This design, although complicated, allows to separate very efficiently the
+/// terminal/gui logic, the logic specific to a menu, and the logic for every
+/// state.
 ///
 /// \note This class is abstract because it is not a concrete state, and because
 /// it is not specialized for terminal/GUI. So the exact name should be
@@ -47,10 +70,10 @@ class AbstractState
 		/// Delete all the states.
 		void stackClear();
 
-		Client& _client;
+		Client& _client;  ///< The client.
 
 	private:
-		StateStack& _stateStack;
+		StateStack& _stateStack;  ///< The state stack that holds this state.
 };
 
 template<typename StateType>

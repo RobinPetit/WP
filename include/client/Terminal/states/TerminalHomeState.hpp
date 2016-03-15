@@ -1,12 +1,14 @@
 #ifndef _TERMINAL_HOME_STATE_CLIENT_HPP
 #define _TERMINAL_HOME_STATE_CLIENT_HPP
 
+// std-C++ headers
 #include <string>
 #include <utility>
+// WizardPoker headers
 #include "client/Terminal/TerminalAbstractState.hpp"
 #include "client/states/AbstractHomeState.hpp"
 
-/// Cannot be more explicit.
+/// Final class for the home in the terminal.
 class TerminalHomeState : public TerminalAbstractState, public AbstractHomeState
 {
 	public:

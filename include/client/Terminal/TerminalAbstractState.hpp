@@ -1,15 +1,17 @@
 #ifndef _TERMINAL_ABSTRACT_STATE_CLIENT_HPP
 #define _TERMINAL_ABSTRACT_STATE_CLIENT_HPP
 
-// Standard headers
+// std-C++ headers
 #include <vector>
 #include <utility>  // std::pair
 #include <functional>  // std::function and std::bind
-// Wizard Poker headers
+// WizardPoker headers
 #include "client/StateStack.hpp"
 #include "client/AbstractState.hpp"
 
 /// Terminal specialisation of AbstractState.
+/// Does all the work that is not specific to a state, but that is common to all
+/// terminal states.
 class TerminalAbstractState : virtual public AbstractState
 {
 	public:
@@ -19,7 +21,8 @@ class TerminalAbstractState : virtual public AbstractState
 		TerminalAbstractState(StateStack& stateStack, Client& client);
 
 		/// The display function.
-		/// It must do all things related to drawing or printing stuff on the screen.
+		/// It must do all things related to drawing or printing stuff on the
+		/// screen.
 		virtual void display() override;
 
 		/// The event handling function.
@@ -49,7 +52,8 @@ class TerminalAbstractState : virtual public AbstractState
 		static void waitForEnter();
 
 	private:
-		std::vector<std::pair<std::string, std::function<void()>>> _actions;  ///< All actions doable in the state.
+		/// All actions doable in the state.
+		std::vector<std::pair<std::string, std::function<void()>>> _actions;
 };
 
 template<typename StateType>

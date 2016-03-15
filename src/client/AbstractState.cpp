@@ -1,7 +1,7 @@
-// Standard headers
+// std-C++ headers
 #include <iostream>
 #include <cassert>
-// Wizard Poker headers
+// WizardPoker headers
 #include "client/AbstractState.hpp"
 
 AbstractState::AbstractState(StateStack& stateStack, Client& client):

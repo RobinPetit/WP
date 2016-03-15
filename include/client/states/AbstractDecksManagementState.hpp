@@ -1,6 +1,7 @@
 #ifndef _ABSTRACT_DECKS_MANAGEMENT_STATE_CLIENT_HPP
 #define _ABSTRACT_DECKS_MANAGEMENT_STATE_CLIENT_HPP
 
+// WizardPoker headers
 #include "client/AbstractState.hpp"
 #include "common/Deck.hpp"
 #include "common/CardsCollection.hpp"

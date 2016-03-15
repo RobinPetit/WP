@@ -3,7 +3,7 @@
 
 // Standard headers
 #include <string>
-// Wizard Poker headers
+// WizardPoker headers
 #include "client/AbstractState.hpp"
 
 /// Abstract version of the lobby state.
