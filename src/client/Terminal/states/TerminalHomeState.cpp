@@ -6,30 +6,31 @@
 #include "common/constants.hpp"
 #include "common/UnableToConnectException.hpp"
 #include "client/ErrorCode.hpp"
-#include "client/sockets/Client.hpp"
 #include "common/ini/IniFile.hpp"
-#include "client/states/MainMenuState.hpp"
-#include "client/states/HomeState.hpp"
+#include "client/Terminal/states/TerminalMainMenuState.hpp"
+#include "client/Terminal/states/TerminalHomeState.hpp"
 
-HomeState::HomeState(StateStack& stateStack, Client& client):
-	AbstractState(stateStack, client)
+TerminalHomeState::TerminalHomeState(StateStack& stateStack, Client& client):
+	AbstractState(stateStack, client),
+	TerminalAbstractState(stateStack, client),
+	AbstractHomeState(stateStack, client)
 {
-	addAction("Quit", &HomeState::quit);
-	addAction("Connect with your account", &HomeState::connect);
-	addAction("Create an account", &HomeState::createAccount);
+	addAction("Quit", &TerminalHomeState::quit);
+	addAction("Connect with your account", &TerminalHomeState::connect);
+	addAction("Create an account", &TerminalHomeState::createAccount);
 }
 
-void HomeState::display()
+void TerminalHomeState::display()
 {
 	std::cout << "Welcome to Wizard Poker!\n";
 
 	// Display the actions
-	AbstractState::display();
+	TerminalAbstractState::display();
 }
 
 // \TODO: factorize connect and createAccount
 
-void HomeState::connect()
+void TerminalHomeState::connect()
 {
 	try
 	{
@@ -63,7 +64,7 @@ void HomeState::connect()
 					throw;
 			}
 		}
-		stackPush<MainMenuState>();
+		stackPush<TerminalMainMenuState>();
 	}
 	catch(const std::runtime_error& e)
 	{
@@ -76,7 +77,7 @@ void HomeState::connect()
 	}
 }
 
-void HomeState::createAccount()
+void TerminalHomeState::createAccount()
 {
 	try
 	{
@@ -101,12 +102,7 @@ void HomeState::createAccount()
 	waitForEnter();
 }
 
-void HomeState::quit()
-{
-	stackClear();
-}
-
-std::pair<std::string, std::string> HomeState::askIdentifiers()
+std::pair<std::string, std::string> TerminalHomeState::askIdentifiers()
 {
 	std::string userName, password;
 	std::cout << "What is your user name? ";

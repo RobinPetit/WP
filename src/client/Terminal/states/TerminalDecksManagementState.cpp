@@ -1,30 +1,22 @@
 // std-C++ headers
 #include <iostream>
 // WizardPoker headers
-#include "client/states/DecksManagementState.hpp"
 #include "common/CardData.hpp"
+#include "client/Terminal/states/TerminalDecksManagementState.hpp"
 
-DecksManagementState::DecksManagementState(StateStack& stateStack, Client& client):
-	AbstractState(stateStack, client)
+TerminalDecksManagementState::TerminalDecksManagementState(StateStack& stateStack, Client& client):
+	AbstractState(stateStack, client),
+	TerminalAbstractState(stateStack, client),
+	AbstractDecksManagementState(stateStack, client)
 {
-	addAction("Back to main menu", &DecksManagementState::backMainMenu);
-	addAction("Display a deck", &DecksManagementState::displayDeck);
-	addAction("Edit a deck", &DecksManagementState::editDeck);
-	addAction("Create a deck", &DecksManagementState::createDeck);
-	addAction("Delete a deck", &DecksManagementState::deleteDeck);
-	try
-	{
-		_decks = _client.getDecks();
-		_cardsCollection = _client.getCardsCollection();
-	}
-	catch(const std::runtime_error& e)
-	{
-		std::cout << "Error: " << e.what() << "\n";
-		std::cout << "Default card collection loaded.\n";
-	}
+	addAction("Back to main menu", &TerminalDecksManagementState::backMainMenu);
+	addAction("Display a deck", &TerminalDecksManagementState::displayDeck);
+	addAction("Edit a deck", &TerminalDecksManagementState::editDeck);
+	addAction("Create a deck", &TerminalDecksManagementState::createDeck);
+	addAction("Delete a deck", &TerminalDecksManagementState::deleteDeck);
 }
 
-void DecksManagementState::display()
+void TerminalDecksManagementState::display()
 {
 	std::cout << "Here are your decks:\n";
 	int i{0};
@@ -33,10 +25,10 @@ void DecksManagementState::display()
 	std::cout << std::string(40, '*') << "\n";
 
 	// Display the actions
-	AbstractState::display();
+	TerminalAbstractState::display();
 }
 
-void DecksManagementState::displayDeck()
+void TerminalDecksManagementState::displayDeck()
 {
 	if(_decks.empty())
 	{
@@ -50,7 +42,7 @@ void DecksManagementState::displayDeck()
 	waitForEnter();
 }
 
-void DecksManagementState::editDeck()
+void TerminalDecksManagementState::editDeck()
 {
 	if(_decks.empty())
 	{
@@ -102,7 +94,7 @@ void DecksManagementState::editDeck()
 		std::cout << "Error: " << e.what() << "\n";
 	}
 }
-std::size_t DecksManagementState::askForReplacedCard(std::size_t deckIndex)
+std::size_t TerminalDecksManagementState::askForReplacedCard(std::size_t deckIndex)
 {
 	int i{0};
 	std::cout << "Content of the deck " << _decks[deckIndex].getName() << ":\n";
@@ -112,7 +104,7 @@ std::size_t DecksManagementState::askForReplacedCard(std::size_t deckIndex)
 	return askForNumber(0, Deck::size + 1);
 }
 
-cardId DecksManagementState::askForReplacingCard(std::size_t deckIndex)
+cardId TerminalDecksManagementState::askForReplacingCard(std::size_t deckIndex)
 {
 	std::cout << "Content of your card collection:\n";
 	for(const auto& card : _cardsCollection)
@@ -129,7 +121,7 @@ cardId DecksManagementState::askForReplacingCard(std::size_t deckIndex)
 	return replacingCard;
 }
 
-void DecksManagementState::createDeck()
+void TerminalDecksManagementState::createDeck()
 {
 	std::cout << "What is the name of your new deck? ";
 	std::string input;
@@ -145,7 +137,7 @@ void DecksManagementState::createDeck()
 	}
 }
 
-void DecksManagementState::deleteDeck()
+void TerminalDecksManagementState::deleteDeck()
 {
 	if(_decks.empty())
 	{
@@ -168,10 +160,3 @@ void DecksManagementState::deleteDeck()
 		std::cout << "Error: " << e.what() << "\n";
 	}
 }
-
-void DecksManagementState::backMainMenu()
-{
-	stackPop();
-}
-
-
