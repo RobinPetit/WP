@@ -1,17 +1,6 @@
 #include "server/Spell.hpp"
 
-Spell::Spell(cardId cardIdentifier, int cost, std::vector<EffectParamsCollection> effects):
-	Card(cardIdentifier, cost, effects)
+Spell::Spell(const SpellData& cardData):
+	Card(cardData)
 {
-
-}
-
-bool Spell::isCreature()
-{
-	return false;
-}
-
-bool Spell::isSpell()
-{
-	return true;
 }

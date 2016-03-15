@@ -2,7 +2,7 @@
 #define _CARD_DATA_HPP_
 
 #include <vector>
-#include "common/Identifiers.hpp"
+#include "common/Identifiers.hpp" // cardId, deckId...
 #include "common/CardData.inc"
 
 constexpr int UNLIMITED_TURNS = 100;

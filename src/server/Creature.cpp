@@ -14,25 +14,13 @@ std::function<void(Creature&, const EffectParamsCollection&)> Creature::_effectM
 	&Creature::changeShield
 };
 
-Creature::Creature(cardId cardIdentifier, int cost, int attack, int health, int shield, int shieldType,
-					std::vector<EffectParamsCollection> effects):
-	Card(cardIdentifier, cost, effects),
-	_attack(attack),
-	_health(health),
-	_shield(shield),
-	_shieldType(shieldType)
+Creature::Creature(const CreatureData& cardData):
+	Card(cardData),
+	_attack(cardData.getAttack()),
+	_health(cardData.getHealth()),
+	_shield(cardData.getShield()),
+	_shieldType(cardData.getShieldType())
 {
-
-}
-
-bool Creature::isCreature()
-{
-	return true;
-}
-
-bool Creature::isSpell()
-{
-	return false;
 }
 
 void Creature::movedToBoard()
@@ -178,19 +166,19 @@ void Creature::setConstraint(const EffectParamsCollection& args)
 void Creature::resetAttack(const EffectParamsCollection&)
 {
 	//no arguments
-	 _attack = _attackInit;
+	 _attack = prototype().getAttack();
 }
 
 void Creature::resetHealth(const EffectParamsCollection&)
 {
 	//arguments
-	 _health = _healthInit;
+	 _health = prototype().getHealth();
 }
 
 void Creature::resetShield(const EffectParamsCollection&)
 {
 	//no arguments
-	 _shield = _shieldInit;
+	 _shield = prototype().getShield();
 }
 
 void Creature::changeAttack(const EffectParamsCollection& args)
@@ -259,4 +247,10 @@ void Creature::changeShield(const EffectParamsCollection& args)
 	{
 		 throw std::runtime_error("Error with cards arguments");
 	}
+}
+
+/*--------------------------- PRIVATE METHOD */
+inline const CreatureData& Creature::prototype() const
+{
+	return static_cast<const CreatureData&>(_prototype);
 }

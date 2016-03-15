@@ -6,31 +6,26 @@
 // WizardPoker headers
 #include "server/Constraints.hpp"
 #include "server/CardData.hpp"
-#include "common/Identifiers.hpp"
 
 class Card
 {
-private:
+protected:
+	const CommonCardData& _prototype;
 	int _cost;
-	cardId _cardID;  //Will be needed for communicating modification to player's hand/deck/...
-	std::vector<EffectParamsCollection> _effects;	//Effects
 
 public:
 	/// Constructor
-	Card(cardId cardIdentifier, int cost, std::vector<EffectParamsCollection> effects);
+	Card(const CommonCardData&);
 
 	/// Getters
-	int getEnergyCost();
-	std::vector<EffectParamsCollection> getEffects();
-	cardId getID();
-
+	int getEnergyCost() const;
+	cardId getID() const;
 
 	/// Methods
-	virtual bool isCreature()=0;
-	virtual bool isSpell()=0;
+	bool isCreature() const;
+	bool isSpell() const;
 
-	virtual ~Card()=default;
-
+	virtual ~Card() = default;
 };
 
 #endif //_CARD_SERVER_HPP

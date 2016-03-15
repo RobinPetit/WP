@@ -11,9 +11,9 @@
 class Creature : public Card
 {
 private:
-	int _attack, _attackInit;
-	int _health, _healthInit;
-	int _shield, _shieldInit;
+	int _attack;
+	int _health;
+	int _shield;
 	int _shieldType;
 
 	Player* _owner;
@@ -34,14 +34,14 @@ private:
 	void changeShield(const EffectParamsCollection& args);
 	void forcedChangeHealth(const EffectParamsCollection& args);
 
+	/// used to get good prototype type
+	inline const CreatureData& prototype() const;
+
 public:
 	/// Constructors
-	Creature(cardId cardIdentifier, int cost, int attack, int health, int shield, int shieldType,
-			std::vector<EffectParamsCollection> effects);
+	Creature(const CreatureData&);
 
 	/// Player interface
-	virtual bool isCreature() override;
-	virtual bool isSpell() override;
 	void movedToBoard();
 	void removedFromBoard();
 	bool isOnBoard() const;
@@ -50,7 +50,7 @@ public:
 	void leaveTurn();
 
 	void makeAttack(Creature& victim);
-	void receiveAttack(Creature& attacker, int attack, int forced, int loopCount=0);
+	void receiveAttack(Creature& attacker, int attack, int forced, int loopCount = 0);
 
 	/// Effects interface
 	void applyEffectToSelf(EffectParamsCollection effectArgs);

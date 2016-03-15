@@ -8,10 +8,7 @@ class Spell: public Card
 {
 public:
 	/// Constructor
-	Spell(cardId cardIdentifier, int cost, std::vector<EffectParamsCollection> effects);
-
-	virtual inline bool isCreature() override;
-	virtual inline bool isSpell() override;
+	Spell(const SpellData&);
 };
 
 #endif //_SPELL_SERVER_HPP

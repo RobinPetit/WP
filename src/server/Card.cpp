@@ -1,24 +1,26 @@
 #include "server/Card.hpp"
 
-Card::Card(cardId cardIdentifier, int cost, std::vector<EffectParamsCollection> effects):
-	_cost(cost),
-	_cardID(cardIdentifier),
-	_effects(effects)
+Card::Card(const CommonCardData& cardData):
+	_prototype(cardData), _cost(cardData.getCost())
 {
-
 }
 
-std::vector<EffectParamsCollection> Card::getEffects()
-{
-	return _effects;
-}
-
-int Card::getEnergyCost()
+int Card::getEnergyCost() const
 {
 	return _cost;
 }
 
-cardId Card::getID()
+cardId Card::getID() const
 {
-	return _cardID;
+	return _prototype.getId();
+}
+
+bool Card::isCreature() const
+{
+	return _prototype.isCreature();
+}
+
+bool Card::isSpell() const
+{
+	return _prototype.isSpell();
 }

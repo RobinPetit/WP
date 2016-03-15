@@ -2,7 +2,6 @@
 #define _CARD_DATA_SEVER_HPP_
 
 // WizardPocker
-#include "common/Identifiers.hpp" // cardId, deckId...
 #include "common/CardData.hpp"    // CommonCreatureData,... CostValue,...
 // std-C++
 #include <vector>
