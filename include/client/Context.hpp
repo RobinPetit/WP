@@ -1,8 +1,9 @@
 #ifndef _CONTEXT_CLIENT_HPP
 #define _CONTEXT_CLIENT_HPP
 
-// SFML headers
+// External headers
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <TGUI/Gui.hpp>
 
 // Forward declarations
 class Client;
@@ -29,7 +30,7 @@ struct Context
 
 	// GUI attributes
 	sf::RenderWindow* window;  ///< The window.
-	// tgui::Gui* gui;            ///< The GUI.
+	tgui::Gui* gui;            ///< The GUI.
 };
 
 #endif  // _CONTEXT_CLIENT_HPP

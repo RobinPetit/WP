@@ -3,6 +3,6 @@
 AbstractApplication::AbstractApplication():
 	_client{},
 	_stateStack{_context},
-	_context{&_client, &_stateStack, nullptr}
+	_context{&_client, &_stateStack, nullptr, nullptr}
 {
 }

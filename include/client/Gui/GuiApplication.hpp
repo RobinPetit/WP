@@ -1,8 +1,9 @@
 #ifndef _GUI_APPLICATION_CLIENT_HPP
 #define _GUI_APPLICATION_CLIENT_HPP
 
-// SFML headers
+// External headers
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <TGUI/Gui.hpp>
 // WizardPoker headers
 #include "client/AbstractApplication.hpp"
 
@@ -20,6 +21,7 @@ class GuiApplication : public AbstractApplication
 		sf::VideoMode _videoMode;
 		std::string _windowTitle;
 		sf::RenderWindow _window;
+		tgui::Gui _gui;
 };
 
 #endif  // _GUI_APPLICATION_CLIENT_HPP

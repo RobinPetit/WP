@@ -5,9 +5,11 @@
 GuiApplication::GuiApplication():
 	_videoMode{800, 600},
 	_windowTitle{"Wizard Poker"},
-	_window{_videoMode, _windowTitle}
+	_window{_videoMode, _windowTitle},
+	_gui{_window}
 {
 	_context.window = &_window;
+	_context.gui = &_gui;
 }
 
 int GuiApplication::play()
