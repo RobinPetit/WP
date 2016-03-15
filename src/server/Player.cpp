@@ -33,7 +33,6 @@ Player::Player(GameThread& gameThread, ServerDatabase& database, userId id):
 	_id(id),
 	_isActive(false)
 {
-	std::cout << _energy << _health << std::endl;
 	// Input sockets are non-blocking, this is easier since the sockets of the
 	// two players are separated in the Player instances. So that as soon as a
 	// packet is received, the packet is handled, rather than waiting that the
