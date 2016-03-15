@@ -3,17 +3,17 @@
 
 #include <string>
 #include <utility>
-#include "client/AbstractState.hpp"
+#include "client/Terminal/TerminalAbstractState.hpp"
 
 // Forward declarations
 class StateStack;
 
 /// Cannot be more explicit.
-class HomeState : public AbstractState
+class TerminalHomeState : public TerminalAbstractState
 {
 	public:
 		/// Constructor.
-		HomeState(StateStack& stateStack, Client& client);
+		TerminalHomeState(StateStack& stateStack, Client& client);
 
 		/// The display function.
 		/// It must do all things related to drawing or printing stuff on the screen.
@@ -24,8 +24,6 @@ class HomeState : public AbstractState
 		void createAccount();
 		void quit();
 		static std::pair<std::string, std::string> askIdentifiers();
-
 };
 
 #endif// _HOME_STATE_CLIENT_HPP
-

@@ -3,18 +3,18 @@
 // WizardPoker headers
 #include "client/sockets/Client.hpp"
 #include "common/sockets/TransferType.hpp"
-#include "client/states/LobbyState.hpp"
+#include "client/states/AbstractLobbyState.hpp"
 #include "client/NonBlockingInput.hpp"
 #include "client/Terminal/TerminalGame.hpp"
 
-LobbyState::LobbyState(StateStack& stateStack, Client& client):
+AbstractLobbyState::AbstractLobbyState(StateStack& stateStack, Client& client):
 	AbstractState(stateStack, client)
 {
-	addAction("Quit", &LobbyState::quit);
-	addAction("Find a game", &LobbyState::startGame);
+	addAction("Quit", &AbstractLobbyState::quit);
+	addAction("Find a game", &AbstractLobbyState::startGame);
 }
 
-void LobbyState::display()
+void AbstractLobbyState::display()
 {
 	std::cout << "Welcome to the matchmaking lobby!\n";
 
@@ -22,7 +22,7 @@ void LobbyState::display()
 	AbstractState::display();
 }
 
-void LobbyState::startGame()
+void AbstractLobbyState::startGame()
 {
 	std::cout << "Let's find you an opponent\n";
 	if(_client.startGame())
@@ -36,7 +36,7 @@ void LobbyState::startGame()
 		std::cout << "You stopped waiting for an opponent.\n";
 }
 
-void LobbyState::quit()
+void AbstractLobbyState::quit()
 {
 	stackPop();
 }

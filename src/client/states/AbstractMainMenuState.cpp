@@ -1,12 +1,12 @@
 // std-C++ headers
 #include <iostream>
 // WizardPoker headers
-#include "client/states/CardsCollectionState.hpp"
-#include "client/states/DecksManagementState.hpp"
-#include "client/states/FriendsManagementState.hpp"
-#include "client/states/LadderState.hpp"
-#include "client/states/MainMenuState.hpp"
-#include "client/states/LobbyState.hpp"
+#include "client/states/AbstractCardsCollectionState.hpp"
+#include "client/states/AbstractDecksManagementState.hpp"
+#include "client/states/AbstractFriendsManagementState.hpp"
+#include "client/states/AbstractLadderState.hpp"
+#include "client/states/AbstractMainMenuState.hpp"
+#include "client/states/AbstractLobbyState.hpp"
 
 MainMenuState::MainMenuState(StateStack& stateStack, Client& client):
 	AbstractState(stateStack, client)
@@ -67,5 +67,3 @@ void MainMenuState::quit()
 	std::cout << "Bye!...\n";
 	stackClear();
 }
-
-

@@ -6,24 +6,33 @@
 #include <iostream>
 // WizardPoker heaaders
 #include "client/StateStack.hpp"
-#include "client/states/HomeState.hpp"
+#include "client/Terminal/states/TerminalHomeState.hpp"
 #include "client/sockets/Client.hpp"
 
-int main()
+int main(int argc, char* argv[])
 {
+	bool noGui{true};
+	// TODO: once the GUI is implemented, the ligne above should be:
+	// bool noGui{false};
+	if(argc > 1 and std::string(argv[1]) == "--no-gui")
+		noGui = true;
 	Client client;
 	StateStack stack(client);
-	stack.push<HomeState>();
+	if(noGui)
+		stack.push<TerminalHomeState>();
+	else
+	{
+		//stack.push<GuiHomeState>();
+	}
+
 	while(not stack.isEmpty())
 	{
-		system("clear");
 		stack.display();
-		std::cout << "What do you want to do? ";
-		std::string input;
-		std::getline(std::cin, input);
+		// Is this try/catch really useful? We do nothing when an exception
+		// is caught, the behavior is almost the same as without try/catch.
 		try
 		{
-			stack.handleInput(input);
+			stack.handleInput();
 		}
 		catch(std::runtime_error& error)
 		{

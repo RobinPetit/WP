@@ -1,7 +1,7 @@
 #ifndef _DECKS_MANAGEMENT_STATE_CLIENT_HPP
 #define _DECKS_MANAGEMENT_STATE_CLIENT_HPP
 
-#include "client/AbstractState.hpp"
+#include "client/Terminal/TerminalAbstractState.hpp"
 #include "common/Deck.hpp"
 #include "common/CardsCollection.hpp"
 
@@ -9,11 +9,11 @@
 class StateStack;
 
 /// Cannot be more explicit.
-class DecksManagementState : public AbstractState
+class TerminalDecksManagementState : public TerminalAbstractState
 {
 	public:
 		/// Constructor.
-		DecksManagementState(StateStack& stateStack, Client& client);
+		TerminalDecksManagementState(StateStack& stateStack, Client& client);
 
 		/// The display function.
 		/// It must do all things related to drawing or printing stuff on the screen.

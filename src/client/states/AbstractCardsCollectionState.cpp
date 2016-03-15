@@ -1,12 +1,12 @@
 // std-C++ headers
 #include <iostream>
 // WizardPoker headers
-#include "client/states/CardsCollectionState.hpp"
+#include "client/states/AbstractCardsCollectionState.hpp"
 
-CardsCollectionState::CardsCollectionState(StateStack& stateStack, Client& client):
+AbstractCardsCollectionState::AbstractCardsCollectionState(StateStack& stateStack, Client& client):
 	AbstractState(stateStack, client)
 {
-	addAction("Back to main menu", &CardsCollectionState::backMainMenu);
+	addAction("Back to main menu", &AbstractCardsCollectionState::backMainMenu);
 	try
 	{
 		_cardsCollection = _client.getCardsCollection();
@@ -18,7 +18,7 @@ CardsCollectionState::CardsCollectionState(StateStack& stateStack, Client& clien
 	}
 }
 
-void CardsCollectionState::display()
+void AbstractCardsCollectionState::display()
 {
 	std::cout << "Here are your cards:\n";
 	for(const auto& card : _cardsCollection)
@@ -30,7 +30,7 @@ void CardsCollectionState::display()
 	AbstractState::display();
 }
 
-void CardsCollectionState::backMainMenu()
+void AbstractCardsCollectionState::backMainMenu()
 {
 	stackPop();
 }

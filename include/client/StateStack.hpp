@@ -34,11 +34,11 @@ class StateStack
 		/// This declarations is here in order to avoid a warning about inlining.
 		~StateStack() = default;
 
-		/// Call the display() function of the top state.
+		/// Calls the display() function of the top state.
 		void display();
 
-		/// Call the handleInput() function of the top state.
-		void handleInput(const std::string& input);
+		/// Calls the handleInput() function of the top state.
+		void handleInput();
 
 		/// Add a new state of the template type to the top of the stack.
 		/// \tparam StateType The type of the state to construct.
@@ -80,4 +80,3 @@ void StateStack::push()
 }
 
 #endif// _STATE_STACK_CLIENT_HPP
-

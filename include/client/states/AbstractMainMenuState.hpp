@@ -1,5 +1,5 @@
-#ifndef _MAIN_MENU_STATE_CLIENT_HPP
-#define _MAIN_MENU_STATE_CLIENT_HPP
+#ifndef _ABSTRACT_MAIN_MENU_STATE_CLIENT_HPP
+#define _ABSTRACT_MAIN_MENU_STATE_CLIENT_HPP
 
 #include "client/AbstractState.hpp"
 
@@ -7,11 +7,11 @@
 class StateStack;
 
 /// Cannot be more explicit.
-class MainMenuState : public AbstractState
+class AbstractMainMenuState : public AbstractState
 {
 	public:
 		/// Constructor.
-		MainMenuState(StateStack& stateStack, Client& client);
+		AbstractMainMenuState(StateStack& stateStack, Client& client);
 
 		/// The display function.
 		/// It must do all things related to drawing or printing stuff on the screen.
@@ -27,5 +27,4 @@ class MainMenuState : public AbstractState
 		void quit();
 };
 
-#endif// _MAIN_MENU_STATE_CLIENT_HPP
-
+#endif// _ABSTRACT_MAIN_MENU_STATE_CLIENT_HPP

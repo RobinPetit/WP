@@ -1,5 +1,5 @@
-#ifndef _LOBBY_STATE_CLIENT_HPP
-#define _LOBBY_STATE_CLIENT_HPP
+#ifndef _ABSTRACT_LOBBY_STATE_CLIENT_HPP
+#define _ABSTRACT_LOBBY_STATE_CLIENT_HPP
 
 #include "client/AbstractState.hpp"
 #include <string>
@@ -8,11 +8,11 @@
 class StateStack;
 
 /// Cannot be more explicit.
-class LobbyState : public AbstractState
+class AbstractLobbyState : public AbstractState
 {
 	public:
 		/// Constructor.
-		LobbyState(StateStack& stateStack, Client& client);
+		AbstractLobbyState(StateStack& stateStack, Client& client);
 
 		/// The display function.
 		/// It must do all things related to drawing or printing stuff on the screen.
@@ -27,5 +27,4 @@ class LobbyState : public AbstractState
 		void startGame();
 };
 
-#endif// _LOBBY_STATE_CLIENT_HPP
-
+#endif// _ABSTRACT_LOBBY_STATE_CLIENT_HPP

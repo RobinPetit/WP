@@ -1,17 +1,17 @@
 #ifndef _FRIENDS_MANAGEMENT_STATE_CLIENT_HPP
 #define _FRIENDS_MANAGEMENT_STATE_CLIENT_HPP
 
-#include "client/AbstractState.hpp"
+#include "client/Terminal/TerminalAbstractState.hpp"
 
 // Forward declarations
 class StateStack;
 
 /// Cannot be more explicit.
-class FriendsManagementState : public AbstractState
+class TerminalFriendsManagementState : public TerminalAbstractState
 {
 	public:
 		/// Constructor.
-		FriendsManagementState(StateStack& stateStack, Client& client);
+		TerminalFriendsManagementState(StateStack& stateStack, Client& client);
 
 		/// The display function.
 		/// It must do all things related to drawing or printing stuff on the screen.
@@ -26,4 +26,3 @@ class FriendsManagementState : public AbstractState
 };
 
 #endif// _FRIENDS_MANAGEMENT_STATE_CLIENT_HPP
-

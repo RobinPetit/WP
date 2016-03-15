@@ -1,7 +1,7 @@
 // std-C++ headers
 #include <iostream>
 // WizardPoker headers
-#include "client/states/FriendsManagementState.hpp"
+#include "client/states/AbstractFriendsManagementState.hpp"
 
 enum
 {
@@ -10,17 +10,17 @@ enum
 	FRIENDSHIP_REQUEST_IGNORE,
 };
 
-FriendsManagementState::FriendsManagementState(StateStack& stateStack, Client& client):
+AbstractFriendsManagementState::AbstractFriendsManagementState(StateStack& stateStack, Client& client):
 	AbstractState(stateStack, client)
 {
-	addAction("Back to main menu", &FriendsManagementState::backMainMenu);
-	addAction("Add a friend to the list", &FriendsManagementState::addFriend);
-	addAction("Remove a friend from the list", &FriendsManagementState::removeFriend);
-	addAction("Treat friendship requests", &FriendsManagementState::treatRequests);
-	addAction("Chat with a friend", &FriendsManagementState::startChat);
+	addAction("Back to main menu", &AbstractFriendsManagementState::backMainMenu);
+	addAction("Add a friend to the list", &AbstractFriendsManagementState::addFriend);
+	addAction("Remove a friend from the list", &AbstractFriendsManagementState::removeFriend);
+	addAction("Treat friendship requests", &AbstractFriendsManagementState::treatRequests);
+	addAction("Chat with a friend", &AbstractFriendsManagementState::startChat);
 }
 
-void FriendsManagementState::display()
+void AbstractFriendsManagementState::display()
 {
 	try
 	{
@@ -42,7 +42,7 @@ void FriendsManagementState::display()
 	AbstractState::display();
 }
 
-void FriendsManagementState::addFriend()
+void AbstractFriendsManagementState::addFriend()
 {
 	std::cout << "What is the user name of your new friend? ";
 	std::string input;
@@ -60,7 +60,7 @@ void FriendsManagementState::addFriend()
 	waitForEnter();
 }
 
-void FriendsManagementState::removeFriend()
+void AbstractFriendsManagementState::removeFriend()
 {
 	std::cout << "What is the user name of the friend that you want to remove? ";
 	std::string input;
@@ -77,7 +77,7 @@ void FriendsManagementState::removeFriend()
 	waitForEnter();
 }
 
-void FriendsManagementState::treatRequests()
+void AbstractFriendsManagementState::treatRequests()
 {
 	try
 	{
@@ -109,7 +109,7 @@ void FriendsManagementState::treatRequests()
 	waitForEnter();
 }
 
-void FriendsManagementState::startChat()
+void AbstractFriendsManagementState::startChat()
 {
 	std::string friendName;
 	std::cout << "Who do you want to chat with? ";
@@ -125,7 +125,7 @@ void FriendsManagementState::startChat()
 	waitForEnter();
 }
 
-void FriendsManagementState::backMainMenu()
+void AbstractFriendsManagementState::backMainMenu()
 {
 	stackPop();
 }
