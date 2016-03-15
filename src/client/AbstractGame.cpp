@@ -101,10 +101,12 @@ void AbstractGame::useCard()
 		_client.getGameSocket().send(actionPacket);
 		// receive amount of selection to make
 		_client.getGameSocket().receive(actionPacket);
-		std::vector<CardToSelect> requiredInputs;
-		actionPacket >> requiredInputs;
 		// ask and send the additionnal inputs to the server
-		treatAdditionnalInputs(requiredInputs);
+		if(not treatAdditionnalInputs(actionPacket))
+		{
+			displayMessage("No card to select, unable to play this card!");
+			return;
+		}
 		// receive status of operation from server
 		_client.getGameSocket().receive(actionPacket);
 		TransferType responseHeader;
@@ -132,11 +134,19 @@ void AbstractGame::useCard()
 	}
 }
 
-void AbstractGame::treatAdditionnalInputs(const std::vector<CardToSelect>& inputs)
+bool AbstractGame::treatAdditionnalInputs(sf::Packet& actionPacket)
 {
+	TransferType responseHeader;
+	actionPacket >> responseHeader;
+	if(responseHeader == TransferType::FAILURE)
+		return false;
+	assert(responseHeader == TransferType::ACKNOWLEDGE);
+	std::vector<CardToSelect> requiredInputs;
+	actionPacket >> requiredInputs;
+
 	std::vector<sf::Uint32> indices;
-	indices.reserve(inputs.size());
-	for(const auto& input : inputs)
+	indices.reserve(requiredInputs.size());
+	for(const auto& input : requiredInputs)
 	{
 		switch(input)
 		{
@@ -160,6 +170,7 @@ void AbstractGame::treatAdditionnalInputs(const std::vector<CardToSelect>& input
 	sf::Packet indicesPacket;
 	indicesPacket << indices;
 	_client.getGameSocket().send(indicesPacket);
+	return true;
 }
 
 void AbstractGame::attackWithCreature()

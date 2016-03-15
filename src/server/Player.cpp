@@ -424,12 +424,16 @@ void Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 		case CREATURE_SELF_INDX:  //active player's creature at given index
 			if(not _cardBoard.empty())
 				applyEffectToCreature(effectArgs, askUserToSelectCards({CardToSelect::SELF_BOARD}));
+			else
+				sendValueToClient(TransferType::FAILURE);
 			break;
 
 		case CREATURE_SELF_RAND:  //active player's creature at random index
 			askUserToSelectCards({});
 			if(not _cardBoard.empty())
 				applyEffectToCreature(effectArgs, getRandomBoardIndexes({CardToSelect::SELF_BOARD}));
+			else
+				sendValueToClient(TransferType::FAILURE);
 			break;
 
 		case CREATURE_SELF_TEAM:  //active player's team of creatures
@@ -440,6 +444,8 @@ void Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 		case CREATURE_OPPO_INDX:	//passive player's creature at given index
 			if(not _opponent._cardBoard.empty())
 				_opponent.applyEffectToCreature(effectArgs, askUserToSelectCards({CardToSelect::OPPO_BOARD}));
+			else
+				sendValueToClient(TransferType::FAILURE);
 			break;
 
 		case CREATURE_OPPO_RAND:	//passive player's creature at random index
@@ -908,9 +914,9 @@ void Player::logBoardCreatureDataFromVector(TransferType type, const std::vector
 std::vector<int> Player::askUserToSelectCards(const std::vector<CardToSelect>& selection)
 {
 	sf::Packet packet;
-	packet << selection;
+	packet << TransferType::ACKNOWLEDGE << selection;
 	_socketToClient.send(packet);
-	std::vector<sf::Uint32> indices(selection.size());
+	std::vector<sf::Uint32> indices;
 	// have the socket blocking because the answer is expected at this very moment
 	_socketToClient.setBlocking(true);
 	_socketToClient.receive(packet);
