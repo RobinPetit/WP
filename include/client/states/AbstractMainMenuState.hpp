@@ -3,26 +3,14 @@
 
 #include "client/AbstractState.hpp"
 
-// Forward declarations
-class StateStack;
-
-/// Cannot be more explicit.
+/// Abstract version of the main menu state.
 class AbstractMainMenuState : virtual public AbstractState
 {
 	public:
 		/// Constructor.
 		AbstractMainMenuState(StateStack& stateStack, Client& client);
 
-		/// The display function.
-		/// It must do all things related to drawing or printing stuff on the screen.
-		virtual void display() override;
-
-	private:
-		void findGame();
-		void manageDecks();
-		void seeCollection();
-		void seeLadder();
-		void manageFriends();
+	protected:
 		void logOut();
 		void quit();
 };

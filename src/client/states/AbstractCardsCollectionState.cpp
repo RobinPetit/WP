@@ -4,7 +4,7 @@
 #include "client/states/AbstractCardsCollectionState.hpp"
 
 AbstractCardsCollectionState::AbstractCardsCollectionState(StateStack& stateStack, Client& client):
-	AbstractState{stateStack, client}
+	AbstractState(stateStack, client)
 {
 	try
 	{

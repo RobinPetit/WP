@@ -5,10 +5,7 @@
 #include "common/Deck.hpp"
 #include "common/CardsCollection.hpp"
 
-// Forward declarations
-class StateStack;
-
-/// Cannot be more explicit.
+/// Abstract version of the decks management state.
 class AbstractDecksManagementState : virtual public AbstractState
 {
 	public:

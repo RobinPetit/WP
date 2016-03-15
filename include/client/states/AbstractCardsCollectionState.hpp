@@ -4,10 +4,7 @@
 #include "client/AbstractState.hpp"
 #include "common/CardsCollection.hpp"
 
-// Forward declarations
-class StateStack;
-
-/// Cannot be more explicit.
+/// Abstract version of the card collection state.
 class AbstractCardsCollectionState : virtual public AbstractState
 {
 	public:

@@ -1,7 +1,7 @@
 // std-C++ headers
 #include <iostream>
 // WizardPoker headers
-#include "client/states/TerminalFriendsManagementState.hpp"
+#include "client/Terminal/states/TerminalFriendsManagementState.hpp"
 
 enum
 {
@@ -11,8 +11,9 @@ enum
 };
 
 TerminalFriendsManagementState::TerminalFriendsManagementState(StateStack& stateStack, Client& client):
-	TerminalAbstractState{stateStack, client},
-	AbstractFriendsManagementState{stateStack, client}
+	AbstractState(stateStack, client),
+	TerminalAbstractState(stateStack, client),
+	AbstractFriendsManagementState(stateStack, client)
 {
 	addAction("Back to main menu", &TerminalFriendsManagementState::backMainMenu);
 	addAction("Add a friend to the list", &TerminalFriendsManagementState::addFriend);

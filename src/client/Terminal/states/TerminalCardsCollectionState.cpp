@@ -1,11 +1,12 @@
 // std-C++ headers
 #include <iostream>
 // WizardPoker headers
-#include "client/states/TerminalCardsCollectionState.hpp"
+#include "client/Terminal/states/TerminalCardsCollectionState.hpp"
 
 TerminalCardsCollectionState::TerminalCardsCollectionState(StateStack& stateStack, Client& client):
-	TerminalAbstractState{stateStack, client},
-	AbstractCardsCollectionState{stateStack, client}
+	AbstractState(stateStack, client),
+	TerminalAbstractState(stateStack, client),
+	AbstractCardsCollectionState(stateStack, client)
 {
 	addAction("Back to main menu", &TerminalCardsCollectionState::backMainMenu);
 }

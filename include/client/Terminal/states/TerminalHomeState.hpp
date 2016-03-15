@@ -4,12 +4,10 @@
 #include <string>
 #include <utility>
 #include "client/Terminal/TerminalAbstractState.hpp"
-
-// Forward declarations
-class StateStack;
+#include "client/states/AbstractHomeState.hpp"
 
 /// Cannot be more explicit.
-class TerminalHomeState : public TerminalAbstractState
+class TerminalHomeState : public TerminalAbstractState, public AbstractHomeState
 {
 	public:
 		/// Constructor.
@@ -22,7 +20,6 @@ class TerminalHomeState : public TerminalAbstractState
 	private:
 		void connect();
 		void createAccount();
-		void quit();
 		static std::pair<std::string, std::string> askIdentifiers();
 };
 

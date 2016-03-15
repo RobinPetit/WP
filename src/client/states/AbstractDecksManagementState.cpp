@@ -2,10 +2,9 @@
 #include <iostream>
 // WizardPoker headers
 #include "client/states/AbstractDecksManagementState.hpp"
-#include "common/CardData.hpp"
 
 AbstractDecksManagementState::AbstractDecksManagementState(StateStack& stateStack, Client& client):
-	AbstractState{stateStack, client}
+	AbstractState(stateStack, client)
 {
 	try
 	{

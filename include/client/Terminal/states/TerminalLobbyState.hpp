@@ -1,14 +1,14 @@
 #ifndef _TERMINAL_LOBBY_STATE_CLIENT_HPP
 #define _TERMINAL_LOBBY_STATE_CLIENT_HPP
 
-#include "client/Terminal/TerminalAbstractState.hpp"
+// Standard headers
 #include <string>
-
-// Forward declarations
-class StateStack;
+// Wizard Poker headers
+#include "client/Terminal/TerminalAbstractState.hpp"
+#include "client/states/AbstractLobbyState.hpp"
 
 /// Cannot be more explicit.
-class TerminalLobbyState : public TerminalAbstractState
+class TerminalLobbyState : public TerminalAbstractState, public AbstractLobbyState
 {
 	public:
 		/// Constructor.
@@ -19,11 +19,8 @@ class TerminalLobbyState : public TerminalAbstractState
 		virtual void display() override;
 
 	private:
-		/////////// attributes
 		static const std::string _quitString;
 
-		/////////// private methods
-		void quit();
 		void startGame();
 };
 

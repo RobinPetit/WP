@@ -1,15 +1,17 @@
 // std-C++ headers
 #include <iostream>
 // WizardPoker headers
-#include "client/states/CardsCollectionState.hpp"
-#include "client/states/DecksManagementState.hpp"
-#include "client/states/FriendsManagementState.hpp"
-#include "client/states/LadderState.hpp"
-#include "client/states/TerminalMainMenuState.hpp"
-#include "client/states/LobbyState.hpp"
+#include "client/Terminal/states/TerminalCardsCollectionState.hpp"
+#include "client/Terminal/states/TerminalDecksManagementState.hpp"
+#include "client/Terminal/states/TerminalFriendsManagementState.hpp"
+#include "client/Terminal/states/TerminalLadderState.hpp"
+#include "client/Terminal/states/TerminalMainMenuState.hpp"
+#include "client/Terminal/states/TerminalLobbyState.hpp"
 
 TerminalMainMenuState::TerminalMainMenuState(StateStack& stateStack, Client& client):
-	AbstractState(stateStack, client)
+	AbstractState(stateStack, client),
+	TerminalAbstractState(stateStack, client),
+	AbstractMainMenuState(stateStack, client)
 {
 	addAction("Quit", &TerminalMainMenuState::quit);
 	addAction("Enter in the matchmaking lobby", &TerminalMainMenuState::findGame);
@@ -27,43 +29,30 @@ void TerminalMainMenuState::display()
 	std::cout << "Main menu:\n";
 
 	// Display the actions
-	AbstractState::display();
+	TerminalAbstractState::display();
 }
 
 void TerminalMainMenuState::findGame()
 {
-	stackPush<LobbyState>();
+	stackPush<TerminalLobbyState>();
 }
 
 void TerminalMainMenuState::manageDecks()
 {
-	stackPush<DecksManagementState>();
+	stackPush<TerminalDecksManagementState>();
 }
 
 void TerminalMainMenuState::seeCollection()
 {
-	stackPush<CardsCollectionState>();
+	stackPush<TerminalCardsCollectionState>();
 }
 
 void TerminalMainMenuState::seeLadder()
 {
-	stackPush<LadderState>();
+	stackPush<TerminalLadderState>();
 }
 
 void TerminalMainMenuState::manageFriends()
 {
-	stackPush<FriendsManagementState>();
-}
-
-void TerminalMainMenuState::logOut()
-{
-	std::cout << "Bye!...\n";
-	_client.quit();
-	stackPop();
-}
-
-void TerminalMainMenuState::quit()
-{
-	std::cout << "Bye!...\n";
-	stackClear();
+	stackPush<TerminalFriendsManagementState>();
 }

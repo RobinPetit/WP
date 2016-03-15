@@ -4,11 +4,8 @@
 #include "client/Terminal/TerminalAbstractState.hpp"
 #include "client/states/AbstractCardsCollectionState.hpp"
 
-// Forward declarations
-class StateStack;
-
 /// Cannot be more explicit.
-class TerminalCardsCollectionState : public AbstractCardsCollectionState, public TerminalAbstractState
+class TerminalCardsCollectionState : public TerminalAbstractState, public AbstractCardsCollectionState
 {
 	public:
 		/// Constructor.

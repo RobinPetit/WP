@@ -3,17 +3,14 @@
 
 #include "client/AbstractState.hpp"
 
-// Forward declarations
-class StateStack;
-
-/// Cannot be more explicit.
+/// Abstract version of the friends management state.
 class AbstractFriendsManagementState : virtual public AbstractState
 {
 	public:
 		/// Constructor.
 		AbstractFriendsManagementState(StateStack& stateStack, Client& client);
 
-	private:
+	protected:
 		void backMainMenu();
 };
 

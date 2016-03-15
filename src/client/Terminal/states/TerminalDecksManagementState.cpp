@@ -1,11 +1,13 @@
 // std-C++ headers
 #include <iostream>
 // WizardPoker headers
-#include "client/states/TerminalDecksManagementState.hpp"
 #include "common/CardData.hpp"
+#include "client/Terminal/states/TerminalDecksManagementState.hpp"
 
 TerminalDecksManagementState::TerminalDecksManagementState(StateStack& stateStack, Client& client):
-	AbstractState(stateStack, client)
+	AbstractState(stateStack, client),
+	TerminalAbstractState(stateStack, client),
+	AbstractDecksManagementState(stateStack, client)
 {
 	addAction("Back to main menu", &TerminalDecksManagementState::backMainMenu);
 	addAction("Display a deck", &TerminalDecksManagementState::displayDeck);

@@ -6,9 +6,6 @@
 #include "common/Deck.hpp"
 #include "common/CardsCollection.hpp"
 
-// Forward declarations
-class StateStack;
-
 /// Cannot be more explicit.
 class TerminalDecksManagementState : public TerminalAbstractState, public AbstractDecksManagementState
 {

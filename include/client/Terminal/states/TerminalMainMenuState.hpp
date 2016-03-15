@@ -2,12 +2,10 @@
 #define _TERMINAL_MAIN_MENU_STATE_CLIENT_HPP
 
 #include "client/Terminal/TerminalAbstractState.hpp"
-
-// Forward declarations
-class StateStack;
+#include "client/states/AbstractMainMenuState.hpp"
 
 /// Cannot be more explicit.
-class TerminalMainMenuState : public TerminalAbstractState
+class TerminalMainMenuState : public TerminalAbstractState, public AbstractMainMenuState
 {
 	public:
 		/// Constructor.
@@ -23,8 +21,6 @@ class TerminalMainMenuState : public TerminalAbstractState
 		void seeCollection();
 		void seeLadder();
 		void manageFriends();
-		void logOut();
-		void quit();
 };
 
 #endif// _TERMINAL_MAIN_MENU_STATE_CLIENT_HPP

@@ -4,9 +4,6 @@
 #include "client/Terminal/TerminalAbstractState.hpp"
 #include "client/states/AbstractFriendsManagementState.hpp"
 
-// Forward declarations
-class StateStack;
-
 /// Cannot be more explicit.
 class TerminalFriendsManagementState : public TerminalAbstractState, public AbstractFriendsManagementState
 {

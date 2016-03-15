@@ -6,13 +6,14 @@
 #include "common/constants.hpp"
 #include "common/UnableToConnectException.hpp"
 #include "client/ErrorCode.hpp"
-#include "client/sockets/Client.hpp"
 #include "common/ini/IniFile.hpp"
-#include "client/states/MainMenuState.hpp"
-#include "client/states/TerminalHomeState.hpp"
+#include "client/Terminal/states/TerminalMainMenuState.hpp"
+#include "client/Terminal/states/TerminalHomeState.hpp"
 
 TerminalHomeState::TerminalHomeState(StateStack& stateStack, Client& client):
-	AbstractState(stateStack, client)
+	AbstractState(stateStack, client),
+	TerminalAbstractState(stateStack, client),
+	AbstractHomeState(stateStack, client)
 {
 	addAction("Quit", &TerminalHomeState::quit);
 	addAction("Connect with your account", &TerminalHomeState::connect);
@@ -24,7 +25,7 @@ void TerminalHomeState::display()
 	std::cout << "Welcome to Wizard Poker!\n";
 
 	// Display the actions
-	AbstractState::display();
+	TerminalAbstractState::display();
 }
 
 // \TODO: factorize connect and createAccount
@@ -63,7 +64,7 @@ void TerminalHomeState::connect()
 					throw;
 			}
 		}
-		stackPush<MainMenuState>();
+		stackPush<TerminalMainMenuState>();
 	}
 	catch(const std::runtime_error& e)
 	{
@@ -99,11 +100,6 @@ void TerminalHomeState::createAccount()
 		std::cout << "Unable to register to server, try again.\n";
 	}
 	waitForEnter();
-}
-
-void TerminalHomeState::quit()
-{
-	stackClear();
 }
 
 std::pair<std::string, std::string> TerminalHomeState::askIdentifiers()
