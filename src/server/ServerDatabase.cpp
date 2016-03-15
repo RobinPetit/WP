@@ -1,7 +1,7 @@
 #include "common/Identifiers.hpp"
 #include "server/ServerDatabase.hpp"
 #include "server/Spell.hpp"
-#include "server/Card.hpp"
+#include "common/Card.hpp"
 #include "server/Creature.hpp"
 
 #include <cassert>

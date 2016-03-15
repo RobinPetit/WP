@@ -6,7 +6,8 @@
 
 #include "common/Database.hpp"
 #include "common/Identifiers.hpp"
-#include "server/Card.hpp"
+#include "common/Card.hpp"
+#include "server/CardData.hpp"
 
 class Creature;
 class Spell;

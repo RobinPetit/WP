@@ -2,6 +2,7 @@ set(SOURCES
 	"Deck.cpp"
 	"CardsCollection.cpp"
 	"CardData.cpp"
+	"Card.cpp"
 	"NotConnectedException.cpp"
 	"Terminal.cpp"
 	"ini/IniFile.cpp"

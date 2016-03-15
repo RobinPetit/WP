@@ -9,7 +9,7 @@
 #include <cstddef>
 #include <atomic>
 // WizardPoker headers
-#include "server/Card.hpp"
+#include "common/Card.hpp"
 #include "server/Spell.hpp"
 #include "server/Constraints.hpp"
 #include "server/ServerDatabase.hpp"

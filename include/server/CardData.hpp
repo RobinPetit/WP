@@ -40,6 +40,4 @@ public:
 	virtual ~SpellData() = default;
 };
 
-
-
 #endif  // _CARD_DATA_SERVER_HPP
