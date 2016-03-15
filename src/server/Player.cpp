@@ -146,12 +146,8 @@ void Player::enterTurn(int turn)
 	_turnData = _emptyTurnData;  // Reset the turn data
 	_turnData.turnCount = turn;  // Store turn number
 
-	if(_cardDeck.empty())
-	{
-		_turnsSinceEmptyDeck++;
-		if (_turnsSinceEmptyDeck == 10)
-			finishGame(false, EndGame::Cause::TEN_TURNS_WITH_EMPTY_DECK);
-	}
+	if(_cardDeck.empty() and ++_turnsSinceEmptyDeck == _maximumAmountOfTurnsWithEmptyDeck)
+		finishGame(false, EndGame::Cause::TEN_TURNS_WITH_EMPTY_DECK);
 
 	//Player's turn-based constraints
 	// do not pick a card at first turn

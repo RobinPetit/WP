@@ -87,6 +87,7 @@ private:
 	/*------------------------------ Static variables */
 	constexpr static TurnData _emptyTurnData = {0, 0, 0, 0, 0};
 	constexpr static unsigned _initialAmountOfCards{5};
+	constexpr static unsigned _maximumAmountOfTurnsWithEmptyDeck{10};
 
 	/*------------------------------ Attributes */
 	GameThread& _gameThread;
@@ -102,7 +103,7 @@ private:
 
 	// Gameplay
 	int _energyInit = 0, _energy = _energyInit, _healthInit = 20, _health = 20;
-	int _turnsSinceEmptyDeck = 0;
+	unsigned _turnsSinceEmptyDeck = 0;
 	static const int _maxEnergy = 10, _maxHealth = 20;
 	TurnData _turnData;
 
