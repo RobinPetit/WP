@@ -30,6 +30,8 @@ private:
 	int askOppoBoardIndex() override;
 	int askOppoHandIndex() override;
 
+	bool wantToAttackOpponent() override;
+
 	void chooseDeck() override;
 
 	void receiveCard(cardId id) override;

@@ -179,6 +179,15 @@ int TerminalGame::askOppoBoardIndex()
 	return askIndex(_oppoBoardCreatures.size(), "Choose the index for a card on the opponent's board: ");
 }
 
+bool TerminalGame::wantToAttackOpponent()
+{
+	std::string buffer;
+	std::cout << "Do you want to attack the opponent (y for \"yes\", anything else for \"no\")?\n\t";
+	std::cin.ignore();
+	std::getline(std::cin, buffer);
+	return buffer == "y";
+}
+
 void TerminalGame::receiveCard(cardId id)
 {
 	displayMessage("You won the card '" + getCardName(id) + "'");
