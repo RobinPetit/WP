@@ -374,6 +374,7 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 	else
 	{
 		attacker->makeAttack(*victim);
+		victim->makeAttack(*attacker);
 		logOpponentBoardState();
 		logBoardState();  // If an attack is returned to the attacker, the board changes
 		_opponent->logOpponentBoardState();
