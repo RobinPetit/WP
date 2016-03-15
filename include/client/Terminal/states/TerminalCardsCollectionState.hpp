@@ -1,14 +1,14 @@
-#ifndef _CARDS_COLLECTION_STATE_CLIENT_HPP
-#define _CARDS_COLLECTION_STATE_CLIENT_HPP
+#ifndef _TERMINAL_CARDS_COLLECTION_STATE_CLIENT_HPP
+#define _TERMINAL_CARDS_COLLECTION_STATE_CLIENT_HPP
 
 #include "client/Terminal/TerminalAbstractState.hpp"
-#include "common/CardsCollection.hpp"
+#include "client/states/AbstractCardsCollectionState.hpp"
 
 // Forward declarations
 class StateStack;
 
 /// Cannot be more explicit.
-class TerminalCardsCollectionState : public TerminalAbstractState
+class TerminalCardsCollectionState : public AbstractCardsCollectionState, public TerminalAbstractState
 {
 	public:
 		/// Constructor.
@@ -17,10 +17,6 @@ class TerminalCardsCollectionState : public TerminalAbstractState
 		/// The display function.
 		/// It must do all things related to drawing or printing stuff on the screen.
 		virtual void display() override;
-
-	private:
-		void backMainMenu();
-		CardsCollection _cardsCollection;
 };
 
-#endif  // _CARDS_COLLECTION_STATE_CLIENT_HPP
+#endif  // _TERMINAL_CARDS_COLLECTION_STATE_CLIENT_HPP

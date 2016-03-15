@@ -12,16 +12,6 @@ TerminalDecksManagementState::TerminalDecksManagementState(StateStack& stateStac
 	addAction("Edit a deck", &TerminalDecksManagementState::editDeck);
 	addAction("Create a deck", &TerminalDecksManagementState::createDeck);
 	addAction("Delete a deck", &TerminalDecksManagementState::deleteDeck);
-	try
-	{
-		_decks = _client.getDecks();
-		_cardsCollection = _client.getCardsCollection();
-	}
-	catch(const std::runtime_error& e)
-	{
-		std::cout << "Error: " << e.what() << "\n";
-		std::cout << "Default card collection loaded.\n";
-	}
 }
 
 void TerminalDecksManagementState::display()
@@ -33,7 +23,7 @@ void TerminalDecksManagementState::display()
 	std::cout << std::string(40, '*') << "\n";
 
 	// Display the actions
-	AbstractState::display();
+	TerminalAbstractState::display();
 }
 
 void TerminalDecksManagementState::displayDeck()
@@ -167,9 +157,4 @@ void TerminalDecksManagementState::deleteDeck()
 	{
 		std::cout << "Error: " << e.what() << "\n";
 	}
-}
-
-void TerminalDecksManagementState::backMainMenu()
-{
-	stackPop();
 }

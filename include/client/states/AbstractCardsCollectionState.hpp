@@ -8,19 +8,16 @@
 class StateStack;
 
 /// Cannot be more explicit.
-class AbstractCardsCollectionState : public AbstractState
+class AbstractCardsCollectionState : virtual public AbstractState
 {
 	public:
 		/// Constructor.
 		AbstractCardsCollectionState(StateStack& stateStack, Client& client);
 
-		/// The display function.
-		/// It must do all things related to drawing or printing stuff on the screen.
-		virtual void display() override;
-
-	private:
-		void backMainMenu();
+	protected:
 		CardsCollection _cardsCollection;
+
+		void backMainMenu();
 };
 
 #endif  // _ABSTRACT_CARDS_COLLECTION_STATE_CLIENT_HPP

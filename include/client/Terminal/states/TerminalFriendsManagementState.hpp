@@ -1,13 +1,14 @@
-#ifndef _FRIENDS_MANAGEMENT_STATE_CLIENT_HPP
-#define _FRIENDS_MANAGEMENT_STATE_CLIENT_HPP
+#ifndef _TERMINAL_FRIENDS_MANAGEMENT_STATE_CLIENT_HPP
+#define _TERMINAL_FRIENDS_MANAGEMENT_STATE_CLIENT_HPP
 
 #include "client/Terminal/TerminalAbstractState.hpp"
+#include "client/states/AbstractFriendsManagementState.hpp"
 
 // Forward declarations
 class StateStack;
 
 /// Cannot be more explicit.
-class TerminalFriendsManagementState : public TerminalAbstractState
+class TerminalFriendsManagementState : public TerminalAbstractState, public AbstractFriendsManagementState
 {
 	public:
 		/// Constructor.
@@ -20,9 +21,8 @@ class TerminalFriendsManagementState : public TerminalAbstractState
 	private:
 		void addFriend();
 		void removeFriend();
-		void backMainMenu();
 		void treatRequests();
 		void startChat();
 };
 
-#endif// _FRIENDS_MANAGEMENT_STATE_CLIENT_HPP
+#endif// _TERMINAL_FRIENDS_MANAGEMENT_STATE_CLIENT_HPP

@@ -1,5 +1,5 @@
-#ifndef _MAIN_MENU_STATE_CLIENT_HPP
-#define _MAIN_MENU_STATE_CLIENT_HPP
+#ifndef _TERMINAL_MAIN_MENU_STATE_CLIENT_HPP
+#define _TERMINAL_MAIN_MENU_STATE_CLIENT_HPP
 
 #include "client/Terminal/TerminalAbstractState.hpp"
 
@@ -27,4 +27,4 @@ class TerminalMainMenuState : public TerminalAbstractState
 		void quit();
 };
 
-#endif// _MAIN_MENU_STATE_CLIENT_HPP
+#endif// _TERMINAL_MAIN_MENU_STATE_CLIENT_HPP

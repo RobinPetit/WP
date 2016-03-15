@@ -1,5 +1,5 @@
-#ifndef _LADDER_STATE_CLIENT_HPP
-#define _LADDER_STATE_CLIENT_HPP
+#ifndef _TERMINAL_LADDER_STATE_CLIENT_HPP
+#define _TERMINAL_LADDER_STATE_CLIENT_HPP
 
 #include "common/Database.hpp"// Ladder
 #include "client/Terminal/TerminalAbstractState.hpp"
@@ -24,4 +24,4 @@ class TerminalLadderState : public TerminalAbstractState
 		Ladder _ladder;
 };
 
-#endif// _LADDER_STATE_CLIENT_HPP
+#endif// _TERMINAL_LADDER_STATE_CLIENT_HPP

@@ -1,5 +1,5 @@
-#ifndef _LOBBY_STATE_CLIENT_HPP
-#define _LOBBY_STATE_CLIENT_HPP
+#ifndef _TERMINAL_LOBBY_STATE_CLIENT_HPP
+#define _TERMINAL_LOBBY_STATE_CLIENT_HPP
 
 #include "client/Terminal/TerminalAbstractState.hpp"
 #include <string>
@@ -27,4 +27,4 @@ class TerminalLobbyState : public TerminalAbstractState
 		void startGame();
 };
 
-#endif// _LOBBY_STATE_CLIENT_HPP
+#endif// _TERMINAL_LOBBY_STATE_CLIENT_HPP

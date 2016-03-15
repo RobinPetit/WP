@@ -1,5 +1,6 @@
 // Standard headers
 #include <string>
+#include <cassert>
 // Wizard Poker headers
 #include "client/Terminal/TerminalAbstractState.hpp"
 

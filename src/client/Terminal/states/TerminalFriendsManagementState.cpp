@@ -11,7 +11,8 @@ enum
 };
 
 TerminalFriendsManagementState::TerminalFriendsManagementState(StateStack& stateStack, Client& client):
-	AbstractState(stateStack, client)
+	TerminalAbstractState{stateStack, client},
+	AbstractFriendsManagementState{stateStack, client}
 {
 	addAction("Back to main menu", &TerminalFriendsManagementState::backMainMenu);
 	addAction("Add a friend to the list", &TerminalFriendsManagementState::addFriend);
@@ -38,8 +39,9 @@ void TerminalFriendsManagementState::display()
 	{
 		std::cout << "Error: " << e.what() << "\n";
 	}
+
 	// Display the actions
-	AbstractState::display();
+	TerminalAbstractState::display();
 }
 
 void TerminalFriendsManagementState::addFriend()
@@ -123,9 +125,4 @@ void TerminalFriendsManagementState::startChat()
 		std::cerr << "Unable to chat with " << friendName << ": " << error.what() << "\n";
 	}
 	waitForEnter();
-}
-
-void TerminalFriendsManagementState::backMainMenu()
-{
-	stackPop();
 }

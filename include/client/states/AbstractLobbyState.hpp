@@ -8,7 +8,7 @@
 class StateStack;
 
 /// Cannot be more explicit.
-class AbstractLobbyState : public AbstractState
+class AbstractLobbyState : virtual public AbstractState
 {
 	public:
 		/// Constructor.

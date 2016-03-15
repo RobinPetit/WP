@@ -10,7 +10,7 @@
 #include "client/AbstractState.hpp"
 
 /// Terminal specialisation of AbstractState.
-class TerminalAbstractState : AbstractState
+class TerminalAbstractState : virtual public AbstractState
 {
 	public:
 		/// Constructor.

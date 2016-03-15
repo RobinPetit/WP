@@ -1,7 +1,8 @@
-#ifndef _DECKS_MANAGEMENT_STATE_CLIENT_HPP
-#define _DECKS_MANAGEMENT_STATE_CLIENT_HPP
+#ifndef _TERMINAL_DECKS_MANAGEMENT_STATE_CLIENT_HPP
+#define _TERMINAL_DECKS_MANAGEMENT_STATE_CLIENT_HPP
 
 #include "client/Terminal/TerminalAbstractState.hpp"
+#include "client/states/AbstractDecksManagementState.hpp"
 #include "common/Deck.hpp"
 #include "common/CardsCollection.hpp"
 
@@ -9,7 +10,7 @@
 class StateStack;
 
 /// Cannot be more explicit.
-class TerminalDecksManagementState : public TerminalAbstractState
+class TerminalDecksManagementState : public TerminalAbstractState, public AbstractDecksManagementState
 {
 	public:
 		/// Constructor.
@@ -25,14 +26,8 @@ class TerminalDecksManagementState : public TerminalAbstractState
 		// Edit deck submethods
 		std::size_t askForReplacedCard(std::size_t deckIndex);
 		cardId askForReplacingCard(std::size_t deckIndex);
-
-
 		void createDeck();
 		void deleteDeck();
-		void backMainMenu();
-
-		std::vector<Deck> _decks;
-		CardsCollection _cardsCollection;
 };
 
-#endif// _DECKS_MANAGEMENT_STATE_CLIENT_HPP
+#endif// _TERMINAL_DECKS_MANAGEMENT_STATE_CLIENT_HPP

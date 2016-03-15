@@ -7,7 +7,7 @@
 class StateStack;
 
 /// Cannot be more explicit.
-class AbstractMainMenuState : public AbstractState
+class AbstractMainMenuState : virtual public AbstractState
 {
 	public:
 		/// Constructor.

@@ -1,5 +1,5 @@
-#ifndef _HOME_STATE_CLIENT_HPP
-#define _HOME_STATE_CLIENT_HPP
+#ifndef _TERMINAL_HOME_STATE_CLIENT_HPP
+#define _TERMINAL_HOME_STATE_CLIENT_HPP
 
 #include <string>
 #include <utility>
@@ -26,4 +26,4 @@ class TerminalHomeState : public TerminalAbstractState
 		static std::pair<std::string, std::string> askIdentifiers();
 };
 
-#endif// _HOME_STATE_CLIENT_HPP
+#endif// _TERMINAL_HOME_STATE_CLIENT_HPP
