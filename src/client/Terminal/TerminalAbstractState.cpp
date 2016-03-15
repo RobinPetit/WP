@@ -13,7 +13,6 @@ TerminalAbstractState::TerminalAbstractState(StateStack& stateStack, Client& cli
 
 void TerminalAbstractState::display()
 {
-	system("clear");
 	for(size_t i{1}; i < _actions.size(); ++i)
 		std::cout << i << ". " << _actions[i].first << "\n";
 	assert(_actions.size() > 0);

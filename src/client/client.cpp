@@ -4,6 +4,7 @@
 
 // std-C++ headers
 #include <iostream>
+#include <cstdlib>
 // WizardPoker heaaders
 #include "client/StateStack.hpp"
 #include "client/Terminal/states/TerminalHomeState.hpp"
@@ -27,6 +28,8 @@ int main(int argc, char* argv[])
 
 	while(not stack.isEmpty())
 	{
+		if(noGui)
+			system("clear");
 		stack.display();
 		// Is this try/catch really useful? We do nothing when an exception
 		// is caught, the behavior is almost the same as without try/catch.
