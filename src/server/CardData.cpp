@@ -1,6 +1,5 @@
 #include "server/CardData.hpp"
 
-
 // CreatureData
 CreatureData::CreatureData(cardId id, CostValue cost, const std::vector<EffectParamsCollection>& effects,
                            AttackValue attack, HealthValue health, ShieldValue shield, ShieldType shieldType) :
