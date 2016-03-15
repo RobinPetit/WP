@@ -1,4 +1,22 @@
 #include "client/ClientSpell.hpp"
 
-ClientSpell::ClientSpell(cardId cardIdentifier, const std::string& name, int cost, const std::string& description) :
-	ClientCard(cardIdentifier, name, cost, description) {}
+ClientSpell::ClientSpell(const SpellData& cardData):
+	Card(cardData)
+{
+}
+
+/*--------------------------- PRIVATE METHOD */
+inline const SpellData& ClientSpell::prototype() const
+{
+	return static_cast<const SpellData&>(_prototype);
+}
+
+const std::string& ClientSpell::getName()
+{
+	return prototype().getName();
+}
+
+const std::string& ClientSpell::getDescription()
+{
+	return prototype().getDescription();
+}

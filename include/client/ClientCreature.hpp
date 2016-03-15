@@ -1,28 +1,33 @@
 #ifndef _CLIENT_CREATURE_CLIENT_HPP
 #define _CLIENT_CREATURE_CLIENT_HPP
 
-#include "client/ClientCard.hpp"
+#include "common/Card.hpp"
+#include "client/CardData.hpp"
 
 ///Spell card : One of the 2 playables card
-class ClientCreature: public ClientCard
+class ClientCreature: public Card
 {
 private:
 	int _attack, _health, _shield;
 	int _shieldType;
 
+	/// used to get good prototype type
+	inline const CreatureData& prototype() const;
+
 public:
 	/// Constructor
-	ClientCreature(cardId cardIdentifier, const std::string& name, int cost, const std::string& description,
-	               int attack, int health, int shield, int shieldType);
+	ClientCreature(const CreatureData&);
 
 	// GETTERS
+	const std::string& getName() const;
+	const std::string& getDescription() const;
 	int getAttack() const;
 	int getHealth() const;
 	int getShield() const;
 	int getShieldType() const;
 
-	virtual bool isCreature() const override { return true; }
-	virtual bool isSpell() const override {return false; }
+	// TODO: client too should store when values change to be used by gui from here
+	// SETTERS
 };
 
 #endif // _CLIENT_CREATURE_CLIENT_HPP

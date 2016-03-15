@@ -1,11 +1,10 @@
 #include "client/ClientCreature.hpp"
 
-ClientCreature::ClientCreature(cardId cardIdentifier, const std::string& name, int cost,
-                               const std::string& description, int attack, int health, int shield, int shieldType) :
-	ClientCard(cardIdentifier, name, cost, description),
-	_attack(attack), _health(health), _shield(shield), _shieldType(shieldType)
+ClientCreature::ClientCreature(const CreatureData& cardData) :
+	Card(cardData),
+	_attack(cardData.getAttack()), _health(cardData.getHealth()), _shield(cardData.getShield()),
+	_shieldType(cardData.getShieldType())
 {
-
 }
 
 int ClientCreature::getAttack() const
@@ -26,4 +25,20 @@ int ClientCreature::getShield() const
 int ClientCreature::getShieldType() const
 {
 	return _shieldType;
+}
+
+const std::string& ClientCreature::getName() const
+{
+	return prototype().getName();
+}
+
+const std::string& ClientCreature::getDescription() const
+{
+	return prototype().getDescription();
+}
+
+/*--------------------------- PRIVATE METHOD */
+inline const CreatureData& ClientCreature::prototype() const
+{
+	return static_cast<const CreatureData&>(_prototype);
 }
