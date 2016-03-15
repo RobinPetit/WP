@@ -238,7 +238,7 @@ sf::Socket::Status Player::tryReceiveClientInput()
 				attackWithCreature(static_cast<int>(attackerIndex), static_cast<int>(victimIndex));
 				break;
 			}
-
+			// \TODO: add TransferType::GAME_QUIT and send if from client when game is quit ? (different from disconnected player)
 			default:
 				std::cerr << "Player::tryReceiveClientInput error: wrong packet header ("
 				          << static_cast<sf::Uint32>(type) << "), expected in-game action header.\n";
