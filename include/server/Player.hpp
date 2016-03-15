@@ -96,9 +96,9 @@ private:
 
 	/// Pointer responsability is not given to this Player:
 	/// it is not an allocated-attribute
-	Player* _opponent = nullptr; // \TODO: use reference ?
+	Player* _opponent = nullptr; // pointer is required because attribute is initialized after constructor
 	userId _id;
-	std::atomic_bool _isActive; // Blocks functions that are only allowed for active player
+	std::atomic_bool _isActive; // blocks functions that are only allowed for active player
 
 	// Client communication
 	sf::TcpSocket _socketToClient;
