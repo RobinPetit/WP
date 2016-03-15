@@ -9,7 +9,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 # set(SFML_STATIC_LIBRARIES TRUE)
 
 # Find dependencies
-find_package(SFML 2.1 COMPONENTS network system REQUIRED)
+find_package(SFML 2.1 COMPONENTS network window graphics system REQUIRED)
 find_package(SQLite3 REQUIRED)
 
 # Set the include directory of the project
@@ -49,5 +49,3 @@ add_custom_target(database
 		COMMAND ./initdatabase.sh
 		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/prebuildscript/
 	)
-
-

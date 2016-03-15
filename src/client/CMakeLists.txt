@@ -1,11 +1,13 @@
-set(SOURCES	"client.cpp"
+set(SOURCES
+		# Unspecialized files
+		"client.cpp"
 		"ClientDatabase.cpp"
-		# sockets
+		"AbstractApplication.cpp"
+		## sockets
 		"sockets/Client.cpp"
 		"NonBlockingInput.cpp"
-		# states
+		## states
 		"AbstractState.cpp"
-		"Terminal/TerminalAbstractState.cpp"
 		"StateStack.cpp"
 		"states/AbstractCardsCollectionState.cpp"
 		"states/AbstractDecksManagementState.cpp"
@@ -14,6 +16,13 @@ set(SOURCES	"client.cpp"
 		"states/AbstractLobbyState.cpp"
 		"states/AbstractMainMenuState.cpp"
 		"states/AbstractHomeState.cpp"
+		## Game
+		"AbstractGame.cpp"
+
+		# Terminal files
+		"Terminal/TerminalApplication.cpp"
+		## States
+		"Terminal/TerminalAbstractState.cpp"
 		"Terminal/states/TerminalCardsCollectionState.cpp"
 		"Terminal/states/TerminalDecksManagementState.cpp"
 		"Terminal/states/TerminalFriendsManagementState.cpp"
@@ -21,9 +30,14 @@ set(SOURCES	"client.cpp"
 		"Terminal/states/TerminalLobbyState.cpp"
 		"Terminal/states/TerminalMainMenuState.cpp"
 		"Terminal/states/TerminalHomeState.cpp"
-		# Game
-		"AbstractGame.cpp"
+		## Game
 		"Terminal/TerminalGame.cpp"
+
+		# GUI files
+		"Gui/GuiApplication.cpp"
+		## States
+		"Gui/GuiAbstractState.cpp"
+		"Gui/states/GuiHomeState.cpp"
 	)
 
 set(CLIENT_NAME "${PROJECT_NAME}_client")
