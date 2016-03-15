@@ -12,7 +12,7 @@ class TerminalLobbyState : public TerminalAbstractState, public AbstractLobbySta
 {
 	public:
 		/// Constructor.
-		TerminalLobbyState(StateStack& stateStack, Client& client);
+		TerminalLobbyState(Context& context);
 
 		/// The display function.
 		/// It must do all things related to drawing or printing stuff on the screen.

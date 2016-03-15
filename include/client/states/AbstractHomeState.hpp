@@ -14,7 +14,7 @@ class AbstractHomeState : virtual public AbstractState
 {
 	public:
 		/// Constructor.
-		AbstractHomeState(StateStack& stateStack, Client& client);
+		AbstractHomeState(Context& context);
 
 	protected:
 		/// Reads the configuration file and return the address and the port of

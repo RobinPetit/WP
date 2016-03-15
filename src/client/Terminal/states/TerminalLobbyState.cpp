@@ -4,10 +4,10 @@
 #include "client/Terminal/TerminalGame.hpp"
 #include "client/Terminal/states/TerminalLobbyState.hpp"
 
-TerminalLobbyState::TerminalLobbyState(StateStack& stateStack, Client& client):
-	AbstractState(stateStack, client),
-	TerminalAbstractState(stateStack, client),
-	AbstractLobbyState(stateStack, client)
+TerminalLobbyState::TerminalLobbyState(Context& context):
+	AbstractState(context),
+	TerminalAbstractState(context),
+	AbstractLobbyState(context)
 {
 	addAction("Quit", &TerminalLobbyState::quit);
 	addAction("Find a game", &TerminalLobbyState::startGame);
@@ -24,9 +24,9 @@ void TerminalLobbyState::display()
 void TerminalLobbyState::startGame()
 {
 	std::cout << "Let's find you an opponent\n";
-	if(_client.startGame())
+	if(_context.client->startGame())
 	{
-		TerminalGame game{_client};
+		TerminalGame game{*_context.client};
 		game.init();
 		game.play();
 		waitForEnter();

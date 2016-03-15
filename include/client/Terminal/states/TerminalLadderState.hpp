@@ -11,7 +11,7 @@ class TerminalLadderState : public TerminalAbstractState, public AbstractLadderS
 {
 	public:
 		/// Constructor.
-		TerminalLadderState(StateStack& stateStack, Client& client);
+		TerminalLadderState(Context& context);
 
 		/// The display function.
 		/// It must do all things related to drawing or printing stuff on the screen.

@@ -10,7 +10,7 @@ class TerminalCardsCollectionState : public TerminalAbstractState, public Abstra
 {
 	public:
 		/// Constructor.
-		TerminalCardsCollectionState(StateStack& stateStack, Client& client);
+		TerminalCardsCollectionState(Context& context);
 
 		/// The display function.
 		/// It must do all things related to drawing or printing stuff on the screen.

@@ -5,8 +5,8 @@
 #include "client/Terminal/TerminalAbstractState.hpp"
 
 
-TerminalAbstractState::TerminalAbstractState(StateStack& stateStack, Client& client):
-	AbstractState{stateStack, client}
+TerminalAbstractState::TerminalAbstractState(Context& context):
+	AbstractState(context)
 {
 
 }

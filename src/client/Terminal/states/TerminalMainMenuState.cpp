@@ -8,10 +8,10 @@
 #include "client/Terminal/states/TerminalMainMenuState.hpp"
 #include "client/Terminal/states/TerminalLobbyState.hpp"
 
-TerminalMainMenuState::TerminalMainMenuState(StateStack& stateStack, Client& client):
-	AbstractState(stateStack, client),
-	TerminalAbstractState(stateStack, client),
-	AbstractMainMenuState(stateStack, client)
+TerminalMainMenuState::TerminalMainMenuState(Context& context):
+	AbstractState(context),
+	TerminalAbstractState(context),
+	AbstractMainMenuState(context)
 {
 	addAction("Quit", &TerminalMainMenuState::quit);
 	addAction("Enter in the matchmaking lobby", &TerminalMainMenuState::findGame);

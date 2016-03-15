@@ -3,13 +3,13 @@
 // WizardPoker headers
 #include "client/states/AbstractDecksManagementState.hpp"
 
-AbstractDecksManagementState::AbstractDecksManagementState(StateStack& stateStack, Client& client):
-	AbstractState(stateStack, client)
+AbstractDecksManagementState::AbstractDecksManagementState(Context& context):
+	AbstractState(context)
 {
 	try
 	{
-		_decks = _client.getDecks();
-		_cardsCollection = _client.getCardsCollection();
+		_decks = _context.client->getDecks();
+		_cardsCollection = _context.client->getCardsCollection();
 	}
 	catch(const std::runtime_error& e)
 	{

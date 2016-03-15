@@ -10,7 +10,7 @@ class TerminalMainMenuState : public TerminalAbstractState, public AbstractMainM
 {
 	public:
 		/// Constructor.
-		TerminalMainMenuState(StateStack& stateStack, Client& client);
+		TerminalMainMenuState(Context& context);
 
 		/// The display function.
 		/// It must do all things related to drawing or printing stuff on the screen.

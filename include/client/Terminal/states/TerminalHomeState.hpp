@@ -13,7 +13,7 @@ class TerminalHomeState : public TerminalAbstractState, public AbstractHomeState
 {
 	public:
 		/// Constructor.
-		TerminalHomeState(StateStack& stateStack, Client& client);
+		TerminalHomeState(Context& context);
 
 		/// The display function.
 		/// It must do all things related to drawing or printing stuff on the screen.

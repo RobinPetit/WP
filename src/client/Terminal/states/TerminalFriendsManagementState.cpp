@@ -10,10 +10,10 @@ enum
 	FRIENDSHIP_REQUEST_IGNORE,
 };
 
-TerminalFriendsManagementState::TerminalFriendsManagementState(StateStack& stateStack, Client& client):
-	AbstractState(stateStack, client),
-	TerminalAbstractState(stateStack, client),
-	AbstractFriendsManagementState(stateStack, client)
+TerminalFriendsManagementState::TerminalFriendsManagementState(Context& context):
+	AbstractState(context),
+	TerminalAbstractState(context),
+	AbstractFriendsManagementState(context)
 {
 	addAction("Back to main menu", &TerminalFriendsManagementState::backMainMenu);
 	addAction("Add a friend to the list", &TerminalFriendsManagementState::addFriend);
@@ -26,7 +26,7 @@ void TerminalFriendsManagementState::display()
 {
 	try
 	{
-		const auto& friends(_client.getFriends());
+		const auto& friends(_context.client->getFriends());
 		if(friends.empty())
 			std::cout << "You have no friend yet!\n";
 		else
@@ -53,7 +53,7 @@ void TerminalFriendsManagementState::addFriend()
 	// Get the user data from the user name (input)...
 	try
 	{
-		_client.sendFriendshipRequest(input);
+		_context.client->sendFriendshipRequest(input);
 		std::cout << "A friendship request has been sent to " << input << ".\n";
 	}
 	catch(std::runtime_error& error)
@@ -70,7 +70,7 @@ void TerminalFriendsManagementState::removeFriend()
 	std::getline(std::cin, input);
 	try
 	{
-		_client.removeFriend(input);
+		_context.client->removeFriend(input);
 		std::cout << input << "has been removed from you friend list.\n";
 	}
 	catch(std::runtime_error& error)
@@ -84,7 +84,7 @@ void TerminalFriendsManagementState::treatRequests()
 {
 	try
 	{
-		const auto& requests(_client.getFriendshipRequests());
+		const auto& requests(_context.client->getFriendshipRequests());
 		if(requests.empty())
 			std::cout << "You have no incoming friendship request.\n";
 		else
@@ -98,9 +98,9 @@ void TerminalFriendsManagementState::treatRequests()
 				int choice;
 				std::cin >> choice;
 				if(choice == FRIENDSHIP_REQUEST_ACCEPT)
-					_client.acceptFriendshipRequest(user.name);
+					_context.client->acceptFriendshipRequest(user.name);
 				else if (choice == FRIENDSHIP_REQUEST_REFUSE)
-					_client.acceptFriendshipRequest(user.name, false);
+					_context.client->acceptFriendshipRequest(user.name, false);
 			}
 
 		}
@@ -119,7 +119,7 @@ void TerminalFriendsManagementState::startChat()
 	std::getline(std::cin, friendName);
 	try
 	{
-		_client.startConversation(friendName);
+		_context.client->startConversation(friendName);
 	}
 	catch(const std::runtime_error& error)
 	{

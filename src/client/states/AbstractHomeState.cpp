@@ -4,8 +4,8 @@
 #include "common/ini/IniFile.hpp"
 #include "client/states/AbstractHomeState.hpp"
 
-AbstractHomeState::AbstractHomeState(StateStack& stateStack, Client& client):
-	AbstractState(stateStack, client)
+AbstractHomeState::AbstractHomeState(Context& context):
+	AbstractState(context)
 {
 }
 

@@ -4,12 +4,12 @@
 // WizardPoker headers
 #include "client/states/AbstractLadderState.hpp"
 
-AbstractLadderState::AbstractLadderState(StateStack& stateStack, Client& client):
-	AbstractState(stateStack, client)
+AbstractLadderState::AbstractLadderState(Context& context):
+	AbstractState(context)
 {
 	try
 	{
-		_ladder = _client.getLadder();
+		_ladder = _context.client->getLadder();
 	}
 	catch(const std::runtime_error& e)
 	{

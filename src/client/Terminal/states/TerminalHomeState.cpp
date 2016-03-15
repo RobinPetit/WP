@@ -5,10 +5,10 @@
 #include "client/Terminal/states/TerminalMainMenuState.hpp"
 #include "client/Terminal/states/TerminalHomeState.hpp"
 
-TerminalHomeState::TerminalHomeState(StateStack& stateStack, Client& client):
-	AbstractState(stateStack, client),
-	TerminalAbstractState(stateStack, client),
-	AbstractHomeState(stateStack, client)
+TerminalHomeState::TerminalHomeState(Context& context):
+	AbstractState(context),
+	TerminalAbstractState(context),
+	AbstractHomeState(context)
 {
 	addAction("Quit", &TerminalHomeState::quit);
 	addAction("Connect with your account", &TerminalHomeState::connect);
@@ -40,7 +40,7 @@ void TerminalHomeState::connect()
 		{
 			try
 			{
-				_client.connectToServer(identifiers.first, identifiers.second,
+				_context.client->connectToServer(identifiers.first, identifiers.second,
 						connectionConfig.first, connectionConfig.second);
 				tryToConnect = false;
 			}
@@ -61,7 +61,7 @@ void TerminalHomeState::connect()
 		std::cout << "Unable to connect to server\n";
 		// If the error was caused by client::updateFriends, the client is connected
 		// but the user will stay on this state. The client must be deconnected.
-		_client.quit();
+		_context.client->quit();
 		waitForEnter();
 	}
 }
@@ -72,7 +72,7 @@ void TerminalHomeState::createAccount()
 	{
 		const auto connectionConfig(getConnectionConfiguration());
 		const auto identifiers(askIdentifiers());
-		_client.registerToServer(identifiers.first, identifiers.second,
+		_context.client->registerToServer(identifiers.first, identifiers.second,
 				connectionConfig.first, connectionConfig.second);
 		std::cout << "You have been successfuly registered!\n";
 	}

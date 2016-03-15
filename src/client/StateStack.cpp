@@ -1,9 +1,11 @@
 #include "client/AbstractState.hpp"
 #include "client/StateStack.hpp"
 
-StateStack::StateStack(Client& client):
-	_stack(),
-	_client{client}
+StateStack::StateStack(Context& context):
+	_stack{},
+	_stackIterator{},
+	_context{context},
+	_empty{false}
 {
 
 }

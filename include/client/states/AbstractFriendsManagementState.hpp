@@ -9,7 +9,7 @@ class AbstractFriendsManagementState : virtual public AbstractState
 {
 	public:
 		/// Constructor.
-		AbstractFriendsManagementState(StateStack& stateStack, Client& client);
+		AbstractFriendsManagementState(Context& context);
 
 	protected:
 		void backMainMenu();

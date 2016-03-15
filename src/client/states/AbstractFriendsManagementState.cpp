@@ -1,8 +1,8 @@
 // WizardPoker headers
 #include "client/states/AbstractFriendsManagementState.hpp"
 
-AbstractFriendsManagementState::AbstractFriendsManagementState(StateStack& stateStack, Client& client):
-	AbstractState(stateStack, client)
+AbstractFriendsManagementState::AbstractFriendsManagementState(Context& context):
+	AbstractState(context)
 {
 }
 

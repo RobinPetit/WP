@@ -11,7 +11,7 @@ class AbstractDecksManagementState : virtual public AbstractState
 {
 	public:
 		/// Constructor.
-		AbstractDecksManagementState(StateStack& stateStack, Client& client);
+		AbstractDecksManagementState(Context& context);
 
 	protected:
 		void backMainMenu();

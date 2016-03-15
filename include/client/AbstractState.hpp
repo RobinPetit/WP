@@ -2,8 +2,8 @@
 #define _ABSTRACT_STATE_CLIENT_HPP
 
 // WizardPoker headers
+#include "client/Context.hpp"
 #include "client/StateStack.hpp"
-#include "client/sockets/Client.hpp"
 
 /// Base class for the various states.
 /// A state is basically a screen of the application, such as a menu,
@@ -35,17 +35,11 @@
 /// This design, although complicated, allows to separate very efficiently the
 /// terminal/gui logic, the logic specific to a menu, and the logic for every
 /// state.
-///
-/// \note This class is abstract because it is not a concrete state, and because
-/// it is not specialized for terminal/GUI. So the exact name should be
-/// AbstractAbstractState, but for keep things simple we use AbstractState.
 class AbstractState
 {
 	public:
 		/// Constructor.
-		/// \param stateStack The stack that manages this state.
-		/// \param client The client connected to the server
-		AbstractState(StateStack& stateStack, Client& client);
+		AbstractState(Context& context);
 
 		/// Destructor.
 		virtual ~AbstractState() = default;
@@ -70,16 +64,13 @@ class AbstractState
 		/// Delete all the states.
 		void stackClear();
 
-		Client& _client;  ///< The client.
-
-	private:
-		StateStack& _stateStack;  ///< The state stack that holds this state.
+		Context& _context;  ///< The context.
 };
 
 template<typename StateType>
 void AbstractState::stackPush()
 {
-	_stateStack.push<StateType>();
+	_context.stateStack->push<StateType>();
 }
 
 #endif  // _ABSTRACT_STATE_CLIENT_HPP

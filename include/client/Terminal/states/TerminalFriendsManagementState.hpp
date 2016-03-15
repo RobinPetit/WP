@@ -10,7 +10,7 @@ class TerminalFriendsManagementState : public TerminalAbstractState, public Abst
 {
 	public:
 		/// Constructor.
-		TerminalFriendsManagementState(StateStack& stateStack, Client& client);
+		TerminalFriendsManagementState(Context& context);
 
 		/// The display function.
 		/// It must do all things related to drawing or printing stuff on the screen.
