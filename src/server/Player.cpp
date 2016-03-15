@@ -162,6 +162,12 @@ void Player::enterTurn(int turn)
 	//Will call creature's turn-based constraints
 	for(unsigned i = 0; i < _cardBoard.size(); i++)
 		_cardBoard.at(i)->enterTurn();
+	logBoardState();
+	logOpponentBoardState();
+	logCurrentHealth();
+	_opponent.logBoardState();
+	_opponent.logOpponentBoardState();
+	_opponent.logOpponentHealth();
 }
 
 void Player::leaveTurn()
