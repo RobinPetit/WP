@@ -139,6 +139,11 @@ void Client::connectionLost()
 	_isConnected = false;
 }
 
+bool Client::isConnected()
+{
+	return _isConnected;
+}
+
 std::string Client::shrinkName(const std::string& name)
 {
 	return (name.size() < MAX_NAME_LENGTH) ? name : name.substr(0, MAX_NAME_LENGTH);
