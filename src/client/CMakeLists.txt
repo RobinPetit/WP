@@ -1,4 +1,5 @@
 set(SOURCES	"client.cpp"
+		"CardData.cpp"
 		"ClientCard.cpp"
 		"ClientCreature.cpp"
 		"ClientSpell.cpp"

@@ -2,7 +2,7 @@ set(SOURCES
 		"server.cpp"
 		"ServerDatabase.cpp"
 		"Card.cpp"
-		#"CardData.cpp"  # contains the cards declaration
+		"CardData.cpp"
 		"Creature.cpp"
 		"Spell.cpp"
 		"Player.cpp"

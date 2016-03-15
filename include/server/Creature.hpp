@@ -5,7 +5,7 @@
 #include "server/Card.hpp"
 #include "server/Player.hpp"
 #include "server/Constraints.hpp"
-#include "common/CardData.hpp"
+#include "server/CardData.hpp"
 
 ///Creature card : One of the 2 playables card
 class Creature : public Card

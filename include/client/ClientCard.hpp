@@ -4,7 +4,7 @@
 // std-C++ headers
 #include <string>
 // WizardPoker headers
-#include "common/CardData.hpp"
+#include "client/CardData.hpp"
 #include "common/Identifiers.hpp"
 
 class ClientCard

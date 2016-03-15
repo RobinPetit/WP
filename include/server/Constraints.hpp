@@ -2,7 +2,7 @@
 #define _CONSTRAINTS_HPP_
 
 #include <vector>
-#include "common/CardData.hpp"
+#include "server/CardData.hpp"
 
 class Creature;
 

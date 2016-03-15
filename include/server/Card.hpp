@@ -5,7 +5,7 @@
 #include <string>
 // WizardPoker headers
 #include "server/Constraints.hpp"
-#include "common/CardData.hpp"
+#include "server/CardData.hpp"
 #include "common/Identifiers.hpp"
 
 class Card
