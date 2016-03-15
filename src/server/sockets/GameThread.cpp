@@ -154,14 +154,11 @@ userId GameThread::runGame()
 					sf::Packet boardChanges{player->getBoardChanges()};
 					specialSocket.send(boardChanges);
 				}
-
-				// Check if the player quitted the game \TODO: when is this useful ??
-				if(_winner != 0)
-				{
-					_running.store(false);
-					break;
-				}
 			}
+
+			// the game has been won/interrupted
+			if (_running.load() == false)
+				break;
 		}
 		sf::sleep(sf::milliseconds(50));
 	}
