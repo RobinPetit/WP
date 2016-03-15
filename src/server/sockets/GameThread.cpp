@@ -132,17 +132,22 @@ userId GameThread::runGame()
 		{
 			sf::TcpSocket& specialSocket{player == &_player1 ? _specialOutputSocketPlayer1 : _specialOutputSocketPlayer2};
 
-			auto status{player->tryReceiveClientInput()};
+			auto status{player->tryReceiveClientInput()}; // get input
+			// player has disconnected
 			if(status == sf::Socket::Disconnected)
 			{
 				std::cerr << "Lost connection with a player\n";
-				_winner = player->getId(); // \TODO: shouldn't it be the loser ?
-				_running.store(false);
+				//winner is the player who's still connected
+				userId winnerId = player == _activePlayer ? _passivePlayer->getId() : _activePlayer->getId();
+				endGame(winnerId, EndGame::Cause::LOST_CONNECTION);
 				break;
 			}
+
+			// error while transmitting
 			if(status == sf::Socket::Error)
 				std::cerr << "Error while transmitting, ignoring block\n";
-			// The player received some valid input from the client
+
+			// received some valid input from the client
 			else  // if status == sf::Socket::Done or if status == sf::Socket::NotReady
 			{
 				// Send the changes to the client
@@ -152,7 +157,7 @@ userId GameThread::runGame()
 					specialSocket.send(boardChanges);
 				}
 
-				// Check if the player quitted the game
+				// Check if the player quitted the game \TODO: when is this useful ??
 				if(_winner != 0)
 				{
 					_running.store(false);

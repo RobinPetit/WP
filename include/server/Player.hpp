@@ -134,7 +134,7 @@ private:
 
 	/// Last card that was used to cast an effect (his or his opponent's)
 	/// This is not a smart pointer because it points to an already allocated card.
-	const Card* _lastCasterCard = nullptr; // \TODO: use a reference ?
+	const Card* _lastCasterCard = nullptr;
 
 	// Effects container
 	static std::array<std::function<void(Player&, const EffectParamsCollection&)>, P_EFFECTS_COUNT> _effectMethods;
