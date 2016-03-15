@@ -326,7 +326,6 @@ void Player::useSpell(int handIndex, Card* usedCard)
 	cardHandToGraveyard(handIndex);
 	exploitCardEffects(usedCard);
 	sendValueToClient(TransferType::ACKNOWLEDGE);
-	logHandState();
 }
 
 void Player::attackWithCreature(int attackerIndex, int victimIndex)
