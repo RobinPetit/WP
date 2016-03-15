@@ -308,6 +308,8 @@ void Player::useCreature(int handIndex, Card* usedCard)
 	exploitCardEffects(usedCard);
 	sendValueToClient(TransferType::ACKNOWLEDGE);
 	logBoardState();
+	logOpponentBoardState();
+	_opponent->logBoardState();
 	_opponent->logOpponentBoardState();
 }
 
@@ -374,6 +376,8 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 		attacker->makeAttack(*victim);
 		logOpponentBoardState();
 		logBoardState();  // If an attack is returned to the attacker, the board changes
+		_opponent->logOpponentBoardState();
+		_opponent->logBoardState();
 	}
 	sendValueToClient(TransferType::ACKNOWLEDGE);
 }
