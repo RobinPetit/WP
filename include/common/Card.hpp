@@ -1,11 +1,10 @@
-#ifndef _CARD_SERVER_HPP
-#define _CARD_SERVER_HPP
+#ifndef _CARD_COMMON_HPP
+#define _CARD_COMMON_HPP
 
 // std-C++ headers
 #include <string>
 // WizardPoker headers
-#include "server/Constraints.hpp"
-#include "server/CardData.hpp"
+#include "common/CardData.hpp"
 
 class Card
 {
@@ -28,4 +27,4 @@ public:
 	virtual ~Card() = default;
 };
 
-#endif //_CARD_SERVER_HPP
+#endif //_CARD_COMMON_HPP

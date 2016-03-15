@@ -2,10 +2,10 @@
 #define CREATURE_SERVER_HPP
 
 // WizardPoker headers
-#include "server/Card.hpp"
+#include "common/Card.hpp"
+#include "server/CardData.hpp"
 #include "server/Player.hpp"
 #include "server/Constraints.hpp"
-#include "server/CardData.hpp"
 
 ///Creature card : One of the 2 playables card
 class Creature : public Card

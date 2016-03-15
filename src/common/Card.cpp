@@ -1,4 +1,4 @@
-#include "server/Card.hpp"
+#include "common/Card.hpp"
 
 Card::Card(const CommonCardData& cardData):
 	_prototype(cardData), _cost(cardData.getCost())
