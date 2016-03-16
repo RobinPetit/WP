@@ -170,6 +170,16 @@ private:
 	/// Apply an effect to all of its Creatures
 	void applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollection& effectArgs);
 
+	/// Generate a ramdom number in the interval [0, vector.size()[. This is a
+	/// convenience function used only to lightweight the code.
+	/// \tparam Type contained in the vector.
+	/// \param vector The vector that need a random index.
+	/// \return A ramdom number in the interval [0, vector.size()[.
+	/// \note The implementation is in source file rather than in the header
+	/// because this is a private method.
+	template <typename T>
+	inline int getRandomIndex(const std::vector<T>& vector);
+
 	/// \param selection a vector of values telling whether the choice must be in player's cards or opponent's cards
 	/// \return a vector of indices selected
 	std::vector<int> getRandomBoardIndexes(const std::vector<CardToSelect>& selection);

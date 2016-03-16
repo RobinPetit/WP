@@ -64,6 +64,10 @@ class AbstractGame
 		CostValue getCardCost(cardId id);
 		const std::string& getCardDescription(cardId id);
 
+		/// Check wheter the card is a spell or a creature.
+		/// \return True if the card is a spell, false if it is a creature.
+		bool isSpell(cardId id);
+
 	private:
 		//////////////// private methods
 

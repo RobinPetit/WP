@@ -11,6 +11,8 @@ set(SOURCES
 	"sockets/PacketOverload.cpp"
 	"Database.cpp"
 	"CardData.cpp" #temporary
+	# random
+	"random/RandomInteger.cpp"
 	)
 
 add_library(${COMMON_NAME} ${SOURCES})
