@@ -85,8 +85,7 @@ private:
 
 public:
 	Constraints(const std::vector<ConstraintDefaultValue>& defaultValues);
-	void setConstraint(int constraintID, int value, int turns);
-	void setConstraint(int constraintID, int value, int turns, const Creature* caster);
+	void setConstraint(int constraintID, int value, int turns, const Creature* caster=nullptr);
 	int getConstraint(int constraintID) const;
 	int getOverallConstraint(int constraintID, int otherValue) const;
 	void timeOutConstraints();
