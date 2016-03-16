@@ -24,9 +24,3 @@ bool Card::isSpell() const
 {
 	return _prototype.isSpell();
 }
-
-bool Card::isCreature() const
-{
-	return _prototype.isCreature();
-}
-
