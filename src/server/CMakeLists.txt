@@ -1,7 +1,7 @@
 set(SOURCES
 		"server.cpp"
 		"ServerDatabase.cpp"
-		"CardData.cpp"
+		"ServerCardData.cpp"
 		"Creature.cpp"
 		"Spell.cpp"
 		"Player.cpp"

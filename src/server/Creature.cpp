@@ -14,7 +14,7 @@ std::function<void(Creature&, const EffectParamsCollection&)> Creature::_effectM
 	&Creature::changeShield
 };
 
-Creature::Creature(const CreatureData& cardData):
+Creature::Creature(const ServerCreatureData& cardData):
 	Card(cardData),
 	_attack(cardData.getAttack()),
 	_health(cardData.getHealth()),
@@ -255,7 +255,7 @@ void Creature::changeShield(const EffectParamsCollection& args)
 }
 
 /*--------------------------- PRIVATE METHOD */
-inline const CreatureData& Creature::prototype() const
+inline const ServerCreatureData& Creature::prototype() const
 {
-	return static_cast<const CreatureData&>(_prototype);
+	return static_cast<const ServerCreatureData&>(_prototype);
 }

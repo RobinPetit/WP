@@ -1,6 +1,6 @@
 #include "server/Spell.hpp"
 
-Spell::Spell(const SpellData& cardData):
+Spell::Spell(const ServerSpellData& cardData):
 	Card(cardData)
 {
 }
@@ -11,7 +11,7 @@ std::vector<EffectParamsCollection> Spell::getEffects()
 }
 
 /*--------------------------- PRIVATE METHOD */
-inline const SpellData& Spell::prototype() const
+inline const ServerSpellData& Spell::prototype() const
 {
-	return static_cast<const SpellData&>(_prototype);
+	return static_cast<const ServerSpellData&>(_prototype);
 }

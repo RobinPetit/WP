@@ -9,7 +9,7 @@
 // WizardPoker headers
 #include "client/AbstractState.hpp"
 #include "client/NonBlockingInput.hpp"
-#include "client/CardData.hpp"
+#include "client/ClientCardData.hpp"
 #include "common/GameData.hpp"
 #include "common/Identifiers.hpp"
 #include "common/sockets/TransferType.hpp"

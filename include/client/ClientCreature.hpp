@@ -2,7 +2,7 @@
 #define _CLIENT_CREATURE_CLIENT_HPP
 
 #include "common/Card.hpp"
-#include "client/CardData.hpp"
+#include "client/ClientCardData.hpp"
 
 ///Spell card : One of the 2 playables card
 class ClientCreature: public Card
@@ -12,11 +12,11 @@ private:
 	int _shieldType;
 
 	/// used to get good prototype type
-	inline const CreatureData& prototype() const;
+	inline const ClientCreatureData& prototype() const;
 
 public:
 	/// Constructor
-	ClientCreature(const CreatureData&);
+	ClientCreature(const ClientCreatureData&);
 
 	// GETTERS
 	const std::string& getName() const;

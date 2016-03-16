@@ -3,7 +3,7 @@
 
 // WizardPoker headers
 #include "common/Card.hpp"
-#include "server/CardData.hpp"
+#include "server/ServerCardData.hpp"
 #include "server/Player.hpp"
 #include "server/Constraints.hpp"
 
@@ -35,11 +35,11 @@ private:
 	void forcedChangeHealth(const EffectParamsCollection& args);
 
 	/// used to get good prototype type
-	inline const CreatureData& prototype() const;
+	inline const ServerCreatureData& prototype() const;
 
 public:
 	/// Constructors
-	Creature(const CreatureData&);
+	Creature(const ServerCreatureData&);
 
 	/// Player interface
 	void movedToBoard();

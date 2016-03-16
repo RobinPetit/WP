@@ -108,7 +108,9 @@ public:
 };
 
 // forward declaration of classes actually used by server and client
-//class CreatureData;
-//class SpellData;
+//class ClientCreatureData;
+//class ClientSpellData;
+//class ServerCreatureData;
+//class ServerSpellData;
 
 #endif  // _CARD_DATA_HPP

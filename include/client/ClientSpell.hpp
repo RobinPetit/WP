@@ -2,18 +2,18 @@
 #define _CLIENT_SPELL_CLIENT_HPP
 
 #include "common/Card.hpp"
-#include "client/CardData.hpp"
+#include "client/ClientCardData.hpp"
 
 ///Spell card : One of the 2 playables card
 class ClientSpell: public Card
 {
 private:
 	/// used to get good prototype type
-	inline const SpellData& prototype() const;
+	inline const ClientSpellData& prototype() const;
 
 public:
 	/// Constructor
-	ClientSpell(const SpellData&);
+	ClientSpell(const ClientSpellData&);
 
 	// GETTERS
 	const std::string& getName();

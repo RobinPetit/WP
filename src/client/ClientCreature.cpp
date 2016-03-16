@@ -1,6 +1,6 @@
 #include "client/ClientCreature.hpp"
 
-ClientCreature::ClientCreature(const CreatureData& cardData) :
+ClientCreature::ClientCreature(const ClientCreatureData& cardData) :
 	Card(cardData),
 	_attack(cardData.getAttack()), _health(cardData.getHealth()), _shield(cardData.getShield()),
 	_shieldType(cardData.getShieldType())
@@ -38,7 +38,7 @@ const std::string& ClientCreature::getDescription() const
 }
 
 /*--------------------------- PRIVATE METHOD */
-inline const CreatureData& ClientCreature::prototype() const
+inline const ClientCreatureData& ClientCreature::prototype() const
 {
-	return static_cast<const CreatureData&>(_prototype);
+	return static_cast<const ClientCreatureData&>(_prototype);
 }

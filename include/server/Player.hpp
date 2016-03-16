@@ -13,7 +13,7 @@
 #include "server/Spell.hpp"
 #include "server/Constraints.hpp"
 #include "server/ServerDatabase.hpp"
-#include "server/CardData.hpp"
+#include "server/ServerCardData.hpp"
 #include "common/GameData.hpp"
 #include "common/Identifiers.hpp"  // userId
 #include "common/sockets/TransferType.hpp"

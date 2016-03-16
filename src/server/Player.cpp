@@ -82,12 +82,12 @@ void Player::setDeck(const Deck& newDeck)
 		// and higher cardId are spells. THIS SHOULD BE FIXED.
 		if(card <= 10)
 		{
-			CreatureData creat = ALL_CREATURES[card-1];
+			ServerCreatureData creat = ALL_CREATURES[card-1];
 			loadedCards[i] = new Creature(card, creat.cost, creat.attack, creat.health, creat.shield, creat.shieldType, creat.effects);
 		}
 		else
 		{
-			SpellData spell = ALL_SPELLS[card - 11];
+			ServerSpellData spell = ALL_SPELLS[card - 11];
 			loadedCards[i] = new Spell(card, spell.cost, spell.effects);
 		}
 	}
