@@ -30,48 +30,30 @@ class GameThread;
 class Player
 {
 public:
+	/*------------------------------ Methods */
 	/// Constructor
 	Player(GameThread& gameThread, ServerDatabase& database, userId id);
+
 	void setOpponent(Player* opponent);  // Complementary
 
 	// Interface for basic gameplay
 	/// Receive the deck sent by the client and put it in the game
 	void receiveDeck();
+
 	/// The game has begun.
 	void beginGame(bool isActivePlayer);
+
 	/// The player's turn has started
 	void enterTurn(int turn);
+
 	/// The player's turn has ended
 	void leaveTurn();
 
 	// Interface for client input
-
 	/// Tries to receive an input from the client, executes the corresponding
 	/// action.
 	/// \return the status of the socket after the receiving
 	sf::Socket::Status tryReceiveClientInput();
-
-	/// Interface for applying effects
-	// TODO make these methods private
-	void applyEffect(Card* usedCard, EffectParamsCollection effect);
-	//to itself
-	void applyEffectToSelf(const Card* usedCard, EffectParamsCollection& effectArgs);
-	//to one of its Creatures
-	void applyEffectToCreature(Creature* casterAndSubject, EffectParamsCollection& effectArgs); //With ref. to creature
-	void applyEffectToCreature(const Card* usedCard, EffectParamsCollection& effectArgs, const std::vector<int>& boardIndexes); //With creature index
-	//to all of its Creatures
-	void applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollection& effectArgs);
-
-	/// Getters
-	int getCreatureConstraint(const Creature& subject, int constraintId) const;
-	const Card* getLastCaster() const;
-	userId getId() const;
-	sf::TcpSocket& getSocket();
-
-	// TODO make these getters private
-	const std::vector<std::unique_ptr<Creature>>& getBoard() const;
-	int getHealth() const;
-	std::vector<std::unique_ptr<Card>>::size_type getHandSize() const;
 
 	/// \return true if some changes has been logged since the last player's
 	/// action, false otherwise.
@@ -83,13 +65,14 @@ public:
 	/// \post !thereAreBoardChanges();
 	sf::Packet getBoardChanges();
 
-	/// \return a vector of indices selected
-	/// \param selection a vector of values telling whether the choice must be in player's cards or opponent's cards
-	std::vector<int>&& getRandomBoardIndexes(const std::vector<CardToSelect>& selection);
-	std::vector<int>&& askUserToSelectCards(const std::vector<CardToSelect>& selection);
+	// Getters
+	int getCreatureConstraint(const Creature& subject, int constraintId) const;
+	const Card* getLastCaster() const;
+	userId getId() const;
+	sf::TcpSocket& getSocket();
 
 private:
-	/// Types
+	/*------------------------------ Types */
 	struct TurnData
 	{
 		int turnCount;
@@ -99,19 +82,21 @@ private:
 		int spellCalls;
 	};
 
-	/// const{expr} static variables
+	/*------------------------------ Static variables */
 	constexpr static TurnData _emptyTurnData = {0, 0, 0, 0, 0};
 	constexpr static unsigned _initialAmountOfCards{4};
 
-	/// Attributes
+	/*------------------------------ Attributes */
 	GameThread& _gameThread;
 	ServerDatabase& _database;
-	// Pointer responsability is not given to this Player: it is not an allocated-attribute
+
+	/// Pointer responsability is not given to this Player:
+	/// it is not an allocated-attribute
 	Player* _opponent = nullptr;
 	userId _id;
 	std::atomic_bool _isActive;
 
-	//Client communication
+	// Client communication
 	sf::TcpSocket _socketToClient;
 	sf::Packet _pendingBoardChanges;
 
@@ -130,10 +115,18 @@ private:
 	// because at first, all are empty except the deck which contains... The deck
 	// obviously... And then the cards move from one to another but never disappear
 	// or are created
-	std::stack<std::unique_ptr<Card>> _cardDeck;  ///< Cards that are in the deck (not usable yet)
-	std::vector<std::unique_ptr<Card>> _cardHand;  ///< Cards that are in the player's hand (usable)
-	std::vector<std::unique_ptr<Creature>> _cardBoard;  ///< Cards that are on the board (usable for attacks)
-	std::vector<std::unique_ptr<Card>> _cardGraveyard;  ///< Cards that are discarded (dead creatures, used spells)
+
+	/// Cards that are in the deck (not usable yet)
+	std::stack<std::unique_ptr<Card>> _cardDeck;
+
+	/// Cards that are in the player's hand (usable)
+	std::vector<std::unique_ptr<Card>> _cardHand;
+
+	/// Cards that are on the board (usable for attacks)
+	std::vector<std::unique_ptr<Creature>> _cardBoard;
+
+	/// Cards that are discarded (dead creatures, used spells)
+	std::vector<std::unique_ptr<Card>> _cardGraveyard;
 
 	/// Last card that was used to cast an effect (his or opponent's)
 	/// This is not a smart pointer because it points to an already allocated card.
@@ -146,16 +139,46 @@ private:
 	// Effects container
 	static std::function<void(Player&, const EffectParamsCollection&)> _effectMethods[P_EFFECTS_COUNT];
 
-
+	/*------------------------------ Methods */
 	/// User actions
 	//TODO: check for each function if Player is the active player, and lock changes to _isActive until end of function
-	void useCard(int handIndex); 	///< Use a card
-	void attackWithCreature(int boardIndex, int victim);  ///< Attack victim (-1 for opponent) with a card
-	void endTurn(); //TODO; define behavior
+	/// Use a card
+	void useCard(int handIndex);
+
+	/// Attack victim (-1 for opponent) with a card
+	void attackWithCreature(int boardIndex, int victim);
+
+	/// End the turn
+	void endTurn();
+
 	/// The game has ended because of some reason (maybe because the user want to quit the game)
 	void finishGame(bool hasWon, EndGame::Cause cause);
 
-	/// Effects (private)
+	// Interface for applying effects
+	/// Generic method that will then call the appropriate method below.
+	void applyEffect(Card* usedCard, EffectParamsCollection effect);
+
+	/// Apply an effect to itself
+	void applyEffectToSelf(const Card* usedCard, EffectParamsCollection& effectArgs);
+
+	/// Apply an effect to one of its Creatures, with reference to creature
+	void applyEffectToCreature(Creature* casterAndSubject, EffectParamsCollection& effectArgs);
+
+	/// Apply an effect to one of its Creatures, with creature index
+	void applyEffectToCreature(const Card* usedCard, EffectParamsCollection& effectArgs, const std::vector<int>& boardIndexes);
+
+	/// Apply an effect to all of its Creatures
+	void applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollection& effectArgs);
+
+	/// \param selection a vector of values telling whether the choice must be in player's cards or opponent's cards
+	/// \return a vector of indices selected
+	std::vector<int>&& getRandomBoardIndexes(const std::vector<CardToSelect>& selection);
+
+	/// \param selection a vector of values telling whether the choice must be in player's cards or opponent's cards
+	/// \return a vector of indices selected
+	std::vector<int>&& askUserToSelectCards(const std::vector<CardToSelect>& selection);
+
+	// Effects (private)
 	void setConstraint(const EffectParamsCollection& args);
 	void pickDeckCards(const EffectParamsCollection& args);
 	void loseHandCards(const EffectParamsCollection& args);
@@ -166,15 +189,19 @@ private:
 	void changeEnergy(const EffectParamsCollection& args);
 	void changeHealth(const EffectParamsCollection& args);
 
-	/// Other private methods
+	// Other private methods
 	void exploitCardEffects(Card* usedCard);
 	void setTeamConstraint(const Card* usedCard, const EffectParamsCollection& effectArgs);
 	void setDeck(const Deck& newDeck);
 
 	void cardDeckToHand(int amount);
 	void cardHandToBoard(int handIndex);
-	void cardHandToGraveyard(int handIndex);  ///< Move the card at handIndex from the player's hand to the bin
-	void cardBoardToGraveyard(int boardIndex);  ///< Move the card at boardIndex from the board to the bin
+
+	/// Move the card at handIndex from the player's hand to the bin
+	void cardHandToGraveyard(int handIndex);
+
+	/// Move the card at boardIndex from the board to the bin
+	void cardBoardToGraveyard(int boardIndex);
 	void cardGraveyardToHand(int binIndex);
 	void cardAddToHand(std::unique_ptr<Card> given);
 	std::unique_ptr<Card> cardRemoveFromHand();
@@ -200,6 +227,11 @@ private:
 	void logCardDataFromVector(TransferType type, const std::vector<std::unique_ptr<Card>>& vect);
 	void logBoardCreatureDataFromVector(TransferType type, const std::vector<std::unique_ptr<Creature>>& vect);
 	void sendValueToClient(TransferType value);
+
+	// Some getters
+	const std::vector<std::unique_ptr<Creature>>& getBoard() const;
+	int getHealth() const;
+	std::vector<std::unique_ptr<Card>>::size_type getHandSize() const;
 };
 
 

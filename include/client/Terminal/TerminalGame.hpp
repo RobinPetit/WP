@@ -8,10 +8,13 @@ class TerminalGame : public AbstractGame
 public:
 	TerminalGame(Client& client);
 
+	void startTurn() override;
+
 	~TerminalGame();
 
 private:
-	void display() override;
+
+	void displayOptions();
 	void displayGame() override;
 	void displayCardVector(const std::vector<CardData>& cardVector, bool displayDescription=false);
 	void displayBoardCreatureVector(const std::vector<BoardCreatureData>& cardVector, bool displayDescription=false);
