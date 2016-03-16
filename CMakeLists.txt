@@ -41,4 +41,13 @@ add_custom_target(srd
 		COMMAND make -C ${PROJECT_SOURCE_DIR}/SRD/ srd.pdf
 		# COMMAND cp ${PROJECT_SOURCE_DIR}/SRD/srd.pdf ${PROJECT_SOURCE_DIR}/srd.pdf # It seems that it is confusing to have two srd.pdf
 	)
-add_custom_target(cleansrd COMMAND make -C ${PROJECT_SOURCE_DIR}/SRD/ mrproper)
+add_custom_target(cleansrd
+		COMMAND make -C ${PROJECT_SOURCE_DIR}/SRD/ mrproper
+	)
+
+add_custom_target(database
+		COMMAND ./initdatabase.sh
+		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/prebuildscript/
+	)
+
+

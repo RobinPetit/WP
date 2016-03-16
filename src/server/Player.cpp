@@ -206,9 +206,16 @@ sf::Socket::Status Player::tryReceiveClientInput()
 
 	if(type == TransferType::GAME_QUIT_GAME)
 		finishGame(false, EndGame::Cause::QUITTED);
-	// Be sure this is the active player that sent input
-	else if(_isActive.load())
+
+	else
 	{
+		// These methods are not allowed for passive player
+		if (_isActive.load() == false)
+		{
+			std::cout << "Passive player tried to cheat, perma ban ?\n";
+			return status;
+		}
+
 		switch(type)
 		{
 			case TransferType::GAME_PLAYER_LEAVE_TURN:
@@ -257,21 +264,23 @@ void Player::useCard(int handIndex)
 		sendValueToClient(TransferType::FAILURE);
 		return;
 	}
-	//Check if we have enough energy to use this card
+	// check if player has enough energy to use the card
 	if(usedCard->getEnergyCost() > _energy)
 	{
 		sendValueToClient(TransferType::GAME_NOT_ENOUGH_ENERGY);
 		return;
 	}
 
-	//Check if we have the right to put more cards (constraint)
+	// check if player is allowed to use more cards
 	if(_constraints.getConstraint(PC_TEMP_CARD_USE_LIMIT) == _turnData.cardsUsed)
 	{
 		sendValueToClient(TransferType::GAME_CARD_LIMIT_TURN_REACHED);
 		return;
 	}
 
-	_energy -= usedCard->getEnergyCost();
+	_lastCasterCard = usedCard;
+	_opponent->_lastCasterCard = usedCard;
+
 	(this->*(usedCard->isCreature() ? &Player::useCreature : &Player::useSpell))(handIndex, usedCard);
 	logHandState();
 	_opponent->logOpponentHandState();
@@ -282,33 +291,41 @@ void Player::useCard(int handIndex)
 
 void Player::useCreature(int handIndex, Card* usedCard)
 {
+	// check if player is allowed to place a creature
 	if (_constraints.getConstraint(PC_TEMP_CREATURE_PLACING_LIMIT) == _turnData.creaturesPlaced)
-		sendValueToClient(TransferType::FAILURE);
-	else
 	{
-		_turnData.cardsUsed++;
-		_turnData.creaturesPlaced++;
-		cardHandToBoard(handIndex);
-		exploitCardEffects(usedCard);
-		sendValueToClient(TransferType::ACKNOWLEDGE);
+		sendValueToClient(TransferType::FAILURE);
+		return;
 	}
+
+	_turnData.cardsUsed++;
+	_turnData.creaturesPlaced++;
+	_energy -= usedCard->getEnergyCost();
+
+	cardHandToBoard(handIndex);
+	exploitCardEffects(usedCard);
+	sendValueToClient(TransferType::ACKNOWLEDGE);
 	logBoardState();
 	_opponent->logOpponentBoardState();
 }
 
 void Player::useSpell(int handIndex, Card* usedCard)
 {
+	// check if player is allowed to call a spell
 	if (_constraints.getConstraint(PC_TEMP_SPELL_CALL_LIMIT) == _turnData.spellCalls)
-		sendValueToClient(TransferType::FAILURE);
-	else
 	{
-		_turnData.cardsUsed++;
-		_turnData.spellCalls++;
-		cardHandToGraveyard(handIndex);
-		exploitCardEffects(usedCard);
-		sendValueToClient(TransferType::ACKNOWLEDGE);
+		sendValueToClient(TransferType::FAILURE);
+		return;
 	}
-	logGraveyardState();
+
+	_turnData.cardsUsed++;
+	_turnData.spellCalls++;
+	_energy -= usedCard->getEnergyCost();
+
+	cardHandToGraveyard(handIndex);
+	exploitCardEffects(usedCard);
+	sendValueToClient(TransferType::ACKNOWLEDGE);
+	logHandState();
 }
 
 void Player::attackWithCreature(int attackerIndex, int victimIndex)
@@ -327,32 +344,36 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 		return;
 	}
 
-	//Check if we have enough energy to use this card
+	// check if we have enough energy to use this card
 	if(attacker->getEnergyCost() > _energy)
 	{
 		sendValueToClient(TransferType::GAME_NOT_ENOUGH_ENERGY);
 		return;
 	}
+
+	// check if player is allowed to attack
+	if(_constraints.getConstraint(PC_TEMP_CREATURE_ATTACK_LIMIT) == _turnData.creatureAttacks)
+	{
+		sendValueToClient(TransferType::FAILURE);
+		return;
+	}
+
+	_turnData.creatureAttacks++;
 	_energy -= attacker->getEnergyCost();
 
-	if(_constraints.getConstraint(PC_TEMP_CREATURE_ATTACK_LIMIT) == _turnData.creatureAttacks)
-		sendValueToClient(TransferType::FAILURE);
+	if(victimIndex < 0)
+	{
+		std::vector<int> params{{PE_CHANGE_HEALTH, -(attacker->getAttack())}}; // \TODO: I don't think we should use effects this way
+		_opponent->applyEffectToSelf(params);  //no forced attacks on opponent
+		logOpponentHealth();
+	}
 	else
 	{
-		if(victimIndex < 0)
-		{
-			std::vector<int> params{{PE_CHANGE_HEALTH, -(attacker->getAttack())}};
-			_opponent->applyEffectToSelf(attacker, params);  //no forced attacks on opponent
-			logOpponentHealth();
-		}
-		else
-		{
-			attacker->makeAttack(*victim);
-			logOpponentBoardState();
-			logBoardState();  // If an attack is returned to the attacker, the board change
-		}
-		sendValueToClient(TransferType::ACKNOWLEDGE);
+		attacker->makeAttack(*victim);
+		logOpponentBoardState();
+		logBoardState();  // If an attack is returned to the attacker, the board changes
 	}
+	sendValueToClient(TransferType::ACKNOWLEDGE);
 }
 
 void Player::endTurn()
@@ -374,18 +395,19 @@ void Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 		throw std::runtime_error("Error with cards arguments");
 	}
 
-
+	_lastCasterCard = usedCard;  // remember last used card
+	_opponent->_lastCasterCard = usedCard; // same for opponent
 
 	switch(subject)
 	{
 		case PLAYER_SELF:  //passive player
 			askUserToSelectCards({});
-			applyEffectToSelf(usedCard, effectArgs);
+			applyEffectToSelf(effectArgs);
 			break;
 
 		case PLAYER_OPPO:  //active player
 			askUserToSelectCards({});
-			_opponent->applyEffectToSelf(usedCard, effectArgs);
+			_opponent->applyEffectToSelf(effectArgs);
 			break;
 
 		case CREATURE_SELF_THIS:  //active player's creature that was used
@@ -398,47 +420,43 @@ void Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 
 		case CREATURE_SELF_INDX:  //active player's creature at given index
 			if(not _cardBoard.empty())
-				applyEffectToCreature(usedCard, effectArgs, askUserToSelectCards({CardToSelect::SELF_BOARD}));
+				applyEffectToCreature(effectArgs, askUserToSelectCards({CardToSelect::SELF_BOARD}));
 			break;
 
 		case CREATURE_SELF_RAND:  //active player's creature at random index
 			askUserToSelectCards({});
 			if(not _cardBoard.empty())
-				applyEffectToCreature(usedCard, effectArgs, getRandomBoardIndexes({CardToSelect::SELF_BOARD}));
+				applyEffectToCreature(effectArgs, getRandomBoardIndexes({CardToSelect::SELF_BOARD}));
 			break;
 
 		case CREATURE_SELF_TEAM:  //active player's team of creatures
 			askUserToSelectCards({});
-			applyEffectToCreatureTeam(usedCard, effectArgs);
+			applyEffectToCreatureTeam(effectArgs);
 			break;
 
 		case CREATURE_OPPO_INDX:	//passive player's creature at given index
 			if(not _opponent->_cardBoard.empty())
-				_opponent->applyEffectToCreature(usedCard, effectArgs, askUserToSelectCards({CardToSelect::OPPO_BOARD}));
+				_opponent->applyEffectToCreature(effectArgs, askUserToSelectCards({CardToSelect::OPPO_BOARD}));
 			break;
 
 		case CREATURE_OPPO_RAND:	//passive player's creature at random index
 			askUserToSelectCards({});
 			if(not _opponent->_cardBoard.empty())
-				_opponent->applyEffectToCreature(usedCard, effectArgs, getRandomBoardIndexes({CardToSelect::OPPO_BOARD}));
+				_opponent->applyEffectToCreature(effectArgs, getRandomBoardIndexes({CardToSelect::OPPO_BOARD}));
 			break;
 
 		case CREATURE_OPPO_TEAM:	//passive player's team of creatures
 			askUserToSelectCards({});
-			_opponent->applyEffectToCreatureTeam(usedCard, effectArgs);
+			_opponent->applyEffectToCreatureTeam(effectArgs);
 			break;
 
 		default:
 			throw std::runtime_error("Effect subject not valid");
 	}
-
-	// TODO factorize _lastCasterCard = usedCard;
 }
 
-void Player::applyEffectToSelf(const Card* usedCard, EffectParamsCollection& effectArgs)
+void Player::applyEffectToSelf(EffectParamsCollection& effectArgs)
 {
-	_lastCasterCard = usedCard;  //remember last used card
-
 	int method = effectArgs.front();  //what method is used
 	effectArgs.erase(effectArgs.begin());
 
@@ -447,25 +465,21 @@ void Player::applyEffectToSelf(const Card* usedCard, EffectParamsCollection& eff
 
 void Player::applyEffectToCreature(Creature* casterAndSubject, EffectParamsCollection& effectArgs)
 {
-	_lastCasterCard = casterAndSubject; //remember last used card
 	casterAndSubject->applyEffectToSelf(effectArgs); //call method on effect subject (same as caster)
 }
 
-void Player::applyEffectToCreature(const Card* usedCard, EffectParamsCollection& effectArgs, const std::vector<int>& boardIndexes)
+void Player::applyEffectToCreature(EffectParamsCollection& effectArgs, const std::vector<int>& boardIndexes)
 {
-	_lastCasterCard = usedCard; //remember last used card
 	_cardBoard.at(boardIndexes.at(0))->applyEffectToSelf(effectArgs);
 }
 
-void Player::applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollection& effectArgs)
+void Player::applyEffectToCreatureTeam(EffectParamsCollection& effectArgs)
 {
-	_lastCasterCard = usedCard;
-
 	//If the effect consists in setting a constraint
 	if(effectArgs.at(0) == CE_SET_CONSTRAINT)
 	{
 		effectArgs.erase(effectArgs.begin()); //remove the method value
-		setTeamConstraint(usedCard, effectArgs); //set a team constraint instead of individual ones
+		setTeamConstraint(effectArgs); //set a team constraint instead of individual ones
 	}
 	else //other effects just get applied to each creature individually
 		for(auto& card : _cardBoard)
@@ -704,7 +718,7 @@ void Player::exploitCardEffects(Card* usedCard)
 		applyEffect(usedCard, effectArgs); //apply it
 }
 
-void Player::setTeamConstraint(const Card* /* usedCard */, const EffectParamsCollection& args)
+void Player::setTeamConstraint(const EffectParamsCollection& args)
 {
 	int constraintId;  // constraint to set
 	int value;  // value to give to it
@@ -779,6 +793,13 @@ void Player::cardBoardToGraveyard(int boardIndex)
 	logBoardState();
 	_opponent->logOpponentBoardState();
 	logGraveyardState();
+}
+
+void Player::cardBoardToGraveyard(const Creature *card)
+{
+	const auto& lambdaCheck{[card](const auto& it){return it.get() == card;}};
+	const auto& cardIterator{std::find_if(_cardBoard.begin(), _cardBoard.end(), lambdaCheck)};
+	cardBoardToGraveyard(static_cast<int>(cardIterator - _cardBoard.begin()));
 }
 
 void Player::cardGraveyardToHand(int binIndex)
@@ -874,35 +895,8 @@ void Player::logCardDataFromVector(TransferType type, const std::vector<std::uni
 void Player::logBoardCreatureDataFromVector(TransferType type, const std::vector<std::unique_ptr<Creature>>& vect)
 {
 	std::vector<BoardCreatureData> boardCreatures;
-	for (std::size_t i = 0U; i<vect.size(); i++)
-	{
-		BoardCreatureData data;
-		Creature& creat = *vect.at(i);
-		data.id = creat.getId();
-		data.attack = creat.getAttack();
-		data.health = creat.getHealth();
-		data.shield = creat.getShield();
-		int shieldType = creat.getShieldType();
-		switch(shieldType)
-		{
-			case SHIELD_NONE:
-				data.shieldType = "none";
-				break;
-
-			case SHIELD_BLUE:
-				data.shieldType = "blue";
-				break;
-
-			case SHIELD_ORANGE:
-				data.shieldType = "orange";
-				break;
-
-			case SHIELD_LEGENDARY:
-				data.shieldType = "legendary";
-				break;
-		}
-		boardCreatures.push_back(data);
-	}
+	for(const auto& creature : vect)
+		boardCreatures.push_back(static_cast<BoardCreatureData>(*creature));
 	// std::vector transmission in packet is defined in common/sockets/PacketOverload.hpp
 	_pendingBoardChanges << type << boardCreatures;
 }

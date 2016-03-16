@@ -33,11 +33,11 @@ void Creature::moveToBoard()
 
 void Creature::removeFromBoard()
 {
+	_isOnBoard = false;
 	//Creature's death-based constraints
 	changeAttack({getConstraint(CC_DEATH_ATTACK_CHANGE)});
 	changeHealth({getConstraint(CC_DEATH_HEALTH_CHANGE)});
 	changeShield({getConstraint(CC_DEATH_ATTACK_CHANGE)});
-	_isOnBoard = false;
 }
 
 bool Creature::isOnBoard() const
@@ -110,22 +110,22 @@ const std::vector<EffectParamsCollection>& Creature::getEffects() const
 	return prototype().getEffects();
 }
 
-int Creature::getAttack()
+int Creature::getAttack() const
 {
 	return _attack;
 }
 
-int Creature::getHealth()
+int Creature::getHealth() const
 {
 	return _health;
 }
 
-int Creature::getShield()
+int Creature::getShield() const
 {
 	return _shield;
 }
 
-int Creature::getShieldType()
+int Creature::getShieldType() const
 {
 	return _shieldType;
 }
@@ -228,7 +228,7 @@ void Creature::changeHealth(const EffectParamsCollection& args)
 					points = 0;
 				break;
 			case SHIELD_ORANGE:
-				if(points <= _shield)
+				if(-points <= _shield)
 					points = 0;  // Orange shield, only stronger attacks go through
 				break;
 			case SHIELD_LEGENDARY:
@@ -241,7 +241,8 @@ void Creature::changeHealth(const EffectParamsCollection& args)
 	if(_health <= 0)
 	{
 		_health = 0;
-		// Creature died
+		if(_isOnBoard)
+			_owner.cardBoardToGraveyard(this);
 	}
 }
 
@@ -259,8 +260,16 @@ void Creature::changeShield(const EffectParamsCollection& args)
 	}
 }
 
+Creature::operator BoardCreatureData() const
+{
+	BoardCreatureData data {getId(), getHealth(), getAttack(), getShield(),
+			BoardCreatureData::shieldTypes[getShieldType()-1]};
+	return data;
+}
+
 /*--------------------------- PRIVATE METHOD */
 inline const ServerCreatureData& Creature::prototype() const
 {
 	return static_cast<const ServerCreatureData&>(_prototype);
 }
+

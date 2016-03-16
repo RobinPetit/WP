@@ -9,6 +9,8 @@
 #include "server/ServerCardData.hpp"
 #include "server/Player.hpp"
 #include "server/Constraints.hpp"
+#include "common/CardData.hpp" // Why?
+#include "common/GameData.hpp" // Why?
 
 // Forward declarations
 class Player;
@@ -62,12 +64,14 @@ public:
 	void applyEffectToSelf(EffectParamsCollection& effectArgs);
 
 	const std::vector<EffectParamsCollection>& getEffects() const;
-	int getAttack();
-	int getHealth();
-	int getShield();
-	int getShieldType();
+	int getAttack() const;
+	int getHealth() const;
+	int getShield() const;
+	int getShieldType() const;
 	int getPersonalConstraint(int constraintId) const;
 	int getConstraint(int constraintId) const;
+
+	explicit operator BoardCreatureData() const;
 };
 
 #endif // CREATURE_SERVER_HPP
