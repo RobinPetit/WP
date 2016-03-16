@@ -14,8 +14,8 @@ private:
 
 public:
 	/// Constructor
-	ServerCreatureData(cardId, CostValue, const std::vector<EffectParamsCollection>& effects,
-	             AttackValue, HealthValue, ShieldValue, ShieldType);
+	ServerCreatureData(cardId, int cost, const std::vector<EffectParamsCollection>& effects,
+	             int attack, int health, int shield, int shieldType);
 
 	/// Getters
 	const std::vector<EffectParamsCollection>& getEffects() const;
@@ -32,7 +32,7 @@ private:
 
 public:
 	/// Constructor
-	ServerSpellData(cardId, CostValue, const std::vector<EffectParamsCollection>& effects);
+	ServerSpellData(cardId, int cost, const std::vector<EffectParamsCollection>& effects);
 
 	/// Getters
 	const std::vector<EffectParamsCollection>& getEffects() const;

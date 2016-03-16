@@ -15,8 +15,8 @@ private:
 
 public:
 	/// Constructor
-	ClientCreatureData(cardId, const std::string& name, CostValue, const std::string& description,
-	                   AttackValue, HealthValue, ShieldValue, ShieldType);
+	ClientCreatureData(cardId, const std::string& name, int cost, const std::string& description,
+	                   int health, int attack, int shield, int shieldType);
 
 	/// Getters
 	inline const std::string& getName() const;
@@ -35,7 +35,7 @@ private:
 
 public:
 	/// Constructor
-	ClientSpellData(cardId, const std::string& name, CostValue, const std::string& description);
+	ClientSpellData(cardId, const std::string& name, int cost, const std::string& description);
 
 	/// Getters
 	inline const std::string& getName() const;

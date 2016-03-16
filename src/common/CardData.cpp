@@ -1,7 +1,7 @@
 #include "common/CardData.hpp"
 
 // CommonCardData base class
-CommonCardData::CommonCardData(cardId id, CostValue cost) :
+CommonCardData::CommonCardData(cardId id, int cost) :
 	_id(id), _cost(cost)
 {
 }
@@ -11,36 +11,36 @@ cardId CommonCardData::getId() const
 	return _id;
 }
 
-CostValue CommonCardData::getCost() const
+int CommonCardData::getCost() const
 {
 	return _cost;
 }
 
 
 // CommonCreatureData
-CommonCreatureData::CommonCreatureData(cardId id, CostValue cost,
-                           AttackValue attack, HealthValue health, ShieldValue shield, ShieldType shieldType) :
+CommonCreatureData::CommonCreatureData(cardId id, int cost,
+                           int attack, int health, int shield, int shieldType) :
 	CommonCardData(id,cost),
 	_attack(attack), _health(health), _shield(shield), _shieldType(shieldType)
 {
 }
 
-AttackValue CommonCreatureData::getAttack() const
+int CommonCreatureData::getAttack() const
 {
 	return _attack;
 }
 
-HealthValue CommonCreatureData::getHealth() const
+int CommonCreatureData::getHealth() const
 {
 	return _health;
 }
 
-ShieldValue CommonCreatureData::getShield() const
+int CommonCreatureData::getShield() const
 {
 	return _shield;
 }
 
-ShieldType CommonCreatureData::getShieldType() const
+int CommonCreatureData::getShieldType() const
 {
 	return _shieldType;
 }
@@ -57,7 +57,7 @@ bool CommonCreatureData::isSpell() const
 
 
 // CommonSpellData
-CommonSpellData::CommonSpellData(cardId id, CostValue cost) :
+CommonSpellData::CommonSpellData(cardId id, int cost) :
 	CommonCardData(id,cost)
 {
 }

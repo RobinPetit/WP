@@ -49,15 +49,22 @@ class CommonCardData
 {
 protected:
 	cardId _id;
-	CostValue _cost;
+  // use int instead of enum because
+  // int is used in code
+  // and static_cast from int to enum do not ensure that the value is valid
+  // enum E{E0,E1}; E e(static_cast<E>(42)); //Code compiled without warning by gcc
+  // so use ...Value enums add need of static_cast everywhere without any advantage.
+  // The purpose of the enums in CardData.inc is (only) to have Cards.sql readable.
+  // TODO? overload operator for enums to be able to use enums everywhere
+	int _cost;
 
 public:
 	/// Constructor
-	CommonCardData(cardId, CostValue);
+	CommonCardData(cardId, int cost);
 
 	/// Getters
 	inline cardId getId() const;
-	inline CostValue getCost() const;
+	inline int getCost() const;
 
 	/// Methods
 	virtual bool isCreature() const = 0;
@@ -70,21 +77,21 @@ public:
 class CommonCreatureData : public CommonCardData
 {
 protected:
-	AttackValue _attack;
-	HealthValue _health;
-	ShieldValue _shield;
-	ShieldType _shieldType;
+	int _attack;
+	int _health;
+	int _shield;
+	int _shieldType;
 
 public:
 	/// Constructor
-	CommonCreatureData(cardId, CostValue,
-	                   AttackValue, HealthValue, ShieldValue, ShieldType);
+	CommonCreatureData(cardId, int cost,
+	                   int attack, int health, int shield, int shieldType);
 
 	/// Getters
-	inline AttackValue getAttack() const;
-	inline HealthValue getHealth() const;
-	inline ShieldValue getShield() const;
-	inline ShieldType getShieldType() const;
+	inline int getAttack() const;
+	inline int getHealth() const;
+	inline int getShield() const;
+	inline int getShieldType() const;
 
 	/// Methods
 	virtual bool isCreature() const override;
@@ -98,7 +105,7 @@ class CommonSpellData : public CommonCardData
 {
 public:
 	/// Constructor
-	CommonSpellData(cardId, CostValue);
+	CommonSpellData(cardId, int cost);
 
 	/// Methods
 	virtual bool isCreature() const override;
