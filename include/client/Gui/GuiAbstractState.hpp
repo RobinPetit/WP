@@ -29,6 +29,9 @@ class GuiAbstractState : virtual public AbstractState
 		/// The event handling function.
 		/// This method get the user input and do things with it.
 		virtual void handleInput() override;
+
+	protected:
+		void displayMessage(const std::string& message);
 };
 
 #endif  // _GUI_ABSTRACT_STATE_CLIENT_HPP

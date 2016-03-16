@@ -1,8 +1,9 @@
 // std-C++ headers
 #include <string>
 #include <cassert>
-// SFML headers
+// External headers
 #include <SFML/Window/Event.hpp>
+#include <TGUI/Widgets/MessageBox.hpp>
 // WizardPoker headers
 #include "client/Gui/GuiAbstractState.hpp"
 
@@ -36,4 +37,25 @@ void GuiAbstractState::handleInput()
 		// Give the event to the GUI, to bring menus alive
 		_context.gui->handleEvent(event);
 	}
+}
+
+void GuiAbstractState::displayMessage(const std::string& message)
+{
+	static const std::string okButtonText{"Ok"};
+	tgui::MessageBox::Ptr messageBox{std::make_shared<tgui::MessageBox>()};
+
+	// Set up the message box
+	messageBox->setText(message);
+	messageBox->addButton(okButtonText);
+	messageBox->getRenderer()->setTitleBarColor({127, 127, 127});
+	_context.gui->add(messageBox);
+	messageBox->setPosition((tgui::bindWidth(*_context.gui) - tgui::bindWidth(messageBox)) / 2,
+			(tgui::bindHeight(*_context.gui) - tgui::bindHeight(messageBox)) / 2);
+
+	// Make the "Ok" button closing the message box
+	messageBox->connect("buttonPressed", [messageBox](const sf::String& buttonName)
+	{
+		if(buttonName == okButtonText)
+			messageBox->destroy();
+	});
 }

@@ -84,7 +84,7 @@ void GuiHomeState::connect()
 	}
 	catch(const std::runtime_error& e)
 	{
-		// TODO display error message about the exception
+		displayMessage(e.what());
 		// If the error was caused by client::updateFriends, the client is connected
 		// but the user will stay on this state. The client must be deconnected.
 		_context.client->quit();
@@ -103,6 +103,6 @@ void GuiHomeState::createAccount()
 	}
 	catch(const std::runtime_error& e)
 	{
-		// TODO display error message about the exception
+		displayMessage(e.what());
 	}
 }
