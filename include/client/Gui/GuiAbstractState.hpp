@@ -31,6 +31,9 @@ class GuiAbstractState : virtual public AbstractState
 		virtual void handleInput() override;
 
 	protected:
+		/// Display a GUI message box with \a message as content, and with
+		/// a button Ok.
+		/// \param message The message to display in the message box.
 		void displayMessage(const std::string& message);
 };
 

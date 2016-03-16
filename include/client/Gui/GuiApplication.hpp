@@ -14,14 +14,15 @@ class GuiApplication : public AbstractApplication
 		/// Constructor.
 		GuiApplication();
 
-		/// Playe the game.
+		/// Play the game.
+		/// \return The return status of the application.
 		virtual int play() override;
 
 	private:
-		sf::VideoMode _videoMode;
-		std::string _windowTitle;
-		sf::RenderWindow _window;
-		tgui::Gui _gui;
+		const sf::VideoMode _videoMode;  ///< The video mode (i.e. the resolution).
+		const std::string _windowTitle;  ///< The title of the window.
+		sf::RenderWindow _window;        ///< The window.
+		tgui::Gui _gui;                  ///< The main GUI class.
 };
 
 #endif  // _GUI_APPLICATION_CLIENT_HPP

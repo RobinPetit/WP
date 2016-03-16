@@ -53,6 +53,9 @@ void GuiAbstractState::displayMessage(const std::string& message)
 			(tgui::bindHeight(*_context.gui) - tgui::bindHeight(messageBox)) / 2);
 
 	// Make the "Ok" button closing the message box
+	// Note: do not try to pass messageBox as reference, since this lambda will
+	// be stored elsewhere, the reference will become invalid when we'll go out
+	// of the scope of this method! We must pass it by value.
 	messageBox->connect("buttonPressed", [messageBox](const sf::String& buttonName)
 	{
 		if(buttonName == okButtonText)
