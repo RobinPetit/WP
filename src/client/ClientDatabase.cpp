@@ -9,20 +9,27 @@
 const char ClientDatabase::FILENAME[] = "../resources/client/database.db";
 ClientDatabase::ClientDatabase(const std::string& filename) : Database(filename)
 {
-	prepareStmt(_getCardFullStmt);
+	for(size_t i = 0; i < _statements.size(); ++i)
+		prepareStmt(_statements[i]);
+
+	assert(sqliteThrowExcept(sqlite3_step(_countCardsStmt)) == SQLITE_ROW);
+	_cardCount = sqlite3_column_int(_countCardsStmt, 0);
+
+	assert(sqliteThrowExcept(sqlite3_step(_countCreaturesStmt)) == SQLITE_ROW);
+	_creatureCount = sqlite3_column_int(_countCreaturesStmt, 0);
+
+	assert(sqliteThrowExcept(sqlite3_step(_countSpellsStmt)) == SQLITE_ROW);
+	_spellCount = sqlite3_column_int(_countSpellsStmt, 0);
 }
 
 Card ClientDatabase::getCard(cardId id)
 {
 	const CommonCardData* data(getCardData(id));
-	if (data->isSpell())
-	{
+
+	if(data->isSpell())
 		return ClientSpell(*static_cast<const ClientSpellData*>(data));
-	}
 	else
-	{
 		return ClientCreature(*static_cast<const ClientCreatureData*>(data));
-	}
 }
 
 const CommonCardData* ClientDatabase::getCardData(cardId id)
@@ -73,14 +80,33 @@ const CommonCardData* ClientDatabase::getCardData(cardId id)
 	}
 }
 
+int ClientDatabase::countCards()
+{
+	return _cardCount;
+}
+
+int ClientDatabase::countCreatures()
+{
+	return _creatureCount;
+}
+
+int ClientDatabase::countSpells()
+{
+	return _spellCount;
+}
+
+
 ClientDatabase::~ClientDatabase()
 {
+	// TODO: move it to Database base class
 	int errcode;
 
-	if((errcode = sqlite3_finalize(_getCardStmt)) != SQLITE_OK)
-		std::cerr << "ERROR while finalizing statement "
-		          << ": " << sqlite3_errstr(errcode)
-		          << std::endl;
+	for(size_t i = 0; i < _statements.size(); ++i)
+		if((errcode = sqlite3_finalize(*_statements[i].statement())) != SQLITE_OK)
+			std::cerr << "ERROR while finalizing statement "
+			          << i + 1 << " of " << _statements.size()
+			          << ": " << sqlite3_errstr(errcode)
+			          << std::endl;
 
 	/*for(_cards::const_iterator it = _cards.begin(); it != _cards.end(); ++it)
 		delete *it;*/

@@ -19,6 +19,10 @@ public:
 	Card getCard(cardId id);
 	const CommonCardData* getCardData(cardId id);
 
+	int countCards();
+	int countCreatures();
+	int countSpells();
+
 	virtual ~ClientDatabase();
 
 private:
@@ -26,15 +30,38 @@ private:
 	static const char FILENAME[];
 
 	std::map<const cardId, const std::unique_ptr<const CommonCardData> > _cards;
+	int _cardCount;
+	int _creatureCount;
+	int _spellCount;
 
 	sqlite3_stmt * _getCardStmt;
-	Statement _getCardFullStmt
+	sqlite3_stmt * _countCardsStmt;
+	sqlite3_stmt * _countCreaturesStmt;
+	sqlite3_stmt * _countSpellsStmt;
+	//TODO (server too) separate startup statement from long-life statement to save (a few) memory
+	StatementsList<4> _statements
 	{
-		&_getCardStmt,
-		"SELECT name, cost, description,"
-		"		attack, health, shield, shieldType "
-		"	FROM FullCard "
-		"	WHERE id == ?1;"
+		{
+			Statement {
+				&_getCardStmt,
+				"SELECT name, cost, description,"
+				"		attack, health, shield, shieldType "
+				"	FROM FullCard "
+				"	WHERE id == ?1;"
+			},
+			Statement {
+				&_countCardsStmt,
+				"SELECT count() FROM FullCard;"
+			},
+			Statement {
+				&_countCreaturesStmt,
+				"SELECT count() FROM CreatureCard;"
+			},
+			Statement { // 3
+				&_countSpellsStmt,
+				"SELECT count() FROM SpellCard;"
+			}
+		}
 	};
 };
 
