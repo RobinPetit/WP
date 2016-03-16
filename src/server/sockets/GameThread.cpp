@@ -78,8 +78,6 @@ void GameThread::setSocket(sf::TcpSocket& socket, sf::TcpSocket& specialSocket, 
 userId GameThread::startGame(const ClientInformations& player1, const ClientInformations& player2)
 {
 	establishSockets(player1, player2);
-	sf::Packet packet;
-	std::cout << "waiting for decks\n";
 	_player1.receiveDeck();
 	_player2.receiveDeck();
 
@@ -91,7 +89,7 @@ userId GameThread::startGame(const ClientInformations& player1, const ClientInfo
 	userId winnerId{runGame()};
 
 	// Send to the winner he wins and send his new card ID
-	packet.clear();
+	sf::Packet packet;
 	std::random_device device;
 	std::mt19937 generator{device()};
 	cardId earnedCardId{std::uniform_int_distribution<int>(0, static_cast<int>(nbSpells + nbCreatures))(generator)};

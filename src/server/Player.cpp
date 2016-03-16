@@ -908,7 +908,7 @@ void Player::logBoardCreatureDataFromVector(TransferType type, const std::vector
 //////////
 
 // TODO: handle the case where the user doesn't give and his turn finishes
-std::vector<int>&& Player::askUserToSelectCards(const std::vector<CardToSelect>& selection)
+std::vector<int> Player::askUserToSelectCards(const std::vector<CardToSelect>& selection)
 {
 	sf::Packet packet;
 	packet << selection;
@@ -923,10 +923,10 @@ std::vector<int>&& Player::askUserToSelectCards(const std::vector<CardToSelect>&
 	std::vector<int> ret(selection.size());
 	for(std::size_t i{0U}; i < selection.size(); ++i)
 		ret[i] = static_cast<int>(indices[i]);
-	return std::move(ret);
+	return ret;
 }
 
-std::vector<int>&& Player::getRandomBoardIndexes(const std::vector<CardToSelect>& selection)
+std::vector<int> Player::getRandomBoardIndexes(const std::vector<CardToSelect>& selection)
 {
 	std::vector<int> indices(selection.size());
 	for(std::size_t i{0}; i < selection.size(); i++)
@@ -934,23 +934,23 @@ std::vector<int>&& Player::getRandomBoardIndexes(const std::vector<CardToSelect>
 		switch(selection.at(i))
 		{
 			case CardToSelect::SELF_BOARD:
-				indices.push_back(std::uniform_int_distribution<int>(0, static_cast<int>(_cardBoard.size())-1)(_engine));
+				indices[i] = std::uniform_int_distribution<int>(0, static_cast<int>(_cardBoard.size())-1)(_engine);
 				break;
 
 			case CardToSelect::SELF_HAND:
-				indices.push_back(std::uniform_int_distribution<int>(0, static_cast<int>(_cardHand.size())-1)(_engine));
+				indices[i] = std::uniform_int_distribution<int>(0, static_cast<int>(_cardHand.size())-1)(_engine);
 				break;
 
 			case CardToSelect::OPPO_BOARD:
-				indices.push_back(std::uniform_int_distribution<int>(0, static_cast<int>(_opponent->_cardBoard.size())-1)(_engine));
+				indices[i] = std::uniform_int_distribution<int>(0, static_cast<int>(_opponent->_cardBoard.size())-1)(_engine);
 				break;
 
 			case CardToSelect::OPPO_HAND:
-				indices.push_back(std::uniform_int_distribution<int>(0, static_cast<int>(_opponent->_cardHand.size())-1)(_engine));
+				indices[i] = std::uniform_int_distribution<int>(0, static_cast<int>(_opponent->_cardHand.size())-1)(_engine);
 				break;
 		}
 	}
-	return std::move(indices);
+	return indices;
 }
 
 void Player::sendValueToClient(TransferType transferType)

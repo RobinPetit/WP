@@ -172,11 +172,11 @@ private:
 
 	/// \param selection a vector of values telling whether the choice must be in player's cards or opponent's cards
 	/// \return a vector of indices selected
-	std::vector<int>&& getRandomBoardIndexes(const std::vector<CardToSelect>& selection);
+	std::vector<int> getRandomBoardIndexes(const std::vector<CardToSelect>& selection);
 
 	/// \param selection a vector of values telling whether the choice must be in player's cards or opponent's cards
 	/// \return a vector of indices selected
-	std::vector<int>&& askUserToSelectCards(const std::vector<CardToSelect>& selection);
+	std::vector<int> askUserToSelectCards(const std::vector<CardToSelect>& selection);
 
 	// Effects (private)
 	void setConstraint(const EffectParamsCollection& args);

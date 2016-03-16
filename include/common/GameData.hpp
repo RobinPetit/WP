@@ -28,11 +28,4 @@ struct CardData
 	cardId id;
 };
 
-//TODO: use in transmission ?!
-struct PlayerData
-{
-	int health;
-	int energy;
-};
-
-#endif// _GAME_DATA_COMMON_HPP
+#endif  // _GAME_DATA_COMMON_HPP
