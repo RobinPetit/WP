@@ -8,9 +8,11 @@
 #include <functional>
 #include <cstddef>
 #include <atomic>
+#include <memory>
 // WizardPoker headers
 #include "common/Card.hpp"
 #include "server/Spell.hpp"
+#include "server/Creature.hpp"
 #include "server/Constraints.hpp"
 #include "server/ServerDatabase.hpp"
 #include "server/ServerCardData.hpp"
@@ -23,7 +25,6 @@
 #include <SFML/Network/TcpSocket.hpp>
 
 class GameThread;
-class Creature;
 
 /// Represents one of the two players for a given game.
 class Player
@@ -32,9 +33,6 @@ public:
 	/// Constructor
 	Player(GameThread& gameThread, ServerDatabase& database, userId id);
 	void setOpponent(Player* opponent);  // Complementary
-
-	/// Destructor.
-	~Player();
 
 	// Interface for basic gameplay
 	/// Receive the deck sent by the client and put it in the game
@@ -54,6 +52,7 @@ public:
 	sf::Socket::Status tryReceiveClientInput();
 
 	/// Interface for applying effects
+	// TODO make these methods private
 	void applyEffect(Card* usedCard, EffectParamsCollection effect);
 	//to itself
 	void applyEffectToSelf(const Card* usedCard, EffectParamsCollection& effectArgs);
@@ -64,13 +63,15 @@ public:
 	void applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollection& effectArgs);
 
 	/// Getters
-	int getCreatureConstraint(const Creature& subject, int constraintID) const;
+	int getCreatureConstraint(const Creature& subject, int constraintId) const;
 	const Card* getLastCaster() const;
-	userId getID() const;
+	userId getId() const;
 	sf::TcpSocket& getSocket();
-	const std::vector<Creature *>& getBoard() const;
+
+	// TODO make these getters private
+	const std::vector<std::unique_ptr<Creature>>& getBoard() const;
 	int getHealth() const;
-	std::vector<Card *>::size_type getHandSize() const;
+	std::vector<std::unique_ptr<Card>>::size_type getHandSize() const;
 
 	/// \return true if some changes has been logged since the last player's
 	/// action, false otherwise.
@@ -129,11 +130,14 @@ private:
 	// because at first, all are empty except the deck which contains... The deck
 	// obviously... And then the cards move from one to another but never disappear
 	// or are created
-	std::stack<Card *> _cardDeck;  ///< Cards that are in the deck (not usable yet)
-	std::vector<Card *> _cardHand;  ///< Cards that are in the player's hand (usable)
-	std::vector<Creature *> _cardBoard;  ///< Cards that are on the board (usable for attacks)
-	std::vector<Card *> _cardGraveyard;  ///< Cards that are discarded (dead creatures, used spells)
-	const Card* _lastCasterCard=nullptr; ///<Last card that was used to cast an effect (his or opponent's)
+	std::stack<std::unique_ptr<Card>> _cardDeck;  ///< Cards that are in the deck (not usable yet)
+	std::vector<std::unique_ptr<Card>> _cardHand;  ///< Cards that are in the player's hand (usable)
+	std::vector<std::unique_ptr<Creature>> _cardBoard;  ///< Cards that are on the board (usable for attacks)
+	std::vector<std::unique_ptr<Card>> _cardGraveyard;  ///< Cards that are discarded (dead creatures, used spells)
+
+	/// Last card that was used to cast an effect (his or opponent's)
+	/// This is not a smart pointer because it points to an already allocated card.
+	const Card* _lastCasterCard = nullptr;
 
 	// Random management
 	/// Used for uniformly distributed integer generation
@@ -172,13 +176,13 @@ private:
 	void cardHandToGraveyard(int handIndex);  ///< Move the card at handIndex from the player's hand to the bin
 	void cardBoardToGraveyard(int boardIndex);  ///< Move the card at boardIndex from the board to the bin
 	void cardGraveyardToHand(int binIndex);
-	void cardAddToHand(Card* given);
-	Card* cardRemoveFromHand();
-	Card* cardExchangeFromHand(Card* given);
-	Card* cardExchangeFromHand(Card* given, int handIndex);
+	void cardAddToHand(std::unique_ptr<Card> given);
+	std::unique_ptr<Card> cardRemoveFromHand();
+	std::unique_ptr<Card> cardExchangeFromHand(std::unique_ptr<Card> given);
+	std::unique_ptr<Card> cardExchangeFromHand(std::unique_ptr<Card> given, int handIndex);
 
-	void useCreature(int handIndex, Card *& usedCard);
-	void useSpell(int handIndex, Card *& useSpell);
+	void useCreature(int handIndex, Card* usedCard);
+	void useSpell(int handIndex, Card* useSpell);
 
 	void logCurrentEnergy();
 	void logCurrentHealth();
@@ -192,9 +196,9 @@ private:
 	void logOpponentHandState();
 
 	template <typename CardType>
-	void logIdsFromVector(TransferType type, const std::vector<CardType *>& vect);
-	void logCardDataFromVector(TransferType type, const std::vector<Card*>& vect);
-	void logBoardCreatureDataFromVector(TransferType type, const std::vector<Creature*>& vect);
+	void logIdsFromVector(TransferType type, const std::vector<std::unique_ptr<CardType>>& vect);
+	void logCardDataFromVector(TransferType type, const std::vector<std::unique_ptr<Card>>& vect);
+	void logBoardCreatureDataFromVector(TransferType type, const std::vector<std::unique_ptr<Creature>>& vect);
 	void sendValueToClient(TransferType value);
 };
 

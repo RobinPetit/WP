@@ -10,7 +10,7 @@ int Card::getEnergyCost() const
 	return _cost;
 }
 
-cardId Card::getID() const
+cardId Card::getId() const
 {
 	return _prototype.getId();
 }
@@ -24,3 +24,9 @@ bool Card::isSpell() const
 {
 	return _prototype.isSpell();
 }
+
+bool Card::isCreature() const
+{
+	return _prototype.isCreature();
+}
+

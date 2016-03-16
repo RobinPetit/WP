@@ -16,13 +16,13 @@
 
 constexpr std::chrono::seconds GameThread::_turnTime;
 
-GameThread::GameThread(ServerDatabase& database, userId player1ID, userId player2ID):
+GameThread::GameThread(ServerDatabase& database, userId player1Id, userId player2Id):
 	std::thread(),
-	_player1ID(player1ID),
-	_player2ID(player2ID),
+	_player1Id(player1Id),
+	_player2Id(player2Id),
 	_running(false),
-	_player1(*this, database, _player1ID),
-	_player2(*this, database, _player2ID),
+	_player1(*this, database, _player1Id),
+	_player2(*this, database, _player2Id),
 	_database(database),
 	_winner{0},
 	_turn(0),
@@ -102,13 +102,13 @@ userId GameThread::startGame(const ClientInformations& player1, const ClientInfo
 	// EndGame::applyToSelf indicate which player won the game: false mean that
 	// the player who receive this message has won.
 	packet << TransferType::GAME_OVER << EndGame{_endGamecause, false} << earnedCardId;
-	sf::TcpSocket& winnerSocket{winnerId == _player1ID ? _specialOutputSocketPlayer1 : _specialOutputSocketPlayer2};
+	sf::TcpSocket& winnerSocket{winnerId == _player1Id ? _specialOutputSocketPlayer1 : _specialOutputSocketPlayer2};
 	winnerSocket.send(packet);
 
 	// Send to the loser he lost (do NOT send a card index thus)
 	packet.clear();
 	packet << TransferType::GAME_OVER << EndGame{_endGamecause, true};
-	sf::TcpSocket& loserSocket{winnerId == _player1ID ? _specialOutputSocketPlayer2 : _specialOutputSocketPlayer1};
+	sf::TcpSocket& loserSocket{winnerId == _player1Id ? _specialOutputSocketPlayer2 : _specialOutputSocketPlayer1};
 	loserSocket.send(packet);
 
 	return winnerId;
@@ -126,7 +126,7 @@ userId GameThread::runGame()
 			if(status == sf::Socket::Disconnected)
 			{
 				std::cerr << "Lost connection with a player\n";
-				_winner = player->getID();
+				_winner = player->getId();
 				_running.store(false);
 				break;
 			}

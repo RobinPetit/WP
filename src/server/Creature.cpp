@@ -1,4 +1,5 @@
 // WizardPoker headers
+#include "server/Player.hpp"
 #include "server/Creature.hpp"
 // std-C++ headers
 #include <iostream>
@@ -127,30 +128,30 @@ int Creature::getShieldType()
 	return _shieldType;
 }
 
-int Creature::getPersonalConstraint(int constraintID) const
+int Creature::getPersonalConstraint(int constraintId) const
 {
-	return _constraints.getConstraint(constraintID);
+	return _constraints.getConstraint(constraintId);
 }
 
-int Creature::getConstraint(int constraintID) const
+int Creature::getConstraint(int constraintId) const
 {
-	return _owner.getCreatureConstraint(*this, constraintID);
+	return _owner.getCreatureConstraint(*this, constraintId);
 }
 
 /*--------------------------- EFFECTS */
 void Creature::setConstraint(const EffectParamsCollection& args)
 {
-	int constraintID; //constraint to set
+	int constraintId; //constraint to set
 	int value; //value to give to it
 	int turns; //for how many turns
 	int casterOptions; //whether the constraint depends on its caster being alive
 	try //check the input
 	{
-		constraintID=args.at(0);
+		constraintId=args.at(0);
 		value=args.at(1);
 		turns=args.at(2);
 		casterOptions=args.at(3);
-		if (constraintID<0 or constraintID>=C_CONSTRAINTS_COUNT or turns<0)
+		if (constraintId<0 or constraintId>=C_CONSTRAINTS_COUNT or turns<0)
 			throw std::out_of_range("");
 	}
 	catch (std::out_of_range&)
@@ -161,10 +162,10 @@ void Creature::setConstraint(const EffectParamsCollection& args)
 	switch (casterOptions)
 	{
 		case IF_CASTER_ALIVE:
-			_constraints.setConstraint(constraintID, value, turns, dynamic_cast<const Creature*>(_owner.getLastCaster()));
+			_constraints.setConstraint(constraintId, value, turns, dynamic_cast<const Creature*>(_owner.getLastCaster()));
 			break;
 		default:
-			_constraints.setConstraint(constraintID, value, turns);
+			_constraints.setConstraint(constraintId, value, turns);
 			break;
 	}
 }

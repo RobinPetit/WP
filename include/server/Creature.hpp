@@ -1,11 +1,17 @@
 #ifndef CREATURE_SERVER_HPP
 #define CREATURE_SERVER_HPP
 
+// Standard header
+#include <vector>
+#include <functional>
 // WizardPoker headers
 #include "common/Card.hpp"
 #include "server/ServerCardData.hpp"
 #include "server/Player.hpp"
 #include "server/Constraints.hpp"
+
+// Forward declarations
+class Player;
 
 ///Creature card : One of the 2 playables card
 class Creature : public Card
@@ -60,8 +66,8 @@ public:
 	int getHealth();
 	int getShield();
 	int getShieldType();
-	int getPersonalConstraint(int constraintID) const;
-	int getConstraint(int constraintID) const;
+	int getPersonalConstraint(int constraintId) const;
+	int getConstraint(int constraintId) const;
 };
 
 #endif // CREATURE_SERVER_HPP

@@ -361,20 +361,20 @@ void Server::startGame(std::size_t idx)
 		};
 	};
 
-	const auto& player1{std::find_if(_clients.begin(), _clients.end(), finderById(selfThread->_player1ID))};
-	const auto& player2{std::find_if(_clients.begin(), _clients.end(), finderById(selfThread->_player2ID))};
+	const auto& player1{std::find_if(_clients.begin(), _clients.end(), finderById(selfThread->_player1Id))};
+	const auto& player2{std::find_if(_clients.begin(), _clients.end(), finderById(selfThread->_player2Id))};
 	std::cout << "Game " << idx << " is starting: " + userToString(player1) + " vs. " + userToString(player2) + "\n";
 	userId winnerId{selfThread->startGame(player1->second, player2->second)};
 	// \TODO: change personnal scores
-	const auto& winner{winnerId == selfThread->_player1ID ? player1 : player2};
-	const auto& loser{winnerId == selfThread->_player1ID ? player2 : player1};
+	const auto& winner{winnerId == selfThread->_player1Id ? player1 : player2};
+	const auto& loser{winnerId == selfThread->_player1Id ? player2 : player1};
 	std::cout << winner->first << " won and " << loser->first << " lost\n";
 }
 
-void Server::createGame(userId ID1, userId ID2)
+void Server::createGame(userId Id1, userId Id2)
 {
 	std::lock_guard<std::mutex> lockRunningGames{_accessRunningGames};
-	_runningGames.emplace_back(new GameThread(_database, ID1, ID2, &Server::startGame, this, _runningGames.size()));
+	_runningGames.emplace_back(new GameThread(_database, Id1, Id2, &Server::startGame, this, _runningGames.size()));
 	// _accessRunningGames is unlocked when lockRunningGames is destructed
 }
 

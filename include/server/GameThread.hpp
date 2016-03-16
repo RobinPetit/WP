@@ -17,11 +17,11 @@ class GameThread final : public std::thread
 {
 public:
 	/// Constructor
-	GameThread(ServerDatabase& database, userId player1ID, userId player2ID);
+	GameThread(ServerDatabase& database, userId player1Id, userId player2Id);
 
 	/// Constructor starting a thread
 	template <class F, class ...Args>
-	explicit GameThread(ServerDatabase& database, userId player1ID, userId player2ID, F&& f, Args&&... args);
+	explicit GameThread(ServerDatabase& database, userId player1Id, userId player2Id, F&& f, Args&&... args);
 
 	/// Functions which stops the running thread (abortion)
 	void interruptGame();
@@ -38,8 +38,8 @@ public:
 	~GameThread();
 
 	// Public attributes
-	const userId _player1ID;
-	const userId _player2ID;
+	const userId _player1Id;
+	const userId _player2Id;
 
 private:
 	//////////// Attributes
@@ -79,13 +79,13 @@ private:
 ///////// template code
 
 template <typename Function, class... Args>
-GameThread::GameThread(ServerDatabase& database, userId player1ID, userId player2ID, Function&& function, Args&&... args):
+GameThread::GameThread(ServerDatabase& database, userId player1Id, userId player2Id, Function&& function, Args&&... args):
 	std::thread(function, args...),
-	_player1ID(player1ID),
-	_player2ID(player2ID),
+	_player1Id(player1Id),
+	_player2Id(player2Id),
 	_running(true),
-	_player1(*this, database, _player1ID),
-	_player2(*this, database, _player2ID),
+	_player1(*this, database, _player1Id),
+	_player2(*this, database, _player2Id),
 	_database(database),
 	_winner{0},
 	_turn(0),
