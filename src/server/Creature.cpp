@@ -112,9 +112,7 @@ void Creature::applyEffectToSelf(EffectArgs effect)
 {
 	assert(effect.args.size() >= 1);
 	const int method = effect.args.at(effect.index++);  // What method is used
-
-	// remove 1 because enums start at 1 (because of SQLite)
-	_effectMethods.at(method-1)(*this, effect);  // Call the method
+	_effectMethods.at(method)(*this, effect);  // Call the method
 }
 
 int Creature::getAttack() const
@@ -275,6 +273,6 @@ void Creature::changeShield(EffectArgs effect)
 Creature::operator BoardCreatureData() const
 {
 	BoardCreatureData data {getId(), getHealth(), getAttack(), getShield(),
-			BoardCreatureData::shieldTypes[getShieldType()-1]};
+			BoardCreatureData::shieldTypes[getShieldType()]};
 	return data;
 }

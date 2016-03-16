@@ -11,7 +11,7 @@
 /// Subject of the effect
 enum EffectSubject : int32_t
 {
-    PLAYER_SELF = 1, // This is needed because of: ROWID >= 1 in sqlite
+    PLAYER_SELF,
     PLAYER_OPPO,
 
     CREATURE_SELF_THIS,
@@ -28,7 +28,7 @@ enum EffectSubject : int32_t
 enum PlayerEffect : int32_t
 {
     //constraints
-    PE_SET_CONSTRAINT = 1,
+    PE_SET_CONSTRAINT = 0,
     //other effects
     PE_PICK_DECK_CARDS,
     PE_LOSE_HAND_CARDS,
@@ -46,7 +46,7 @@ enum PlayerEffect : int32_t
 enum PlayerConstraint : int32_t
 {
     //turn-by-turn
-    PC_TURN_CARDS_PICKED = 1, 			//amount of cards to pick each turn
+    PC_TURN_CARDS_PICKED = 0, 			//amount of cards to pick each turn
     PC_TURN_ENERGY_INIT_CHANGE,			//amount of points added to init value each turn
     PC_TURN_ENERGY_CHANGE,				//amount of energy points added each turn
     PC_TURN_HEALTH_CHANGE,				//amount of health points added each turn
@@ -65,7 +65,7 @@ enum PlayerConstraint : int32_t
 enum CreatureEffect : int32_t
 {
     //constraints
-    CE_SET_CONSTRAINT = 1,
+    CE_SET_CONSTRAINT = 0,
     //other effects
     CE_RESET_ATTACK,
     CE_RESET_HEALTH,
@@ -81,7 +81,7 @@ enum CreatureEffect : int32_t
 enum CreatureConstraint : int32_t
 {
     //turn-by-turn
-    CC_TURN_ATTACK_CHANGE = 1,			//Attack points added each turn
+    CC_TURN_ATTACK_CHANGE = 0,		//Attack points added each turn
     CC_TURN_HEALTH_CHANGE,			//Health points added each turn
     CC_TURN_SHIELD_CHANGE,			//Shield points added each turn
     //passive
@@ -101,7 +101,7 @@ enum CreatureConstraint : int32_t
 
 enum ConstraintCondition : int32_t
 {
-    NO_CASTER_NEEDED = 1,	//Constraint does not care about the caster's state
+    NO_CASTER_NEEDED,	//Constraint does not care about the caster's state
     IF_CASTER_ALIVE		//Constraint applies only if CREATURE who cast it is alive AND not paralyzed
 };
 
@@ -113,23 +113,23 @@ enum CostValue : int32_t
 
 enum AttackValue : int32_t
 {
-    ATTACK_1=1, ATTACK_2, ATTACK_3, ATTACK_4, ATTACK_5, ATTACK_6, ATTACK_7, ATTACK_8, ATTACK_9, ATTACK_10
+    ATTACK_0=0, ATTACK_1, ATTACK_2, ATTACK_3, ATTACK_4, ATTACK_5, ATTACK_6, ATTACK_7, ATTACK_8, ATTACK_9, ATTACK_10
 };
 
 enum HealthValue : int32_t
 {
-    HEALTH_1 = 1, HEALTH_2, HEALTH_3, HEALTH_4, HEALTH_5, HEALTH_6, HEALTH_7, HEALTH_8, HEALTH_9,
+    HEALTH_1=1, HEALTH_2, HEALTH_3, HEALTH_4, HEALTH_5, HEALTH_6, HEALTH_7, HEALTH_8, HEALTH_9,
     HEALTH_10, HEALTH_11, HEALTH_12, HEALTH_13, HEALTH_14, HEALTH_15, HEALTH_16, HEALTH_17, HEALTH_18, HEALTH_19, HEALTH_20
 };
 
 enum ShieldValue : int32_t
 {
-    SHIELD_1=1, SHIELD_2, SHIELD_3, SHIELD_4, SHIELD_5
+    SHIELD_0=0, SHIELD_1, SHIELD_2, SHIELD_3, SHIELD_4, SHIELD_5
 };
 
 enum ShieldType : int32_t
 {
-    SHIELD_NONE = 1,		//no shield
+    SHIELD_NONE,		//no shield
     SHIELD_BLUE,		//allows part of the attack to deal damage if attack is stronger than shield
     SHIELD_ORANGE,		//allows all the attack to deal damage if attack is stronger than shield
     SHIELD_LEGENDARY	//creature attacks don't go through
