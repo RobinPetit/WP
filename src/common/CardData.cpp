@@ -81,6 +81,7 @@ constexpr std::array<const char *, 4> BoardCreatureData::shieldTypes;
 // ------------- TO BE DELETED
 
 ///CREATURES
+/*
 const CreatureData ALL_CREATURES[] = {
 	{
 		"Tower guard",
@@ -141,7 +142,9 @@ const CreatureData ALL_CREATURES[] = {
 		COST_2, ATTACK_1, HEALTH_5, SHIELD_3, SHIELD_BLUE,
 		{{PLAYER_OPPO,PE_SET_CONSTRAINT,PC_TEMP_SPELL_CALL_LIMIT,2,UNLIMITED_TURNS,NO_CASTER_NEEDED}},
 		"Your opponent can't play more than 2 spells per turn."
-	}/*,
+	}
+*/
+	/*,
 	{
 		"Armored leprechaun",
 		COST_1, ATTACK_1, HEALTH_3, SHIELD_1, SHIELD_NONE,
@@ -205,6 +208,7 @@ const CreatureData ALL_CREATURES[] = {
   
 
 ///SPELLS
+/*
 const SpellData ALL_SPELLS[] = {
 	{
 		"Abracadabra",
@@ -265,7 +269,9 @@ const SpellData ALL_SPELLS[] = {
 		COST_1,
 		{{PLAYER_SELF, PE_STEAL_HAND_CARD}},
 		"You steal a random card from the opponent's hand"
-	}/*,
+	}
+*/
+/*,
 	// TODO: CE_SELF_HYPNOTIZED NOT CREATED YET
 	{
 		"Hypnosis",
@@ -347,9 +353,11 @@ const SpellData ALL_SPELLS[] = {
 		{{CREATURE_ONE_OPPO, C_TRAP, 3}},
 		"Deal 3 damage or summon two 1/1 snacks"
 	}*/
+/*
 };
+
 
 const std::size_t nbSpells{sizeof(ALL_SPELLS) / sizeof(SpellData)};
 
 const std::size_t nbCreatures{sizeof(ALL_CREATURES) / sizeof(CreatureData)};
-
+*/
