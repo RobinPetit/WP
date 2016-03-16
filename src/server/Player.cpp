@@ -374,8 +374,7 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 
 	if(victimIndex < 0)
 	{
-		std::vector<int> params{{PE_CHANGE_HEALTH, -(attacker->getAttack())}}; // \TODO: I don't think we should use effects this way
-		_opponent.applyEffectToSelf(params);  //no forced attacks on opponent
+		_opponent.changeHealth({-attacker->getAttack()});
 		logOpponentHealth();
 	}
 	else
@@ -384,6 +383,7 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 		victim->makeAttack(*attacker);
 		logOpponentBoardState();
 		logBoardState();  // If an attack is returned to the attacker, the board changes
+		logCurrentEnergy();
 		_opponent.logOpponentBoardState();
 		_opponent.logBoardState();
 	}

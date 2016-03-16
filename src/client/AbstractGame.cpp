@@ -67,10 +67,8 @@ void AbstractGame::play()
 		if(_myTurn.load())
 			startTurn();
 		else
-		{
 			while(not _myTurn.load())
 				sf::sleep(sf::milliseconds(100));
-		}
 	}
 	if(_listeningThread.joinable())
 		_listeningThread.join();
