@@ -8,11 +8,9 @@
 /// Main menu in GUI Interface 
 class GuiMainMenuState: public GuiAbstractState, public AbstractMainMenuState
 {
-
-    public:
-        /// Constructor
-        GuiMainMenuState(Context& context);
-        
+	public:
+		/// Constructor
+		GuiMainMenuState(Context& context);
 };
 
 #endif // _GUI_MAIN_MENU_STATE_HPP
