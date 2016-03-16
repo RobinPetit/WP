@@ -15,12 +15,7 @@ GuiAbstractState::GuiAbstractState(Context& context):
 
 void GuiAbstractState::display()
 {
-	// The child classes will have to call themselve _context.window->clear, and
-	// then call GuiAbstractState::display(). The reason is that the clear has
-	// to be done before anything is printed on the window, and the display has
-	// to be done after all the printing on the window.
-	_context.window->clear(); // TODO move this line in child classes
-
+	_context.window->clear(sf::Color::White);
 	_context.gui->draw();
 	_context.window->display();
 }

@@ -1,6 +1,8 @@
 #ifndef _GUI_HOME_STATE_CLIENT_HPP
 #define _GUI_HOME_STATE_CLIENT_HPP
 
+// External headers
+#include <TGUI/TGUI.hpp>
 // WizardPoker headers
 #include "client/Gui/GuiAbstractState.hpp"
 #include "client/states/AbstractHomeState.hpp"
@@ -15,6 +17,16 @@ class GuiHomeState : public GuiAbstractState, public AbstractHomeState
 	private:
 		void connect();
 		void createAccount();
+
+		// Attributes
+		tgui::Label::Ptr _titleLabel;
+		tgui::Label::Ptr _userNameLabel;
+		tgui::Label::Ptr _passwordLabel;
+		tgui::EditBox::Ptr _userNameEditBox;
+		tgui::EditBox::Ptr _passwordEditBox;
+		tgui::Button::Ptr _connectButton;
+		tgui::Button::Ptr _createAccountButton;
+		tgui::Grid::Ptr _grid;
 };
 
 #endif  // _GUI_HOME_STATE_CLIENT_HPP
