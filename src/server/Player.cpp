@@ -284,6 +284,11 @@ void Player::useCard(int handIndex)
 	logHandState();
 	_opponent.logOpponentHandState();
 	logCurrentEnergy();
+
+	logBoardState();
+	logOpponentBoardState();
+	_opponent.logBoardState();
+	_opponent.logOpponentBoardState();
 }
 
 ////////////////////// specialized card cases
@@ -304,11 +309,6 @@ void Player::useCreature(int handIndex, Card* usedCard)
 	exploitCardEffects(usedCard);
 	cardHandToBoard(handIndex);
 	sendValueToClient(TransferType::ACKNOWLEDGE);
-
-	logBoardState();
-	logOpponentBoardState();
-	_opponent.logBoardState();
-	_opponent.logOpponentBoardState();
 }
 
 void Player::useSpell(int handIndex, Card* usedCard)
