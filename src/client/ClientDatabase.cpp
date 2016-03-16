@@ -1,7 +1,9 @@
 #include "client/ClientDatabase.hpp"
+
+// WizardPocker
 #include "client/ClientCreature.hpp"
 #include "client/ClientSpell.hpp"
-
+// std-C++
 #include <cassert>
 
 const char ClientDatabase::FILENAME[] = "../resources/client/database.db";
@@ -10,7 +12,20 @@ ClientDatabase::ClientDatabase(const std::string& filename) : Database(filename)
 	prepareStmt(_getCardFullStmt);
 }
 
-const ClientCard* ClientDatabase::getCard(cardId id)
+Card ClientDatabase::getCard(cardId id)
+{
+	const CommonCardData* data(getCardData(id));
+	if (data->isSpell())
+	{
+		return ClientSpell(*static_cast<const ClientSpellData*>(data));
+	}
+	else
+	{
+		return ClientCreature(*static_cast<const ClientCreatureData*>(data));
+	}
+}
+
+const CommonCardData* ClientDatabase::getCardData(cardId id)
 {
 	auto found = _cards.find(id);
 
@@ -21,21 +36,21 @@ const ClientCard* ClientDatabase::getCard(cardId id)
 
 		assert(sqliteThrowExcept(sqlite3_step(_getCardStmt)) == SQLITE_ROW);
 
-		ClientCard * card;
-		ClientSpell test(1, "Nom", 2, "Description");
+		CommonCardData * cardData;
+		ClientSpellData test(1, "Nom", 2, "Description"); // TODO delete
 
 		if(sqlite3_column_type(_getCardStmt, 4) == SQLITE_NULL) // Spell
 		{
-			card = new ClientSpell(
+			cardData = new ClientSpellData(
 			    id,
 			    reinterpret_cast<const char *>(sqlite3_column_text(_getCardStmt, 0)), // name
 			    sqlite3_column_int(_getCardStmt, 1), // cost
 			    reinterpret_cast<const char *>(sqlite3_column_text(_getCardStmt, 2)) // description
 			);
 		}
-		else
+		else // Creature
 		{
-			card = new ClientCreature(
+			cardData = new ClientCreatureData(
 			    id,
 			    reinterpret_cast<const char *>(sqlite3_column_text(_getCardStmt, 0)), // name
 			    sqlite3_column_int(_getCardStmt, 1), // cost
@@ -49,7 +64,7 @@ const ClientCard* ClientDatabase::getCard(cardId id)
 
 		return _cards.emplace(std::make_pair<>(
 		                          id,
-		                          std::unique_ptr<ClientCard>(card)
+		                          std::unique_ptr<CommonCardData>(cardData)
 		                      )).first->second.get();
 	}
 	else

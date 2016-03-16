@@ -7,7 +7,7 @@
 #include "common/Database.hpp"
 #include "common/Identifiers.hpp"
 #include "common/Card.hpp"
-#include "server/CardData.hpp"
+#include "server/ServerCardData.hpp"
 
 class Creature;
 class Spell;
@@ -22,7 +22,8 @@ public:
 	/// \param filename: relative path to sqlite3 file.
 	explicit ServerDatabase(const std::string& filename = FILENAME);
 
-	const Card* getCard(cardId card);
+	Card getCard(cardId card);
+	const CommonCardData* getCardData(cardId card);
 
 	userId getUserId(const std::string& login);
 	std::string getLogin(userId id);
@@ -64,12 +65,12 @@ public:
 private:
 	/// Default relative path to sqlite3 file
 	static const char FILENAME[];
-	std::map<const cardId, const std::unique_ptr<const Card> > _cards;
+	std::map<const cardId, const std::unique_ptr<const CommonCardData> > _cardData;
 
 	FriendsList getAnyFriendsList(userId id, sqlite3_stmt * stmt);
 	/// Add a card to _cards;
-	void createSpellCards();
-	void createCreatureCards();
+	void createSpellData();
+	void createCreatureData();
 	std::vector<EffectParamsCollection> createCardEffects(cardId id);
 
 	sqlite3_stmt * _friendListStmt;

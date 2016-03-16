@@ -1,9 +1,11 @@
-#include "common/Identifiers.hpp"
 #include "server/ServerDatabase.hpp"
-#include "server/Spell.hpp"
-#include "common/Card.hpp"
-#include "server/Creature.hpp"
 
+// WizardPocker
+#include "common/Identifiers.hpp"
+#include "common/Card.hpp"
+#include "server/Spell.hpp"
+#include "server/Creature.hpp"
+// std-C++
 #include <cassert>
 #include <cstring>
 #include <string>
@@ -12,22 +14,22 @@
 #define AUTO_QUERY_LENGTH -1
 
 const char ServerDatabase::FILENAME[] = "../resources/server/database.db";
-ServerDatabase::ServerDatabase(const std::string& filename) : Database(filename), _cards()
+ServerDatabase::ServerDatabase(const std::string& filename) : Database(filename), _cardData()
 {
 	for(size_t i = 0; i < _statements.size(); ++i)
 		prepareStmt(_statements[i]);
 
 	// The server will need all cards. So we create all at startup and keep its in a map.
-	createSpellCards();
-	createCreatureCards();
+	createSpellData();
+	createCreatureData();
 }
 
-const Card* ServerDatabase::getCard(cardId card)
+Card ServerDatabase::getCard(cardId card)
 {
-	if(_cards.count(card) == 0)
+	if(_cardData.count(card) == 0)
 		throw std::runtime_error("The requested card (" + std::to_string(card) + ") does not exist.");
 
-	return _cards.at(card).get();
+	return Card(*_cardData.at(card).get());
 }
 
 userId ServerDatabase::getUserId(const std::string& login)
@@ -280,7 +282,7 @@ FriendsList ServerDatabase::getAnyFriendsList(userId user, sqlite3_stmt * stmt)
 	return friends;
 }
 
-void ServerDatabase::createSpellCards()
+void ServerDatabase::createSpellData()
 {
 	std::unique_lock<std::mutex> lock {_dbAccess};
 	sqlite3_reset(_getSpellCardsStmt);
@@ -289,10 +291,10 @@ void ServerDatabase::createSpellCards()
 	{
 		cardId id(sqlite3_column_int64(_getSpellCardsStmt, 0));
 
-		_cards.emplace(
+		_cardData.emplace(
 		    std::make_pair<>(
 		        id,
-		        std::unique_ptr<Card>(new Spell(
+		        std::unique_ptr<CommonCardData>(new ServerSpellData(
 		                                  id, sqlite3_column_int(_getSpellCardsStmt, 1), // cost
 		                                  std::vector<EffectParamsCollection>(createCardEffects(id)) // effects
 		                              ))
@@ -301,7 +303,7 @@ void ServerDatabase::createSpellCards()
 	}
 }
 
-void ServerDatabase::createCreatureCards()
+void ServerDatabase::createCreatureData()
 {
 	std::unique_lock<std::mutex> lock {_dbAccess};
 	sqlite3_reset(_getCreatureCardsStmt);
@@ -310,17 +312,17 @@ void ServerDatabase::createCreatureCards()
 	{
 		cardId id(sqlite3_column_int64(_getCreatureCardsStmt, 0));
 
-		_cards.emplace(
+		_cardData.emplace(
 		    std::make_pair<>(
 		        id,
-		        std::unique_ptr<Card>(new Creature(
+		        std::unique_ptr<CommonCardData>(new ServerCreatureData(
 		                                  id,
 		                                  sqlite3_column_int(_getCreatureCardsStmt, 1), // cost
+		                                  std::vector<EffectParamsCollection>(createCardEffects(id)), // effects
 		                                  sqlite3_column_int(_getCreatureCardsStmt, 2), // attack
 		                                  sqlite3_column_int(_getCreatureCardsStmt, 3), // health
 		                                  sqlite3_column_int(_getCreatureCardsStmt, 4), // shield
-		                                  sqlite3_column_int(_getCreatureCardsStmt, 5), // shieldType
-		                                  std::vector<EffectParamsCollection>(createCardEffects(id)) // effects
+		                                  sqlite3_column_int(_getCreatureCardsStmt, 5) // shieldType
 		                              ))
 		    )
 		);

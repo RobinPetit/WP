@@ -5,7 +5,8 @@
 #include <memory>
 
 #include "common/Database.hpp"
-#include "client/ClientCard.hpp"
+#include "common/Card.hpp"
+#include "client/ClientCardData.hpp"
 
 /// Interface to the client database.
 class ClientDatabase : public Database
@@ -15,7 +16,8 @@ public:
 	/// \param filename: relative path to sqlite3 file.
 	explicit ClientDatabase(const std::string& filename = FILENAME);
 
-	const ClientCard* getCard(cardId id);
+	Card getCard(cardId id);
+	const CommonCardData* getCardData(cardId id);
 
 	virtual ~ClientDatabase();
 
@@ -23,7 +25,7 @@ private:
 	/// Default relative path to sqlite3 file
 	static const char FILENAME[];
 
-	std::map<const cardId, const std::unique_ptr<const ClientCard> > _cards;
+	std::map<const cardId, const std::unique_ptr<const CommonCardData> > _cards;
 
 	sqlite3_stmt * _getCardStmt;
 	Statement _getCardFullStmt
