@@ -16,7 +16,7 @@ private:
 	int _shield;
 	int _shieldType;
 
-	Player* _owner;
+	Player& _owner;
 	bool _isOnBoard;
 
 	//Constraints
@@ -39,11 +39,11 @@ private:
 
 public:
 	/// Constructors
-	Creature(const ServerCreatureData&);
+	Creature(const ServerCreatureData&, Player& owner);
 
 	/// Player interface
-	void movedToBoard();
-	void removedFromBoard();
+	void moveToBoard();
+	void removeFromBoard();
 	bool isOnBoard() const;
 
 	void enterTurn();

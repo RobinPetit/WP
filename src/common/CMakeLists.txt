@@ -4,6 +4,7 @@ set(SOURCES
 	"CardData.cpp"
 	"Card.cpp"
 	"NotConnectedException.cpp"
+	"UnableToConnectException.cpp"
 	"Terminal.cpp"
 	"ini/IniFile.cpp"
 	"sockets/TransferType.cpp"

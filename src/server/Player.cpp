@@ -87,8 +87,8 @@ void Player::setDeck(const Deck& newDeck)
 		// and higher cardId are spells. THIS SHOULD BE FIXED.
 		if(card <= 10)
 		{
-			ServerCreatureData creat = ALL_CREATURES[card-1];
-			loadedCards[i] = new Creature(card, creat.cost, creat.attack, creat.health, creat.shield, creat.shieldType, creat.effects);
+			CreatureData creat = ALL_CREATURES[card-1];
+			loadedCards[i] = new Creature(card, *this, creat.cost, creat.attack, creat.health, creat.shield, creat.shieldType, creat.effects);
 		}
 		else
 		{
@@ -186,8 +186,6 @@ void Player::leaveTurn()
 void Player::finishGame(bool hasWon, EndGame::Cause cause)
 {
 	_gameThread.endGame(hasWon ? getID() : _opponent->getID(), cause);
-	// TODO: write an enum that list all possible reasons of a game ending,
-	// and use this rather than endMessage
 }
 
 
@@ -231,8 +229,8 @@ sf::Socket::Status Player::tryReceiveClientInput()
 			}
 
 			default:
-				std::cout << "Player::tryReceiveClientInput error: wrong packet header, "
-				             "expected in-game action header.\n";
+				std::cerr << "Player::tryReceiveClientInput error: wrong packet header ("
+				          << static_cast<sf::Uint32>(type) << "), expected in-game action header.\n";
 				break;
 		}
 	}
@@ -273,6 +271,7 @@ void Player::useCard(int handIndex)
 	_energy -= usedCard->getEnergyCost();
 	(*this.*(usedCard->isCreature() ? &Player::useCreature : &Player::useSpell))(handIndex, usedCard);
 	logHandState();
+	_opponent->logOpponentHandState();
 }
 
 ////////////////////// specialized card cases
@@ -360,6 +359,8 @@ void Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 	{
 		throw std::runtime_error("Error with cards arguments");
 	}
+
+	std::cout << "[type == " << subject << "]\n";
 
 	switch (subject)
 	{
@@ -643,37 +644,32 @@ void Player::changeHealth(const EffectParamsCollection& args)
 }
 
 
-///////// logers
+///////// loggers
 
 void Player::logCurrentEnergy()
 {
-	std::lock_guard<std::mutex> lock{_lockPacket};
 	// cast to be sure that the right amount of bits is sent and received
 	_pendingBoardChanges << TransferType::GAME_PLAYER_ENERGY_UPDATED << static_cast<sf::Uint32>(_energy);
 }
 
 void Player::logCurrentHealth()
 {
-	std::lock_guard<std::mutex> lock{_lockPacket};
 	// cast to be sure that the right amount of bits is sent and received
 	_pendingBoardChanges << TransferType::GAME_PLAYER_HEALTH_UPDATED << static_cast<sf::Uint32>(_health);
 }
 
 void Player::logOpponentHealth()
 {
-	std::lock_guard<std::mutex> lock{_lockPacket};
 	_pendingBoardChanges << TransferType::GAME_OPPONENT_HEALTH_UPDATED << static_cast<sf::Uint32>(_opponent->getHealth());
 }
 
 void Player::logCurrentDeck()
 {
-	std::lock_guard<std::mutex> lock{_lockPacket};
 	_pendingBoardChanges << TransferType::GAME_DECK_UPDATED << static_cast<sf::Uint32>(_cardDeck.size());
 }
 
 void Player::logOpponentHandState()
 {
-	std::lock_guard<std::mutex> lock{_lockPacket};
 	_pendingBoardChanges << TransferType::GAME_OPPONENT_HAND_UPDATED << static_cast<sf::Uint32>(_opponent->getHandSize());
 }
 
@@ -736,7 +732,7 @@ void Player::cardHandToBoard(int handIndex)
 {
 	const auto& handIt = std::find(_cardHand.begin(), _cardHand.end(), _cardHand[handIndex]);
 	_cardBoard.push_back(dynamic_cast<Creature*>(_cardHand.at(handIndex)));
-	_cardBoard.back()->movedToBoard();
+	_cardBoard.back()->moveToBoard();
 	_cardHand.erase(handIt);
 	logHandState();
 	_opponent->logOpponentHandState();
@@ -757,7 +753,7 @@ void Player::cardHandToGraveyard(int handIndex)
 void Player::cardBoardToGraveyard(int boardIndex)
 {
 	const auto& boardIt = std::find(_cardBoard.begin(), _cardBoard.end(), _cardBoard[boardIndex]);
-	_cardBoard.at(boardIndex)->removedFromBoard();
+	_cardBoard.at(boardIndex)->removeFromBoard();
 	_cardGraveyard.push_back(_cardBoard.at(boardIndex));
 	_cardBoard.erase(boardIt);
 	logBoardState();
@@ -843,7 +839,6 @@ void Player::logIdsFromVector(TransferType type, const std::vector<CardType *>& 
 	for(typename std::vector<CardType *>::size_type i{0}; i < vect.size(); ++i)
 		cardIds[i] = vect[i]->getID();
 
-	std::lock_guard<std::mutex> lock{_lockPacket};
 	_pendingBoardChanges << type << cardIds;
 }
 
@@ -856,8 +851,6 @@ void Player::logCardDataFromVector(TransferType type, const std::vector<Card*>& 
 		data.id = vect.at(i)->getID();
 		cards.push_back(data);
 	}
-
-	std::lock_guard<std::mutex> lock{_lockPacket};
 	_pendingBoardChanges << type << cards;
 }
 
@@ -890,8 +883,6 @@ void Player::logBoardCreatureDataFromVector(TransferType type, const std::vector
 		}
 		boardCreatures.push_back(data);
 	}
-
-	std::lock_guard<std::mutex> lock{_lockPacket};
 	// std::vector transmission in packet is defined in common/sockets/PacketOverload.hpp
 	_pendingBoardChanges << type << boardCreatures;
 }

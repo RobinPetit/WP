@@ -14,21 +14,22 @@ std::function<void(Creature&, const EffectParamsCollection&)> Creature::_effectM
 	&Creature::changeShield
 };
 
-Creature::Creature(const ServerCreatureData& cardData):
+Creature::Creature(const ServerCreatureData& cardData, Player& owner):
 	Card(cardData),
 	_attack(cardData.getAttack()),
 	_health(cardData.getHealth()),
 	_shield(cardData.getShield()),
-	_shieldType(cardData.getShieldType())
+	_shieldType(cardData.getShieldType()),
+	_owner(owner)
 {
 }
 
-void Creature::movedToBoard()
+void Creature::moveToBoard()
 {
 	_isOnBoard = true;
 }
 
-void Creature::removedFromBoard()
+void Creature::removeFromBoard()
 {
 	//Creature's death-based constraints
 	changeAttack({getConstraint(CC_DEATH_ATTACK_CHANGE)});
@@ -133,7 +134,7 @@ int Creature::getPersonalConstraint(int constraintID) const
 
 int Creature::getConstraint(int constraintID) const
 {
-	return _owner->getCreatureConstraint(*this, constraintID);
+	return _owner.getCreatureConstraint(*this, constraintID);
 }
 
 /*--------------------------- EFFECTS */
@@ -160,7 +161,7 @@ void Creature::setConstraint(const EffectParamsCollection& args)
 	switch (casterOptions)
 	{
 		case IF_CASTER_ALIVE:
-			_constraints.setConstraint(constraintID, value, turns, dynamic_cast<const Creature*>(_owner->getLastCaster()));
+			_constraints.setConstraint(constraintID, value, turns, dynamic_cast<const Creature*>(_owner.getLastCaster()));
 			break;
 		default:
 			_constraints.setConstraint(constraintID, value, turns);

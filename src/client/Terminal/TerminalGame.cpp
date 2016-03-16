@@ -28,7 +28,7 @@ void TerminalGame::chooseDeck()
 
 void TerminalGame::displayMessage(const std::string& message)
 {
-	std::cout << message;
+	std::cout << message << "\n";
 }
 
 // TODO: rename this to be consistent
@@ -74,7 +74,7 @@ void TerminalGame::displayCardVector(const std::vector<CardData>& cardVector, bo
 		cardId id = cardVector.at(i).id;
 		std::cout << "  * " << i << " : " << getCardName(id) << " (cost: " << getCardCost(id)
 		          << ")" << (i < cardVector.size()-1 ? ", " : "")
-		          << (displayDescription ? getCardDescription(id) : "") << "\n";
+		          << (displayDescription ? "\n\t" + getCardDescription(id) : "") << "\n";
 	}
 }
 
@@ -90,7 +90,7 @@ void TerminalGame::displayBoardCreatureVector(const std::vector<BoardCreatureDat
 		             ", attack: " << thisCreature.attack <<
 		             ", health: " << thisCreature.health <<
 		             ", shield: " << thisCreature.shield << "-" << thisCreature.shieldType << ")"
-		             << (displayDescription ? getCardDescription(id) : "") << "\n";
+		             << (displayDescription ? "\n\t" + getCardDescription(id) : "") << "\n";
 		//TODO use card names instead of card IDs ?
 		if (i!=cardVector.size()-1)
 			std::cout << ", ";
@@ -156,7 +156,7 @@ int TerminalGame::askOppoBoardIndex()
 
 void TerminalGame::receiveCard(cardId id)
 {
-	std::cout << "You won the card '" << getCardName(id) << "'\n";
+	displayMessage("You won the card '" + getCardName(id) + "'");
 }
 
 TerminalGame::~TerminalGame()
