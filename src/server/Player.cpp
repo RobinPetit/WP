@@ -50,6 +50,11 @@ int Player::getHealth() const
 	return _health;
 }
 
+std::vector<Card *>::size_type Player::getHandSize() const
+{
+	return _cardHand.size();
+}
+
 userId Player::getID() const
 {
 	return _id;
@@ -120,11 +125,16 @@ void Player::beginGame(bool isActivePlayer)
 {
 	std::cout << "Pre-beginGame" << _energy << _health << std::endl;
 	// init Player's data
-	cardDeckToHand(4);
+	cardDeckToHand(_initialAmountOfCards);  // calls logHandState
 	// log & send
 	logCurrentEnergy();
 	logCurrentHealth();
 	logOpponentHealth();
+	logCurrentDeck();
+	// Do not call `logOpponentHandState()` because players are initialized one after another.
+	// So when (first player).beginGame is called, (second player).hand is still empty.
+	// Thus to ensure the right value is sent, it is sent directly
+	_pendingBoardChanges << TransferType::GAME_OPPONENT_HAND_UPDATED << static_cast<sf::Uint32>(_initialAmountOfCards);
 	_socketToClient.send(_pendingBoardChanges);
 	_pendingBoardChanges.clear();
 
@@ -285,6 +295,7 @@ void Player::useCreature(int handIndex, Card *& usedCard)
 		sendValueToClient(TransferType::ACKNOWLEDGE);
 	}
 	logBoardState();
+	_opponent->logOpponentBoardState();
 }
 
 void Player::useSpell(int handIndex, Card *& usedCard)
@@ -626,6 +637,7 @@ void Player::changeHealth(const EffectParamsCollection& args)
 		{
 			_health = _maxHealth;
 			logCurrentHealth();
+			_opponent->logOpponentHealth();
 		}
 	}
 	catch (std::out_of_range&)
@@ -636,7 +648,7 @@ void Player::changeHealth(const EffectParamsCollection& args)
 }
 
 
-/////////
+///////// logers
 
 void Player::logCurrentEnergy()
 {
@@ -653,6 +665,16 @@ void Player::logCurrentHealth()
 void Player::logOpponentHealth()
 {
 	_pendingBoardChanges << TransferType::GAME_OPPONENT_HEALTH_UPDATED << static_cast<sf::Uint32>(_opponent->getHealth());
+}
+
+void Player::logCurrentDeck()
+{
+	_pendingBoardChanges << TransferType::GAME_DECK_UPDATED << static_cast<sf::Uint32>(_cardDeck.size());
+}
+
+void Player::logOpponentHandState()
+{
+	_pendingBoardChanges << TransferType::GAME_OPPONENT_HAND_UPDATED << static_cast<sf::Uint32>(_opponent->getHandSize());
 }
 
 /*--------------------------- PRIVATE */
@@ -693,6 +715,7 @@ void Player::setTeamConstraint(const Card* /* usedCard */, const EffectParamsCol
 			break;
 		default:
 			_constraints.setConstraint(constraintID, value, turns);
+			break;
 	}
 }
 
@@ -705,6 +728,8 @@ void Player::cardDeckToHand(int amount)
 		_cardDeck.pop();
 	}
 	logHandState();
+	_opponent->logOpponentHandState();
+	logCurrentDeck();
 }
 
 void Player::cardHandToBoard(int handIndex)
@@ -714,7 +739,9 @@ void Player::cardHandToBoard(int handIndex)
 	_cardBoard.back()->movedToBoard();
 	_cardHand.erase(handIt);
 	logHandState();
+	_opponent->logOpponentHandState();
 	logBoardState();
+	_opponent->logOpponentBoardState();
 }
 
 void Player::cardHandToGraveyard(int handIndex)
@@ -723,6 +750,7 @@ void Player::cardHandToGraveyard(int handIndex)
 	_cardGraveyard.push_back(_cardHand.at(handIndex));
 	_cardHand.erase(handIt);
 	logHandState();
+	_opponent->logOpponentHandState();
 	logGraveyardState();
 }
 
@@ -733,6 +761,7 @@ void Player::cardBoardToGraveyard(int boardIndex)
 	_cardGraveyard.push_back(_cardBoard.at(boardIndex));
 	_cardBoard.erase(boardIt);
 	logBoardState();
+	_opponent->logOpponentBoardState();
 	logGraveyardState();
 }
 
@@ -743,6 +772,7 @@ void Player::cardGraveyardToHand(int binIndex)
 	_cardGraveyard.erase(binIt);
 	logGraveyardState();
 	logHandState();
+	_opponent->logOpponentHandState();
 }
 
 void Player::cardAddToHand(Card* givenCard)
@@ -751,6 +781,7 @@ void Player::cardAddToHand(Card* givenCard)
 	{
 		_cardHand.push_back(givenCard);
 		logHandState();
+		_opponent->logOpponentHandState();
 	}
 }
 
@@ -763,6 +794,7 @@ Card* Player::cardRemoveFromHand()
 	const auto& handIt = std::find(_cardHand.begin(), _cardHand.end(), _cardHand[handIndex]);
 	_cardHand.erase(handIt);
 	logHandState();
+	_opponent->logOpponentHandState();
 	return stolenCard;
 }
 
@@ -779,6 +811,7 @@ Card* Player::cardExchangeFromHand(Card* givenCard, int handIndex)
 	Card* stolen = _cardHand[handIndex];
 	_cardHand.at(handIndex) = givenCard;
 	logHandState();
+	_opponent->logOpponentHandState();
 	return stolen;
 }
 
@@ -918,3 +951,4 @@ Player::~Player()
 		_cardDeck.pop();
 	}
 }
+

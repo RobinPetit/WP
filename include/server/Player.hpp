@@ -70,6 +70,7 @@ public:
 	sf::TcpSocket& getSocket();
 	const std::vector<Creature *>& getBoard() const;
 	int getHealth() const;
+	std::vector<Card *>::size_type getHandSize() const;
 
 	/// \return true if some changes has been logged since the last player's
 	/// action, false otherwise.
@@ -86,6 +87,14 @@ public:
 	std::vector<int>&& getRandomBoardIndexes(const std::vector<CardToSelect>& selection);
 	std::vector<int>&& askUserToSelectCards(const std::vector<CardToSelect>& selection);
 
+	/////////////////////// public loggers
+	// the loggers about opponent's data must be public so that
+	// one player can call the logger on the other player
+
+	void logOpponentBoardState();
+	void logOpponentHealth();
+	void logOpponentHandState();
+
 private:
 	/// Types
 	struct TurnData
@@ -96,7 +105,10 @@ private:
 		int creatureAttacks;
 		int spellCalls;
 	};
+
+	/// const{expr} static variables
 	constexpr static TurnData _emptyTurnData = {0, 0, 0, 0, 0};
+	constexpr static unsigned _initialAmountOfCards{4};
 
 	/// Attributes
 	GameThread& _gameThread;
@@ -181,9 +193,8 @@ private:
 
 	void logHandState();
 	void logBoardState();
-	void logOpponentBoardState();
 	void logGraveyardState();
-	void logOpponentHealth();
+	void logCurrentDeck();
 
 	template <typename CardType>
 	void logIdsFromVector(TransferType type, const std::vector<CardType *>& vect);
