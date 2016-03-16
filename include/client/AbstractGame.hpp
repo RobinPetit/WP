@@ -15,18 +15,19 @@
 #include "common/sockets/TransferType.hpp"
 
 /// The class representing the gameplay for the client
-class Game
+class AbstractGame
 {
 	public:
 		/// Constructor.
-		Game(Client& client);
+		AbstractGame(Client& client);
 
+		void init();
 		void play();
 		void startTurn();
 
-		~Game();
+		virtual ~AbstractGame();
 
-	private:
+	protected:
 		///////////////// attributes
 
 		Client& _client;
@@ -53,19 +54,21 @@ class Game
 		/// Waits for special server data such as END_OF_TURN, BOARD_UPDATE, etc.
 		std::thread _listeningThread;
 
+		//////////// static members
+
+		static const std::vector<std::pair<const std::string, void (AbstractGame::*)()>> _actions;
+
+		//////////// protected methods
+
+		const std::string& getCardName(cardId id);
+		CostValue getCardCost(cardId id);
+		const std::string& getCardDescription(cardId id);
+
+	private:
 		//////////////// private methods
 
 		// called by the constructor to init the object
-		void init();
-		void chooseDeck();
-
-		// Requests user for additional input
-		int askIndex(std::size_t upperBound, const std::string& inputMessage);
-		int askSelfHandIndex();
-		int askSelfBoardIndex();
-		int askSelfGraveyardIndex();
-		int askOppoBoardIndex();
-		int askOppoHandIndex();
+		virtual void chooseDeck() = 0;
 
 		// User interface ("actions")
 		void useCard();
@@ -75,14 +78,17 @@ class Game
 		void endGame(sf::Packet& transmission);  // only used to lighten handlePacket
 
 		// Game display
-		void display();
-		void displayGame();
-		void displayCardVector(const std::vector<CardData>& cardVector, bool displayDescription=false);
-		void displayBoardCreatureVector(const std::vector<BoardCreatureData>& cardVector, bool displayDescription=false);
+		virtual void display() = 0;
+		virtual void displayGame() = 0;
 
-		const std::string& getCardName(cardId id);
-		CostValue getCardCost(cardId id);
-		const std::string& getCardDescription(cardId id);
+		virtual void displayMessage(const std::string& message) = 0;
+
+		// game "inputs"
+		virtual int askSelfHandIndex() = 0;
+		virtual int askSelfBoardIndex() = 0;
+		virtual int askSelfGraveyardIndex() = 0;
+		virtual int askOppoBoardIndex() = 0;
+		virtual int askOppoHandIndex() = 0;
 
 		/// Start the new thread waiting for special data
 		void initListening();
@@ -92,15 +98,11 @@ class Game
 		/// Handles the whole transmission until transmission.endOfPacket()
 		void handlePacket(sf::Packet& transmission);
 
-		/// Those methods can be used for effects
-		//void pickCard(int); //HAPPENS IN SERVER
-		//void applyOppoEffect();
-		//void applySelfEffect();
-		//void putOnBoard(std::size_t);
+		virtual void receiveCard(cardId id) = 0;
+
+		void treatAdditionnalInputs(const std::vector<CardToSelect>& inputs);
 
 		//////////// static member
-
-		static const std::vector<std::pair<const std::string, void (Game::*)()>> _actions;
 
 		template <typename FixedSizeIntegerType>
 		static FixedSizeIntegerType receiveFromPacket(sf::Packet& receivedPacket);

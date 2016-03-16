@@ -5,7 +5,7 @@
 #include "common/sockets/TransferType.hpp"
 #include "client/states/LobbyState.hpp"
 #include "client/NonBlockingInput.hpp"
-#include "client/Game.hpp"
+#include "client/Terminal/TerminalGame.hpp"
 
 LobbyState::LobbyState(StateStack& stateStack, Client& client):
 	AbstractState(stateStack, client)
@@ -27,7 +27,8 @@ void LobbyState::startGame()
 	std::cout << "Let's find you an opponent\n";
 	if(_client.startGame())
 	{
-		Game game{_client};
+		TerminalGame game{_client};
+		game.init();
 		game.play();
 		waitForEnter();
 	}

@@ -98,7 +98,7 @@ void Player::setDeck(const Deck& newDeck)
 	}
 	//Deterministic behavior is best while testing
 	//TODO: re-enable shuffling when required
-	//std::shuffle(loadedCards.begin(), loadedCards.end(), std::mt19937(std::random_device()()));
+	std::shuffle(loadedCards.begin(), loadedCards.end(), std::mt19937(std::random_device()()));
 	for(const auto& cardInShuffledDeck: loadedCards)
 		_cardDeck.push(cardInShuffledDeck);
 }
@@ -123,7 +123,6 @@ void Player::receiveDeck()
 
 void Player::beginGame(bool isActivePlayer)
 {
-	std::cout << "Pre-beginGame" << _energy << _health << std::endl;
 	// init Player's data
 	cardDeckToHand(_initialAmountOfCards);  // calls logHandState
 	// log & send
@@ -142,12 +141,10 @@ void Player::beginGame(bool isActivePlayer)
 	packet << TransferType::GAME_STARTING << (isActivePlayer ? TransferType::GAME_PLAYER_ENTER_TURN : TransferType::GAME_PLAYER_LEAVE_TURN);
 	_socketToClient.send(packet);
 	_isActive.store(isActivePlayer);
-	std::cout << "Post-beginGame" << _energy << _health << std::endl;
 }
 
 void Player::enterTurn(int turn)
 {
-	std::cout << "Pre-enterTurn" << _energy << _health << std::endl;
 	_isActive.store(true); //Player has become active
 
 	_turnData = _emptyTurnData;  // Reset the turn data
@@ -171,7 +168,6 @@ void Player::enterTurn(int turn)
 	//Will call creature's turn-based constraints
 	for (unsigned i=0; i<_cardBoard.size(); i++)
 		_cardBoard.at(i)->enterTurn();
-	std::cout << "Post-enterTurn" << _energy << _health << std::endl;
 }
 
 void Player::leaveTurn()
@@ -259,7 +255,6 @@ void Player::useCard(int handIndex)
 		sendValueToClient(TransferType::FAILURE);
 		return;
 	}
-
 	Card* usedCard = _cardHand.at(handIndex);
 	//Check if we have enough energy to use this card
 	if (usedCard->getEnergyCost() > _energy)
@@ -652,28 +647,33 @@ void Player::changeHealth(const EffectParamsCollection& args)
 
 void Player::logCurrentEnergy()
 {
+	std::lock_guard<std::mutex> lock{_lockPacket};
 	// cast to be sure that the right amount of bits is sent and received
 	_pendingBoardChanges << TransferType::GAME_PLAYER_ENERGY_UPDATED << static_cast<sf::Uint32>(_energy);
 }
 
 void Player::logCurrentHealth()
 {
+	std::lock_guard<std::mutex> lock{_lockPacket};
 	// cast to be sure that the right amount of bits is sent and received
 	_pendingBoardChanges << TransferType::GAME_PLAYER_HEALTH_UPDATED << static_cast<sf::Uint32>(_health);
 }
 
 void Player::logOpponentHealth()
 {
+	std::lock_guard<std::mutex> lock{_lockPacket};
 	_pendingBoardChanges << TransferType::GAME_OPPONENT_HEALTH_UPDATED << static_cast<sf::Uint32>(_opponent->getHealth());
 }
 
 void Player::logCurrentDeck()
 {
+	std::lock_guard<std::mutex> lock{_lockPacket};
 	_pendingBoardChanges << TransferType::GAME_DECK_UPDATED << static_cast<sf::Uint32>(_cardDeck.size());
 }
 
 void Player::logOpponentHandState()
 {
+	std::lock_guard<std::mutex> lock{_lockPacket};
 	_pendingBoardChanges << TransferType::GAME_OPPONENT_HAND_UPDATED << static_cast<sf::Uint32>(_opponent->getHandSize());
 }
 
@@ -839,11 +839,12 @@ void Player::logGraveyardState()
 template <typename CardType>
 void Player::logIdsFromVector(TransferType type, const std::vector<CardType *>& vect)
 {
-	_pendingBoardChanges << type;
 	std::vector<sf::Uint32> cardIds{static_cast<sf::Uint32>(vect.size())};
 	for(typename std::vector<CardType *>::size_type i{0}; i < vect.size(); ++i)
 		cardIds[i] = vect[i]->getID();
-	_pendingBoardChanges << cardIds;
+
+	std::lock_guard<std::mutex> lock{_lockPacket};
+	_pendingBoardChanges << type << cardIds;
 }
 
 void Player::logCardDataFromVector(TransferType type, const std::vector<Card*>& vect)
@@ -855,6 +856,8 @@ void Player::logCardDataFromVector(TransferType type, const std::vector<Card*>& 
 		data.id = vect.at(i)->getID();
 		cards.push_back(data);
 	}
+
+	std::lock_guard<std::mutex> lock{_lockPacket};
 	_pendingBoardChanges << type << cards;
 }
 
@@ -887,6 +890,8 @@ void Player::logBoardCreatureDataFromVector(TransferType type, const std::vector
 		}
 		boardCreatures.push_back(data);
 	}
+
+	std::lock_guard<std::mutex> lock{_lockPacket};
 	// std::vector transmission in packet is defined in common/sockets/PacketOverload.hpp
 	_pendingBoardChanges << type << boardCreatures;
 }
@@ -899,10 +904,17 @@ std::vector<int>&& Player::askUserToSelectCards(const std::vector<CardToSelect>&
 	sf::Packet packet;
 	packet << selection;
 	_socketToClient.send(packet);
-	std::vector<int> indices(selection.size());
+	std::vector<sf::Uint32> indices(selection.size());
+	// have the socket blocking because the answer is expected at this very moment
+	_socketToClient.setBlocking(true);
 	_socketToClient.receive(packet);
+	_socketToClient.setBlocking(false);
 	packet >> indices;
-	return std::move(indices);
+	// covnert the sf::Uint32 received on the network by implementation-defined integers
+	std::vector<int> ret(selection.size());
+	for(auto i{0U}; i < selection.size(); ++i)
+		ret[i] = static_cast<int>(indices[i]);
+	return std::move(ret);
 }
 
 std::vector<int>&& Player::getRandomBoardIndexes(const std::vector<CardToSelect>& selection)
@@ -951,4 +963,3 @@ Player::~Player()
 		_cardDeck.pop();
 	}
 }
-

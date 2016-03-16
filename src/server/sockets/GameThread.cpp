@@ -149,7 +149,7 @@ userId GameThread::runGame()
 				}
 			}
 		}
-		sf::sleep(sf::milliseconds(250));
+		sf::sleep(sf::milliseconds(50));
 	}
 	assert(_winner != 0);
 	return _winner;
