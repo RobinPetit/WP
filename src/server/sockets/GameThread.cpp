@@ -98,7 +98,7 @@ userId GameThread::startGame(const ClientInformations& player1, const ClientInfo
 
 	// Send to the winner he wins and send his new card ID
 	sf::Packet packet;
-	cardId earnedCardId{_intGenerator.next(nbSpells + nbCreatures)};
+	cardId earnedCardId{_intGenerator.next(static_cast<int>(nbSpells + nbCreatures))};
 	++earnedCardId;  // Card indices start to 1 because of SQLite
 	if(_endGameCause != EndGame::Cause::ENDING_SERVER)
 		_database.addCard(winnerId, earnedCardId);
