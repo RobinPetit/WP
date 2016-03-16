@@ -20,7 +20,7 @@ private:
 	bool _isOnBoard;
 
 	//Constraints
-	Constraints _constraints = Constraints(C_CONSTRAINT_DEFAULTS, C_CONSTRAINTS_COUNT);
+	Constraints _constraints = Constraints(creatureDefaultConstraints);
 
 	//Effects
 	static std::function<void(Creature&, const EffectParamsCollection&)> _effectMethods[P_EFFECTS_COUNT];
@@ -53,7 +53,7 @@ public:
 	void receiveAttack(Creature& attacker, int attack, int forced, int loopCount = 0);
 
 	/// Effects interface
-	void applyEffectToSelf(EffectParamsCollection effectArgs);
+	void applyEffectToSelf(EffectParamsCollection& effectArgs);
 
 	std::vector<EffectParamsCollection> getEffects();
 	int getAttack();

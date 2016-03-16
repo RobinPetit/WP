@@ -97,7 +97,6 @@ userId GameThread::startGame(const ClientInformations& player1, const ClientInfo
 	cardId earnedCardId{std::uniform_int_distribution<int>(0, static_cast<int>(nbSpells + nbCreatures))(generator)};
 	++earnedCardId;  // Card indices start to 1 because of SQLite
 	_database.addCard(winnerId, earnedCardId);
-	// \TODO: add earnedCardId to winner's card collection
 
 	// Send to the winner he won
 	// EndGame::applyToSelf indicate which player won the game: false mean that

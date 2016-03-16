@@ -1,10 +1,10 @@
 #include "server/Constraints.hpp"
 #include "server/Creature.hpp"
 
-Constraints::Constraints(const ConstraintDefaultValue* defaultValues, const int arraySize):
-	_size(arraySize), _defaultValues(defaultValues)
+Constraints::Constraints(const std::vector<ConstraintDefaultValue>& defaultValues):
+	_defaultValues(defaultValues)
 {
-	_timedValues = new std::vector<ConstraintTimedValue>[_size];
+	_timedValues = new std::vector<ConstraintTimedValue>[defaultValues.size()];
 }
 
 void Constraints::setConstraint(int constraintID, int value, int turns)
@@ -19,13 +19,14 @@ void Constraints::setConstraint(int constraintID, int value, int turns, const Cr
 
 int Constraints::getConstraint(int constraintID) const
 {
+	--constraintID;
 	switch (_defaultValues[constraintID].orderOption)
 	{
-		case GET_FIRST:
+		case ConstraintOrderOption::GET_FIRST:
 			return getFirstTimedValue(constraintID);
-		case GET_LAST:
+		case ConstraintOrderOption::GET_LAST:
 			return getLastTimedValue(constraintID);
-		case GET_SUM:
+		case ConstraintOrderOption::GET_SUM:
 			return getSumTimedValues(constraintID);
 	}
 	throw std::runtime_error("Order option not valid");
@@ -35,7 +36,7 @@ int Constraints::getOverallConstraint(int constraintID, int otherValue) const
 {
 	switch (_defaultValues[constraintID].orderOption)
 	{
-		case GET_FIRST:
+		case ConstraintOrderOption::GET_FIRST:
 			{
 				if (otherValue == _defaultValues[constraintID].value)
 					return getFirstTimedValue(constraintID);
@@ -43,7 +44,7 @@ int Constraints::getOverallConstraint(int constraintID, int otherValue) const
 					return otherValue;
 			}
 			break;
-		case GET_LAST:
+		case ConstraintOrderOption::GET_LAST:
 			{
 				if (otherValue == _defaultValues[constraintID].value)
 					return getLastTimedValue(constraintID);
@@ -51,7 +52,7 @@ int Constraints::getOverallConstraint(int constraintID, int otherValue) const
 					return otherValue;
 			}
 			break;
-		case GET_SUM:
+		case ConstraintOrderOption::GET_SUM:
 			{
 				otherValue += getSumTimedValues(constraintID);
 				return otherValue;
@@ -66,10 +67,10 @@ int Constraints::getValue(int constraintID, unsigned valueIndex) const
 	int value = _timedValues[constraintID].at(valueIndex).value;
 	switch(_defaultValues[constraintID].valueOption) //rules
 	{
-		case VALUE_GET_INCREMENT:
+		case ConstraintValueOption::VALUE_GET_INCREMENT:
 			_timedValues[constraintID].at(valueIndex).value++;
 			break;
-		case VALUE_GET_DECREMENT:
+		case ConstraintValueOption::VALUE_GET_DECREMENT:
 			_timedValues[constraintID].at(valueIndex).value--;
 			break;
 		default:
@@ -130,7 +131,7 @@ int Constraints::getSumTimedValues(int constraintID) const
 
 void Constraints::timeOutConstraints()
 {
-	for (unsigned i=0; i<_size; i++)
+	for (unsigned i=0; i < _defaultValues.size(); i++)
 	{
 		std::vector<ConstraintTimedValue>& vect = _timedValues[i]; //value, turns left, caster
 		for (auto vectIt=vect.begin(); vectIt!=vect.end();)
@@ -143,10 +144,10 @@ void Constraints::timeOutConstraints()
 				vectIt->turns--;
 				switch (_defaultValues[i].valueOption)  // rules
 				{
-					case VALUE_TURN_INCREMENT:
+					case ConstraintValueOption::VALUE_TURN_INCREMENT:
 						vectIt->value++;
 						break;
-					case VALUE_TURN_DECREMENT:
+					case ConstraintValueOption::VALUE_TURN_DECREMENT:
 						vectIt->value--;
 						break;
 					default:
