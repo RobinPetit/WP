@@ -93,6 +93,11 @@ userId GameThread::startGame(const ClientInformations& player1, const ClientInfo
 	_passivePlayer->beginGame(false);
 	_timerThread = std::thread(&GameThread::makeTimer, this);
 
+	// call explicitely enterTurn for the first player because this method
+	// is only called when there is a turn swapping. So first turn is never
+	// **officially** started
+	_activePlayer->enterTurn(1);
+
 	userId winnerId{runGame()};
 
 	// Send to the winner he wins and send his new card ID

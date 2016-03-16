@@ -88,12 +88,12 @@ void Player::setDeck(const Deck& newDeck)
 		// and higher cardId are spells. THIS SHOULD BE FIXED.
 		if(card <= 10)
 		{
-			CreatureData creat = ALL_CREATURES[card-1];
+			const CreatureData& creat = ALL_CREATURES[card-1];
 			loadedCards[i].reset(new Creature(card, *this, creat.cost, creat.attack, creat.health, creat.shield, creat.shieldType, creat.effects));
 		}
 		else
 		{
-			SpellData spell = ALL_SPELLS[card - 11];
+			const SpellData& spell = ALL_SPELLS[card - 11];
 			loadedCards[i].reset(new Spell(card, spell.cost, spell.effects));
 		}
 	}
@@ -159,7 +159,9 @@ void Player::enterTurn(int turn)
 	}
 
 	//Player's turn-based constraints
-	cardDeckToHand(_constraints.getConstraint(PC_TURN_CARDS_PICKED));
+	// do not pick a card at first turn
+	if(turn != 1)
+		cardDeckToHand(_constraints.getConstraint(PC_TURN_CARDS_PICKED));
 	resetEnergy({_constraints.getConstraint(PC_TURN_ENERGY_INIT_CHANGE)});
 	changeEnergy({_constraints.getConstraint(PC_TURN_ENERGY_CHANGE)});
 	changeHealth({_constraints.getConstraint(PC_TURN_HEALTH_CHANGE)});
@@ -466,8 +468,8 @@ void Player::applyEffectToCreatureTeam(const Card* usedCard, EffectParamsCollect
 		setTeamConstraint(usedCard, effectArgs); //set a team constraint instead of individual ones
 	}
 	else //other effects just get applied to each creature individually
-		for (unsigned i=0; i<_cardBoard.size(); i++)
-			_cardBoard.at(i)->applyEffectToSelf(effectArgs);
+		for(auto& card : _cardBoard)
+			card->applyEffectToSelf(effectArgs);
 }
 
 /*------------------------------ GETTERS */
@@ -697,11 +699,9 @@ void Player::logOpponentHandState()
 
 void Player::exploitCardEffects(Card* usedCard)
 {
-	std::vector<EffectParamsCollection> effects = usedCard->getEffects();
-	for (unsigned i=0; i<effects.size(); i++) //for each effect of the card
-	{
-		applyEffect(usedCard, effects.at(i)); //apply it
-	}
+	const std::vector<EffectParamsCollection>& effects(usedCard->getEffects());
+	for(const auto& effectArgs: effects) //for each effect of the card
+		applyEffect(usedCard, effectArgs); //apply it
 }
 
 void Player::setTeamConstraint(const Card* /* usedCard */, const EffectParamsCollection& args)
@@ -934,7 +934,7 @@ inline int Player::getRandomIndex(const std::vector<T>& vector)
 {
 	if(vector.empty())
 		throw std::out_of_range("Cannot generate a random index for an empty vector.");
-	return _gameThread.getGenerator().next(vector.size());
+	return _gameThread.getGenerator().next(static_cast<int>(vector.size()));
 }
 
 std::vector<int> Player::getRandomBoardIndexes(const std::vector<CardToSelect>& selection)

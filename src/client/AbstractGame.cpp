@@ -53,6 +53,7 @@ void AbstractGame::init()
 	else if(type == TransferType::GAME_PLAYER_LEAVE_TURN)
 	{
 		_myTurn.store(false);
+		displayGame();
 		displayMessage("Your opponent begins, wait for your turn...");
 	}
 	else

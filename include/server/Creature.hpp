@@ -61,7 +61,7 @@ public:
 	/// Effects interface
 	void applyEffectToSelf(EffectParamsCollection& effectArgs);
 
-	std::vector<EffectParamsCollection> getEffects();
+	const std::vector<EffectParamsCollection>& getEffects() const;
 	int getAttack();
 	int getHealth();
 	int getShield();

@@ -84,7 +84,7 @@ private:
 
 	/*------------------------------ Static variables */
 	constexpr static TurnData _emptyTurnData = {0, 0, 0, 0, 0};
-	constexpr static unsigned _initialAmountOfCards{4};
+	constexpr static unsigned _initialAmountOfCards{5};
 
 	/*------------------------------ Attributes */
 	GameThread& _gameThread;
@@ -131,10 +131,6 @@ private:
 	/// Last card that was used to cast an effect (his or opponent's)
 	/// This is not a smart pointer because it points to an already allocated card.
 	const Card* _lastCasterCard = nullptr;
-
-	// Random management
-	/// Used for uniformly distributed integer generation
-	std::default_random_engine _engine;
 
 	// Effects container
 	static std::function<void(Player&, const EffectParamsCollection&)> _effectMethods[P_EFFECTS_COUNT];
