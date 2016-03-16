@@ -301,9 +301,14 @@ void Player::useCreature(int handIndex, Card* usedCard)
 	_turnData.creaturesPlaced++;
 	_energy -= usedCard->getEnergyCost();
 
-	cardHandToBoard(handIndex);
-	exploitCardEffects(usedCard);
-	sendValueToClient(TransferType::ACKNOWLEDGE);
+	// if card cannot be set on board (all of its required effects
+	// could not be applied), then do not set it on the board
+	if(exploitCardEffects(usedCard))
+	{
+		cardHandToBoard(handIndex);
+		sendValueToClient(TransferType::ACKNOWLEDGE);
+	}
+	// do not send FAILURE: exploitCardEffects call applyEffect which sends it itself
 	logBoardState();
 	logOpponentBoardState();
 	_opponent.logBoardState();
@@ -323,9 +328,15 @@ void Player::useSpell(int handIndex, Card* usedCard)
 	_turnData.spellCalls++;
 	_energy -= usedCard->getEnergyCost();
 
-	cardHandToGraveyard(handIndex);
-	exploitCardEffects(usedCard);
-	sendValueToClient(TransferType::ACKNOWLEDGE);
+	// if one of the required effects could not have been applied, then
+	// the spell is not usable for now and so don't use the card
+	if(exploitCardEffects(usedCard))
+	{
+		cardHandToGraveyard(handIndex);
+		sendValueToClient(TransferType::ACKNOWLEDGE);
+	}
+	// no need to send FAILURE: exploitCardEffects call applyEffect
+	// which sends FAILURE the function returns false.
 }
 
 void Player::attackWithCreature(int attackerIndex, int victimIndex)
@@ -385,7 +396,7 @@ void Player::endTurn()
 }
 
 /*------------------------------ EFFECTS INTERFACE */
-void Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
+bool Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 {
 	int subject;  // who the effect applies to
 	try  // check the input
@@ -400,6 +411,7 @@ void Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 
 	_lastCasterCard = usedCard;  // remember last used card
 	_opponent._lastCasterCard = usedCard; // same for opponent
+	bool ret{true};
 
 	switch(subject)
 	{
@@ -425,7 +437,10 @@ void Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 			if(not _cardBoard.empty())
 				applyEffectToCreature(effectArgs, askUserToSelectCards({CardToSelect::SELF_BOARD}));
 			else
+			{
 				sendValueToClient(TransferType::FAILURE);
+				ret = false;
+			}
 			break;
 
 		case CREATURE_SELF_RAND:  //active player's creature at random index
@@ -433,7 +448,10 @@ void Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 			if(not _cardBoard.empty())
 				applyEffectToCreature(effectArgs, getRandomBoardIndexes({CardToSelect::SELF_BOARD}));
 			else
+			{
 				sendValueToClient(TransferType::FAILURE);
+				ret = false;
+			}
 			break;
 
 		case CREATURE_SELF_TEAM:  //active player's team of creatures
@@ -445,13 +463,21 @@ void Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 			if(not _opponent._cardBoard.empty())
 				_opponent.applyEffectToCreature(effectArgs, askUserToSelectCards({CardToSelect::OPPO_BOARD}));
 			else
+			{
 				sendValueToClient(TransferType::FAILURE);
+				ret = false;
+			}
 			break;
 
 		case CREATURE_OPPO_RAND:	//passive player's creature at random index
 			askUserToSelectCards({});
 			if(not _opponent._cardBoard.empty())
 				_opponent.applyEffectToCreature(effectArgs, getRandomBoardIndexes({CardToSelect::OPPO_BOARD}));
+			else
+			{
+				sendValueToClient(TransferType::FAILURE);
+				ret = false;
+			}
 			break;
 
 		case CREATURE_OPPO_TEAM:	//passive player's team of creatures
@@ -462,6 +488,7 @@ void Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 		default:
 			throw std::runtime_error("Effect subject not valid");
 	}
+	return ret;
 }
 
 void Player::applyEffectToSelf(EffectParamsCollection& effectArgs)
@@ -718,11 +745,13 @@ void Player::logOpponentHandState()
 
 /*--------------------------- PRIVATE */
 
-void Player::exploitCardEffects(Card* usedCard)
+bool Player::exploitCardEffects(Card* usedCard)
 {
 	const std::vector<EffectParamsCollection>& effects(usedCard->getEffects());
 	for(const auto& effectArgs: effects) //for each effect of the card
-		applyEffect(usedCard, effectArgs); //apply it
+		if(not applyEffect(usedCard, effectArgs)) //apply it
+			return false;
+	return true;
 }
 
 void Player::setTeamConstraint(const EffectParamsCollection& args)

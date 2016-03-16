@@ -103,10 +103,7 @@ void AbstractGame::useCard()
 		_client.getGameSocket().receive(actionPacket);
 		// ask and send the additionnal inputs to the server
 		if(not treatAdditionnalInputs(actionPacket))
-		{
-			displayMessage("No card to select, unable to play this card!");
 			return;
-		}
 		// receive status of operation from server
 		_client.getGameSocket().receive(actionPacket);
 		TransferType responseHeader;
@@ -115,14 +112,6 @@ void AbstractGame::useCard()
 		{
 		case TransferType::ACKNOWLEDGE:
 			displayMessage("The card has been successfuly used.");
-			break;
-
-		case TransferType::GAME_NOT_ENOUGH_ENERGY:
-			displayMessage("You have not enough energy to use this card.");
-			break;
-
-		case TransferType::GAME_CARD_LIMIT_TURN_REACHED:
-			displayMessage("You can't use more cards, the limit is reached.");
 			break;
 
 		// This line is more documentative than really needed
@@ -138,8 +127,30 @@ bool AbstractGame::treatAdditionnalInputs(sf::Packet& actionPacket)
 {
 	TransferType responseHeader;
 	actionPacket >> responseHeader;
-	if(responseHeader == TransferType::FAILURE)
+	switch(responseHeader)
+	{
+	case TransferType::FAILURE:
+		displayMessage("No card to select, unable to play this card!");
 		return false;
+
+	case TransferType::GAME_NOT_ENOUGH_ENERGY:
+		displayMessage("You have not enough energy to use this card.");
+		return false;
+
+	case TransferType::GAME_CARD_LIMIT_TURN_REACHED:
+		displayMessage("You can't use more cards, the limit is reached.");
+		return false;
+
+	// note the case here so that ACKNOWLEDGE is not taken as `default`
+	// but the code for ACKNOWLEDGE is after the switch
+	case TransferType::ACKNOWLEDGE:
+		break;
+
+	default:
+		std::cerr << "Unexpected value: " << static_cast<sf::Uint32>(responseHeader) << std::endl;
+		return false;
+	}
+
 	assert(responseHeader == TransferType::ACKNOWLEDGE);
 	std::vector<CardToSelect> requiredInputs;
 	actionPacket >> requiredInputs;
