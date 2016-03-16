@@ -12,7 +12,7 @@
 #include <SFML/Network/Packet.hpp>
 
 /*------------------------------ CONSTRUCTOR AND INIT */
-std::array<std::function<void(Player&, const EffectParamsCollection&)>, P_EFFECTS_COUNT> Player::_effectMethods =
+std::array<std::function<void(Player&, EffectArgs)>, P_EFFECTS_COUNT> Player::_effectMethods =
 {
 	&Player::setConstraint,
 	&Player::pickDeckCards,
@@ -393,13 +393,12 @@ void Player::endTurn()
 }
 
 /*------------------------------ EFFECTS INTERFACE */
-bool Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
+bool Player::applyEffect(Card* usedCard, EffectArgs effect)
 {
 	int subject;  // who the effect applies to
 	try  // check the input
 	{
-		subject = effectArgs.at(0);
-		effectArgs.erase(effectArgs.begin());
+		subject = effect.args.at(effect.index++);
 	}
 	catch(std::out_of_range&)
 	{
@@ -414,25 +413,25 @@ bool Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 	{
 		case PLAYER_SELF:  //passive player
 			askUserToSelectCards({});
-			applyEffectToSelf(effectArgs);
+			applyEffectToSelf(effect);
 			break;
 
 		case PLAYER_OPPO:  //active player
 			askUserToSelectCards({});
-			_opponent.applyEffectToSelf(effectArgs);
+			_opponent.applyEffectToSelf(effect);
 			break;
 
 		case CREATURE_SELF_THIS:  //active player's creature that was used
 		{
 			askUserToSelectCards({});
 			Creature* usedCreature = dynamic_cast<Creature*>(usedCard);
-			applyEffectToCreature(usedCreature, effectArgs);
+			applyEffectToCreature(usedCreature, effect);
 		}
 			break;
 
 		case CREATURE_SELF_INDX:  //active player's creature at given index
 			if(not _cardBoard.empty())
-				applyEffectToCreature(effectArgs, askUserToSelectCards({CardToSelect::SELF_BOARD}));
+				applyEffectToCreature(effect, askUserToSelectCards({CardToSelect::SELF_BOARD}));
 			else
 			{
 				sendValueToClient(TransferType::FAILURE);
@@ -443,7 +442,7 @@ bool Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 		case CREATURE_SELF_RAND:  //active player's creature at random index
 			askUserToSelectCards({});
 			if(not _cardBoard.empty())
-				applyEffectToCreature(effectArgs, getRandomBoardIndexes({CardToSelect::SELF_BOARD}));
+				applyEffectToCreature(effect, getRandomBoardIndexes({CardToSelect::SELF_BOARD}));
 			else
 			{
 				sendValueToClient(TransferType::FAILURE);
@@ -453,12 +452,12 @@ bool Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 
 		case CREATURE_SELF_TEAM:  //active player's team of creatures
 			askUserToSelectCards({});
-			applyEffectToCreatureTeam(effectArgs);
+			applyEffectToCreatureTeam(effect);
 			break;
 
 		case CREATURE_OPPO_INDX:	//passive player's creature at given index
 			if(not _opponent._cardBoard.empty())
-				_opponent.applyEffectToCreature(effectArgs, askUserToSelectCards({CardToSelect::OPPO_BOARD}));
+				_opponent.applyEffectToCreature(effect, askUserToSelectCards({CardToSelect::OPPO_BOARD}));
 			else
 			{
 				sendValueToClient(TransferType::FAILURE);
@@ -469,7 +468,7 @@ bool Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 		case CREATURE_OPPO_RAND:	//passive player's creature at random index
 			askUserToSelectCards({});
 			if(not _opponent._cardBoard.empty())
-				_opponent.applyEffectToCreature(effectArgs, getRandomBoardIndexes({CardToSelect::OPPO_BOARD}));
+				_opponent.applyEffectToCreature(effect, getRandomBoardIndexes({CardToSelect::OPPO_BOARD}));
 			else
 			{
 				sendValueToClient(TransferType::FAILURE);
@@ -479,7 +478,7 @@ bool Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 
 		case CREATURE_OPPO_TEAM:	//passive player's team of creatures
 			askUserToSelectCards({});
-			_opponent.applyEffectToCreatureTeam(effectArgs);
+			_opponent.applyEffectToCreatureTeam(effect);
 			break;
 
 		default:
@@ -488,34 +487,33 @@ bool Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 	return ret;
 }
 
-void Player::applyEffectToSelf(EffectParamsCollection& effectArgs)
+void Player::applyEffectToSelf(EffectArgs effect)
 {
-	int method = effectArgs.front();  //what method is used
-	effectArgs.erase(effectArgs.begin());
-	_effectMethods.at(method-1)(*this, effectArgs);  //call method on self
+	int method = effect.args.at(effect.index++);
+	_effectMethods.at(method-1)(*this, effect);  //call method on self
 }
 
-void Player::applyEffectToCreature(Creature* casterAndSubject, EffectParamsCollection& effectArgs)
+void Player::applyEffectToCreature(Creature* casterAndSubject, EffectArgs effect)
 {
-	casterAndSubject->applyEffectToSelf(effectArgs); //call method on effect subject (same as caster)
+	casterAndSubject->applyEffectToSelf(effect); //call method on effect subject (same as caster)
 }
 
-void Player::applyEffectToCreature(EffectParamsCollection& effectArgs, const std::vector<int>& boardIndexes)
+void Player::applyEffectToCreature(EffectArgs effect, const std::vector<int>& boardIndexes)
 {
-	_cardBoard.at(boardIndexes.at(0))->applyEffectToSelf(effectArgs);
+	_cardBoard.at(boardIndexes.at(0))->applyEffectToSelf(effect);
 }
 
-void Player::applyEffectToCreatureTeam(EffectParamsCollection& effectArgs)
+void Player::applyEffectToCreatureTeam(EffectArgs effect)
 {
 	//If the effect consists in setting a constraint
-	if(effectArgs.at(0) == CE_SET_CONSTRAINT)
+	if(effect.args.at(effect.index) == CE_SET_CONSTRAINT)
 	{
-		effectArgs.erase(effectArgs.begin()); //remove the method value
-		setTeamConstraint(effectArgs); //set a team constraint instead of individual ones
+		effect.index++;
+		setTeamConstraint(effect); //set a team constraint instead of individual ones
 	}
 	else //other effects just get applied to each creature individually
 		for(auto& card : _cardBoard)
-			card->applyEffectToSelf(effectArgs);
+			card->applyEffectToSelf(effect);
 }
 
 /*------------------------------ GETTERS */
@@ -537,7 +535,7 @@ sf::TcpSocket& Player::getSocket()
 }
 
 /*------------------------------ EFFECTS (PRIVATE) */
-void Player::setConstraint(const EffectParamsCollection& args)
+void Player::setConstraint(EffectArgs effect)
 {
 	int constraintId; //constraint to set
 	int value; //value to give to it
@@ -545,10 +543,10 @@ void Player::setConstraint(const EffectParamsCollection& args)
 	int casterOptions; //whether the constraint depends on its caster being alive
 	try //check the input
 	{
-		constraintId=args.at(0);
-		value=args.at(1);
-		turns=args.at(2);
-		casterOptions=args.at(3);
+		constraintId = effect.args.at(effect.index++);
+		value = effect.args.at(effect.index++);
+		turns = effect.args.at(effect.index++);
+		casterOptions = effect.args.at(effect.index++);
 		if (constraintId<0 or constraintId>=P_CONSTRAINTS_COUNT or turns<0)
 			throw std::out_of_range("");
 	}
@@ -569,12 +567,12 @@ void Player::setConstraint(const EffectParamsCollection& args)
 	}
 }
 
-void Player::pickDeckCards(const EffectParamsCollection& args)
+void Player::pickDeckCards(EffectArgs effect)
 {
 	int amount;//amount of cards
 	try //check the input
 	{
-		amount=args.at(0);
+		amount = effect.args.at(effect.index++);
 	}
 	catch(std::out_of_range&)
 	{
@@ -583,11 +581,11 @@ void Player::pickDeckCards(const EffectParamsCollection& args)
 	cardDeckToHand(amount);
 }
 
-void Player::loseHandCards(const EffectParamsCollection& args)
+void Player::loseHandCards(EffectArgs effect)
 {
 	try  //check the input
 	{
-		for(int amount{args.at(0)}; not _cardHand.empty() and amount > 0; amount--)
+		for(int amount{effect.args.at(effect.index)}; not _cardHand.empty() and amount > 0; amount--)
 			cardHandToGraveyard(getRandomIndex(_cardHand));
 	}
 	catch(std::out_of_range&)
@@ -596,12 +594,12 @@ void Player::loseHandCards(const EffectParamsCollection& args)
 	}
 }
 
-void Player::reviveGraveyardCard(const EffectParamsCollection& args)
+void Player::reviveGraveyardCard(EffectArgs effect)
 {
 	int binIndex;  //what card to revive
 	try  //check the input
 	{
-		binIndex = args.at(0);
+		binIndex = effect.args.at(effect.index);
 		_cardGraveyard.at(binIndex);
 	}
 	catch(std::out_of_range&)
@@ -611,7 +609,7 @@ void Player::reviveGraveyardCard(const EffectParamsCollection& args)
 	cardGraveyardToHand(binIndex);
 }
 
-void Player::stealHandCard(const EffectParamsCollection& /* args */)
+void Player::stealHandCard(EffectArgs /* effect */)
 {
 	//no arguments
 	cardAddToHand(_opponent.cardRemoveFromHand());
@@ -620,7 +618,7 @@ void Player::stealHandCard(const EffectParamsCollection& /* args */)
 /// \network sends to user one of the following:
 ///	 + FAILURE if opponent has no card in his hand
 ///	 + ACKNOWLEDGE if card has been swapped
-void Player::exchgHandCard(const EffectParamsCollection& /* args */)
+void Player::exchgHandCard(EffectArgs /* effect */)
 {
 	int myCardIndex; //card to exchange
 	sf::Packet packet;
@@ -652,11 +650,11 @@ void Player::exchgHandCard(const EffectParamsCollection& /* args */)
 	_socketToClient.send(packet); //Shouldn't this be called before cardExchangeFromHand ?
 }
 
-void Player::resetEnergy(const EffectParamsCollection& args)
+void Player::resetEnergy(EffectArgs effect)
 {
 	try //check the input
 	{
-		_energyInit += args.at(0);
+		_energyInit += effect.args.at(effect.index++);
 	}
 	catch (std::out_of_range&)
 	{
@@ -669,11 +667,11 @@ void Player::resetEnergy(const EffectParamsCollection& args)
 	_energy = _energyInit;
 }
 
-void Player::changeEnergy(const EffectParamsCollection& args)
+void Player::changeEnergy(EffectArgs effect)
 {
 	try //check the input
 	{
-		_energy += args.at(0);
+		_energy += effect.args.at(effect.index++);
 	}
 	catch (std::out_of_range&)
 	{
@@ -686,11 +684,11 @@ void Player::changeEnergy(const EffectParamsCollection& args)
 	logCurrentEnergy();
 }
 
-void Player::changeHealth(const EffectParamsCollection& args)
+void Player::changeHealth(EffectArgs effect)
 {
 	try //check the input
 	{
-		_health += args.at(0);
+		_health += effect.args.at(effect.index++);
 		if(_health < 0)
 		{
 			_health = 0;
@@ -745,13 +743,13 @@ void Player::logOpponentHandState()
 bool Player::exploitCardEffects(Card* usedCard)
 {
 	const std::vector<EffectParamsCollection>& effects(usedCard->getEffects());
-	for(const auto& effectArgs: effects) //for each effect of the card
-		if(not applyEffect(usedCard, effectArgs)) //apply it
+	for(const auto& effect: effects) //for each effect of the card
+		if(not applyEffect(usedCard, effect)) //apply it
 			return false;
 	return true;
 }
 
-void Player::setTeamConstraint(const EffectParamsCollection& args)
+void Player::setTeamConstraint(EffectArgs effect)
 {
 	int constraintId;  // constraint to set
 	int value;  // value to give to it
@@ -759,10 +757,10 @@ void Player::setTeamConstraint(const EffectParamsCollection& args)
 	int casterOptions;  // whether the constraint depends on its caster being alive
 	try  // check the input
 	{
-		constraintId = args.at(0);
-		value = args.at(1);
-		turns = args.at(2);
-		casterOptions = args.at(3);
+		constraintId = effect.args.at(effect.index++);
+		value = effect.args.at(effect.index++);
+		turns = effect.args.at(effect.index++);
+		casterOptions = effect.args.at(effect.index++);
 		if(constraintId < 0 or constraintId >= C_CONSTRAINTS_COUNT or turns < 0)
 			throw std::out_of_range("");
 	}

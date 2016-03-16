@@ -5,7 +5,7 @@
 #include <iostream>
 #include <cassert>
 
-std::array<std::function<void(Creature&, const EffectParamsCollection&)>, P_EFFECTS_COUNT> Creature::_effectMethods =
+std::array<std::function<void(Creature&, EffectArgs)>, P_EFFECTS_COUNT> Creature::_effectMethods =
 {
 	&Creature::setConstraint,
 	&Creature::resetAttack,
@@ -108,14 +108,13 @@ void Creature::receiveAttack(Creature& attacker, int attack, int forced, int loo
 }
 
 /*--------------------------- GETTERS FOR EFFECTS */
-void Creature::applyEffectToSelf(EffectParamsCollection& effectArgs)
+void Creature::applyEffectToSelf(EffectArgs effect)
 {
-	assert(effectArgs.size() >= 1);
-	const int method{effectArgs.front()};  // What method is used
-	effectArgs.erase(effectArgs.begin());
+	assert(effect.args.size() >= 1);
+	const int method = effect.args.at(effect.index++);  // What method is used
 
 	// remove 1 because enums start at 1 (because of SQLite)
-	_effectMethods.at(method-1)(*this, effectArgs);  // Call the method
+	_effectMethods.at(method-1)(*this, effect);  // Call the method
 }
 
 int Creature::getAttack() const
@@ -149,7 +148,7 @@ int Creature::getConstraint(int constraintId) const
 }
 
 /*--------------------------- EFFECTS */
-void Creature::setConstraint(const EffectParamsCollection& args)
+void Creature::setConstraint(EffectArgs effect)
 {
 	int constraintId;  // constraint to set
 	int value;  // value to give to it
@@ -157,10 +156,10 @@ void Creature::setConstraint(const EffectParamsCollection& args)
 	int casterOptions;  // whether the constraint depends on its caster being alive
 	try  // check the input
 	{
-		constraintId = args.at(0);
-		value = args.at(1);
-		turns = args.at(2);
-		casterOptions=args.at(3);
+		constraintId = effect.args.at(effect.index++);
+		value = effect.args.at(effect.index++);
+		turns = effect.args.at(effect.index++);
+		casterOptions = effect.args.at(effect.index++);
 		if(constraintId < 0 or constraintId >= C_CONSTRAINTS_COUNT or turns < 0)
 			throw std::out_of_range("");
 	}
@@ -181,29 +180,29 @@ void Creature::setConstraint(const EffectParamsCollection& args)
 	}
 }
 
-void Creature::resetAttack(const EffectParamsCollection&)
+void Creature::resetAttack(EffectArgs /* effect */)
 {
 	// no arguments
 	 _attack = _attackInit;
 }
 
-void Creature::resetHealth(const EffectParamsCollection&)
+void Creature::resetHealth(EffectArgs /* effect */)
 {
 	// no arguments
 	 _health = _healthInit;
 }
 
-void Creature::resetShield(const EffectParamsCollection&)
+void Creature::resetShield(EffectArgs /* effect */)
 {
 	// no arguments
 	 _shield = _shieldInit;
 }
 
-void Creature::changeAttack(const EffectParamsCollection& args)
+void Creature::changeAttack(EffectArgs effect)
 {
 	try //check the input
 	{
-		_attack += args.at(0);
+		_attack += effect.args.at(effect.index++);
 		if(_attack < 0)
 			_attack = 0;
 	}
@@ -213,12 +212,17 @@ void Creature::changeAttack(const EffectParamsCollection& args)
 	}
 }
 
-void Creature::changeHealth(const EffectParamsCollection& args)
+void Creature::changeHealth(EffectArgs effect)
 {
 	int points;  // health points to add
+	int forced;	 // 1 if change is forced, 0 if not
 	try  // check the input
 	{
-		points=args.at(0);
+		points = effect.args.at(effect.index++);
+		if (effect.args.size() <= effect.index)
+			forced = effect.args.at(effect.index++);
+		else
+			forced = 0;
 	}
 	catch (std::out_of_range&)
 	{
@@ -226,7 +230,7 @@ void Creature::changeHealth(const EffectParamsCollection& args)
 	}
 
 	// bool forced = args.at(1) : if attack is forced, shield does not count
-	if(points < 0 and (args.size() == 1 or args.at(1) == 0))
+	if(points < 0 and forced==0)
 	{
 		switch (_shieldType)
 		{
@@ -254,11 +258,11 @@ void Creature::changeHealth(const EffectParamsCollection& args)
 	}
 }
 
-void Creature::changeShield(const EffectParamsCollection& args)
+void Creature::changeShield(EffectArgs effect)
 {
 	try  // check the input
 	{
-		_shield += args.at(0);
+		_shield += effect.args.at(effect.index++);
 		if(_shield < 0)
 			_shield = 0;
 	}

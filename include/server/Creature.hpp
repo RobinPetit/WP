@@ -29,16 +29,16 @@ private:
 	Constraints _constraints = Constraints(creatureDefaultConstraints);
 
 	//Effects
-	static std::array<std::function<void(Creature&, const EffectParamsCollection&)>, P_EFFECTS_COUNT> _effectMethods;
+	static std::array<std::function<void(Creature&, EffectArgs)>, P_EFFECTS_COUNT> _effectMethods;
 
-	void setConstraint(const EffectParamsCollection& args);
-	void resetAttack(const EffectParamsCollection& args);
-	void resetHealth(const EffectParamsCollection& args);
-	void resetShield(const EffectParamsCollection& args);
-	void changeAttack(const EffectParamsCollection& args);
-	void changeHealth(const EffectParamsCollection& args);
-	void changeShield(const EffectParamsCollection& args);
-	void forcedChangeHealth(const EffectParamsCollection& args);
+	void setConstraint(EffectArgs effect);
+	void resetAttack(EffectArgs effect);
+	void resetHealth(EffectArgs effect);
+	void resetShield(EffectArgs effect);
+	void changeAttack(EffectArgs effect);
+	void changeHealth(EffectArgs effect);
+	void changeShield(EffectArgs effect);
+	void forcedChangeHealth(EffectArgs effect);
 
 public:
 	/// Constructors
@@ -59,7 +59,7 @@ public:
 	void receiveAttack(Creature& attacker, int attack, int forced, int loopCount=0);
 
 	/// Effects interface
-	void applyEffectToSelf(EffectParamsCollection& effectArgs);
+	void applyEffectToSelf(EffectArgs effect);
 
 	int getAttack() const;
 	int getHealth() const;

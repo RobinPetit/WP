@@ -10,6 +10,14 @@ constexpr int UNLIMITED_TURNS=100;
 
 ///How to define an effect:
 typedef std::vector<int> EffectParamsCollection;
+
+struct EffectArgs
+{
+	EffectArgs(EffectParamsCollection effect): args(effect), index(0) {};
+	EffectArgs(std::initializer_list<int> effect): args(effect), index(0) {};
+	const EffectParamsCollection& args; // values that define the effect
+	std::size_t index; // index indicating where values should be read
+};
 //In the following order:
 //EFFECT SUBJECT [+ SUBJECT INDEX] if subject is identified by index (INDX at the end)
 //EFFECT ID
