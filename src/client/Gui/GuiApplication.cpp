@@ -10,6 +10,12 @@ GuiApplication::GuiApplication():
 {
 	_context.window = &_window;
 	_context.gui = &_gui;
+
+	// Fix a bug that occurs on Theo's computer, showing a "This window does not
+	// respond, do you wanna kill it?" prompt after a few seconds when running
+	// the application
+	sf::Event event;
+	while(_window.pollEvent(event));
 }
 
 int GuiApplication::play()
