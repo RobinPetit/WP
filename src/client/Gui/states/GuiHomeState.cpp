@@ -37,7 +37,7 @@ GuiHomeState::GuiHomeState(Context& context):
 	_connectButton->setText("Connect");
 	_connectButton->connect("pressed", &GuiHomeState::connect, this);
 	_createAccountButton->setText("Create an account");
-	_connectButton->connect("pressed", &GuiHomeState::createAccount, this);
+	_createAccountButton->connect("pressed", &GuiHomeState::createAccount, this);
 
 	// Add the widgets to the grid
 	_grid->setPosition(windowWidth / 4, windowHeight / 4);
