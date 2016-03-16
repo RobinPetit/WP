@@ -30,8 +30,8 @@ std::array<std::function<void(Player&, const EffectParamsCollection&)>, P_EFFECT
 Player::Player(GameThread& gameThread, ServerDatabase& database, userId id, Player& opponent):
 	_gameThread(gameThread),
 	_database(database),
-	_id(id),
 	_opponent(opponent),
+	_id(id),
 	_isActive(false)
 {
 	// Input sockets are non-blocking, this is easier since the sockets of the
@@ -146,12 +146,8 @@ void Player::enterTurn(int turn)
 	_turnData = _emptyTurnData;  // Reset the turn data
 	_turnData.turnCount = turn;  // Store turn number
 
-	if(_cardDeck.empty())
-	{
-		_turnsSinceEmptyDeck++;
-		if (_turnsSinceEmptyDeck == 10)
-			finishGame(false, EndGame::Cause::TEN_TURNS_WITH_EMPTY_DECK);
-	}
+	if(_cardDeck.empty() and ++_turnsSinceEmptyDeck == _maximumAmountOfTurnsWithEmptyDeck)
+		finishGame(false, EndGame::Cause::TEN_TURNS_WITH_EMPTY_DECK);
 
 	//Player's turn-based constraints
 	// do not pick a card at first turn
@@ -166,6 +162,12 @@ void Player::enterTurn(int turn)
 	//Will call creature's turn-based constraints
 	for(unsigned i = 0; i < _cardBoard.size(); i++)
 		_cardBoard.at(i)->enterTurn();
+	logBoardState();
+	logOpponentBoardState();
+	logCurrentHealth();
+	_opponent.logBoardState();
+	_opponent.logOpponentBoardState();
+	_opponent.logOpponentHealth();
 }
 
 void Player::leaveTurn()
@@ -282,6 +284,11 @@ void Player::useCard(int handIndex)
 	logHandState();
 	_opponent.logOpponentHandState();
 	logCurrentEnergy();
+
+	logBoardState();
+	logOpponentBoardState();
+	_opponent.logBoardState();
+	_opponent.logOpponentBoardState();
 }
 
 ////////////////////// specialized card cases
@@ -299,13 +306,9 @@ void Player::useCreature(int handIndex, Card* usedCard)
 	_turnData.creaturesPlaced++;
 	_energy -= usedCard->getEnergyCost();
 
-	cardHandToBoard(handIndex);
 	exploitCardEffects(usedCard);
+	cardHandToBoard(handIndex);
 	sendValueToClient(TransferType::ACKNOWLEDGE);
-	logBoardState();
-	logOpponentBoardState();
-	_opponent.logBoardState();
-	_opponent.logOpponentBoardState();
 }
 
 void Player::useSpell(int handIndex, Card* usedCard)
@@ -321,10 +324,15 @@ void Player::useSpell(int handIndex, Card* usedCard)
 	_turnData.spellCalls++;
 	_energy -= usedCard->getEnergyCost();
 
-	cardHandToGraveyard(handIndex);
-	exploitCardEffects(usedCard);
-	sendValueToClient(TransferType::ACKNOWLEDGE);
-	logHandState();
+	// if one of the required effects could not have been applied, then
+	// the spell is not usable for now and so don't use the card
+	if(exploitCardEffects(usedCard))
+	{
+		cardHandToGraveyard(handIndex);
+		sendValueToClient(TransferType::ACKNOWLEDGE);
+	}
+	// no need to send FAILURE: exploitCardEffects call applyEffect
+	// which sends FAILURE the function returns false.
 }
 
 void Player::attackWithCreature(int attackerIndex, int victimIndex)
@@ -362,9 +370,9 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 
 	if(victimIndex < 0)
 	{
-		std::vector<int> params{{PE_CHANGE_HEALTH, -(attacker->getAttack())}}; // \TODO: I don't think we should use effects this way
-		_opponent.applyEffectToSelf(params);  //no forced attacks on opponent
+		_opponent.changeHealth({-attacker->getAttack()});
 		logOpponentHealth();
+		_opponent.logCurrentHealth();
 	}
 	else
 	{
@@ -375,6 +383,7 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 		_opponent.logOpponentBoardState();
 		_opponent.logBoardState();
 	}
+	logCurrentEnergy();
 	sendValueToClient(TransferType::ACKNOWLEDGE);
 }
 
@@ -384,7 +393,7 @@ void Player::endTurn()
 }
 
 /*------------------------------ EFFECTS INTERFACE */
-void Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
+bool Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 {
 	int subject;  // who the effect applies to
 	try  // check the input
@@ -399,6 +408,7 @@ void Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 
 	_lastCasterCard = usedCard;  // remember last used card
 	_opponent._lastCasterCard = usedCard; // same for opponent
+	bool ret{true};
 
 	switch(subject)
 	{
@@ -423,12 +433,22 @@ void Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 		case CREATURE_SELF_INDX:  //active player's creature at given index
 			if(not _cardBoard.empty())
 				applyEffectToCreature(effectArgs, askUserToSelectCards({CardToSelect::SELF_BOARD}));
+			else
+			{
+				sendValueToClient(TransferType::FAILURE);
+				ret = false;
+			}
 			break;
 
 		case CREATURE_SELF_RAND:  //active player's creature at random index
 			askUserToSelectCards({});
 			if(not _cardBoard.empty())
 				applyEffectToCreature(effectArgs, getRandomBoardIndexes({CardToSelect::SELF_BOARD}));
+			else
+			{
+				sendValueToClient(TransferType::FAILURE);
+				ret = false;
+			}
 			break;
 
 		case CREATURE_SELF_TEAM:  //active player's team of creatures
@@ -439,12 +459,22 @@ void Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 		case CREATURE_OPPO_INDX:	//passive player's creature at given index
 			if(not _opponent._cardBoard.empty())
 				_opponent.applyEffectToCreature(effectArgs, askUserToSelectCards({CardToSelect::OPPO_BOARD}));
+			else
+			{
+				sendValueToClient(TransferType::FAILURE);
+				ret = false;
+			}
 			break;
 
 		case CREATURE_OPPO_RAND:	//passive player's creature at random index
 			askUserToSelectCards({});
 			if(not _opponent._cardBoard.empty())
 				_opponent.applyEffectToCreature(effectArgs, getRandomBoardIndexes({CardToSelect::OPPO_BOARD}));
+			else
+			{
+				sendValueToClient(TransferType::FAILURE);
+				ret = false;
+			}
 			break;
 
 		case CREATURE_OPPO_TEAM:	//passive player's team of creatures
@@ -455,6 +485,7 @@ void Player::applyEffect(Card* usedCard, EffectParamsCollection effectArgs)
 		default:
 			throw std::runtime_error("Effect subject not valid");
 	}
+	return ret;
 }
 
 void Player::applyEffectToSelf(EffectParamsCollection& effectArgs)
@@ -635,6 +666,7 @@ void Player::resetEnergy(const EffectParamsCollection& args)
 		_energyInit = 0;
 	else if(_energyInit > _maxEnergy)
 		_energyInit = _maxEnergy;
+	_energy = _energyInit;
 }
 
 void Player::changeEnergy(const EffectParamsCollection& args)
@@ -710,11 +742,13 @@ void Player::logOpponentHandState()
 
 /*--------------------------- PRIVATE */
 
-void Player::exploitCardEffects(Card* usedCard)
+bool Player::exploitCardEffects(Card* usedCard)
 {
 	const std::vector<EffectParamsCollection>& effects(usedCard->getEffects());
 	for(const auto& effectArgs: effects) //for each effect of the card
-		applyEffect(usedCard, effectArgs); //apply it
+		if(not applyEffect(usedCard, effectArgs)) //apply it
+			return false;
+	return true;
 }
 
 void Player::setTeamConstraint(const EffectParamsCollection& args)
@@ -906,9 +940,9 @@ void Player::logBoardCreatureDataFromVector(TransferType type, const std::vector
 std::vector<int> Player::askUserToSelectCards(const std::vector<CardToSelect>& selection)
 {
 	sf::Packet packet;
-	packet << selection;
+	packet << TransferType::ACKNOWLEDGE << selection;
 	_socketToClient.send(packet);
-	std::vector<sf::Uint32> indices(selection.size());
+	std::vector<sf::Uint32> indices;
 	// have the socket blocking because the answer is expected at this very moment
 	_socketToClient.setBlocking(true);
 	_socketToClient.receive(packet);

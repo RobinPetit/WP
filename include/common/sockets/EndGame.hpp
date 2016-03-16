@@ -26,6 +26,7 @@ struct EndGame
 		OUT_OF_HEALTH,
 		QUITTED,
 		LOST_CONNECTION,
+		ENDING_SERVER,
 	};
 
 	/// \see Cause

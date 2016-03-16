@@ -48,13 +48,10 @@ RandomInteger& GameThread::getGenerator()
 	return _intGenerator;
 }
 
-// \TODO: complete the function as a QuitGame
-// \TODO: is the function useful at all ?
 void GameThread::interruptGame()
 {
 	_running.store(false);
-	//TODO: need identifier for player who quit
-	//NETWORK: PLAYER_QUIT_GAME
+	_endGameCause = EndGame::Cause::ENDING_SERVER;
 }
 
 void GameThread::establishSockets(const ClientInformations& player1, const ClientInformations& player2)
@@ -103,19 +100,20 @@ userId GameThread::startGame(const ClientInformations& player1, const ClientInfo
 	sf::Packet packet;
 	cardId earnedCardId{_intGenerator.next(nbSpells + nbCreatures)};
 	++earnedCardId;  // Card indices start to 1 because of SQLite
-	_database.addCard(winnerId, earnedCardId);
+	if(_endGameCause != EndGame::Cause::ENDING_SERVER)
+		_database.addCard(winnerId, earnedCardId);
 	// \TODO: change by cardId earnedCardId = _database.unlockNewCard(winnerId) ?
 
 	// Send to the winner he won
 	// EndGame::applyToSelf indicate which player won the game: false mean that
 	// the player who receive this message has won.
-	packet << TransferType::GAME_OVER << EndGame{_endGamecause, false} << earnedCardId;
+	packet << TransferType::GAME_OVER << EndGame{_endGameCause, false} << earnedCardId;
 	sf::TcpSocket& winnerSocket{winnerId == _player1Id ? _specialOutputSocketPlayer1 : _specialOutputSocketPlayer2};
 	winnerSocket.send(packet);
 
 	// Send to the loser he lost (do NOT send a card index thus)
 	packet.clear();
-	packet << TransferType::GAME_OVER << EndGame{_endGamecause, true};
+	packet << TransferType::GAME_OVER << EndGame{_endGameCause, true};
 	sf::TcpSocket& loserSocket{winnerId == _player1Id ? _specialOutputSocketPlayer2 : _specialOutputSocketPlayer1};
 	loserSocket.send(packet);
 
@@ -162,7 +160,7 @@ userId GameThread::runGame()
 		}
 		sf::sleep(sf::milliseconds(50));
 	}
-	assert(_winner != 0);
+	assert((_winner != 0) xor (_endGameCause == EndGame::Cause::ENDING_SERVER));
 	return _winner;
 }
 
@@ -170,7 +168,7 @@ void GameThread::endGame(userId winnerId, EndGame::Cause cause)
 {
 	std::cout << "Game is asked to end\n";
 	_winner = winnerId;
-	_endGamecause = cause;
+	_endGameCause = cause;
 	_running.store(false);
 }
 
