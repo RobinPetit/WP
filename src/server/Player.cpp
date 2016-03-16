@@ -376,6 +376,7 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 	{
 		_opponent.changeHealth({-attacker->getAttack()});
 		logOpponentHealth();
+		_opponent.logCurrentHealth();
 	}
 	else
 	{
@@ -383,10 +384,10 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 		victim->makeAttack(*attacker);
 		logOpponentBoardState();
 		logBoardState();  // If an attack is returned to the attacker, the board changes
-		logCurrentEnergy();
 		_opponent.logOpponentBoardState();
 		_opponent.logBoardState();
 	}
+	logCurrentEnergy();
 	sendValueToClient(TransferType::ACKNOWLEDGE);
 }
 
