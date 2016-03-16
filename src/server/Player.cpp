@@ -301,14 +301,10 @@ void Player::useCreature(int handIndex, Card* usedCard)
 	_turnData.creaturesPlaced++;
 	_energy -= usedCard->getEnergyCost();
 
-	// if card cannot be set on board (all of its required effects
-	// could not be applied), then do not set it on the board
-	if(exploitCardEffects(usedCard))
-	{
-		cardHandToBoard(handIndex);
-		sendValueToClient(TransferType::ACKNOWLEDGE);
-	}
-	// do not send FAILURE: exploitCardEffects call applyEffect which sends it itself
+	exploitCardEffects(usedCard);
+	cardHandToBoard(handIndex);
+	sendValueToClient(TransferType::ACKNOWLEDGE);
+
 	logBoardState();
 	logOpponentBoardState();
 	_opponent.logBoardState();
