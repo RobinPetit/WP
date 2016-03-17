@@ -31,7 +31,7 @@ private:
 	Constraints _constraints = Constraints(creatureDefaultConstraints);
 
 	//Effects
-	static std::function<void(Creature&, const EffectParamsCollection&)> _effectMethods[P_EFFECTS_COUNT];
+	static std::array<std::function<void(Creature&, const EffectParamsCollection&)>, P_EFFECTS_COUNT> _effectMethods;
 
 	void setConstraint(const EffectParamsCollection& args);
 	void resetAttack(const EffectParamsCollection& args);

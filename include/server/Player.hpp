@@ -105,7 +105,7 @@ private:
 	sf::Packet _pendingBoardChanges;
 
 	// Gameplay
-	int _energy = 1, _energyInit = 1, _health = 20, _healthInit = 20;
+	int _energyInit = 0, _energy = _energyInit, _healthInit = 20, _health = 20;
 	int _turnsSinceEmptyDeck = 0;
 	static const int _maxEnergy = 10, _maxHealth = 20;
 	TurnData _turnData;
@@ -137,7 +137,7 @@ private:
 	const Card* _lastCasterCard = nullptr; // \TODO: use a reference ?
 
 	// Effects container
-	static std::function<void(Player&, const EffectParamsCollection&)> _effectMethods[P_EFFECTS_COUNT];
+	static std::array<std::function<void(Player&, const EffectParamsCollection&)>, P_EFFECTS_COUNT> _effectMethods;
 
 	/*------------------------------ Methods */
 	// User actions

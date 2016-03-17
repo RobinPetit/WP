@@ -5,7 +5,7 @@
 #include <iostream>
 #include <cassert>
 
-std::function<void(Creature&, const EffectParamsCollection&)> Creature::_effectMethods[P_EFFECTS_COUNT] =
+std::array<std::function<void(Creature&, const EffectParamsCollection&)>, P_EFFECTS_COUNT> Creature::_effectMethods =
 {
 	&Creature::setConstraint,
 	&Creature::resetAttack,
@@ -102,7 +102,8 @@ void Creature::applyEffectToSelf(EffectParamsCollection& effectArgs)
 	const int method{effectArgs.front()};  // What method is used
 	effectArgs.erase(effectArgs.begin());
 
-	_effectMethods[method](*this, effectArgs);  // Call the method
+	// remove 1 because enums start at 1 (because of SQLite)
+	_effectMethods.at(method-1)(*this, effectArgs);  // Call the method
 }
 
 const std::vector<EffectParamsCollection>& Creature::getEffects() const
@@ -158,7 +159,7 @@ void Creature::setConstraint(const EffectParamsCollection& args)
 	}
 	catch(std::out_of_range&)
 	{
-		 throw std::runtime_error("Error with cards arguments");
+		 throw std::runtime_error("Creature::setConstraint error with cards arguments");
 	}
 
 	switch(casterOptions)
@@ -201,7 +202,7 @@ void Creature::changeAttack(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range&)
 	{
-		throw std::runtime_error("Error with cards arguments");
+		throw std::runtime_error("changeAttack error with cards arguments");
 	}
 }
 
@@ -214,7 +215,7 @@ void Creature::changeHealth(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range&)
 	{
-		 throw std::runtime_error("Error with cards arguments");
+		 throw std::runtime_error("changeHealth error with cards arguments");
 	}
 
 	// bool forced = args.at(1) : if attack is forced, shield does not count
@@ -256,7 +257,7 @@ void Creature::changeShield(const EffectParamsCollection& args)
 	}
 	catch (std::out_of_range&)
 	{
-		 throw std::runtime_error("Error with cards arguments");
+		 throw std::runtime_error("changeShield error with cards arguments");
 	}
 }
 
