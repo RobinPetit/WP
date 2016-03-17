@@ -80,6 +80,21 @@ const CommonCardData* ClientDatabase::getCardData(cardId id)
 	}
 }
 
+std::vector<cardId> ClientDatabase::getFirstCardIds(unsigned count)
+{
+	sqlite3_reset(_getFirstCardIdsStmt);
+	sqliteThrowExcept(sqlite3_bind_int(_getFirstCardIdsStmt, 1, static_cast<int>(count)));
+
+	std::vector<cardId> cardIds;
+
+	while(sqliteThrowExcept(sqlite3_step(_getFirstCardIdsStmt)) == SQLITE_ROW)
+	{
+		cardIds.emplace_back(sqlite3_column_int64(_getFirstCardIdsStmt, 0));
+	}
+
+	return cardIds;
+}
+
 int ClientDatabase::countCards()
 {
 	return _cardCount;

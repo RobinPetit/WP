@@ -3,6 +3,7 @@
 
 #include <map>
 #include <memory>
+#include <vector>
 
 #include "common/Database.hpp"
 #include "common/Card.hpp"
@@ -18,6 +19,7 @@ public:
 
 	Card getCard(cardId id);
 	const CommonCardData* getCardData(cardId id);
+	std::vector<cardId> getFirstCardIds(unsigned count);
 
 	int countCards();
 	int countCreatures();
@@ -38,8 +40,9 @@ private:
 	sqlite3_stmt * _countCardsStmt;
 	sqlite3_stmt * _countCreaturesStmt;
 	sqlite3_stmt * _countSpellsStmt;
+	sqlite3_stmt * _getFirstCardIdsStmt;
 	//TODO (server too) separate startup statement from long-life statement to save (a few) memory
-	StatementsList<4> _statements
+	StatementsList<5> _statements
 	{
 		{
 			Statement {
@@ -60,6 +63,13 @@ private:
 			Statement { // 3
 				&_countSpellsStmt,
 				"SELECT count() FROM SpellCard;"
+			},
+			Statement {
+				&_getFirstCardIdsStmt,
+				"SELECT id "
+				"	FROM FullCard "
+				"	ORDER BY id "
+				"	LIMIT ?1;"
 			}
 		}
 	};
