@@ -76,26 +76,27 @@ void TerminalGame::displayGame()
 	_client.getTerminal().clearScreen();
 	std::cout << "***************" << std::endl;
 	std::cout << "-----CARDS-----" << std::endl;
-	std::cout << "You have " << _selfDeckSize << " cards left in your deck." << std::endl;
-	std::cout << "Your opponent has " << _oppoHandSize << " cards in his hand." << std::endl;
-	std::cout << "Cards in your graveyard:" << std::endl;
+	std::cout << "-Cards in your deck: " << _selfDeckSize << std::endl;
+	std::cout << "-Cards in your opponent's hand: " << _oppoHandSize << std::endl;
+	std::cout << "-Cards in your graveyard:" << std::endl;
 	displayCardVector(_selfGraveCards);
-	std::cout << "Cards on your opponent's board:" << std::endl;
+	std::cout << "-Cards on your opponent's board:" << std::endl;
 	displayBoardCreatureVector(_oppoBoardCreatures, true);
-	std::cout << "Cards on your board:" << std::endl;
+	std::cout << "-Cards on your board:" << std::endl;
 	displayBoardCreatureVector(_selfBoardCreatures, true);
-	std::cout << "Cards in your hand:" << std::endl;
+	std::cout << "-Cards in your hand:" << std::endl;
 	displayCardVector(_selfHandCards, true);
 
 	std::cout << "-----HEALTH & ENERGY-----" << std::endl;
-	std::cout << "Your opponent has " << _oppoHealth << " life points left." << std::endl;
-	std::cout << "You have " << _selfHealth << " life points left." << std::endl;
-	std::cout << "You have " << _selfEnergy << " energy points left." << std::endl;
+	std::cout << "-Opponent's health points: " << _oppoHealth << std::endl;
+	std::cout << "-Your health points: " << _selfHealth << std::endl;
+	std::cout << "-Your energy points: " << _selfEnergy << std::endl;
 	std::cout << "***************" << std::endl;
 }
 
 void TerminalGame::displayCardVector(const std::vector<CardData>& cardVector, bool displayDescription)
 {
+	// Displays simple informations about a card vector
 	for (auto i=0U; i<cardVector.size(); i++)
 	{
 		cardId id = cardVector.at(i).id;
@@ -104,6 +105,7 @@ void TerminalGame::displayCardVector(const std::vector<CardData>& cardVector, bo
 		          << (isSpell(id) ? "spell" : "creature") << ")"
 		          << (displayDescription ? "\n\t" + getCardDescription(id) : ",") << "\n";
 	}
+	std::cout << std::endl;
 }
 
 void TerminalGame::displayBoardCreatureVector(const std::vector<BoardCreatureData>& cardVector, bool displayDescription)
@@ -114,7 +116,7 @@ void TerminalGame::displayBoardCreatureVector(const std::vector<BoardCreatureDat
 	{
 		const BoardCreatureData& thisCreature = cardVector.at(i);
 		const cardId id = thisCreature.id;
-		std::cout << i << " : " << getCardName(id) << " (cost: " << getCardCost(id) <<
+		std::cout << "  * " << i << " : " << getCardName(id) << " (cost: " << getCardCost(id) <<
 		             ", attack: " << thisCreature.attack <<
 		             ", health: " << thisCreature.health <<
 		             ", shield: " << thisCreature.shield << "-" << thisCreature.shieldType << ")"

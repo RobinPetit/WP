@@ -88,6 +88,7 @@ void Client::sendConnectionToken(const std::string& password)
 		throw std::runtime_error("unidentified server response.");
 	}
 }
+
 void Client::sendRegisteringToken(const std::string& name, const std::string& password, sf::TcpSocket& socket)
 {
 	sf::Packet packet;
@@ -132,6 +133,16 @@ void Client::initServer(const std::string& name, const sf::IpAddress& address, s
 	else
 		initListener();  // creates the new thread which listens for entring chat conenctions
 	sf::sleep(SOCKET_TIME_SLEEP);  // wait a quarter second to let the listening thread init the port
+}
+
+void Client::connectionLost()
+{
+	_isConnected = false;
+}
+
+bool Client::isConnected()
+{
+	return _isConnected;
 }
 
 std::string Client::shrinkName(const std::string& name)

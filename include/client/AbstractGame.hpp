@@ -105,7 +105,12 @@ class AbstractGame
 
 		virtual void receiveCard(cardId id) = 0;
 
-		void treatAdditionnalInputs(const std::vector<CardToSelect>& inputs);
+		/// The function used to receive from the server the informations
+		/// about the required additional inputs
+		/// \param actionPacket The packet containing the informations to ask
+		/// \return True if card is playable (after having sent the
+		/// asked inputs) and false otherwise
+		bool treatAdditionnalInputs(sf::Packet& actionPacket);
 
 		//////////// static member
 

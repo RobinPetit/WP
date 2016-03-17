@@ -67,10 +67,8 @@ void AbstractGame::play()
 		if(_myTurn.load())
 			startTurn();
 		else
-		{
 			while(not _myTurn.load())
 				sf::sleep(sf::milliseconds(100));
-		}
 	}
 	if(_listeningThread.joinable())
 		_listeningThread.join();
@@ -101,10 +99,9 @@ void AbstractGame::useCard()
 		_client.getGameSocket().send(actionPacket);
 		// receive amount of selection to make
 		_client.getGameSocket().receive(actionPacket);
-		std::vector<CardToSelect> requiredInputs;
-		actionPacket >> requiredInputs;
 		// ask and send the additionnal inputs to the server
-		treatAdditionnalInputs(requiredInputs);
+		if(not treatAdditionnalInputs(actionPacket))
+			return;
 		// receive status of operation from server
 		_client.getGameSocket().receive(actionPacket);
 		TransferType responseHeader;
@@ -113,14 +110,6 @@ void AbstractGame::useCard()
 		{
 		case TransferType::ACKNOWLEDGE:
 			displayMessage("The card has been successfuly used.");
-			break;
-
-		case TransferType::GAME_NOT_ENOUGH_ENERGY:
-			displayMessage("You have not enough energy to use this card.");
-			break;
-
-		case TransferType::GAME_CARD_LIMIT_TURN_REACHED:
-			displayMessage("You can't use more cards, the limit is reached.");
 			break;
 
 		// This line is more documentative than really needed
@@ -132,11 +121,41 @@ void AbstractGame::useCard()
 	}
 }
 
-void AbstractGame::treatAdditionnalInputs(const std::vector<CardToSelect>& inputs)
+bool AbstractGame::treatAdditionnalInputs(sf::Packet& actionPacket)
 {
+	TransferType responseHeader;
+	actionPacket >> responseHeader;
+	switch(responseHeader)
+	{
+	case TransferType::FAILURE:
+		displayMessage("No card to select, unable to play this card!");
+		return false;
+
+	case TransferType::GAME_NOT_ENOUGH_ENERGY:
+		displayMessage("You have not enough energy to use this card.");
+		return false;
+
+	case TransferType::GAME_CARD_LIMIT_TURN_REACHED:
+		displayMessage("You can't use more cards, the limit is reached.");
+		return false;
+
+	// note the case here so that ACKNOWLEDGE is not taken as `default`
+	// but the code for ACKNOWLEDGE is after the switch
+	case TransferType::ACKNOWLEDGE:
+		break;
+
+	default:
+		std::cerr << "Unexpected value: " << static_cast<sf::Uint32>(responseHeader) << std::endl;
+		return false;
+	}
+
+	assert(responseHeader == TransferType::ACKNOWLEDGE);
+	std::vector<CardToSelect> requiredInputs;
+	actionPacket >> requiredInputs;
+
 	std::vector<sf::Uint32> indices;
-	indices.reserve(inputs.size());
-	for(const auto& input : inputs)
+	indices.reserve(requiredInputs.size());
+	for(const auto& input : requiredInputs)
 	{
 		switch(input)
 		{
@@ -160,6 +179,7 @@ void AbstractGame::treatAdditionnalInputs(const std::vector<CardToSelect>& input
 	sf::Packet indicesPacket;
 	indicesPacket << indices;
 	_client.getGameSocket().send(indicesPacket);
+	return true;
 }
 
 void AbstractGame::attackWithCreature()
@@ -293,43 +313,35 @@ void AbstractGame::endGame(sf::Packet& transmission)
 {
 	EndGame endGameInfo;
 	transmission >> endGameInfo;
-	if(endGameInfo.applyToSelf)
+	if(endGameInfo.cause == EndGame::Cause::ENDING_SERVER)
 	{
-		switch(endGameInfo.cause)
-		{
-		case EndGame::Cause::TEN_TURNS_WITH_EMPTY_DECK:
-			displayMessage("You lost because you played 10 turns with an empty deck!");
-			break;
-
-		case EndGame::Cause::OUT_OF_HEALTH:
-			displayMessage("You lost because you ran out of health!");
-			break;
-
-		case EndGame::Cause::QUITTED:
-			displayMessage("You quitted the game.");
-			break;
-		}
+		displayMessage("Server is ending, game is aborted.\n");
+		_client.connectionLost();
+		displayMessage("Connection is lost, let's try to reconnect properly.");
 	}
 	else
 	{
-		switch(endGameInfo.cause)
+		std::string endMessage{(endGameInfo.applyToSelf ? "You lost because you" : "You won because your opponent")};
+		if(endGameInfo.cause == EndGame::Cause::TEN_TURNS_WITH_EMPTY_DECK)
+			endMessage += " played 10 turns with an empty deck!";
+		else if(endGameInfo.cause == EndGame::Cause::OUT_OF_HEALTH)
+			endMessage += " ran out of health";
+		else if(endGameInfo.cause == EndGame::Cause::QUITTED)
+			endMessage += " quitted the game";
+		else  // if cause is Cause::LOST_CONNECTION
 		{
-		case EndGame::Cause::TEN_TURNS_WITH_EMPTY_DECK:
-			displayMessage("You won because your opponent played 10 turns with an empty deck!");
-			break;
-
-		case EndGame::Cause::OUT_OF_HEALTH:
-			displayMessage("You won because your opponent ran out of health!");
-			break;
-
-		case EndGame::Cause::QUITTED:
-			displayMessage("You won because your opponent quitted the game!");
-			break;
+			endMessage += " lost connection with the server";
+			_client.connectionLost();
+			displayMessage("Connection is lost, let's try to reconnect properly.");
 		}
-		// Get the won card
-		cardId newCard;
-		transmission >> newCard;
-		receiveCard(newCard);
+		displayMessage(endMessage);
+		if(not endGameInfo.applyToSelf)
+		{
+			// Get the won card
+			cardId newCard;
+			transmission >> newCard;
+			receiveCard(newCard);
+		}
 	}
 	_playing.store(false);
 	_myTurn.store(!_myTurn.load());

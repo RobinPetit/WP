@@ -55,7 +55,7 @@ private:
 	ServerDatabase& _database;
 
 	userId _winner;
-	EndGame::Cause _endGamecause;
+	EndGame::Cause _endGameCause;
 
 	Player *_activePlayer;
 	Player *_passivePlayer;
@@ -92,8 +92,8 @@ GameThread::GameThread(ServerDatabase& database, userId player1Id, userId player
 	_player1Id(player1Id),
 	_player2Id(player2Id),
 	_running(true),
-	_player1(*this, database, _player1Id),
-	_player2(*this, database, _player2Id),
+	_player1(*this, database, _player1Id, _player2),
+	_player2(*this, database, _player2Id, _player1),
 	_database(database),
 	_winner{0},
 	_turn(0),

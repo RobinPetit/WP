@@ -23,8 +23,8 @@ GameThread::GameThread(ServerDatabase& database, userId player1Id, userId player
 	_player1Id(player1Id),
 	_player2Id(player2Id),
 	_running(false),
-	_player1(*this, database, _player1Id),
-	_player2(*this, database, _player2Id),
+	_player1(*this, database, _player1Id, _player2),
+	_player2(*this, database, _player2Id, _player1),
 	_database(database),
 	_winner{0},
 	_turn(0),
@@ -41,8 +41,6 @@ void GameThread::createPlayers()
 	std::random_device device;
 	if(std::bernoulli_distribution(0.5)(device)) //Choose which player starts
 		std::swap(_activePlayer, _passivePlayer);
-	_activePlayer->setOpponent(_passivePlayer);
-	_passivePlayer->setOpponent(_activePlayer);
 }
 
 RandomInteger& GameThread::getGenerator()
@@ -50,13 +48,10 @@ RandomInteger& GameThread::getGenerator()
 	return _intGenerator;
 }
 
-// \TODO: complete the function as a QuitGame
-// \TODO: is the function useful at all ?
 void GameThread::interruptGame()
 {
 	_running.store(false);
-	//TODO: need identifier for player who quit
-	//NETWORK: PLAYER_QUIT_GAME
+	_endGameCause = EndGame::Cause::ENDING_SERVER;
 }
 
 void GameThread::establishSockets(const ClientInformations& player1, const ClientInformations& player2)
@@ -103,21 +98,22 @@ userId GameThread::startGame(const ClientInformations& player1, const ClientInfo
 
 	// Send to the winner he wins and send his new card ID
 	sf::Packet packet;
-	cardId earnedCardId{_intGenerator.next(nbSpells + nbCreatures)};
+	cardId earnedCardId{_intGenerator.next(static_cast<int>(nbSpells + nbCreatures))};
 	++earnedCardId;  // Card indices start to 1 because of SQLite
-	_database.addCard(winnerId, earnedCardId);
+	if(_endGameCause != EndGame::Cause::ENDING_SERVER)
+		_database.addCard(winnerId, earnedCardId);
 	// \TODO: change by cardId earnedCardId = _database.unlockNewCard(winnerId) ?
 
 	// Send to the winner he won
 	// EndGame::applyToSelf indicate which player won the game: false mean that
 	// the player who receive this message has won.
-	packet << TransferType::GAME_OVER << EndGame{_endGamecause, false} << earnedCardId;
+	packet << TransferType::GAME_OVER << EndGame{_endGameCause, false} << earnedCardId;
 	sf::TcpSocket& winnerSocket{winnerId == _player1Id ? _specialOutputSocketPlayer1 : _specialOutputSocketPlayer2};
 	winnerSocket.send(packet);
 
 	// Send to the loser he lost (do NOT send a card index thus)
 	packet.clear();
-	packet << TransferType::GAME_OVER << EndGame{_endGamecause, true};
+	packet << TransferType::GAME_OVER << EndGame{_endGameCause, true};
 	sf::TcpSocket& loserSocket{winnerId == _player1Id ? _specialOutputSocketPlayer2 : _specialOutputSocketPlayer1};
 	loserSocket.send(packet);
 
@@ -156,18 +152,15 @@ userId GameThread::runGame()
 					sf::Packet boardChanges{player->getBoardChanges()};
 					specialSocket.send(boardChanges);
 				}
-
-				// Check if the player quitted the game \TODO: when is this useful ??
-				if(_winner != 0)
-				{
-					_running.store(false);
-					break;
-				}
 			}
+
+			// the game has been won/interrupted
+			if (_running.load() == false)
+				break;
 		}
 		sf::sleep(sf::milliseconds(50));
 	}
-	assert(_winner != 0);
+	assert((_winner != 0) xor (_endGameCause == EndGame::Cause::ENDING_SERVER));
 	return _winner;
 }
 
@@ -175,7 +168,7 @@ void GameThread::endGame(userId winnerId, EndGame::Cause cause)
 {
 	std::cout << "Game is asked to end\n";
 	_winner = winnerId;
-	_endGamecause = cause;
+	_endGameCause = cause;
 	_running.store(false);
 }
 
