@@ -1,6 +1,7 @@
 #ifndef TERMINAL_GAME_HPP
 #define TERMINAL_GAME_HPP
 
+// WizardPoker headers
 #include "client/AbstractGame.hpp"
 
 class TerminalGame : public AbstractGame
@@ -29,6 +30,8 @@ private:
 	int askSelfGraveyardIndex() override;
 	int askOppoBoardIndex() override;
 	int askOppoHandIndex() override;
+
+	bool wantToAttackOpponent() override;
 
 	void chooseDeck() override;
 

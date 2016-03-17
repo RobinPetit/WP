@@ -173,13 +173,19 @@ void AbstractGame::attackWithCreature()
 	{
 		displayMessage("Which creature would you like to attack with?");
 		int selfCardIndex = askSelfBoardIndex();
-
-		displayMessage("Which opponent's creature would you like to attack?");
-		int oppoCardIndex = askOppoBoardIndex();
+		int oppoCardIndex;
+		bool attackOpponent{wantToAttackOpponent()};
+		if(not attackOpponent)
+		{
+			displayMessage("Which opponent's creature would you like to attack?");
+			oppoCardIndex = askOppoBoardIndex();
+		}
 
 		// If there's cards on board
-		if(selfCardIndex >= 0 && oppoCardIndex >= 0)
+		if(selfCardIndex >= 0 and (oppoCardIndex >= 0 or attackOpponent))
 		{
+			if(attackOpponent)
+				oppoCardIndex = -1;
 			sf::Packet actionPacket;
 			actionPacket << TransferType::GAME_ATTACK_WITH_CREATURE
 			             << static_cast<sf::Int32>(selfCardIndex)

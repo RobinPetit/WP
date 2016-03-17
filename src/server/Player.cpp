@@ -33,7 +33,6 @@ Player::Player(GameThread& gameThread, ServerDatabase& database, userId id):
 	_id(id),
 	_isActive(false)
 {
-	std::cout << _energy << _health << std::endl;
 	// Input sockets are non-blocking, this is easier since the sockets of the
 	// two players are separated in the Player instances. So that as soon as a
 	// packet is received, the packet is handled, rather than waiting that the
@@ -239,7 +238,7 @@ sf::Socket::Status Player::tryReceiveClientInput()
 				attackWithCreature(static_cast<int>(attackerIndex), static_cast<int>(victimIndex));
 				break;
 			}
-
+			// \TODO: add TransferType::GAME_QUIT and send if from client when game is quit ? (different from disconnected player)
 			default:
 				std::cerr << "Player::tryReceiveClientInput error: wrong packet header ("
 				          << static_cast<sf::Uint32>(type) << "), expected in-game action header.\n";
@@ -308,6 +307,8 @@ void Player::useCreature(int handIndex, Card* usedCard)
 	exploitCardEffects(usedCard);
 	sendValueToClient(TransferType::ACKNOWLEDGE);
 	logBoardState();
+	logOpponentBoardState();
+	_opponent->logBoardState();
 	_opponent->logOpponentBoardState();
 }
 
@@ -372,8 +373,11 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 	else
 	{
 		attacker->makeAttack(*victim);
+		victim->makeAttack(*attacker);
 		logOpponentBoardState();
 		logBoardState();  // If an attack is returned to the attacker, the board changes
+		_opponent->logOpponentBoardState();
+		_opponent->logBoardState();
 	}
 	sendValueToClient(TransferType::ACKNOWLEDGE);
 }

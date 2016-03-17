@@ -13,9 +13,9 @@ void StateStack::display()
 	(*_stackIterator)->display();
 }
 
-void StateStack::handleInput(const std::string& input)
+void StateStack::handleInput()
 {
-	(*_stackIterator)->handleInput(input);
+	(*_stackIterator)->handleInput();
 }
 
 void StateStack::pop()

@@ -93,6 +93,8 @@ class AbstractGame
 		virtual int askOppoBoardIndex() = 0;
 		virtual int askOppoHandIndex() = 0;
 
+		virtual bool wantToAttackOpponent() = 0;
+
 		/// Start the new thread waiting for special data
 		void initListening();
 		/// Called by the game listening thread: waits for server game thread special data

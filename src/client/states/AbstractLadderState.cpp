@@ -1,14 +1,12 @@
 // std-C++ headers
 #include <iostream>
+#include <algorithm>
 // WizardPoker headers
-#include "client/states/LadderState.hpp"
+#include "client/states/AbstractLadderState.hpp"
 
-LadderState::LadderState(StateStack& stateStack, Client& client):
+AbstractLadderState::AbstractLadderState(StateStack& stateStack, Client& client):
 	AbstractState(stateStack, client)
 {
-	addAction("Back to main menu", &LadderState::backMainMenu);
-	// Sort the ladder according to user's win games/played games ratio
-	// This sorting criterion can really be improved
 	try
 	{
 		_ladder = _client.getLadder();
@@ -31,21 +29,7 @@ LadderState::LadderState(StateStack& stateStack, Client& client):
 	});
 }
 
-void LadderState::display()
-{
-	std::cout << "Here is the ladder:\n";
-	unsigned int i{0U};
-	for(const auto& ladderEntry : _ladder)
-		std::cout << ++i << ". " << ladderEntry.name
-				<< " (" << ladderEntry.victories
-				<< "/" << (ladderEntry.victories + ladderEntry.defeats)
-				<< ")\n";
-	std::cout << std::string(40, '*') << "\n";
-	// Display the actions
-	AbstractState::display();
-}
-
-void LadderState::backMainMenu()
+void AbstractLadderState::backMainMenu()
 {
 	stackPop();
 }

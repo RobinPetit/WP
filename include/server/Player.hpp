@@ -96,9 +96,9 @@ private:
 
 	/// Pointer responsability is not given to this Player:
 	/// it is not an allocated-attribute
-	Player* _opponent = nullptr; // \TODO: use reference ?
+	Player* _opponent = nullptr; // pointer is required because attribute is initialized after constructor
 	userId _id;
-	std::atomic_bool _isActive; // Blocks functions that are only allowed for active player
+	std::atomic_bool _isActive; // blocks functions that are only allowed for active player
 
 	// Client communication
 	sf::TcpSocket _socketToClient;
@@ -134,7 +134,7 @@ private:
 
 	/// Last card that was used to cast an effect (his or his opponent's)
 	/// This is not a smart pointer because it points to an already allocated card.
-	const Card* _lastCasterCard = nullptr; // \TODO: use a reference ?
+	const Card* _lastCasterCard = nullptr;
 
 	// Effects container
 	static std::array<std::function<void(Player&, const EffectParamsCollection&)>, P_EFFECTS_COUNT> _effectMethods;

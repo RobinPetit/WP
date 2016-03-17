@@ -1,7 +1,7 @@
 // std-C++ headers
 #include <iostream>
 // WizardPoker headers
-#include "client/states/FriendsManagementState.hpp"
+#include "client/Terminal/states/TerminalFriendsManagementState.hpp"
 
 enum
 {
@@ -10,17 +10,19 @@ enum
 	FRIENDSHIP_REQUEST_IGNORE,
 };
 
-FriendsManagementState::FriendsManagementState(StateStack& stateStack, Client& client):
-	AbstractState(stateStack, client)
+TerminalFriendsManagementState::TerminalFriendsManagementState(StateStack& stateStack, Client& client):
+	AbstractState(stateStack, client),
+	TerminalAbstractState(stateStack, client),
+	AbstractFriendsManagementState(stateStack, client)
 {
-	addAction("Back to main menu", &FriendsManagementState::backMainMenu);
-	addAction("Add a friend to the list", &FriendsManagementState::addFriend);
-	addAction("Remove a friend from the list", &FriendsManagementState::removeFriend);
-	addAction("Treat friendship requests", &FriendsManagementState::treatRequests);
-	addAction("Chat with a friend", &FriendsManagementState::startChat);
+	addAction("Back to main menu", &TerminalFriendsManagementState::backMainMenu);
+	addAction("Add a friend to the list", &TerminalFriendsManagementState::addFriend);
+	addAction("Remove a friend from the list", &TerminalFriendsManagementState::removeFriend);
+	addAction("Treat friendship requests", &TerminalFriendsManagementState::treatRequests);
+	addAction("Chat with a friend", &TerminalFriendsManagementState::startChat);
 }
 
-void FriendsManagementState::display()
+void TerminalFriendsManagementState::display()
 {
 	try
 	{
@@ -38,11 +40,12 @@ void FriendsManagementState::display()
 	{
 		std::cout << "Error: " << e.what() << "\n";
 	}
+
 	// Display the actions
-	AbstractState::display();
+	TerminalAbstractState::display();
 }
 
-void FriendsManagementState::addFriend()
+void TerminalFriendsManagementState::addFriend()
 {
 	std::cout << "What is the user name of your new friend? ";
 	std::string input;
@@ -60,7 +63,7 @@ void FriendsManagementState::addFriend()
 	waitForEnter();
 }
 
-void FriendsManagementState::removeFriend()
+void TerminalFriendsManagementState::removeFriend()
 {
 	std::cout << "What is the user name of the friend that you want to remove? ";
 	std::string input;
@@ -77,7 +80,7 @@ void FriendsManagementState::removeFriend()
 	waitForEnter();
 }
 
-void FriendsManagementState::treatRequests()
+void TerminalFriendsManagementState::treatRequests()
 {
 	try
 	{
@@ -109,7 +112,7 @@ void FriendsManagementState::treatRequests()
 	waitForEnter();
 }
 
-void FriendsManagementState::startChat()
+void TerminalFriendsManagementState::startChat()
 {
 	std::string friendName;
 	std::cout << "Who do you want to chat with? ";
@@ -123,9 +126,4 @@ void FriendsManagementState::startChat()
 		std::cerr << "Unable to chat with " << friendName << ": " << error.what() << "\n";
 	}
 	waitForEnter();
-}
-
-void FriendsManagementState::backMainMenu()
-{
-	stackPop();
 }

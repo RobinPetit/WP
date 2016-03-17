@@ -8,14 +8,22 @@ set(SOURCES	"client.cpp"
 		"NonBlockingInput.cpp"
 		# states
 		"AbstractState.cpp"
+		"Terminal/TerminalAbstractState.cpp"
 		"StateStack.cpp"
-		"states/CardsCollectionState.cpp"
-		"states/DecksManagementState.cpp"
-		"states/FriendsManagementState.cpp"
-		"states/LadderState.cpp"
-		"states/LobbyState.cpp"
-		"states/MainMenuState.cpp"
-		"states/HomeState.cpp"
+		"states/AbstractCardsCollectionState.cpp"
+		"states/AbstractDecksManagementState.cpp"
+		"states/AbstractFriendsManagementState.cpp"
+		"states/AbstractLadderState.cpp"
+		"states/AbstractLobbyState.cpp"
+		"states/AbstractMainMenuState.cpp"
+		"states/AbstractHomeState.cpp"
+		"Terminal/states/TerminalCardsCollectionState.cpp"
+		"Terminal/states/TerminalDecksManagementState.cpp"
+		"Terminal/states/TerminalFriendsManagementState.cpp"
+		"Terminal/states/TerminalLadderState.cpp"
+		"Terminal/states/TerminalLobbyState.cpp"
+		"Terminal/states/TerminalMainMenuState.cpp"
+		"Terminal/states/TerminalHomeState.cpp"
 		# Game
 		"AbstractGame.cpp"
 		"Terminal/TerminalGame.cpp"
@@ -28,5 +36,3 @@ add_executable(${CLIENT_NAME} ${SOURCES})
 
 # Link the executable to the libraries
 target_link_libraries(${CLIENT_NAME} ${COMMON_NAME} ${EXTERNAL_LIBRARIES})
-
-
