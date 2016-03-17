@@ -20,7 +20,7 @@ public:
 	Card getCard(cardId id);
 	const CommonCardData* getCardData(cardId id);
 	std::vector<cardId> getFirstCardIds(unsigned count);
-	CardId getGreatestCardId();
+	cardId getGreatestCardId();
 
 	int countCards();
 	int countCreatures();

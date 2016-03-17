@@ -95,7 +95,7 @@ std::vector<cardId> ClientDatabase::getFirstCardIds(unsigned count)
 	return cardIds;
 }
 
-CardId ClientDatabase::getGreatestCardId()
+cardId ClientDatabase::getGreatestCardId()
 {
 	sqlite3_reset(_getGreatestCardIdStmt);
 
