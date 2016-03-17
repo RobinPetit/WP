@@ -19,8 +19,9 @@ public:
 	                   int health, int attack, int shield, int shieldType);
 
 	/// Getters
-	inline const std::string& getName() const;
-	inline const std::string& getDescription() const;
+	// I don't know why I get 'W used but never defined' and 'undefined reference to' when I inline?
+	const std::string& getName() const;
+	const std::string& getDescription() const;
 
 	virtual ~ClientCreatureData() = default;
 };
@@ -38,8 +39,9 @@ public:
 	ClientSpellData(cardId, const std::string& name, int cost, const std::string& description);
 
 	/// Getters
-	inline const std::string& getName() const;
-	inline const std::string& getDescription() const;
+	// I don't know why I get 'W used but never defined' and 'undefined reference to' when I inline?
+	const std::string& getName() const;
+	const std::string& getDescription() const;
 
 	virtual ~ClientSpellData() = default;
 };

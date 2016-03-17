@@ -65,8 +65,9 @@ public:
 	CommonCardData(cardId, int cost);
 
 	/// Getters
-	inline cardId getId() const;
-	inline int getCost() const;
+	// I don't know why I get 'W used but never defined' and 'undefined reference to' when I inline?
+	cardId getId() const;
+	int getCost() const;
 
 	/// Methods
 	virtual bool isCreature() const = 0;
@@ -90,10 +91,11 @@ public:
 	                   int attack, int health, int shield, int shieldType);
 
 	/// Getters
-	inline int getAttack() const;
-	inline int getHealth() const;
-	inline int getShield() const;
-	inline int getShieldType() const;
+	// I don't know why I get 'W used but never defined' and 'undefined reference to' when I inline?
+	int getAttack() const;
+	int getHealth() const;
+	int getShield() const;
+	int getShieldType() const;
 
 	/// Methods
 	virtual bool isCreature() const override;
