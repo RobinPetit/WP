@@ -95,6 +95,14 @@ std::vector<cardId> ClientDatabase::getFirstCardIds(unsigned count)
 	return cardIds;
 }
 
+CardId ClientDatabase::getGreatestCardId()
+{
+	sqlite3_reset(_getGreatestCardIdStmt);
+
+	assert(sqliteThrowExcept(sqlite3_step(_getGreatestCardIdStmt)) == SQLITE_ROW);
+	return sqlite3_column_int(_getGreatestCardIdStmt, 0);
+}
+
 int ClientDatabase::countCards()
 {
 	return _cardCount;

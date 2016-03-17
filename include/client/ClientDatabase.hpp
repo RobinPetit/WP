@@ -20,6 +20,7 @@ public:
 	Card getCard(cardId id);
 	const CommonCardData* getCardData(cardId id);
 	std::vector<cardId> getFirstCardIds(unsigned count);
+	CardId getGreatestCardId();
 
 	int countCards();
 	int countCreatures();
@@ -41,8 +42,9 @@ private:
 	sqlite3_stmt * _countCreaturesStmt;
 	sqlite3_stmt * _countSpellsStmt;
 	sqlite3_stmt * _getFirstCardIdsStmt;
+	sqlite3_stmt * _getGreatestCardIdStmt;
 	//TODO (server too) separate startup statement from long-life statement to save (a few) memory
-	StatementsList<5> _statements
+	StatementsList<6> _statements
 	{
 		{
 			Statement {
@@ -70,6 +72,13 @@ private:
 				"	FROM FullCard "
 				"	ORDER BY id "
 				"	LIMIT ?1;"
+			},
+			Statement {
+				&_getGreatestCardIdStmt,
+				"SELECT id "
+				"	FROM FullCard "
+				"	ORDER BY id DESC "
+				"	LIMIT 1;"
 			}
 		}
 	};
