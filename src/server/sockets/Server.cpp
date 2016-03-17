@@ -364,7 +364,7 @@ void Server::startGame(std::size_t idx)
 	const auto& player1{std::find_if(_clients.begin(), _clients.end(), finderById(selfThread->_player1Id))};
 	const auto& player2{std::find_if(_clients.begin(), _clients.end(), finderById(selfThread->_player2Id))};
 	std::cout << "Game " << idx << " is starting: " + userToString(player1) + " vs. " + userToString(player2) + "\n";
-	userId winnerId{selfThread->startGame(player1->second, player2->second)};
+	userId winnerId{selfThread->playGame(player1->second, player2->second)};
 	// \TODO: change personnal scores
 	const auto& winner{winnerId == selfThread->_player1Id ? player1 : player2};
 	const auto& loser{winnerId == selfThread->_player1Id ? player2 : player1};

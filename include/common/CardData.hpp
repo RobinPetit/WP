@@ -2,6 +2,7 @@
 #define _CARD_DATA_HPP_
 
 #include <vector>
+#include <iostream>
 #include "common/Identifiers.hpp" // cardId, deckId...
 #include "common/CardData.inc"
 
@@ -36,10 +37,13 @@ typedef std::vector<int> EffectParamsCollection;
 
 struct EffectArgs
 {
-	EffectArgs(EffectParamsCollection effect): args(effect), index(0) {};
-	EffectArgs(std::initializer_list<int> effect): args(effect), index(0) {};
-	const EffectParamsCollection& args; // values that define the effect
+	EffectArgs(const EffectParamsCollection* effect): args(effect), index(0) {};
+	EffectArgs(std::initializer_list<int> effect): args(new EffectParamsCollection(effect)), index(0) {};
+	const EffectParamsCollection* args; // pointer to parameters that define the effect
 	std::size_t index; // index indicating where values should be read
+	int getArg() {std::cout << "arg " << args->at(index) << std::endl; return args->at(index++);}
+	int peekArg() {return args->at(index);}
+	int remainingArgs() {return static_cast<int>(args->size()) - index;}
 };
 //In the following order:
 //EFFECT SUBJECT [+ SUBJECT INDEX] if subject is identified by index (INDX at the end)

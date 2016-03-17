@@ -48,10 +48,10 @@ RandomInteger& GameThread::getGenerator()
 	return _intGenerator;
 }
 
-void GameThread::interruptGame()
+void GameThread::printVerbose(std::string message)
 {
-	_running.store(false);
-	_endGameCause = EndGame::Cause::ENDING_SERVER;
+	if (_verbose)
+		std::cout << "\tgame 0 - " + message << std::endl;
 }
 
 void GameThread::establishSockets(const ClientInformations& player1, const ClientInformations& player2)
@@ -78,22 +78,18 @@ void GameThread::setSocket(sf::TcpSocket& socket, sf::TcpSocket& specialSocket, 
 		std::cerr << "Error while creating game thread special socket\n";
 }
 
-userId GameThread::startGame(const ClientInformations& player1, const ClientInformations& player2)
+userId GameThread::playGame(const ClientInformations& player1, const ClientInformations& player2)
 {
 	establishSockets(player1, player2);
-	_player1.receiveDeck();
-	_player2.receiveDeck();
+	_activePlayer->receiveDeck(); // ask the client for a deck to load
+	_passivePlayer->receiveDeck();
 
-	// send the game is starting
-	_activePlayer->beginGame(true);
-	_passivePlayer->beginGame(false);
+	// initialize player's data and send "game starting" signal
+	_activePlayer->setUpGame(true);
+	_passivePlayer->setUpGame(false);
 	_timerThread = std::thread(&GameThread::makeTimer, this);
 
-	// call explicitely enterTurn for the first player because this method
-	// is only called when there is a turn swapping. So first turn is never
-	// **officially** started
-	_activePlayer->enterTurn(1);
-
+	// run the game
 	userId winnerId{runGame()};
 
 	// Send to the winner he wins and send his new card ID
@@ -122,8 +118,20 @@ userId GameThread::startGame(const ClientInformations& player1, const ClientInfo
 
 userId GameThread::runGame()
 {
+
+	// call explicitely enterTurn for the first player because this method
+	// is only called when there is a turn swapping. So first turn is never
+	// **officially** started
+	_activePlayer->enterTurn(1);
+	//no need to call leaveTurn for passive Player
+
 	while(_running.load())
 	{
+		if (_turnSwap.load())
+		{
+			endTurn();
+		}
+
 		for(auto player : {_activePlayer, _passivePlayer})
 		{
 			sf::TcpSocket& specialSocket{player == &_player1 ? _specialOutputSocketPlayer1 : _specialOutputSocketPlayer2};
@@ -172,12 +180,32 @@ void GameThread::endGame(userId winnerId, EndGame::Cause cause)
 	_running.store(false);
 }
 
+void GameThread::interruptGame()
+{
+	endGame(0, EndGame::Cause::ENDING_SERVER);
+}
+
 void GameThread::endTurn()
 {
+	// send to both players their turn swapped
+	// MAYBE TODO: store and maintain two pointers, _activeSpecialSocket and _passiveSpecialSocket as attributes
+	sf::TcpSocket& activeSpecialSocket{_activePlayer == &_player1 ? _specialOutputSocketPlayer1 : _specialOutputSocketPlayer2};
+	sf::Packet endOfTurn;
+	endOfTurn << TransferType::GAME_PLAYER_LEAVE_TURN;
+	activeSpecialSocket.send(endOfTurn);
+
+	sf::TcpSocket& passiveSpecialSocket{_activePlayer == &_player1 ? _specialOutputSocketPlayer2 : _specialOutputSocketPlayer1};
+	sf::Packet startOfTurn;
+	startOfTurn << TransferType::GAME_PLAYER_ENTER_TURN;
+	passiveSpecialSocket.send(startOfTurn);
+
 	_turn++;  // turn counter (for both players)
 	_activePlayer->leaveTurn();
 	std::swap(_activePlayer, _passivePlayer);  // swap active and inactive
 	_activePlayer->enterTurn(_turn/2 +1);  // ALWAYS call active player
+
+	_startOfTurnTime = std::chrono::high_resolution_clock::now();
+	_turnSwap.store(false);
 }
 
 void GameThread::swapTurns()
@@ -189,28 +217,17 @@ void GameThread::swapTurns()
 void GameThread::makeTimer()
 {
 	static const std::chrono::milliseconds sleepingTime{50};
-	auto startOfTurnTime{std::chrono::high_resolution_clock::now()};
+	_startOfTurnTime = std::chrono::high_resolution_clock::now();
+
 	while(_running.load())
 	{
 		std::this_thread::sleep_for(sleepingTime);
+
 		// if the current player didn't finished his turn and he still has got time to play, wait
-		if(!_turnSwap.load() && std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - startOfTurnTime) < _turnTime)
+		if(!_turnSwap.load() && std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - _startOfTurnTime) < _turnTime)
 			continue;
-		// send to both players their turn swapped
-		// MAYBE TODO: store and maintain two pointers, _activeSpecialSocket and _passiveSpecialSocket as attributes
-		sf::TcpSocket& activeSpecialSocket{_activePlayer == &_player1 ? _specialOutputSocketPlayer1 : _specialOutputSocketPlayer2};
-		sf::Packet endOfTurn;
-		endOfTurn << TransferType::GAME_PLAYER_LEAVE_TURN;
-		activeSpecialSocket.send(endOfTurn);
 
-		sf::TcpSocket& passiveSpecialSocket{_activePlayer == &_player1 ? _specialOutputSocketPlayer2 : _specialOutputSocketPlayer1};
-		sf::Packet startOfTurn;
-		startOfTurn << TransferType::GAME_PLAYER_ENTER_TURN;
-		passiveSpecialSocket.send(startOfTurn);
-
-		endTurn();
-		startOfTurnTime = std::chrono::high_resolution_clock::now();
-		_turnSwap.store(false);
+		swapTurns();
 	}
 }
 

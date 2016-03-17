@@ -76,7 +76,7 @@ sf::Packet Player::getBoardChanges()
 void Player::setDeck(const Deck& newDeck)
 {
 	std::vector<std::unique_ptr<Card>> loadedCards{Deck::size};
-	for(std::size_t i{0}; i < Deck::size; ++i)
+	for(std::size_t i{0}; i < Deck::size; ++i) // \TODO use database instead
 	{
 		const cardId card{newDeck.getCard(i)};
 		// FIXME For now, we consider that cardId <= 10 are creatures,
@@ -92,8 +92,8 @@ void Player::setDeck(const Deck& newDeck)
 			loadedCards[i].reset(new Spell(card, spell.cost, spell.effects));
 		}
 	}
-	//Deterministic behavior is best while testing
-	//TODO: re-enable shuffling when required
+
+	// shuffle the deck of cards
 	std::shuffle(loadedCards.begin(), loadedCards.end(), std::mt19937(std::random_device()()));
 	for(auto& cardInShuffledDeck: loadedCards)
 		_cardDeck.push(std::move(cardInShuffledDeck));
@@ -117,72 +117,71 @@ void Player::receiveDeck()
 	setDeck(_database.getDeckByName(getId(), deckName));
 }
 
-void Player::beginGame(bool isActivePlayer)
+void Player::setUpGame(bool isActivePlayer)
 {
+	printVerbose(std::string("Player::setUpGame(") + (isActivePlayer ? "true" : "false") + ")");
+
 	// init Player's data
-	cardDeckToHand(_initialAmountOfCards);  // calls logHandState
+	cardDeckToHand(_initialSupplementOfCards);  // start with a few cards in hand
+	_turnData = _emptyTurnData;
+	_turnsSinceEmptyDeck = 0;
+	_energy = _energyInit = 0;
+	_health = _healthInit = 20;
+
 	// log & send
-	logCurrentEnergy();
-	logCurrentHealth();
-	logOpponentHealth();
-	logCurrentDeck();
-	// Do not call `logOpponentHandState()` because players are initialized one after another.
-	// So when (first player).beginGame is called, (second player).hand is still empty.
-	// Thus to ensure the right value is sent, it is sent directly
-	_pendingBoardChanges << TransferType::GAME_OPPONENT_HAND_UPDATED << static_cast<sf::Uint32>(_initialAmountOfCards);
+	logEverything();
 	_socketToClient.send(_pendingBoardChanges);
 	_pendingBoardChanges.clear();
 
+	// send GAME_STARTING packet
 	sf::Packet packet;
 	packet << TransferType::GAME_STARTING << (isActivePlayer ? TransferType::GAME_PLAYER_ENTER_TURN : TransferType::GAME_PLAYER_LEAVE_TURN);
 	_socketToClient.send(packet);
-	_isActive.store(isActivePlayer);
+
+	_isActive.store(isActivePlayer); // Player has become active/passive
 }
 
 void Player::enterTurn(int turn)
 {
-	_isActive.store(true); //Player has become active
+	printVerbose(std::string("Player::enterTurn(") + std::to_string(turn) + ")");
+
+	_isActive.store(true); // Player has become active
 
 	_turnData = _emptyTurnData;  // Reset the turn data
 	_turnData.turnCount = turn;  // Store turn number
 
+	// player loses if he spends 10 turns with empty deck
 	if(_cardDeck.empty() and ++_turnsSinceEmptyDeck == _maximumAmountOfTurnsWithEmptyDeck)
 		finishGame(false, EndGame::Cause::TEN_TURNS_WITH_EMPTY_DECK);
 
-	//Player's turn-based constraints
-	// do not pick a card at first turn
-	if(turn != 1)
-		cardDeckToHand(_constraints.getConstraint(PC_TURN_CARDS_PICKED));
+	// Player's turn-based constraints
+	cardDeckToHand(_constraints.getConstraint(PC_TURN_CARDS_PICKED));
 	resetEnergy({_constraints.getConstraint(PC_TURN_ENERGY_INIT_CHANGE)});
 	changeEnergy({_constraints.getConstraint(PC_TURN_ENERGY_CHANGE)});
 	changeHealth({_constraints.getConstraint(PC_TURN_HEALTH_CHANGE)});
 	if(_cardDeck.empty())
 		changeHealth({_constraints.getConstraint(PC_TURN_HEALTH_CHANGE_DECK_EMPTY)});
 
-	//Will call creature's turn-based constraints
+	// his Creature's turn-based constraints
 	for(unsigned i = 0; i < _cardBoard.size(); i++)
 		_cardBoard.at(i)->enterTurn();
-	logBoardState();
-	logOpponentBoardState();
-	logCurrentHealth();
-	_opponent.logBoardState();
-	_opponent.logOpponentBoardState();
-	_opponent.logOpponentHealth();
+
+	// log all data, since most things change at the beginning of the turn
+	logEverything(); // also clears previous logs
+	_opponent.logEverything();
 }
 
 void Player::leaveTurn()
 {
-	_isActive.store(false); //Player is no longer active
+	_isActive.store(false); // Player is no longer active
 
-	//Time out player constraints
+	// Time out Player's constraints
 	_constraints.timeOutConstraints();
 	_teamConstraints.timeOutConstraints();
 
-	//Time out player's creature's constraints
+	// Time out his Creature's constraints
 	for(unsigned i = 0; i < _cardBoard.size(); i++)
 		_cardBoard.at(i)->leaveTurn();
-
-	changeEnergy({0});  // at the end of the turn, set the energy to 0
 }
 
 void Player::finishGame(bool hasWon, EndGame::Cause cause)
@@ -398,7 +397,7 @@ bool Player::applyEffect(Card* usedCard, EffectArgs effect)
 	int subject;  // who the effect applies to
 	try  // check the input
 	{
-		subject = effect.args.at(effect.index++);
+		subject = effect.getArg();
 	}
 	catch(std::out_of_range&)
 	{
@@ -489,7 +488,7 @@ bool Player::applyEffect(Card* usedCard, EffectArgs effect)
 
 void Player::applyEffectToSelf(EffectArgs effect)
 {
-	int method = effect.args.at(effect.index++);
+	int method = effect.getArg();
 	_effectMethods.at(method)(*this, effect);  //call method on self
 }
 
@@ -506,7 +505,7 @@ void Player::applyEffectToCreature(EffectArgs effect, const std::vector<int>& bo
 void Player::applyEffectToCreatureTeam(EffectArgs effect)
 {
 	//If the effect consists in setting a constraint
-	if(effect.args.at(effect.index) == CE_SET_CONSTRAINT)
+	if(effect.peekArg() == CE_SET_CONSTRAINT)
 	{
 		effect.index++;
 		setTeamConstraint(effect); //set a team constraint instead of individual ones
@@ -534,6 +533,11 @@ sf::TcpSocket& Player::getSocket()
     return _socketToClient;
 }
 
+void Player::printVerbose(std::string message)
+{
+    _gameThread.printVerbose("player " + std::to_string(getId()) + " - "+ message);
+}
+
 /*------------------------------ EFFECTS (PRIVATE) */
 void Player::setConstraint(EffectArgs effect)
 {
@@ -543,10 +547,10 @@ void Player::setConstraint(EffectArgs effect)
 	int casterOptions; //whether the constraint depends on its caster being alive
 	try //check the input
 	{
-		constraintId = effect.args.at(effect.index++);
-		value = effect.args.at(effect.index++);
-		turns = effect.args.at(effect.index++);
-		casterOptions = effect.args.at(effect.index++);
+		constraintId = effect.getArg();
+		value = effect.getArg();
+		turns = effect.getArg();
+		casterOptions = effect.getArg();
 		if (constraintId<0 or constraintId>=P_CONSTRAINTS_COUNT or turns<0)
 			throw std::out_of_range("");
 	}
@@ -572,7 +576,7 @@ void Player::pickDeckCards(EffectArgs effect)
 	int amount;//amount of cards
 	try //check the input
 	{
-		amount = effect.args.at(effect.index++);
+		amount = effect.getArg();
 	}
 	catch(std::out_of_range&)
 	{
@@ -585,7 +589,7 @@ void Player::loseHandCards(EffectArgs effect)
 {
 	try  //check the input
 	{
-		for(int amount{effect.args.at(effect.index)}; not _cardHand.empty() and amount > 0; amount--)
+		for(int amount{effect.peekArg()}; not _cardHand.empty() and amount > 0; amount--)
 			cardHandToGraveyard(getRandomIndex(_cardHand));
 	}
 	catch(std::out_of_range&)
@@ -599,7 +603,7 @@ void Player::reviveGraveyardCard(EffectArgs effect)
 	int binIndex;  //what card to revive
 	try  //check the input
 	{
-		binIndex = effect.args.at(effect.index);
+		binIndex = effect.peekArg();
 		_cardGraveyard.at(binIndex);
 	}
 	catch(std::out_of_range&)
@@ -654,7 +658,7 @@ void Player::resetEnergy(EffectArgs effect)
 {
 	try //check the input
 	{
-		_energyInit += effect.args.at(effect.index++);
+		_energyInit += effect.getArg();
 	}
 	catch (std::out_of_range&)
 	{
@@ -665,13 +669,14 @@ void Player::resetEnergy(EffectArgs effect)
 	else if(_energyInit > _maxEnergy)
 		_energyInit = _maxEnergy;
 	_energy = _energyInit;
+	logCurrentEnergy();
 }
 
 void Player::changeEnergy(EffectArgs effect)
 {
 	try //check the input
 	{
-		_energy += effect.args.at(effect.index++);
+		_energy += effect.getArg();
 	}
 	catch (std::out_of_range&)
 	{
@@ -686,57 +691,32 @@ void Player::changeEnergy(EffectArgs effect)
 
 void Player::changeHealth(EffectArgs effect)
 {
+	std::cout << "Health" << _health << std::endl;
+	int points;
 	try //check the input
 	{
-		_health += effect.args.at(effect.index++);
-		if(_health < 0)
-		{
-			_health = 0;
-			finishGame(false, EndGame::Cause::OUT_OF_HEALTH);
-		}
-		else if(_health > _maxHealth)
-		{
-			_health = _maxHealth;
-			logCurrentHealth();
-			_opponent.logOpponentHealth();
-		}
+		points = effect.getArg();
 	}
 	catch (std::out_of_range&)
 	{
 		throw std::runtime_error("changeHealth error with cards arguments");
 	}
 
+	_health += points;
+	if(_health < 0)
+	{
+		_health = 0;
+		finishGame(false, EndGame::Cause::OUT_OF_HEALTH);
+	}
+	else if(_health > _maxHealth)
+	{
+		_health = _maxHealth;
+	}
+	std::cout << "Health" << _health << " points "<< points << std::endl;
+	logCurrentHealth();
+	_opponent.logOpponentHealth();
 }
 
-
-///////// loggers
-
-void Player::logCurrentEnergy()
-{
-	// cast to be sure that the right amount of bits is sent and received
-	_pendingBoardChanges << TransferType::GAME_PLAYER_ENERGY_UPDATED << static_cast<sf::Uint32>(_energy);
-}
-
-void Player::logCurrentHealth()
-{
-	// cast to be sure that the right amount of bits is sent and received
-	_pendingBoardChanges << TransferType::GAME_PLAYER_HEALTH_UPDATED << static_cast<sf::Uint32>(_health);
-}
-
-void Player::logOpponentHealth()
-{
-	_pendingBoardChanges << TransferType::GAME_OPPONENT_HEALTH_UPDATED << static_cast<sf::Uint32>(_opponent.getHealth());
-}
-
-void Player::logCurrentDeck()
-{
-	_pendingBoardChanges << TransferType::GAME_DECK_UPDATED << static_cast<sf::Uint32>(_cardDeck.size());
-}
-
-void Player::logOpponentHandState()
-{
-	_pendingBoardChanges << TransferType::GAME_OPPONENT_HAND_UPDATED << static_cast<sf::Uint32>(_opponent.getHandSize());
-}
 
 /*--------------------------- PRIVATE */
 
@@ -744,7 +724,7 @@ bool Player::exploitCardEffects(Card* usedCard)
 {
 	const std::vector<EffectParamsCollection>& effects(usedCard->getEffects());
 	for(const auto& effect: effects) //for each effect of the card
-		if(not applyEffect(usedCard, effect)) //apply it
+		if(not applyEffect(usedCard, &effect)) //apply it
 			return false;
 	return true;
 }
@@ -757,10 +737,10 @@ void Player::setTeamConstraint(EffectArgs effect)
 	int casterOptions;  // whether the constraint depends on its caster being alive
 	try  // check the input
 	{
-		constraintId = effect.args.at(effect.index++);
-		value = effect.args.at(effect.index++);
-		turns = effect.args.at(effect.index++);
-		casterOptions = effect.args.at(effect.index++);
+		constraintId = effect.getArg();
+		value = effect.getArg();
+		turns = effect.getArg();
+		casterOptions = effect.getArg();
 		if(constraintId < 0 or constraintId >= C_CONSTRAINTS_COUNT or turns < 0)
 			throw std::out_of_range("");
 	}
@@ -880,9 +860,70 @@ std::unique_ptr<Card> Player::cardExchangeFromHand(std::unique_ptr<Card> givenCa
 	return std::move(givenCard);
 }
 
+
+/*--------------------------- LOGGERS */
+
+void Player::logEverything()
+{
+	//since everything will be logged, we can clear previous logs
+	_pendingBoardChanges.clear();
+
+	logCurrentEnergy();
+	logCurrentHealth();
+	logOpponentHealth();
+	logCurrentDeck();
+
+	logHandState();
+	logOpponentHandState();
+	logBoardState();
+	logOpponentBoardState();
+	logGraveyardState();
+}
+
+void Player::logCurrentEnergy()
+{
+	// cast to be sure that the right amount of bits is sent and received
+	_pendingBoardChanges << TransferType::GAME_PLAYER_ENERGY_UPDATED << static_cast<sf::Uint32>(_energy);
+}
+
+void Player::logCurrentHealth()
+{
+	// cast to be sure that the right amount of bits is sent and received
+	_pendingBoardChanges << TransferType::GAME_PLAYER_HEALTH_UPDATED << static_cast<sf::Uint32>(_health);
+}
+
+void Player::logOpponentHealth()
+{
+	try
+	{
+		_pendingBoardChanges << TransferType::GAME_OPPONENT_HEALTH_UPDATED << static_cast<sf::Uint32>(_opponent.getHealth());
+	}
+	catch (...)  // In case _opponent is not initialized yet
+	{
+        _pendingBoardChanges << TransferType::GAME_OPPONENT_HEALTH_UPDATED << static_cast<sf::Uint32>(_healthInit);
+	}
+}
+
+void Player::logCurrentDeck()
+{
+	_pendingBoardChanges << TransferType::GAME_DECK_UPDATED << static_cast<sf::Uint32>(_cardDeck.size());
+}
+
 void Player::logHandState()
 {
 	logCardDataFromVector(TransferType::GAME_HAND_UPDATED, _cardHand);
+}
+
+void Player::logOpponentHandState()
+{
+	try
+	{
+		_pendingBoardChanges << TransferType::GAME_OPPONENT_HAND_UPDATED << static_cast<sf::Uint32>(_opponent.getHandSize());
+	}
+	catch (...)  // In case _opponent is not initialized yet
+	{
+		_pendingBoardChanges << TransferType::GAME_OPPONENT_HAND_UPDATED << static_cast<sf::Uint32>(_initialSupplementOfCards+1);
+	}
 }
 
 void Player::logBoardState()
@@ -932,7 +973,6 @@ void Player::logBoardCreatureDataFromVector(TransferType type, const std::vector
 	_pendingBoardChanges << type << boardCreatures;
 }
 
-//////////
 
 // TODO: handle the case where the user doesn't give and his turn finishes
 std::vector<int> Player::askUserToSelectCards(const std::vector<CardToSelect>& selection)

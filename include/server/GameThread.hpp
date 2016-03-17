@@ -34,13 +34,14 @@ public:
 
 	void establishSockets(const ClientInformations& player1, const ClientInformations& player2);
 
-	userId startGame(const ClientInformations& player1, const ClientInformations& player2);
+	userId playGame(const ClientInformations& player1, const ClientInformations& player2);
 
 	void endGame(userId winnerId, EndGame::Cause cause);
 
 	void swapTurns();
 
 	RandomInteger& getGenerator();
+	void printVerbose(std::string message);
 
 	/// Destructor
 	~GameThread();
@@ -61,8 +62,11 @@ private:
 	Player *_passivePlayer;
 	int _turn;
 	bool _turnCanEnd;
+	bool _verbose=true;
+
 	std::thread _timerThread;
 	std::atomic_bool _turnSwap;
+	std::chrono::high_resolution_clock::time_point _startOfTurnTime;
 
 	RandomInteger _intGenerator;
 
