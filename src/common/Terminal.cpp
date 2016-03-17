@@ -89,11 +89,20 @@ std::string Terminal::startProgram(const std::string& name, const std::initializ
 	return command;
 }
 
-void Terminal::clearScreen() const
+void Terminal::clearScreen()
 {
 #ifdef __linux__
 	system("clear");
 #else
 	system("cls");
+#endif
+}
+
+std::string Terminal::setBold(const std::string& message)
+{
+#ifdef __linux__
+	return "\033[1m" + message + "\033[0m";
+#else
+	return message;
 #endif
 }

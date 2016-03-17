@@ -34,7 +34,9 @@ public:
 	std::string startProgram(const std::string& name, const std::initializer_list<const std::string>& args) const;
 
 	/// This function clears the content of the terminal
-	void clearScreen() const;
+	static void clearScreen();
+
+	static std::string setBold(const std::string& message);
 private:
 	static const std::string _terminalNames[];
 	int _idx;
