@@ -108,7 +108,7 @@ enum ConstraintCondition : int32_t
 /// Types used for card creation:
 enum CostValue : int32_t
 {
-    COST_1=1, COST_2, COST_3, COST_4, COST_5, COST_6, COST_7, COST_8, COST_9, COST_10
+    COST_0=0, COST_1, COST_2, COST_3, COST_4, COST_5, COST_6, COST_7, COST_8, COST_9, COST_10
 };
 
 enum AttackValue : int32_t
@@ -118,7 +118,7 @@ enum AttackValue : int32_t
 
 enum HealthValue : int32_t
 {
-    HEALTH_1=1, HEALTH_2, HEALTH_3, HEALTH_4, HEALTH_5, HEALTH_6, HEALTH_7, HEALTH_8, HEALTH_9,
+    HEALTH_0=0, HEALTH_1, HEALTH_2, HEALTH_3, HEALTH_4, HEALTH_5, HEALTH_6, HEALTH_7, HEALTH_8, HEALTH_9,
     HEALTH_10, HEALTH_11, HEALTH_12, HEALTH_13, HEALTH_14, HEALTH_15, HEALTH_16, HEALTH_17, HEALTH_18, HEALTH_19, HEALTH_20
 };
 
