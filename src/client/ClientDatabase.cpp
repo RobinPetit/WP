@@ -103,17 +103,17 @@ cardId ClientDatabase::getGreatestCardId()
 	return sqlite3_column_int(_getGreatestCardIdStmt, 0);
 }
 
-int ClientDatabase::countCards()
+cardId ClientDatabase::countCards()
 {
 	return _cardCount;
 }
 
-int ClientDatabase::countCreatures()
+cardId ClientDatabase::countCreatures()
 {
 	return _creatureCount;
 }
 
-int ClientDatabase::countSpells()
+cardId ClientDatabase::countSpells()
 {
 	return _spellCount;
 }

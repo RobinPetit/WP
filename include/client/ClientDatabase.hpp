@@ -22,9 +22,9 @@ public:
 	std::vector<cardId> getFirstCardIds(unsigned count);
 	cardId getGreatestCardId();
 
-	int countCards();
-	int countCreatures();
-	int countSpells();
+	cardId countCards();
+	cardId countCreatures();
+	cardId countSpells();
 
 	virtual ~ClientDatabase();
 
