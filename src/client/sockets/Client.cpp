@@ -561,6 +561,11 @@ cardId Client::getMaxCardId()
 	return _database.getGreatestCardId();
 }
 
+const CommonCardData* Client::getCardData(cardId id)
+{
+	return _database.getCardData(id);
+}
+
 ////////////////// Others
 
 Ladder Client::getLadder()

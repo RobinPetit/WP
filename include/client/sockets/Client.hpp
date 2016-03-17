@@ -126,6 +126,9 @@ public:
 	/// Give greatest card id in database
 	cardId getMaxCardId();
 
+	/// Used by AbstractGame
+	const CommonCardData* getCardData(cardId id);
+
 	// Others
 
 	/// Used when the user wants the ladder
