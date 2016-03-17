@@ -30,6 +30,7 @@ Client::Client():
 	_serverPort(0),
 	_threadLoop(false),
 	_userTerminal(),
+	_database(),
 	_currentConversations(),
 	_inGame(false),
 	_inGameSocket(),

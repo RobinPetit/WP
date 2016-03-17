@@ -15,6 +15,7 @@
 #include "common/Database.hpp"  // FriendsList typedef
 #include "common/CardsCollection.hpp"
 #include "common/Deck.hpp"
+#include "client/ClientDatabase.hpp"
 
 /// Client is a class representing the state of the client program (not the user!)
 class Client final
@@ -78,7 +79,7 @@ public:
 	/// \param name The name of the player who sent the request
 	/// \param accept True to accept the request, false to refuse it
 	/// \return True if the player was successfully accepted or refused, and false otherwise
-	void acceptFriendshipRequest(const std::string& name, bool accept=true);
+	void acceptFriendshipRequest(const std::string& name, bool accept = true);
 
 	/// Used to remove a friend from the friends list
 	/// \param name The name of the player to remove from the friends list
@@ -153,6 +154,8 @@ private:
 
 	/// Gives informations about the terminal installed on the computer
 	Terminal _userTerminal;
+	/// Hold informations about the cards
+	ClientDatabase _database;
 
 	///////// Friend related attributes
 
@@ -187,7 +190,6 @@ private:
 	/// This function is used to make the proper exchanges with the srever when a game is started
 	void initInGameConnection(sf::Packet& transmission);
 
-	// private methods
 	/// Used to know if a particular player is a friend or not
 	/// \return True if the player is a friend of the client and false otherwise
 	/// \param name The name of the player whose friendship is tested
