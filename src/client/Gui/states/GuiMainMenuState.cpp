@@ -1,6 +1,6 @@
-//std-C++ headers
+// std-C++ headers
 #include <iostream>
-//WidzardPoker headers
+// WidzardPoker headers
 #include "client/Gui/states/GuiMainMenuState.hpp"
 
 GuiMainMenuState::GuiMainMenuState(Context& context):
@@ -8,5 +8,5 @@ GuiMainMenuState::GuiMainMenuState(Context& context):
 	GuiAbstractState(context),
 	AbstractMainMenuState(context)
 {
-	
+
 }
