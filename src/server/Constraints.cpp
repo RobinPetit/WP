@@ -4,6 +4,7 @@
 // std-C++ headers
 #include <cassert>
 #include <stdexcept>
+#include <iostream>
 
 Constraints::Constraints(const std::vector<ConstraintDefaultValue>& defaultValues):
 	_defaultValues(defaultValues),
@@ -15,13 +16,13 @@ Constraints::Constraints(const std::vector<ConstraintDefaultValue>& defaultValue
 void Constraints::setConstraint(int constraintId, int value, int turns, const Creature* caster)
 {
 	assert(constraintId < static_cast<int>(_defaultValues.size()) and constraintId >= 0);
-	_timedValues[constraintId].push_back({value, turns, caster});
+	_timedValues.at(constraintId).push_back({value, turns, caster});
 }
 
 int Constraints::getConstraint(int constraintId) const
 {
 	assert(constraintId < static_cast<int>(_defaultValues.size()) and constraintId >= 0);
-	switch(_defaultValues[constraintId].orderOption)
+	switch(_defaultValues.at(constraintId).orderOption)
 	{
 		case ConstraintOrderOption::GET_FIRST:
 			return getFirstTimedValue(constraintId);
@@ -36,15 +37,15 @@ int Constraints::getConstraint(int constraintId) const
 int Constraints::getOverallConstraint(int constraintId, int otherValue) const
 {
 	assert(constraintId < static_cast<int>(_defaultValues.size()) and constraintId >= 0);
-	switch(_defaultValues[constraintId].orderOption)
+	switch(_defaultValues.at(constraintId).orderOption)
 	{
 		case ConstraintOrderOption::GET_FIRST:
-			if(otherValue == _defaultValues[constraintId].value)
+			if(otherValue == _defaultValues.at(constraintId).value)
 				return getFirstTimedValue(constraintId);
 			else
 				return otherValue;
 		case ConstraintOrderOption::GET_LAST:
-			if(otherValue == _defaultValues[constraintId].value)
+			if(otherValue == _defaultValues.at(constraintId).value)
 				return getLastTimedValue(constraintId);
 			else
 				return otherValue;
@@ -58,14 +59,14 @@ int Constraints::getOverallConstraint(int constraintId, int otherValue) const
 int Constraints::getValue(int constraintId, unsigned valueIndex) const
 {
 	assert(constraintId < static_cast<int>(_defaultValues.size()) and constraintId >= 0);
-	int value{_timedValues[constraintId].at(valueIndex).value};
-	switch(_defaultValues[constraintId].valueOption) //rules
+	int value{_timedValues.at(constraintId).at(valueIndex).value};
+	switch(_defaultValues.at(constraintId).valueOption) //rules
 	{
 		case ConstraintValueOption::VALUE_GET_INCREMENT:
-			_timedValues[constraintId].at(valueIndex).value++;
+			_timedValues.at(constraintId).at(valueIndex).value++;
 			break;
 		case ConstraintValueOption::VALUE_GET_DECREMENT:
-			_timedValues[constraintId].at(valueIndex).value--;
+			_timedValues.at(constraintId).at(valueIndex).value--;
 			break;
 		default:
 			// no nothing to value
@@ -77,7 +78,7 @@ int Constraints::getValue(int constraintId, unsigned valueIndex) const
 int Constraints::getFirstTimedValue(int constraintId) const
 {
 	assert(constraintId < static_cast<int>(_defaultValues.size()) and constraintId >= 0);
-	std::vector<ConstraintTimedValue>& vect(_timedValues[constraintId]); //value, turns left, caster
+	std::vector<ConstraintTimedValue>& vect(_timedValues.at(constraintId)); //value, turns left, caster
 	for(auto vectIt(vect.begin()); vectIt != vect.end(); vectIt++)
 	{
 		//if the caster is not remembered, or is on the board
@@ -85,13 +86,13 @@ int Constraints::getFirstTimedValue(int constraintId) const
 			return getValue(constraintId, static_cast<unsigned>(vectIt - vect.begin()));
 
 	}
-	return _defaultValues[constraintId].value;
+	return _defaultValues.at(constraintId).value;
 }
 
 int Constraints::getLastTimedValue(int constraintId) const
 {
 	assert(constraintId < static_cast<int>(_defaultValues.size()) and constraintId >= 0);
-	std::vector<ConstraintTimedValue>& vect = _timedValues[constraintId]; //value, turns left, caster
+	std::vector<ConstraintTimedValue>& vect = _timedValues.at(constraintId); //value, turns left, caster
 	for(auto vectIt(vect.rbegin()); vectIt != vect.rend(); vectIt++)
 	{
 		//if the caster is not remembered, or is on the board and active
@@ -99,14 +100,14 @@ int Constraints::getLastTimedValue(int constraintId) const
 			return getValue(constraintId, static_cast<unsigned>(vectIt - vect.rbegin()));
 
 	}
-	return _defaultValues[constraintId].value;
+	return _defaultValues.at(constraintId).value;
 }
 
 int Constraints::getSumTimedValues(int constraintId) const
 {
 	assert(constraintId < static_cast<int>(_defaultValues.size()) and constraintId >= 0);
-	int value = _defaultValues[constraintId].value;
-	std::vector<ConstraintTimedValue>& vect = _timedValues[constraintId]; //value, turns left, caster
+	int value = _defaultValues.at(constraintId).value;
+	std::vector<ConstraintTimedValue>& vect = _timedValues.at(constraintId); //value, turns left, caster
 	for(auto vectIt(vect.begin()); vectIt != vect.end(); vectIt++)
 	{
 		//if the caster is not remembered, or is on the board and active
