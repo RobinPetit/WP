@@ -551,6 +551,11 @@ CardsCollection Client::getCardsCollection()
 	return cardCollection;
 }
 
+cardId Client::getNumberOfCards()
+{
+	return _database.countCards();
+}
+
 ////////////////// Others
 
 Ladder Client::getLadder()

@@ -120,6 +120,9 @@ public:
 	/// Used when the user wants its cards collection
 	CardsCollection getCardsCollection();
 
+	/// Count number of card templates in database
+	cardId getNumberOfCards();
+
 	// Others
 
 	/// Used when the user wants the ladder
