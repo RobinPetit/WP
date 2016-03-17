@@ -8,6 +8,7 @@
 constexpr int UNLIMITED_TURNS = 100;
 
 //TODO: !!! When enums used as array index do not perform -1
+// I think it was done at 88e2aaa by @StanIsAdmin
 
 //TODO: move to appropriate file
 /// Player constraints

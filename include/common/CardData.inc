@@ -42,6 +42,9 @@ enum PlayerEffect : int32_t
 	P_EFFECTS_COUNT
 };
 
+/// Player constraints
+// see CardData.hpp
+
 /// Creature effects
 enum CreatureEffect : int32_t
 {

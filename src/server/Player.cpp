@@ -490,7 +490,7 @@ bool Player::applyEffect(Card* usedCard, EffectArgs effect)
 void Player::applyEffectToSelf(EffectArgs effect)
 {
 	int method = effect.args.at(effect.index++);
-	_effectMethods.at(method-1)(*this, effect);  //call method on self
+	_effectMethods.at(method)(*this, effect);  //call method on self
 }
 
 void Player::applyEffectToCreature(Creature* casterAndSubject, EffectArgs effect)

@@ -14,14 +14,12 @@ Constraints::Constraints(const std::vector<ConstraintDefaultValue>& defaultValue
 
 void Constraints::setConstraint(int constraintId, int value, int turns, const Creature* caster)
 {
-	--constraintId;
 	assert(constraintId < static_cast<int>(_defaultValues.size()) and constraintId >= 0);
 	_timedValues[constraintId].push_back({value, turns, caster});
 }
 
 int Constraints::getConstraint(int constraintId) const
 {
-	--constraintId;
 	assert(constraintId < static_cast<int>(_defaultValues.size()) and constraintId >= 0);
 	switch(_defaultValues[constraintId].orderOption)
 	{
@@ -37,7 +35,6 @@ int Constraints::getConstraint(int constraintId) const
 
 int Constraints::getOverallConstraint(int constraintId, int otherValue) const
 {
-	--constraintId;
 	assert(constraintId < static_cast<int>(_defaultValues.size()) and constraintId >= 0);
 	switch(_defaultValues[constraintId].orderOption)
 	{
