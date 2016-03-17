@@ -39,7 +39,7 @@ public:
 	void receiveDeck();
 
 	/// The game has begun.
-	void beginGame(bool isActivePlayer);
+	void setUpGame(bool isActivePlayer);
 
 	/// The player's turn has started
 	void enterTurn(int turn);
@@ -86,8 +86,9 @@ private:
 	};
 
 	/*------------------------------ Static variables */
+	static const int _maxEnergy = 10, _maxHealth = 20;
 	constexpr static TurnData _emptyTurnData = {0, 0, 0, 0, 0};
-	constexpr static unsigned _initialAmountOfCards{5};
+	constexpr static unsigned _initialSupplementOfCards{4};
 	constexpr static unsigned _maximumAmountOfTurnsWithEmptyDeck{10};
 
 	/*------------------------------ Attributes */
@@ -103,9 +104,8 @@ private:
 	sf::Packet _pendingBoardChanges;
 
 	// Gameplay
-	int _energyInit = 0, _energy = _energyInit, _healthInit = 20, _health = 20;
-	unsigned _turnsSinceEmptyDeck = 0;
-	static const int _maxEnergy = 10, _maxHealth = 20;
+	int _energyInit, _energy, _healthInit, _health;
+	unsigned _turnsSinceEmptyDeck;
 	TurnData _turnData;
 
 	// Constraints

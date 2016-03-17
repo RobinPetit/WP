@@ -110,8 +110,8 @@ void Creature::receiveAttack(Creature& attacker, int attack, int forced, int loo
 /*--------------------------- GETTERS FOR EFFECTS */
 void Creature::applyEffectToSelf(EffectArgs effect)
 {
-	assert(effect.args.size() >= 1);
-	const int method = effect.args.at(effect.index++);  // What method is used
+	assert(effect.remainingArgs() >= 1);
+	const int method = effect.getArg();  // What method is used
 	_effectMethods.at(method)(*this, effect);  // Call the method
 }
 
@@ -154,10 +154,10 @@ void Creature::setConstraint(EffectArgs effect)
 	int casterOptions;  // whether the constraint depends on its caster being alive
 	try  // check the input
 	{
-		constraintId = effect.args.at(effect.index++);
-		value = effect.args.at(effect.index++);
-		turns = effect.args.at(effect.index++);
-		casterOptions = effect.args.at(effect.index++);
+		constraintId = effect.getArg();
+		value = effect.getArg();
+		turns = effect.getArg();
+		casterOptions = effect.getArg();
 		if(constraintId < 0 or constraintId >= C_CONSTRAINTS_COUNT or turns < 0)
 			throw std::out_of_range("");
 	}
@@ -200,7 +200,7 @@ void Creature::changeAttack(EffectArgs effect)
 {
 	try //check the input
 	{
-		_attack += effect.args.at(effect.index++);
+		_attack += effect.getArg();
 		if(_attack < 0)
 			_attack = 0;
 	}
@@ -216,9 +216,9 @@ void Creature::changeHealth(EffectArgs effect)
 	int forced;	 // 1 if change is forced, 0 if not
 	try  // check the input
 	{
-		points = effect.args.at(effect.index++);
-		if (effect.args.size() <= effect.index)
-			forced = effect.args.at(effect.index++);
+		points = effect.getArg();
+		if (effect.remainingArgs() >= 1)
+			forced = effect.getArg();
 		else
 			forced = 0;
 	}
@@ -260,7 +260,7 @@ void Creature::changeShield(EffectArgs effect)
 {
 	try  // check the input
 	{
-		_shield += effect.args.at(effect.index++);
+		_shield += effect.getArg();
 		if(_shield < 0)
 			_shield = 0;
 	}
