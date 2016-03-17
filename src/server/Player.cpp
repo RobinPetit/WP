@@ -11,6 +11,15 @@
 // SFML headers
 #include <SFML/Network/Packet.hpp>
 
+
+// for debug purposes
+bool verbose=true;
+void Player::printVerbose(std::string message)
+{
+	if (verbose)
+		std::cout << "player " << _id << " - " << message << std::endl;
+}
+
 /*------------------------------ CONSTRUCTOR AND INIT */
 std::array<std::function<void(Player&, EffectArgs)>, P_EFFECTS_COUNT> Player::_effectMethods =
 {
@@ -119,20 +128,17 @@ void Player::receiveDeck()
 
 void Player::beginGame(bool isActivePlayer)
 {
+	printVerbose(std::string("Player::beginGame(") + (isActivePlayer ? "true" : "false") + ")");
+
 	// init Player's data
 	cardDeckToHand(_initialAmountOfCards);  // calls logHandState
+
 	// log & send
-	logCurrentEnergy();
-	logCurrentHealth();
-	logOpponentHealth();
-	logCurrentDeck();
-	// Do not call `logOpponentHandState()` because players are initialized one after another.
-	// So when (first player).beginGame is called, (second player).hand is still empty.
-	// Thus to ensure the right value is sent, it is sent directly
-	_pendingBoardChanges << TransferType::GAME_OPPONENT_HAND_UPDATED << static_cast<sf::Uint32>(_initialAmountOfCards);
+	logEverything();
 	_socketToClient.send(_pendingBoardChanges);
 	_pendingBoardChanges.clear();
 
+	// send GAME_STARTING packet
 	sf::Packet packet;
 	packet << TransferType::GAME_STARTING << (isActivePlayer ? TransferType::GAME_PLAYER_ENTER_TURN : TransferType::GAME_PLAYER_LEAVE_TURN);
 	_socketToClient.send(packet);
@@ -141,6 +147,8 @@ void Player::beginGame(bool isActivePlayer)
 
 void Player::enterTurn(int turn)
 {
+	printVerbose(std::string("Player::enterTurn(") + std::to_string(turn) + ")");
+
 	_isActive.store(true); //Player has become active
 
 	_turnData = _emptyTurnData;  // Reset the turn data
@@ -165,6 +173,7 @@ void Player::enterTurn(int turn)
 	logBoardState();
 	logOpponentBoardState();
 	logCurrentHealth();
+	logCurrentEnergy();
 	_opponent.logBoardState();
 	_opponent.logOpponentBoardState();
 	_opponent.logOpponentHealth();
@@ -709,35 +718,6 @@ void Player::changeHealth(EffectArgs effect)
 }
 
 
-///////// loggers
-
-void Player::logCurrentEnergy()
-{
-	// cast to be sure that the right amount of bits is sent and received
-	_pendingBoardChanges << TransferType::GAME_PLAYER_ENERGY_UPDATED << static_cast<sf::Uint32>(_energy);
-}
-
-void Player::logCurrentHealth()
-{
-	// cast to be sure that the right amount of bits is sent and received
-	_pendingBoardChanges << TransferType::GAME_PLAYER_HEALTH_UPDATED << static_cast<sf::Uint32>(_health);
-}
-
-void Player::logOpponentHealth()
-{
-	_pendingBoardChanges << TransferType::GAME_OPPONENT_HEALTH_UPDATED << static_cast<sf::Uint32>(_opponent.getHealth());
-}
-
-void Player::logCurrentDeck()
-{
-	_pendingBoardChanges << TransferType::GAME_DECK_UPDATED << static_cast<sf::Uint32>(_cardDeck.size());
-}
-
-void Player::logOpponentHandState()
-{
-	_pendingBoardChanges << TransferType::GAME_OPPONENT_HAND_UPDATED << static_cast<sf::Uint32>(_opponent.getHandSize());
-}
-
 /*--------------------------- PRIVATE */
 
 bool Player::exploitCardEffects(Card* usedCard)
@@ -880,9 +860,67 @@ std::unique_ptr<Card> Player::cardExchangeFromHand(std::unique_ptr<Card> givenCa
 	return std::move(givenCard);
 }
 
+
+/*--------------------------- LOGGERS */
+
+void Player::logEverything()
+{
+	logCurrentEnergy();
+	logCurrentHealth();
+	logOpponentHealth();
+	logCurrentDeck();
+
+	logHandState();
+	logOpponentHandState();
+	logBoardState();
+	logOpponentBoardState();
+	logGraveyardState();
+}
+
+void Player::logCurrentEnergy()
+{
+	// cast to be sure that the right amount of bits is sent and received
+	_pendingBoardChanges << TransferType::GAME_PLAYER_ENERGY_UPDATED << static_cast<sf::Uint32>(_energy);
+}
+
+void Player::logCurrentHealth()
+{
+	// cast to be sure that the right amount of bits is sent and received
+	_pendingBoardChanges << TransferType::GAME_PLAYER_HEALTH_UPDATED << static_cast<sf::Uint32>(_health);
+}
+
+void Player::logOpponentHealth()
+{
+	try
+	{
+		_pendingBoardChanges << TransferType::GAME_OPPONENT_HEALTH_UPDATED << static_cast<sf::Uint32>(_opponent.getHealth());
+	}
+	catch (...)  // In case _opponent is not initialized yet
+	{
+        _pendingBoardChanges << TransferType::GAME_OPPONENT_HEALTH_UPDATED << static_cast<sf::Uint32>(_healthInit);
+	}
+}
+
+void Player::logCurrentDeck()
+{
+	_pendingBoardChanges << TransferType::GAME_DECK_UPDATED << static_cast<sf::Uint32>(_cardDeck.size());
+}
+
 void Player::logHandState()
 {
 	logCardDataFromVector(TransferType::GAME_HAND_UPDATED, _cardHand);
+}
+
+void Player::logOpponentHandState()
+{
+	try
+	{
+		_pendingBoardChanges << TransferType::GAME_OPPONENT_HAND_UPDATED << static_cast<sf::Uint32>(_opponent.getHandSize());
+	}
+	catch (...)  // In case _opponent is not initialized yet
+	{
+		_pendingBoardChanges << TransferType::GAME_OPPONENT_HAND_UPDATED << static_cast<sf::Uint32>(_initialAmountOfCards);
+	}
 }
 
 void Player::logBoardState()
@@ -932,7 +970,6 @@ void Player::logBoardCreatureDataFromVector(TransferType type, const std::vector
 	_pendingBoardChanges << type << boardCreatures;
 }
 
-//////////
 
 // TODO: handle the case where the user doesn't give and his turn finishes
 std::vector<int> Player::askUserToSelectCards(const std::vector<CardToSelect>& selection)

@@ -72,6 +72,7 @@ public:
 	const Card* getLastCaster() const;
 	userId getId() const;
 	sf::TcpSocket& getSocket();
+	void printVerbose(std::string message);
 
 private:
 	/*------------------------------ Types */
@@ -223,16 +224,19 @@ private:
 	void useCreature(int handIndex, Card* usedCard);
 	void useSpell(int handIndex, Card* useSpell);
 
+	void logEverything();
+
 	void logCurrentEnergy();
 	void logCurrentHealth();
+	void logOpponentHealth();
+	void logCurrentDeck();
 
 	void logHandState();
-	void logBoardState();
-	void logGraveyardState();
-	void logCurrentDeck();
-	void logOpponentBoardState();
-	void logOpponentHealth();
 	void logOpponentHandState();
+	void logBoardState();
+	void logOpponentBoardState();
+	void logGraveyardState();
+
 
 	template <typename CardType>
 	void logIdsFromVector(TransferType type, const std::vector<std::unique_ptr<CardType>>& vect);
