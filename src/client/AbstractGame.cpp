@@ -410,34 +410,36 @@ void AbstractGame::handlePacket(sf::Packet& transmission)
 	}
 }
 
-///////////////TODO: USE DATABASE INSTEAD
 const std::string& AbstractGame::getCardName(cardId id)
 {
-	if (id<=10)
-		return ALL_CREATURES[id-1].name;
-	else
-		return ALL_SPELLS[id-11].name;
+	const CommonCardData* card = _client.getCardData(id);
+	// Maybe I should have use multiple inheritance to avoid this
+	return card->isSpell()
+		? static_cast<const ClientSpellData*>(card)->getName()
+		: static_cast<const ClientCreatureData*>(card)->getName();
 }
 
 CostValue AbstractGame::getCardCost(cardId id)
 {
-	if (id<=10)
-		return ALL_CREATURES[id-1].cost;
-	else
-		return ALL_SPELLS[id-11].cost;
+	const CommonCardData* card = _client.getCardData(id);
+	// Maybe I should have use multiple inheritance to avoid this
+	return card->isSpell()
+		? static_cast<CostValue>(static_cast<const ClientSpellData*>(card)->getCost())
+		: static_cast<CostValue>(static_cast<const ClientCreatureData*>(card)->getCost());
 }
 
 const std::string& AbstractGame::getCardDescription(cardId id)
 {
-	if (id<=10)
-		return ALL_CREATURES[id-1].description;
-	else
-		return ALL_SPELLS[id-11].description;
+	const CommonCardData* card = _client.getCardData(id);
+	// Maybe I should have use multiple inheritance to avoid this
+	return card->isSpell()
+		? static_cast<const ClientSpellData*>(card)->getDescription()
+		: static_cast<const ClientCreatureData*>(card)->getDescription();
 }
 
 bool AbstractGame::isSpell(cardId id)
 {
-	return id > 10;
+	return _client.getCardData(id)->isSpell();
 }
 
 template <typename FixedSizeIntegerType>
