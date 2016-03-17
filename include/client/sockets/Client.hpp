@@ -123,6 +123,9 @@ public:
 	/// Count number of card templates in database
 	cardId getNumberOfCards();
 
+	/// Give greatest card id in database
+	cardId getMaxCardId();
+
 	// Others
 
 	/// Used when the user wants the ladder

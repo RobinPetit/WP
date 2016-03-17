@@ -556,6 +556,11 @@ cardId Client::getNumberOfCards()
 	return _database.countCards();
 }
 
+cardId Client::getMaxCardId()
+{
+	return _database.getGreatestCardId();
+}
+
 ////////////////// Others
 
 Ladder Client::getLadder()
