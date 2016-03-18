@@ -2,7 +2,7 @@
 #include <iostream>
 // WizardPoker headers
 #include "common/UnableToConnectException.hpp"
-//#include "client/Terminal/states/GuiMainMenuState.hpp"
+#include "client/Gui/states/GuiMainMenuState.hpp"
 #include "client/Gui/states/GuiHomeState.hpp"
 
 GuiHomeState::GuiHomeState(Context& context):
@@ -80,7 +80,7 @@ void GuiHomeState::connect()
 					throw;
 			}
 		}
-		//stackPush<GuiMainMenuState>();
+		stackPush<GuiMainMenuState>();
 	}
 	catch(const std::runtime_error& e)
 	{
@@ -106,3 +106,4 @@ void GuiHomeState::createAccount()
 		displayMessage(e.what());
 	}
 }
+
