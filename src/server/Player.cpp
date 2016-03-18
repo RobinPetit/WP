@@ -712,7 +712,7 @@ void Player::changeHealth(EffectArgs effect)
 	}
 
 	_health += points;
-	if(_health < 0)
+	if(_health <= 0)
 	{
 		_health = 0;
 		finishGame(false, EndGame::Cause::OUT_OF_HEALTH);
