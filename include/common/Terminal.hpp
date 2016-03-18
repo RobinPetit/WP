@@ -12,8 +12,8 @@
 #endif
 
 /// Terminal is a class that allow to find the terminal installed on
-/// the computer (among some predefined)
-class Terminal
+/// the computer (among some predefined) and to handle text on it
+class Terminal final
 {
 public:
 	/// Constructor
@@ -36,9 +36,15 @@ public:
 	/// This function clears the content of the terminal
 	static void clearScreen();
 
+	/// This function returns a string to be able to write a message in bold text
+	/// \param message The message to set in bold text
+	/// \return A string with text in bold if possible and \a message otherwise
 	static std::string setBold(const std::string& message);
+
 private:
+	/// The list of the handled terminals
 	static const std::string _terminalNames[];
+	/// The index of the found terminal in _terminalNames
 	int _idx;
 };
 

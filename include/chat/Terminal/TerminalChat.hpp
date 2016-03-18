@@ -8,6 +8,7 @@
 class TerminalChat : public AbstractChat
 {
 public:
+	/// Constructor
 	TerminalChat(const char * const argv[6]);
 
 	void output() override;
@@ -18,6 +19,7 @@ public:
 	~TerminalChat() = default;
 
 private:
+	/// A Terminal handler to set text in bold or to clear screen
 	Terminal _terminal;
 };
 

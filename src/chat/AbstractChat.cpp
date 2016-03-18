@@ -29,7 +29,12 @@ void AbstractChat::connect()
 
 void AbstractChat::onConnection()
 {
-
+	// Function has empty body because default behaviour is to do nothing
+	// when both players are conected. But having a pure virtual method
+	// would force child classes to define onConnection even though they
+	// don't want to do anything. Choice is then to have an empty-function
+	// here and to not bother developpers of child classes if they don't
+	// want to
 }
 
 void AbstractChat::connectAsCaller()
@@ -82,6 +87,7 @@ void AbstractChat::connectAsCallee()
 void AbstractChat::start()
 {
 	connect();
+	// create awaiting thread
 	_inputThread = std::thread(&AbstractChat::input, this);
 	_friendPresence.store(true);
 	_running.store(true);
@@ -93,6 +99,7 @@ void AbstractChat::treatMessage(const std::string& message)
 	// special inputs start with ':'
 	if(message[0] != ':')
 	{
+		// only send message if friend is still connected
 		if(_friendPresence.load())
 		{
 			sf::Packet messagePacket;
@@ -108,12 +115,15 @@ void AbstractChat::treatMessage(const std::string& message)
 void AbstractChat::endDiscussion()
 {
 	_running.store(false);
+	// if being the first friend to leave the chat
 	if(_friendPresence.load())
 	{
+		// then send a "goodbye message"
 		sf::Packet goodbyePacket;
 		goodbyePacket << TransferType::CHAT_QUIT;
 		_out.send(goodbyePacket);
 	}
+	// otherwise, don't send anything since no one will receive it
 }
 
 void AbstractChat::input()
@@ -125,10 +135,13 @@ void AbstractChat::input()
 	while(_running.load())
 	{
 		sf::Socket::Status status{_in.receive(inputPacket)};
+		// If no packet wassent by friend, wait 1/10 s
 		if(status == sf::Socket::NotReady)
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		// If something arrived,
 		else if(status == sf::Socket::Done)
 		{
+			// it should be in {CHAT_MESSAGE, CHAT_QUIT}
 			TransferType responseHeader;
 			inputPacket >> responseHeader;
 			switch(responseHeader)
@@ -147,6 +160,7 @@ void AbstractChat::input()
 				throw std::runtime_error("AbstractChat::input: Wrong header");
 			}
 		}
+		// if status is Error or Disconnected, stop everything, an error occured
 		else
 			throw std::runtime_error("AbstractChat::input: Error in received status");
 	}
