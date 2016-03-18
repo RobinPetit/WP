@@ -44,13 +44,13 @@ protected:
 
 	void treatMessage(const std::string& message);
 
+	void endDiscussion();
+
 private:
 	void connectAsCaller();
 	void connectAsCallee();
 
 	void connect();
-
-	void endDiscussion();
 
 	void input();
 };

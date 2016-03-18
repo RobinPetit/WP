@@ -2,6 +2,7 @@ set(SOURCES
 		"chat.cpp"
 		"AbstractChat.cpp"
 		"Terminal/TerminalChat.cpp"
+		"Gui/GuiChat.cpp"
 	)
 
 set(CHAT_NAME "${PROJECT_NAME}_chat")

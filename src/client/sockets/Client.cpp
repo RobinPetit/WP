@@ -384,8 +384,7 @@ void Client::startConversation(const std::string& playerName) const
 		throw std::runtime_error("chatting with yourself is not allowed.");
 	else if(!isFriend(playerName))
 		throw std::runtime_error("you are only allowed to chat with your friends.");
-	std::string cmd;
-	cmd = _userTerminal.startProgram(
+	std::string cmd{_userTerminal.startProgram(
 		"WizardPoker_chat",
 		{
 			"caller",  // parameter 1 is caller/callee
@@ -394,7 +393,7 @@ void Client::startConversation(const std::string& playerName) const
 			_name,  // parameter 4 is caller's name
 			playerName, // parameter 5 is callee's name
 			// there is not more parameters!
-		});
+		})};
 	system(cmd.c_str());
 }
 
