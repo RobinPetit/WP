@@ -1,5 +1,5 @@
-#ifndef _BUTTON_DATA_
-#define _BUTTON_DATA_
+#ifndef _BUTTON_DATA_HPP_
+#define _BUTTON_DATA_HPP_
 
 // External headers
 #include <TGUI/Widgets/Button.hpp>
@@ -18,4 +18,4 @@ public:
 	tgui::Button::Ptr button = std::make_shared<tgui::Button>();
 };
 
-#endif  // _BUTTON_DATA_
+#endif  // _BUTTON_DATA_HPP_
