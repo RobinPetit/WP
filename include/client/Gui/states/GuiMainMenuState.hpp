@@ -19,7 +19,7 @@ class GuiMainMenuState: public GuiAbstractState, public AbstractMainMenuState
 		////////// Attributes
 		tgui::Label::Ptr _menuLabel;
 
-		tgui::Grid::Ptr _grid;
+		tgui::VerticalLayout::Ptr _layout;
 
 		static const std::vector<ButtonData<GuiMainMenuState>> _buttons;
 

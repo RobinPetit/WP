@@ -2,7 +2,9 @@
 #define _GUI_FRIENDS_MANAGEMENT_STATE_HPP_
 
 // External headers
-#include "TGUI/Widgets/Grid.hpp"
+#include <TGUI/VerticalLayout.hpp>
+#include <TGUI/Widgets/ListBox.hpp>
+#include <TGUI/Widgets/Label.hpp>
 // WizardPoker headers
 #include "client/Gui/states/ButtonData.hpp"
 #include "client/Gui/GuiAbstractState.hpp"
@@ -21,8 +23,8 @@ private:
 	static const std::vector<ButtonData<GuiFriendsManagementState>> _buttons;
 
 	tgui::Label::Ptr _menuLabel;
-
-	tgui::VerticalLayout::Ptr _layout;
+	tgui::ListBox::Ptr _friendsListBox;
+	tgui::VerticalLayout::Ptr _buttonsLayout;
 
 	////////// Methdos
 
