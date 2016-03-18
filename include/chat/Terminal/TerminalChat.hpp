@@ -14,7 +14,7 @@ public:
 
 	void display(const std::string& name, const std::string& message) override;
 
-	// default constructor issufficient
+	// default constructor is sufficient
 	~TerminalChat() = default;
 
 private:

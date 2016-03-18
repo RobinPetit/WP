@@ -6,14 +6,13 @@
 #include <sstream>
 
 AbstractChat::AbstractChat(const char * const argv[6]):
-	_role{argv[1]},
-	_address{argv[2]},
-	// argv[3] is the port which is initialized in the body of the function
 	_selfName{argv[4]},
 	_friendName{argv[5]},
-	_running{false}
+	_running{false},
+	_address{argv[2]},
+	_role{argv[1]}
 {
-	std::stringstream(argv[3]) >> _gameServerPort;
+	std::stringstream(argv[3]) >> _remotePort;
 }
 
 void AbstractChat::connect()
@@ -36,7 +35,7 @@ void AbstractChat::onConnection()
 void AbstractChat::connectAsCaller()
 {
 	// for now, _out is a connection to the game server
-	_out.connect(_address, _gameServerPort);
+	_out.connect(_address, _remotePort);
 	// send the caller's informations to the server
 	sf::Packet dataPacket;
 	dataPacket << TransferType::CHAT_PLAYER_IP << _selfName << _friendName << _listener.getLocalPort();
@@ -71,7 +70,7 @@ void AbstractChat::connectAsCaller()
 void AbstractChat::connectAsCallee()
 {
 	// connect to friend
-	_out.connect(_address, _gameServerPort);
+	_out.connect(_address, _remotePort);
 	// send to friend the listening port
 	sf::Packet dataPacket;
 	dataPacket << _listener.getLocalPort();
