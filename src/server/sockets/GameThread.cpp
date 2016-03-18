@@ -182,7 +182,10 @@ void GameThread::endGame(userId winnerId, EndGame::Cause cause)
 
 void GameThread::interruptGame()
 {
-	endGame(0, EndGame::Cause::ENDING_SERVER);
+	// verify the game is ended before to interrupt it
+	// (do not end the same game twice)
+	if(_running.load())
+		endGame(0, EndGame::Cause::ENDING_SERVER);
 }
 
 void GameThread::endTurn()
