@@ -14,8 +14,6 @@
 #include <chrono>
 #include <cassert>
 
-extern RandomInteger intGenerator;
-
 constexpr std::chrono::seconds GameThread::_turnTime;
 
 GameThread::GameThread(ServerDatabase& database, userId player1Id, userId player2Id):
@@ -128,9 +126,7 @@ userId GameThread::runGame()
 	while(_running.load())
 	{
 		if (_turnSwap.load())
-		{
 			endTurn();
-		}
 
 		for(auto player : {_activePlayer, _passivePlayer})
 		{

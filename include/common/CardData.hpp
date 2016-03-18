@@ -8,7 +8,7 @@
 #include "common/Identifiers.hpp"
 #include "common/CardData.inc"
 
-constexpr int UNLIMITED_TURNS=100;
+constexpr int UNLIMITED_TURNS = 100;
 
 ///How to define an effect:
 typedef std::vector<int> EffectParamsCollection;
@@ -16,28 +16,19 @@ typedef std::vector<int> EffectParamsCollection;
 class EffectArgs
 {
 private:
-	const std::shared_ptr<const EffectParamsCollection> args; // pointer to parameters that define the effect
-	std::size_t index; // index indicating where values should be read
+	const EffectParamsCollection _args; ///< pointer to parameters that define the effect
+	std::size_t _index; ///< index indicating where values should be read
 public:
-	EffectArgs(const EffectParamsCollection* effect): args(effect), index(0) {};
-	EffectArgs(std::initializer_list<int> effect): args(new EffectParamsCollection(effect)), index(0) {};
+	EffectArgs(const EffectParamsCollection& effect);
+	EffectArgs(const std::initializer_list<int>& effect);
 
-	int getArg() {return args->at(index++);}
-	int peekArg() {return args->at(index);}
-	int remainingArgs() {return static_cast<int>(args->size()) - index;}
-	std::string toString()
-	{
-		std::stringstream ss;
-		ss << "[";
-		for(size_t i = index; i < args->size(); ++i)
-		{
-			if(i != index)
-				ss << ",";
-			ss << args->at(i);
-		}
-		ss << "]";
-		return ss.str();
-	}
+	int getArg();
+
+	int peekArg() const;
+
+	int remainingArgs();
+
+	std::string toString() const;
 };
 //In the following order:
 //EFFECT SUBJECT [+ SUBJECT INDEX] if subject is identified by index (INDX at the end)

@@ -732,7 +732,7 @@ bool Player::exploitCardEffects(Card* usedCard)
 {
 	const std::vector<EffectParamsCollection>& effects(usedCard->getEffects());
 	for(const auto& effect: effects) //for each effect of the card
-		if(not applyEffect(usedCard, &effect)) //apply it
+		if(not applyEffect(usedCard, effect)) //apply it
 			return false;
 	return true;
 }

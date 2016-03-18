@@ -277,3 +277,42 @@ const SpellData ALL_SPELLS[] = {
 const std::size_t nbSpells{sizeof(ALL_SPELLS) / sizeof(SpellData)};
 
 const std::size_t nbCreatures{sizeof(ALL_CREATURES) / sizeof(CreatureData)};
+
+EffectArgs::EffectArgs(const EffectParamsCollection& args):
+	_args(args),
+	_index{0}
+{
+
+}
+
+EffectArgs::EffectArgs(const std::initializer_list<int>& args):
+	_args(args),
+	_index{0}
+{
+
+}
+
+int EffectArgs::getArg()
+{
+	return _args.at(_index++);
+}
+
+int EffectArgs::peekArg() const
+{
+	return _args.at(_index);
+}
+
+int EffectArgs::remainingArgs()
+{
+	return static_cast<int>(_args.size() - _index);
+}
+
+std::string EffectArgs::toString() const
+{
+	std::stringstream ss;
+	ss << "[";
+	for(size_t i = _index; i < _args.size(); ++i)
+		ss << ((i+1 == _args.size() ? "" : ", ") + _args.at(i));
+	ss << "]";
+	return ss.str();
+}
