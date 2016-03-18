@@ -507,7 +507,7 @@ void Player::applyEffectToCreatureTeam(EffectArgs effect)
 	//If the effect consists in setting a constraint
 	if(effect.peekArg() == CE_SET_CONSTRAINT)
 	{
-		effect.index++;
+		effect.getArg();
 		setTeamConstraint(effect); //set a team constraint instead of individual ones
 	}
 	else //other effects just get applied to each creature individually
@@ -541,6 +541,7 @@ void Player::printVerbose(std::string message)
 /*------------------------------ EFFECTS (PRIVATE) */
 void Player::setConstraint(EffectArgs effect)
 {
+	printVerbose("Player::setConstraint(" + effect.toString() + ")");
 	int constraintId; //constraint to set
 	int value; //value to give to it
 	int turns; //for how many turns
@@ -573,6 +574,7 @@ void Player::setConstraint(EffectArgs effect)
 
 void Player::pickDeckCards(EffectArgs effect)
 {
+	printVerbose("Player::pickDeckCards(" + effect.toString() + ")");
 	int amount;//amount of cards
 	try //check the input
 	{
@@ -587,6 +589,7 @@ void Player::pickDeckCards(EffectArgs effect)
 
 void Player::loseHandCards(EffectArgs effect)
 {
+	printVerbose("Player::loseHandCards(" + effect.toString() + ")");
 	try  //check the input
 	{
 		for(int amount{effect.peekArg()}; not _cardHand.empty() and amount > 0; amount--)
@@ -600,6 +603,7 @@ void Player::loseHandCards(EffectArgs effect)
 
 void Player::reviveGraveyardCard(EffectArgs effect)
 {
+	printVerbose("Player::reviveGraveyardCard()");
 	int binIndex;  //what card to revive
 	try  //check the input
 	{
@@ -615,6 +619,7 @@ void Player::reviveGraveyardCard(EffectArgs effect)
 
 void Player::stealHandCard(EffectArgs /* effect */)
 {
+	printVerbose("Player::stealHandCard()");
 	//no arguments
 	cardAddToHand(_opponent.cardRemoveFromHand());
 }
@@ -624,6 +629,7 @@ void Player::stealHandCard(EffectArgs /* effect */)
 ///	 + ACKNOWLEDGE if card has been swapped
 void Player::exchgHandCard(EffectArgs /* effect */)
 {
+	printVerbose("Player::exchgHandCard()");
 	int myCardIndex; //card to exchange
 	sf::Packet packet;
 	std::unique_ptr<Card> myCard;
@@ -656,6 +662,7 @@ void Player::exchgHandCard(EffectArgs /* effect */)
 
 void Player::resetEnergy(EffectArgs effect)
 {
+	printVerbose("Player::resetEnergy(" + effect.toString() + ")");
 	try //check the input
 	{
 		_energyInit += effect.getArg();
@@ -674,6 +681,7 @@ void Player::resetEnergy(EffectArgs effect)
 
 void Player::changeEnergy(EffectArgs effect)
 {
+	printVerbose("Player::changeEnergy(" + effect.toString() + ")");
 	try //check the input
 	{
 		_energy += effect.getArg();
@@ -691,7 +699,8 @@ void Player::changeEnergy(EffectArgs effect)
 
 void Player::changeHealth(EffectArgs effect)
 {
-	std::cout << "Health" << _health << std::endl;
+	printVerbose("Player::changeHealth(" + effect.toString() + ")");
+
 	int points;
 	try //check the input
 	{
@@ -712,7 +721,6 @@ void Player::changeHealth(EffectArgs effect)
 	{
 		_health = _maxHealth;
 	}
-	std::cout << "Health" << _health << " points "<< points << std::endl;
 	logCurrentHealth();
 	_opponent.logOpponentHealth();
 }
