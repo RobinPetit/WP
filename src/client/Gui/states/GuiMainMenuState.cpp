@@ -20,7 +20,7 @@ GuiMainMenuState::GuiMainMenuState(Context& context):
 	GuiAbstractState(context),
 	AbstractMainMenuState(context),
 	_menuLabel{std::make_shared<tgui::Label>()},
-	_grid{std::make_shared<tgui::Grid>()}
+	_layout{std::make_shared<tgui::VerticalLayout>()}
 {
 	_context.gui->removeAllWidgets();
 	// Get a bound version of the window size
@@ -35,16 +35,15 @@ GuiMainMenuState::GuiMainMenuState(Context& context):
 	_menuLabel->setPosition(windowWidth/2 - tgui::bindWidth(_menuLabel)/2, 40);
 	_context.gui->add(_menuLabel);
 
-	_grid->setPosition(windowWidth/5, windowHeight/5);
-	_grid->setSize(windowWidth*3/5, windowHeight*3/5);
-	int i{0};
+	_layout->setPosition(windowWidth/5, windowHeight/5);
+	_layout->setSize(windowWidth*3/5, windowHeight*3/5);
 	for(auto& button : _buttons)
 	{
 		button.button->setText(button.text);
 		button.button->connect("pressed", button.callback, this);
-		_grid->addWidget(button.button, i++, 0, {0, 0, 0, 0}, tgui::Grid::Alignment::Up);
+		_layout->add(button.button);
 	}
-	_context.gui->add(_grid);
+	_context.gui->add(_layout);
 }
 
 void GuiMainMenuState::findGame()

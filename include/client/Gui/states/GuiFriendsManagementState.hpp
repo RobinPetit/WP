@@ -22,7 +22,7 @@ private:
 
 	tgui::Label::Ptr _menuLabel;
 
-	tgui::Grid::Ptr _grid;
+	tgui::VerticalLayout::Ptr _layout;
 
 	////////// Methdos
 
