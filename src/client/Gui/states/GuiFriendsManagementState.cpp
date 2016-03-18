@@ -46,8 +46,7 @@ GuiFriendsManagementState::GuiFriendsManagementState(Context& context):
 	// Make the friends list box
 	_friendsListBox->setPosition(windowWidth/5, windowHeight/5);
 	_friendsListBox->setSize(windowWidth*(1.f/2.f - 1.f/5.f), windowHeight*3.f/4.f);
-	for(const auto& friendUser : _context.client->getFriends())
-		_friendsListBox->addItem(friendUser.name);
+	updateFriendListBox();
 	_context.gui->add(_friendsListBox);
 }
 
@@ -58,7 +57,9 @@ void GuiFriendsManagementState::addFriend()
 
 void GuiFriendsManagementState::removeFriend()
 {
-	;
+	if(_friendsListBox->getSelectedItemIndex() != -1)
+		_context.client->removeFriend(_friendsListBox->getSelectedItem());
+	updateFriendListBox();
 }
 
 void GuiFriendsManagementState::treatRequests()
@@ -68,5 +69,13 @@ void GuiFriendsManagementState::treatRequests()
 
 void GuiFriendsManagementState::startChat()
 {
-	;
+	if(_friendsListBox->getSelectedItemIndex() != -1)
+		_context.client->startConversation(_friendsListBox->getSelectedItem());
+}
+
+void GuiFriendsManagementState::updateFriendListBox()
+{
+	_friendsListBox->removeAllItems();
+	for(const auto& friendUser : _context.client->getFriends())
+		_friendsListBox->addItem(friendUser.name);
 }

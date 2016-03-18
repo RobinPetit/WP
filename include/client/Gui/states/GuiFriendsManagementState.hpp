@@ -32,6 +32,7 @@ private:
 	void removeFriend();
 	void treatRequests();
 	void startChat();
+	void updateFriendListBox();
 
 };
 
