@@ -24,12 +24,12 @@ ServerDatabase::ServerDatabase(const std::string& filename) : Database(filename)
 	createCreatureData();
 }
 
-Card ServerDatabase::getCard(cardId card)
+Card* ServerDatabase::getCard(cardId card)
 {
 	if(_cardData.count(card) == 0)
 		throw std::runtime_error("The requested card (" + std::to_string(card) + ") does not exist.");
 
-	return Card(*_cardData.at(card).get());
+	return new Card(*_cardData.at(card).get());
 }
 
 userId ServerDatabase::getUserId(const std::string& login)
