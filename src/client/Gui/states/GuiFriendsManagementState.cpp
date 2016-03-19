@@ -1,5 +1,6 @@
 // WizardPoker headers
 #include "client/Gui/states/GuiFriendsManagementState.hpp"
+#include "client/Gui/InputBox.hpp"
 
 const std::vector<ButtonData<GuiFriendsManagementState>> GuiFriendsManagementState::_buttons =
 {
@@ -52,7 +53,26 @@ GuiFriendsManagementState::GuiFriendsManagementState(Context& context):
 
 void GuiFriendsManagementState::addFriend()
 {
-	;
+	static const std::string messageBoxText{"Enter the name of your\nnew friend:"};
+	InputBox::Ptr window{std::make_shared<InputBox>()};
+	std::shared_ptr<std::string> newFriendNamePtr{new std::string()};
+
+	window->setTitle("Title of the window");
+	window->setLabelText(messageBoxText);
+
+	auto windowWidth{tgui::bindWidth(*_context.gui)};
+	auto windowHeight{tgui::bindHeight(*_context.gui)};
+	auto childWidth{windowWidth*0.8f};
+	auto childHeight{windowHeight*0.8f};
+
+	window->setSize(childWidth, childHeight);
+	window->setGridPosition(childWidth*0.05f, childHeight*0.25f);
+	window->setGridSize(childWidth*0.9f, childHeight*0.5f);
+	window->setCallback([this](const std::string& friendName)
+	{
+		_context.client->sendFriendshipRequest(friendName);
+	});
+	_context.gui->add(window);
 }
 
 void GuiFriendsManagementState::removeFriend()
@@ -125,3 +145,4 @@ void GuiFriendsManagementState::updateFriendListBox()
 	for(const auto& friendUser : _context.client->getFriends())
 		_friendsListBox->addItem(friendUser.name);
 }
+
