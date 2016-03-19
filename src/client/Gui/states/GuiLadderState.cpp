@@ -27,12 +27,7 @@ GuiLadderState::GuiLadderState(Context& context):
 	_context.gui->add(_titleLabel);
 
 	// Make the button(s)
-	for(auto& button : _buttons)
-	{
-		button.button->setText(button.text);
-		button.button->connect("pressed", button.callback, this);
-		_context.gui->add(button.button);
-	}
+	setupButtons(_buttons, _context.gui);
 	_buttons[0].button->setPosition(windowWidth/5.f, windowHeight * 8.f/10.f);
 	_buttons[0].button->setSize(windowWidth * 3.f/5.f, windowHeight * 1/10.f);
 

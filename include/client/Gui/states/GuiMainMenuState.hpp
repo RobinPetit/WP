@@ -6,7 +6,6 @@
 // WizardPoker headers
 #include "client/Gui/GuiAbstractState.hpp"
 #include "client/states/AbstractMainMenuState.hpp"
-#include "client/Gui/states/ButtonData.hpp"
 
 /// Main menu in GUI Interface
 class GuiMainMenuState: public GuiAbstractState, public AbstractMainMenuState
@@ -21,7 +20,7 @@ class GuiMainMenuState: public GuiAbstractState, public AbstractMainMenuState
 
 		tgui::VerticalLayout::Ptr _layout;
 
-		static const std::vector<ButtonData<GuiMainMenuState>> _buttons;
+		const static std::vector<ButtonData<GuiMainMenuState>> _buttons;
 
 		////////// Methods
 		void findGame();

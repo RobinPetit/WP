@@ -38,12 +38,7 @@ GuiMainMenuState::GuiMainMenuState(Context& context):
 
 	_layout->setPosition(windowWidth/5, windowHeight/5);
 	_layout->setSize(windowWidth*3/5, windowHeight*3/5);
-	for(auto& button : _buttons)
-	{
-		button.button->setText(button.text);
-		button.button->connect("pressed", button.callback, this);
-		_layout->add(button.button);
-	}
+	setupButtons(_buttons, _layout);
 	_context.gui->add(_layout);
 }
 

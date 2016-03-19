@@ -36,12 +36,7 @@ GuiFriendsManagementState::GuiFriendsManagementState(Context& context):
 	// Make the buttons
 	_buttonsLayout->setPosition(windowWidth/2.f, windowHeight/5.f);
 	_buttonsLayout->setSize(windowWidth*(1.f/2.f - 1.f/5.f), windowHeight*3.f/4.f);
-	for(auto& button : _buttons)
-	{
-		button.button->setText(button.text);
-		button.button->connect("pressed", button.callback, this);
-		_buttonsLayout->add(button.button);
-	}
+	setupButtons(_buttons, _buttonsLayout);
 	_context.gui->add(_buttonsLayout);
 
 	// Make the friends list box

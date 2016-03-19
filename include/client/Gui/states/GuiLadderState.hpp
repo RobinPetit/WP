@@ -9,7 +9,6 @@
 #include "common/Database.hpp"  // Ladder
 #include "client/Gui/GuiAbstractState.hpp"
 #include "client/states/AbstractLadderState.hpp"
-#include "client/Gui/states/ButtonData.hpp"
 
 
 /// Final class for the ladder with GUI.
@@ -20,7 +19,7 @@ class GuiLadderState : public GuiAbstractState, public AbstractLadderState
 		GuiLadderState(Context& context);
 
 	private:
-		static const std::vector<ButtonData<GuiLadderState>> _buttons;
+		const static std::vector<ButtonData<GuiLadderState>> _buttons;
 
 		/// A structure that contains all widgets needed for displaying an entry
 		/// of the ladder in GUI.
