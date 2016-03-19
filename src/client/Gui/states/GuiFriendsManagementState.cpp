@@ -69,7 +69,6 @@ void GuiFriendsManagementState::removeFriend()
 		_context.client->removeFriend(selectedFriend);
 		if(not _friendsListBox->removeItem(selectedFriend))
 			throw std::runtime_error("Unable to remove friend from the list box");
-		display();
 	}
 	catch(std::runtime_error& e)
 	{
@@ -77,9 +76,41 @@ void GuiFriendsManagementState::removeFriend()
 	}
 }
 
-void GuiFriendsManagementState::treatRequests()
+void GuiFriendsManagementState::treatIndividualRequest(const Friend& friendRequest)
 {
-	;
+	const static std::string acceptButton{"Accept"};
+	const static std::string refuseButton{"Refuse"};
+	const static std::string ignoreButton{"Ignore"};
+	tgui::MessageBox::Ptr messageBox{std::make_shared<tgui::MessageBox>()};
+
+	// warn that a player wants to become friend
+	messageBox->setText(friendRequest.name + " wants to become your friend");
+
+	// Add the three possible buttons
+	messageBox->addButton(acceptButton);
+	messageBox->addButton(refuseButton);
+	messageBox->addButton(ignoreButton);
+
+	_context.gui->add(messageBox);
+	// center messageBox on current window
+	messageBox->setPosition((tgui::bindWidth(*_context.gui) - tgui::bindWidth(messageBox)) / 2,
+			(tgui::bindHeight(*_context.gui) - tgui::bindHeight(messageBox)) / 2);
+
+	messageBox->connect("buttonPressed", [messageBox, friendRequest, this](const std::string& pressedButtonName)
+	{
+		// accept or refuse according to what button's been pressed
+		if(pressedButtonName == acceptButton)
+		{
+			// send to server that the request is accepted
+			_context.client->acceptFriendshipRequest(friendRequest.name);
+			// and add the friend to the list box
+			_friendsListBox->addItem(friendRequest.name);
+		}
+		else if(pressedButtonName == refuseButton)
+			_context.client->acceptFriendshipRequest(friendRequest.name, false);
+		// destroy the message box anyway
+		messageBox->destroy();
+	});
 }
 
 void GuiFriendsManagementState::startChat()

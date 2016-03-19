@@ -13,6 +13,10 @@ class AbstractFriendsManagementState : virtual public AbstractState
 
 	protected:
 		void backMainMenu();
+
+		void treatRequests();
+
+		virtual void treatIndividualRequest(const Friend& friendRequest) = 0;
 };
 
 #endif// _ABSTRACT_FRIENDS_MANAGEMENT_STATE_CLIENT_HPP

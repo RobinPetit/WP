@@ -49,6 +49,11 @@ void TerminalAbstractState::waitForEnter()
 	std::getline(std::cin, tmp);
 }
 
+void TerminalAbstractState::displayMessage(const std::string& message)
+{
+	std::cout << message << std::endl;
+}
+
 std::size_t TerminalAbstractState::askForNumber(std::size_t from, std::size_t to)
 {
 	std::string input;

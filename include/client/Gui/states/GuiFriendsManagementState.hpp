@@ -5,6 +5,7 @@
 #include <TGUI/VerticalLayout.hpp>
 #include <TGUI/Widgets/ListBox.hpp>
 #include <TGUI/Widgets/Label.hpp>
+#include <TGUI/Widgets/MessageBox.hpp>
 // WizardPoker headers
 #include "client/Gui/states/ButtonData.hpp"
 #include "client/Gui/GuiAbstractState.hpp"
@@ -30,8 +31,10 @@ private:
 
 	void addFriend();
 	void removeFriend();
-	void treatRequests();
+	// void treatRequests() override;
 	void startChat();
+
+	void treatIndividualRequest(const Friend& friendRequest) override;
 
 };
 

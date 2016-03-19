@@ -79,7 +79,7 @@ void TerminalFriendsManagementState::removeFriend()
 	}
 	waitForEnter();
 }
-
+/*
 void TerminalFriendsManagementState::treatRequests()
 {
 	try
@@ -110,6 +110,20 @@ void TerminalFriendsManagementState::treatRequests()
 		std::cout << "Error: " << e.what() << "\n";
 	}
 	waitForEnter();
+}*/
+
+void TerminalFriendsManagementState::treatIndividualRequest(const Friend& friendRequest)
+{
+	std::cout << friendRequest.name << " wants to become your friend.\n"
+	          << FRIENDSHIP_REQUEST_ACCEPT << ". Accept request\n"
+	          << FRIENDSHIP_REQUEST_REFUSE << ". Refuse request\n"
+	          << FRIENDSHIP_REQUEST_IGNORE << ". Ignore request\n\t";
+	int choice;
+	std::cin >> choice;
+	if(choice == FRIENDSHIP_REQUEST_ACCEPT)
+		_context.client->acceptFriendshipRequest(friendRequest.name);
+	else if (choice == FRIENDSHIP_REQUEST_REFUSE)
+		_context.client->acceptFriendshipRequest(friendRequest.name, false);
 }
 
 void TerminalFriendsManagementState::startChat()

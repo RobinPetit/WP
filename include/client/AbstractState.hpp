@@ -64,6 +64,8 @@ class AbstractState
 		/// Delete all the states.
 		void stackClear();
 
+		virtual void displayMessage(const std::string& message) = 0;
+
 		Context& _context;  ///< The context.
 };
 

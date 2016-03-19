@@ -34,7 +34,7 @@ class GuiAbstractState : virtual public AbstractState
 		/// Display a GUI message box with \a message as content, and with
 		/// a button Ok.
 		/// \param message The message to display in the message box.
-		void displayMessage(const std::string& message);
+		void displayMessage(const std::string& message) override;
 };
 
 #endif  // _GUI_ABSTRACT_STATE_CLIENT_HPP

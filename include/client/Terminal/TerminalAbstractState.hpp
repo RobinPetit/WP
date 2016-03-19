@@ -49,6 +49,8 @@ class TerminalAbstractState : virtual public AbstractState
 		/// scroll up in order to see what's just displayed.
 		static void waitForEnter();
 
+		virtual void displayMessage(const std::string& message) override;
+
 	private:
 		/// All actions doable in the state.
 		std::vector<std::pair<std::string, std::function<void()>>> _actions;
