@@ -79,18 +79,8 @@ void Player::setDeck(const Deck& newDeck)
 	for(std::size_t i{0}; i < Deck::size; ++i) // \TODO use database instead
 	{
 		const cardId card{newDeck.getCard(i)};
-		// FIXME For now, we consider that cardId <= 10 are creatures,
-		// and higher cardId are spells. THIS SHOULD BE FIXED.
-		if(card <= 10)
-		{
-			const CreatureData& creat = ALL_CREATURES[card-1];
-			loadedCards[i].reset(new Creature(card, *this, creat.cost, creat.attack, creat.health, creat.shield, creat.shieldType, creat.effects));
-		}
-		else
-		{
-			const SpellData& spell = ALL_SPELLS[card - 11];
-			loadedCards[i].reset(new Spell(card, spell.cost, spell.effects));
-		}
+		// TODO: test use of database
+		loadedCards[i].reset(_database.getCard(card));
 	}
 
 	// shuffle the deck of cards
