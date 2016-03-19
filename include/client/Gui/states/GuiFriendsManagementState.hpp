@@ -33,6 +33,7 @@ private:
 	void removeFriend();
 	// void treatRequests() override;
 	void startChat();
+	void updateFriendListBox();
 
 	void treatIndividualRequest(const Friend& friendRequest) override;
 

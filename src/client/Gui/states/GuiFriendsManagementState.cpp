@@ -46,8 +46,7 @@ GuiFriendsManagementState::GuiFriendsManagementState(Context& context):
 	// Make the friends list box
 	_friendsListBox->setPosition(windowWidth/5, windowHeight/5);
 	_friendsListBox->setSize(windowWidth*(1.f/2.f - 1.f/5.f), windowHeight*3.f/4.f);
-	for(const auto& friendUser : _context.client->getFriends())
-		_friendsListBox->addItem(friendUser.name);
+	updateFriendListBox();
 	_context.gui->add(_friendsListBox);
 }
 
@@ -58,7 +57,7 @@ void GuiFriendsManagementState::addFriend()
 
 void GuiFriendsManagementState::removeFriend()
 {
-	std::string selectedFriend{_friendsListBox->getSelectedItem()};
+	const std::string selectedFriend{_friendsListBox->getSelectedItem()};
 	if(selectedFriend == "")
 	{
 		displayMessage("You need to select a friend first");
@@ -69,6 +68,7 @@ void GuiFriendsManagementState::removeFriend()
 		_context.client->removeFriend(selectedFriend);
 		if(not _friendsListBox->removeItem(selectedFriend))
 			throw std::runtime_error("Unable to remove friend from the list box");
+		updateFriendListBox();
 	}
 	catch(std::runtime_error& e)
 	{
@@ -115,5 +115,13 @@ void GuiFriendsManagementState::treatIndividualRequest(const Friend& friendReque
 
 void GuiFriendsManagementState::startChat()
 {
-	;
+	if(_friendsListBox->getSelectedItemIndex() != -1)
+		_context.client->startConversation(_friendsListBox->getSelectedItem());
+}
+
+void GuiFriendsManagementState::updateFriendListBox()
+{
+	_friendsListBox->removeAllItems();
+	for(const auto& friendUser : _context.client->getFriends())
+		_friendsListBox->addItem(friendUser.name);
 }
