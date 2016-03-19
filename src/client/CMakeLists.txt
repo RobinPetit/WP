@@ -40,6 +40,7 @@ set(SOURCES
 		"Gui/states/GuiHomeState.cpp"
 		"Gui/states/GuiMainMenuState.cpp"
 		"Gui/states/GuiFriendsManagementState.cpp"
+		"Gui/states/GuiLadderState.cpp"
 	)
 
 set(CLIENT_NAME "${PROJECT_NAME}_client")

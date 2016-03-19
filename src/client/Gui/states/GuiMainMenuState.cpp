@@ -3,6 +3,7 @@
 // WidzardPoker headers
 #include "client/Gui/states/GuiMainMenuState.hpp"
 #include "client/Gui/states/GuiFriendsManagementState.hpp"
+#include "client/Gui/states/GuiLadderState.hpp"
 
 const std::vector<ButtonData<GuiMainMenuState>> GuiMainMenuState::_buttons =
 {
@@ -68,5 +69,5 @@ void GuiMainMenuState::manageFriends()
 
 void GuiMainMenuState::seeLadder()
 {
-	// stackPush<GuiLadderState>();
+	stackPush<GuiLadderState>();
 }

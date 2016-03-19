@@ -106,4 +106,3 @@ void GuiHomeState::createAccount()
 		displayMessage(e.what());
 	}
 }
-
