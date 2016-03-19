@@ -55,6 +55,7 @@ public:
 	std::vector<Deck> getDecks(userId id);
 	Deck getDeckByName(userId id, const std::string& deckName);
 	void createDeck(userId id, const Deck& deck);
+	std::vector<cardId> getFirstCardIds(unsigned count); // TODO use it in Deck constructor
 	void deleteDeckByName(userId id, const std::string& deckName);
 	void editDeck(userId id, const Deck& deck); // Deck should contains the deckId
 
@@ -97,9 +98,10 @@ private:
 	sqlite3_stmt * _getCreatureCardsStmt;
 	sqlite3_stmt * _getCardEffectsStmt;
 	sqlite3_stmt * _newCardStmt;
+	sqlite3_stmt * _getFirstCardIdsStmt;
 	sqlite3_stmt * _countCardsStmt;
 
-	StatementsList<23> _statements
+	StatementsList<24> _statements
 	{
 		{
 			Statement {
@@ -229,6 +231,10 @@ private:
 				"	FROM FullCard "
 				"	ORDER BY id "
 				"	LIMIT ?1;"
+			},
+			Statement {
+				&_countCardsStmt,
+				"SELECT count() FROM FullCard;"
 			},
 		}
 	};

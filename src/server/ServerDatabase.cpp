@@ -214,6 +214,21 @@ void ServerDatabase::createDeck(userId id, const Deck& deck)
 	assert(sqliteThrowExcept(sqlite3_step(_createDeckStmt)) == SQLITE_DONE);
 }
 
+std::vector<cardId> ServerDatabase::getFirstCardIds(unsigned count)
+{
+	sqlite3_reset(_getFirstCardIdsStmt);
+	sqliteThrowExcept(sqlite3_bind_int(_getFirstCardIdsStmt, 1, static_cast<int>(count)));
+
+	std::vector<cardId> cardIds;
+
+	while(sqliteThrowExcept(sqlite3_step(_getFirstCardIdsStmt)) == SQLITE_ROW)
+	{
+		cardIds.emplace_back(sqlite3_column_int64(_getFirstCardIdsStmt, 0));
+	}
+
+	return cardIds;
+}
+
 void ServerDatabase::deleteDeckByName(userId id, const std::string& deckName)
 {
 	std::unique_lock<std::mutex> lock {_dbAccess};
