@@ -302,7 +302,7 @@ int EffectArgs::peekArg() const
 	return _args.at(_index);
 }
 
-int EffectArgs::remainingArgs()
+int EffectArgs::remainingArgs() const
 {
 	return static_cast<int>(_args.size() - _index);
 }
