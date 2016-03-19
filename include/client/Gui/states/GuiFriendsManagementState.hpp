@@ -7,7 +7,6 @@
 #include <TGUI/Widgets/Label.hpp>
 #include <TGUI/Widgets/MessageBox.hpp>
 // WizardPoker headers
-#include "client/Gui/states/ButtonData.hpp"
 #include "client/Gui/GuiAbstractState.hpp"
 #include "client/states/AbstractFriendsManagementState.hpp"
 // std-C++ headers
@@ -21,7 +20,7 @@ public:
 
 private:
 	////////// Attributes
-	static const std::vector<ButtonData<GuiFriendsManagementState>> _buttons;
+	const static std::vector<ButtonData<GuiFriendsManagementState>> _buttons;
 
 	tgui::Label::Ptr _menuLabel;
 	tgui::ListBox::Ptr _friendsListBox;
