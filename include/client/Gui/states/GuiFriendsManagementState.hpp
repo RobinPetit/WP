@@ -31,7 +31,6 @@ private:
 
 	void addFriend();
 	void removeFriend();
-	// void treatRequests() override;
 	void startChat();
 	void updateFriendListBox();
 

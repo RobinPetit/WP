@@ -19,10 +19,9 @@ class TerminalFriendsManagementState : public TerminalAbstractState, public Abst
 	private:
 		void addFriend();
 		void removeFriend();
-		//void treatRequests() override;
 		void startChat();
 
 		void treatIndividualRequest(const Friend& friendRequest) override;
 };
 
-#endif// _TERMINAL_FRIENDS_MANAGEMENT_STATE_CLIENT_HPP
+#endif  // _TERMINAL_FRIENDS_MANAGEMENT_STATE_CLIENT_HPP
