@@ -213,27 +213,26 @@ void Creature::changeAttack(EffectArgs effect)
 void Creature::changeHealth(EffectArgs effect)
 {
 	int points;  // health points to add
-	int forced;	 // 1 if change is forced, 0 if not
+	bool forced;
 	try  // check the input
 	{
 		points = effect.getArg();
 		if (effect.remainingArgs() >= 1)
-			forced = effect.getArg();
+			forced = effect.getArg() != 0;
 		else
-			forced = 0;
+			forced = false;
 	}
 	catch (std::out_of_range&)
 	{
 		 throw std::runtime_error("changeHealth error with cards arguments");
 	}
 
-	// bool forced = args.at(1) : if attack is forced, shield does not count
-	if(points < 0 and forced==0)
+	if(points < 0 and not forced)
 	{
 		switch (_shieldType)
 		{
 			case SHIELD_BLUE:
-				points+= _shield;  // Blue shield, can allow part of the attack to deal damage
+				points += _shield;  // Blue shield, can allow part of the attack to deal damage
 				if(points > 0)
 					points = 0;
 				break;
