@@ -48,7 +48,7 @@ class AbstractGame
 		// allow to update these values without interfering during a turn
 		std::mutex _accessHealth;
 		std::mutex _accessEnergy;
-		// \TODO: sync with Client::_inGame
+		std::mutex _accessScreen;
 		std::atomic_bool _playing;
 		std::atomic_bool _myTurn;
 		/// Waits for special server data such as END_OF_TURN, BOARD_UPDATE, etc.
