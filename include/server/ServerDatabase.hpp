@@ -24,6 +24,8 @@ public:
 
 	Card* getCard(cardId card);
 	const CommonCardData* getCardData(cardId card);
+	/// Number of card templates in database
+	cardId countCards();
 
 	userId getUserId(const std::string& login);
 	std::string getLogin(userId id);
@@ -95,8 +97,9 @@ private:
 	sqlite3_stmt * _getCreatureCardsStmt;
 	sqlite3_stmt * _getCardEffectsStmt;
 	sqlite3_stmt * _newCardStmt;
+	sqlite3_stmt * _countCardsStmt;
 
-	StatementsList<22> _statements
+	StatementsList<23> _statements
 	{
 		{
 			Statement {
@@ -219,6 +222,13 @@ private:
 				&_newCardStmt,
 				"INSERT INTO GivenCard(card, owner) "
 				"	VALUES (?1, ?2);"
+			},
+			Statement {
+				&_getFirstCardIdsStmt,
+				"SELECT id "
+				"	FROM FullCard "
+				"	ORDER BY id "
+				"	LIMIT ?1;"
 			},
 		}
 	};

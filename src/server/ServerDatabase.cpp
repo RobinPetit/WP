@@ -32,6 +32,12 @@ Card* ServerDatabase::getCard(cardId card)
 	return new Card(*_cardData.at(card).get());
 }
 
+cardId ServerDatabase::countCards()
+{
+	assert(sqliteThrowExcept(sqlite3_step(_countCardsStmt)) == SQLITE_ROW);
+	return sqlite3_column_int(_countCardsStmt, 0);
+}
+
 userId ServerDatabase::getUserId(const std::string& login)
 {
 	std::unique_lock<std::mutex> lock {_dbAccess};
