@@ -33,7 +33,7 @@ const CreatureData ALL_CREATURES[] = {
 	{
  		"Greedy imp",
 		COST_1, ATTACK_2, HEALTH_2, SHIELD_2, SHIELD_ORANGE,
-		{{PLAYER_SELF,PE_SET_CONSTRAINT,PC_TURN_CARDS_PICKED,2,1,NO_CASTER_NEEDED}},
+		{{PLAYER_SELF,PE_SET_CONSTRAINT,PC_TURN_CARDS_PICKED,2,2,NO_CASTER_NEEDED}},
 		"Allows you to draw one more card at the beginning of your next turn"
 	},
 	{
