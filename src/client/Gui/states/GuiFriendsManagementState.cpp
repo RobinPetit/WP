@@ -26,7 +26,7 @@ GuiFriendsManagementState::GuiFriendsManagementState(Context& context):
 	auto windowHeight(tgui::bindHeight(*_context.gui));
 
 	// Make the label
-	_menuLabel->setText("Friends anagement menu");
+	_menuLabel->setText("Friends management menu");
 	_menuLabel->setTextSize(30);
 	// center the label on the X axis
 	_menuLabel->setPosition(windowWidth/2.f - tgui::bindWidth(_menuLabel)/2.f, 40);
@@ -57,9 +57,23 @@ void GuiFriendsManagementState::addFriend()
 
 void GuiFriendsManagementState::removeFriend()
 {
-	if(_friendsListBox->getSelectedItemIndex() != -1)
-		_context.client->removeFriend(_friendsListBox->getSelectedItem());
-	updateFriendListBox();
+	const std::string selectedFriend{_friendsListBox->getSelectedItem()};
+	if(selectedFriend == "")
+	{
+		displayMessage("You need to select a friend first");
+		return;
+	}
+	try
+	{
+		_context.client->removeFriend(selectedFriend);
+		if(not _friendsListBox->removeItem(selectedFriend))
+			throw std::runtime_error("Unable to remove friend from the list box");
+		updateFriendListBox();
+	}
+	catch(std::runtime_error& e)
+	{
+		displayMessage(e.what());
+	}
 }
 
 void GuiFriendsManagementState::treatRequests()
