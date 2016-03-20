@@ -1,7 +1,5 @@
 #include "client/Gui/CardGui.hpp"
 
-
-using namespace std;
 using namespace sf;
 
 CardGUI::CardGUI()
