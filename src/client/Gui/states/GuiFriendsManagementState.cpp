@@ -18,7 +18,6 @@ GuiFriendsManagementState::GuiFriendsManagementState(Context& context):
 	_friendsListBox{std::make_shared<tgui::ListBox>()},
 	_buttonsLayout{std::make_shared<tgui::VerticalLayout>()}
 {
-	_context.gui->removeAllWidgets();
 	// Get a bound version of the window size
 	// Passing this to setPosition or setSize will make the widget automatically
 	// update when the view of the gui changes
@@ -43,6 +42,20 @@ GuiFriendsManagementState::GuiFriendsManagementState(Context& context):
 	_friendsListBox->setSize(windowWidth*(1.f/2.f - 1.f/5.f), windowHeight*3.f/4.f);
 	updateFriendListBox();
 	_context.gui->add(_friendsListBox);
+}
+
+void GuiFriendsManagementState::onPush()
+{
+	_menuLabel->hide();
+	_friendsListBox->hide();
+	_buttonsLayout->hide();
+}
+
+void GuiFriendsManagementState::onPop()
+{
+	_menuLabel->show();
+	_friendsListBox->show();
+	_buttonsLayout->show();
 }
 
 void GuiFriendsManagementState::addFriend()

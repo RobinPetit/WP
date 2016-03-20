@@ -1,5 +1,6 @@
 // WizardPoker headers
 #include "client/states/AbstractFriendsManagementState.hpp"
+#include "client/StateStack.hpp"
 
 AbstractFriendsManagementState::AbstractFriendsManagementState(Context& context):
 	AbstractState(context)
@@ -8,7 +9,7 @@ AbstractFriendsManagementState::AbstractFriendsManagementState(Context& context)
 
 void AbstractFriendsManagementState::backMainMenu()
 {
-	stackPop();
+	_context.stateStack->pop();
 }
 
 void AbstractFriendsManagementState::treatRequests()
@@ -27,4 +28,3 @@ void AbstractFriendsManagementState::treatRequests()
 		displayMessage(e.what());
 	}
 }
-

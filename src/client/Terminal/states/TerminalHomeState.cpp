@@ -53,7 +53,7 @@ void TerminalHomeState::connect()
 					throw;
 			}
 		}
-		stackPush<TerminalMainMenuState>();
+		_context.stateStack->push<TerminalMainMenuState>();
 	}
 	catch(const std::runtime_error& e)
 	{

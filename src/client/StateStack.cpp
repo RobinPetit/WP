@@ -22,6 +22,7 @@ void StateStack::handleInput()
 
 void StateStack::pop()
 {
+	(*_stackIterator)->onPop();
 	_stackIterator--;
 }
 

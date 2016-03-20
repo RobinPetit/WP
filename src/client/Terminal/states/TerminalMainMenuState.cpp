@@ -34,25 +34,25 @@ void TerminalMainMenuState::display()
 
 void TerminalMainMenuState::findGame()
 {
-	stackPush<TerminalLobbyState>();
+	_context.stateStack->push<TerminalLobbyState>();
 }
 
 void TerminalMainMenuState::manageDecks()
 {
-	stackPush<TerminalDecksManagementState>();
+	_context.stateStack->push<TerminalDecksManagementState>();
 }
 
 void TerminalMainMenuState::seeCollection()
 {
-	stackPush<TerminalCardsCollectionState>();
+	_context.stateStack->push<TerminalCardsCollectionState>();
 }
 
 void TerminalMainMenuState::seeLadder()
 {
-	stackPush<TerminalLadderState>();
+	_context.stateStack->push<TerminalLadderState>();
 }
 
 void TerminalMainMenuState::manageFriends()
 {
-	stackPush<TerminalFriendsManagementState>();
+	_context.stateStack->push<TerminalFriendsManagementState>();
 }

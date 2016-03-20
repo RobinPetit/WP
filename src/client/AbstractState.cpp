@@ -9,12 +9,10 @@ AbstractState::AbstractState(Context& context):
 {
 }
 
-void AbstractState::stackPop()
+void AbstractState::onPush()
 {
-	_context.stateStack->pop();
 }
 
-void AbstractState::stackClear()
+void AbstractState::onPop()
 {
-	_context.stateStack->clear();
 }

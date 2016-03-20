@@ -3,7 +3,6 @@
 
 // WizardPoker headers
 #include "client/Context.hpp"
-#include "client/StateStack.hpp"
 
 /// Base class for the various states.
 /// A state is basically a screen of the application, such as a menu,
@@ -52,27 +51,20 @@ class AbstractState
 		/// This method get the user input and do things with it.
 		virtual void handleInput() = 0;
 
+		/// Method called when another state is pushed on this one.
+		/// By default, does nothing.
+		virtual void onPush();
+
+		/// Method called when this state become the TOS again (e.g. this method
+		/// is called on the HomeState instance when we log out from the main
+		/// menu state).
+		/// By default, does nothing.
+		virtual void onPop();
+
 	protected:
-		/// Add a new state to the stack.
-		/// \tparam The type of state to create.
-		template<typename StateType>
-		void stackPush();
-
-		/// Delete the top state.
-		void stackPop();
-
-		/// Delete all the states.
-		void stackClear();
-
 		virtual void displayMessage(const std::string& message) = 0;
 
 		Context& _context;  ///< The context.
 };
-
-template<typename StateType>
-void AbstractState::stackPush()
-{
-	_context.stateStack->push<StateType>();
-}
 
 #endif  // _ABSTRACT_STATE_CLIENT_HPP

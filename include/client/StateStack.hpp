@@ -11,9 +11,9 @@
 #include <SFML/System.hpp>
 // WizardPoker headers
 #include "client/sockets/Client.hpp"
+#include "client/AbstractState.hpp"
 
 //Forward declarations
-class AbstractState;
 class Context;
 
 /// States manager that holds all the states and manages them.
@@ -75,6 +75,7 @@ void StateStack::push()
 	// If we must store another state type at *(_stackIterator + 1)
 	else if(typeid(StateType*) != typeid((_stackIterator + 1)->get()))
 	{
+		(*_stackIterator)->onPush();
 		_stackIterator++;
 		_stackIterator->reset(new StateType(_context));
 	}

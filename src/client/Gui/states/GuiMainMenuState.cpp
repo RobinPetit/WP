@@ -23,7 +23,6 @@ GuiMainMenuState::GuiMainMenuState(Context& context):
 	_menuLabel{std::make_shared<tgui::Label>()},
 	_layout{std::make_shared<tgui::VerticalLayout>()}
 {
-	_context.gui->removeAllWidgets();
 	// Get a bound version of the window size
 	// Passing this to setPosition or setSize will make the widget automatically
 	// update when the view of the gui changes
@@ -42,27 +41,39 @@ GuiMainMenuState::GuiMainMenuState(Context& context):
 	_context.gui->add(_layout);
 }
 
+void GuiMainMenuState::onPush()
+{
+	_menuLabel->hide();
+	_layout->hide();
+}
+
+void GuiMainMenuState::onPop()
+{
+	_menuLabel->show();
+	_layout->show();
+}
+
 void GuiMainMenuState::findGame()
 {
-	// stackPush<GuiLobbyState>();
+	// _context.stateStack->push<GuiLobbyState>();
 }
 
 void GuiMainMenuState::manageDecks()
 {
-	// stackPush<GuiDecksManagementState>();
+	// _context.stateStack->push<GuiDecksManagementState>();
 }
 
 void GuiMainMenuState::seeCards()
 {
-	// stackPush<GuiCardsCollectionState>();
+	// _context.stateStack->push<GuiCardsCollectionState>();
 }
 
 void GuiMainMenuState::manageFriends()
 {
-	stackPush<GuiFriendsManagementState>();
+	_context.stateStack->push<GuiFriendsManagementState>();
 }
 
 void GuiMainMenuState::seeLadder()
 {
-	stackPush<GuiLadderState>();
+	_context.stateStack->push<GuiLadderState>();
 }

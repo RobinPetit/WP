@@ -80,7 +80,7 @@ void GuiHomeState::connect()
 					throw;
 			}
 		}
-		stackPush<GuiMainMenuState>();
+		_context.stateStack->push<GuiMainMenuState>();
 	}
 	catch(const std::runtime_error& e)
 	{

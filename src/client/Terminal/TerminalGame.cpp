@@ -1,5 +1,7 @@
 // WizardPoker headers
 #include "client/Terminal/TerminalGame.hpp"
+#include "common/Deck.hpp"
+#include "client/sockets/Client.hpp"
 // std-C++ headers
 #include <iostream>
 

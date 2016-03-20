@@ -2,6 +2,7 @@
 #include "common/constants.hpp"
 #include "client/ErrorCode.hpp"
 #include "common/ini/IniFile.hpp"
+#include "client/StateStack.hpp"
 #include "client/states/AbstractHomeState.hpp"
 
 AbstractHomeState::AbstractHomeState(Context& context):
@@ -11,7 +12,7 @@ AbstractHomeState::AbstractHomeState(Context& context):
 
 void AbstractHomeState::quit()
 {
-	stackClear();
+	_context.stateStack->clear();
 }
 
 std::pair<std::string, sf::Uint16> AbstractHomeState::getConnectionConfiguration()

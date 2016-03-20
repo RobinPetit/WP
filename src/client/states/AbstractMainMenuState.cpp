@@ -1,4 +1,5 @@
 // WizardPoker headers
+#include "client/StateStack.hpp"
 #include "client/states/AbstractMainMenuState.hpp"
 
 AbstractMainMenuState::AbstractMainMenuState(Context& context):
@@ -9,10 +10,10 @@ AbstractMainMenuState::AbstractMainMenuState(Context& context):
 void AbstractMainMenuState::logOut()
 {
 	_context.client->quit();
-	stackPop();
+	_context.stateStack->pop();
 }
 
 void AbstractMainMenuState::quit()
 {
-	stackClear();
+	_context.stateStack->clear();
 }

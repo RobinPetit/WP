@@ -15,7 +15,6 @@ GuiLadderState::GuiLadderState(Context& context):
 	_ladderLayout{std::make_shared<tgui::VerticalLayout>()},
 	_titleLabel{std::make_shared<tgui::Label>()}
 {
-	_context.gui->removeAllWidgets();
 	auto windowWidth(tgui::bindWidth(*_context.gui));
 	auto windowHeight(tgui::bindHeight(*_context.gui));
 
@@ -54,6 +53,18 @@ GuiLadderState::GuiLadderState(Context& context):
 	_ladderLayout->setPosition(windowWidth/5.f, windowHeight * 1.2f/10.f);
 	_ladderLayout->setSize(windowWidth * 3.f/5.f, windowHeight * 6.5f/10.f);
 	_context.gui->add(_ladderLayout);
+}
+
+void GuiLadderState::onPush()
+{
+	_ladderLayout->hide();
+	_titleLabel->hide();
+}
+
+void GuiLadderState::onPop()
+{
+	_ladderLayout->show();
+	_titleLabel->show();
 }
 
 GuiLadderState::GuiLadderEntry::GuiLadderEntry():

@@ -2,6 +2,7 @@
 #include <iostream>
 // WizardPoker headers
 #include "client/states/AbstractDecksManagementState.hpp"
+#include "client/StateStack.hpp"
 
 AbstractDecksManagementState::AbstractDecksManagementState(Context& context):
 	AbstractState(context)
@@ -20,5 +21,5 @@ AbstractDecksManagementState::AbstractDecksManagementState(Context& context):
 
 void AbstractDecksManagementState::backMainMenu()
 {
-	stackPop();
+	_context.stateStack->pop();
 }

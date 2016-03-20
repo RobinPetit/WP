@@ -2,6 +2,8 @@
 #include <iostream>
 #include <algorithm>
 // WizardPoker headers
+#include "client/sockets/Client.hpp"
+#include "client/StateStack.hpp"
 #include "client/states/AbstractLadderState.hpp"
 
 AbstractLadderState::AbstractLadderState(Context& context):
@@ -31,5 +33,5 @@ AbstractLadderState::AbstractLadderState(Context& context):
 
 void AbstractLadderState::backMainMenu()
 {
-	stackPop();
+	_context.stateStack->pop();
 }

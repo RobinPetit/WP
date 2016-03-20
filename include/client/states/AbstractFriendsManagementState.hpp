@@ -3,6 +3,7 @@
 
 // WizardPoker headers
 #include "client/AbstractState.hpp"
+#include "common/Database.hpp"  // Friend
 
 /// Abstract version of the friends management state.
 class AbstractFriendsManagementState : virtual public AbstractState

@@ -31,7 +31,7 @@ void GuiAbstractState::handleInput()
 		if(event.type == sf::Event::Closed)
 		{
 			_context.window->close();
-			stackClear();
+			_context.stateStack->clear();
 		}
 
 		// Give the event to the GUI, to bring menus alive
