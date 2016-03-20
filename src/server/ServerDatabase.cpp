@@ -34,6 +34,7 @@ Card* ServerDatabase::getCard(cardId card)
 
 cardId ServerDatabase::countCards()
 {
+	sqlite3_reset(_countCardsStmt);
 	assert(sqliteThrowExcept(sqlite3_step(_countCardsStmt)) == SQLITE_ROW);
 	return sqlite3_column_int(_countCardsStmt, 0);
 }
