@@ -712,7 +712,13 @@ void Player::changeHealth(EffectArgs effect)
 
 bool Player::exploitCardEffects(Card* usedCard)
 {
-	const std::vector<EffectParamsCollection>& effects(usedCard->getEffects());
+	// Maybe I should have use multiple inheritance to avoid this
+	const std::vector<EffectParamsCollection>& effects(
+		usedCard->isSpell()
+			? static_cast<Spell *>(usedCard)->getEffects()
+			: static_cast<Creature *>(usedCard)->getEffects()
+	);
+
 	for(const auto& effect: effects) //for each effect of the card
 		if(not applyEffect(usedCard, &effect)) //apply it
 			return false;
