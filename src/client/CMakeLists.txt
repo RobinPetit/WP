@@ -35,6 +35,7 @@ set(SOURCES
 
 		# GUI files
 		"Gui/GuiApplication.cpp"
+		"Gui/InputBox.cpp"
 		## States
 		"Gui/GuiAbstractState.cpp"
 		"Gui/states/GuiHomeState.cpp"
