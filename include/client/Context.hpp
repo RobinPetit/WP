@@ -20,7 +20,7 @@ class StateStack;
 /// if we are making a terminal game, the window attribute has nothing
 /// to point to.
 ///
-/// This struct has public attributes because it have no logic (methods),
+/// This struct has public attributes because it has no logic (methods),
 /// its only mean is to hold references.
 struct Context
 {
