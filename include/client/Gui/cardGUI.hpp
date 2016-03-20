@@ -15,8 +15,10 @@ private:
     // Front view texture and sprite
     sf::Sprite _frontView;
     sf::Texture _frontTexture;
-
-
+    
+    // Needed attributs
+    std::vector<EffectParamsCollection> _effects;  // Effects
+    int _cost;
 
 public:
     CardGUI();
