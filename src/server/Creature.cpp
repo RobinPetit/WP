@@ -100,11 +100,9 @@ void Creature::receiveAttack(Creature& attacker, int attack, int forced, int loo
 	if(attackMirrored == 1) //If attacks are mirrored, we send it back
 		attacker.receiveAttack(*this, attack, forced, loopCount+1);
 
-	int attackBlocked = getConstraint(CC_TEMP_BLOCK_ATTACKS);
-	if(attackBlocked == 1)  // If attacks are blocked
-		return;
-
-	changeHealth({-attack, forced});
+	bool attackBlocked = getConstraint(CC_TEMP_BLOCK_ATTACKS) != 0;
+	if(not attackBlocked)  // Only attack if attacks are not blocked
+		changeHealth({-attack, forced});
 }
 
 /*--------------------------- GETTERS FOR EFFECTS */
