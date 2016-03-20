@@ -12,6 +12,7 @@ set(SOURCES
 	"Database.cpp"
 	# random
 	"random/RandomInteger.cpp"
+	"Ladder.cpp"
 	)
 
 add_library(${COMMON_NAME} ${SOURCES})

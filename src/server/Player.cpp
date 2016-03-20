@@ -756,11 +756,11 @@ void Player::setTeamConstraint(EffectArgs effect)
 	switch(casterOptions)
 	{
 		case IF_CASTER_ALIVE:
-			_constraints.setConstraint(constraintId, value, turns, dynamic_cast<const Creature*>(getLastCaster()));
+			_teamConstraints.setConstraint(constraintId, value, turns, dynamic_cast<const Creature*>(getLastCaster()));
 			break;
 
 		default:
-			_constraints.setConstraint(constraintId, value, turns);
+			_teamConstraints.setConstraint(constraintId, value, turns);
 			break;
 	}
 }

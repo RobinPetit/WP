@@ -14,12 +14,12 @@ TerminalLadderState::TerminalLadderState(StateStack& stateStack, Client& client)
 void TerminalLadderState::display()
 {
 	std::cout << "Here is the ladder:\n";
-	unsigned int i{0U};
+	unsigned i{0};
 	for(const auto& ladderEntry : _ladder)
 		std::cout << ++i << ". " << ladderEntry.name
-				<< " (" << ladderEntry.victories
-				<< "/" << (ladderEntry.victories + ladderEntry.defeats)
-				<< ")\n";
+		          << " (" << ladderEntry.victories + 1
+		          << "/" << (ladderEntry.defeats + 1)
+		          << ")\n";
 	std::cout << std::string(40, '*') << "\n";
 	// Display the actions
 	TerminalAbstractState::display();

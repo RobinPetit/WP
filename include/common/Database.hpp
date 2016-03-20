@@ -17,15 +17,7 @@
 #include "common/CardsCollection.hpp"
 #include "common/Identifiers.hpp"
 
-struct LadderEntry
-{
-	std::string name;
-	unsigned victories;
-	unsigned defeats;
-};
-
-constexpr int ladderSize = 20;
-using Ladder =  std::array<LadderEntry, ladderSize>;
+#include "common/Ladder.hpp"
 
 struct Statement : private std::pair<sqlite3_stmt **, const char *> // I dont care that it is a std::pair (this is just for implementation) and I prefer apply maximum restrictions rule
 {

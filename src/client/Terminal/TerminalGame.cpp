@@ -73,6 +73,7 @@ void TerminalGame::startTurn()
 
 void TerminalGame::displayGame()
 {
+	std::lock_guard<std::mutex> _lock{_accessScreen};
 	_client.getTerminal().clearScreen();
 	std::cout << "***************" << std::endl;
 	std::cout << "-----CARDS-----" << std::endl;

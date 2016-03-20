@@ -119,15 +119,14 @@ Ladder ServerDatabase::getLadder()
 {
 	std::unique_lock<std::mutex> lock {_dbAccess};
 	sqlite3_reset(_ladderStmt);
-	sqliteThrowExcept(sqlite3_bind_int(_ladderStmt, 1, ladderSize));
 
-	Ladder ladder;
+	Ladder ladder(countAccounts());
 
 	for(size_t i = 0; i < ladder.size() && sqliteThrowExcept(sqlite3_step(_ladderStmt)) == SQLITE_ROW; ++i)
 	{
-		ladder[i].name = reinterpret_cast<const char *>(sqlite3_column_text(_ladderStmt, 0));
-		ladder[i].victories = sqlite3_column_int(_ladderStmt, 1);
-		ladder[i].defeats = sqlite3_column_int(_ladderStmt, 2);
+		ladder.at(i).name = reinterpret_cast<const char *>(sqlite3_column_text(_ladderStmt, 0));
+		ladder.at(i).victories = sqlite3_column_int(_ladderStmt, 1);
+		ladder.at(i).defeats = sqlite3_column_int(_ladderStmt, 2);
 	}
 
 	return ladder;
@@ -381,6 +380,13 @@ std::vector<EffectParamsCollection> ServerDatabase::createCardEffects(cardId id)
 	}
 
 	return effects;
+}
+
+unsigned ServerDatabase::countAccounts()
+{
+	sqlite3_reset(_countAccountsStmt);
+	assert(sqliteThrowExcept(sqlite3_step(_countAccountsStmt)) == SQLITE_ROW);
+	return sqlite3_column_int(_countAccountsStmt, 0);
 }
 
 ServerDatabase::~ServerDatabase()

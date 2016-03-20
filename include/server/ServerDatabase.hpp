@@ -64,6 +64,8 @@ public:
 	bool isRegistered(const std::string& login);
 	void registerUser(const std::string& login, const std::string& password);
 
+	unsigned countAccounts();
+
 	virtual ~ServerDatabase();
 
 private:
@@ -99,11 +101,14 @@ private:
 	sqlite3_stmt * _getCreatureCardsStmt;
 	sqlite3_stmt * _getCardEffectsStmt;
 	sqlite3_stmt * _newCardStmt;
+	sqlite3_stmt * _countAccountsStmt;
 	sqlite3_stmt * _getFirstCardIdsStmt;
 	sqlite3_stmt * _countCardsStmt;
 	sqlite3_stmt * _getRandomCardIdStmt;
 
-	StatementsList<25> _statements
+	// `constexpr std::array::size_type size() const;`
+	// -> future uses have to be _statements.size() -> 26 is written only one time
+	StatementsList<26> _statements
 	{
 		{
 			Statement {
@@ -144,9 +149,7 @@ private:
 			Statement {
 				&_ladderStmt,
 				"SELECT login, victories, defeats "
-				"	FROM Account "
-				"	ORDER BY CAST(victories AS REAL)/defeats DESC, victories DESC, givingup "
-				"	LIMIT ?1;"
+				"	FROM Account;"
 			},
 			Statement {
 				&_addFriendStmt,
@@ -241,6 +244,10 @@ private:
 			Statement {
 				&_getRandomCardIdStmt,
 				"SELECT id FROM FullCard ORDER BY random() LIMIT 1;"
+			},
+			Statement {
+				&_countAccountsStmt,
+				"SELECT COUNT (*) FROM Account;"
 			}
 		}
 	};

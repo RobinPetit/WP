@@ -104,13 +104,13 @@ const CreatureData ALL_CREATURES[] = {
 	{
 		"White wizard",
 		COST_3, ATTACK_7, HEALTH_7, SHIELD_1, SHIELD_NONE,
-		{{CREATURE_SELF_THIS,CE_SET_CONSTRAINT,CC_TEMP_BLOCK_ATTACKS,2,UNLIMITED_TURNS,NO_CASTER_NEEDED}},
+		{{CREATURE_SELF_TEAM,CE_SET_CONSTRAINT,CC_TEMP_BLOCK_ATTACKS,2,UNLIMITED_TURNS,NO_CASTER_NEEDED}},
 		"Blocks the next 2 attacks on your team"
 	},
 	{
  		"Greedy imp",
 		COST_1, ATTACK_2, HEALTH_2, SHIELD_2, SHIELD_ORANGE,
-		{{PLAYER_SELF,PE_SET_CONSTRAINT,PC_TURN_CARDS_PICKED,2,1,NO_CASTER_NEEDED}},
+		{{PLAYER_SELF,PE_SET_CONSTRAINT,PC_TURN_CARDS_PICKED,2,2,NO_CASTER_NEEDED}},
 		"Allows you to draw one more card at the beginning of your next turn"
 	},
 	{
@@ -386,7 +386,7 @@ int EffectArgs::peekArg() const
 	return _args.at(_index);
 }
 
-int EffectArgs::remainingArgs()
+int EffectArgs::remainingArgs() const
 {
 	return static_cast<int>(_args.size() - _index);
 }
