@@ -26,6 +26,7 @@ public:
 	const CommonCardData* getCardData(cardId card);
 	/// Number of card templates in database
 	cardId countCards();
+	cardId getRandomCardId();
 
 	userId getUserId(const std::string& login);
 	std::string getLogin(userId id);
@@ -100,8 +101,9 @@ private:
 	sqlite3_stmt * _newCardStmt;
 	sqlite3_stmt * _getFirstCardIdsStmt;
 	sqlite3_stmt * _countCardsStmt;
+	sqlite3_stmt * _getRandomCardIdStmt;
 
-	StatementsList<24> _statements
+	StatementsList<25> _statements
 	{
 		{
 			Statement {
@@ -236,6 +238,10 @@ private:
 				&_countCardsStmt,
 				"SELECT count() FROM FullCard;"
 			},
+			Statement {
+				&_getRandomCardIdStmt,
+				"SELECT id FROM FullCard ORDER BY random() LIMIT 1;"
+			}
 		}
 	};
 };

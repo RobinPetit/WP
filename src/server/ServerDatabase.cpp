@@ -39,6 +39,13 @@ cardId ServerDatabase::countCards()
 	return sqlite3_column_int(_countCardsStmt, 0);
 }
 
+cardId ServerDatabase::getRandomCardId()
+{
+	sqlite3_reset(_getRandomCardIdStmt);
+	assert(sqliteThrowExcept(sqlite3_step(_getRandomCardIdStmt)) == SQLITE_ROW);
+	return sqlite3_column_int(_getRandomCardIdStmt, 0);
+}
+
 userId ServerDatabase::getUserId(const std::string& login)
 {
 	std::unique_lock<std::mutex> lock {_dbAccess};
