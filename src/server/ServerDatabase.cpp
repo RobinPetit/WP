@@ -203,6 +203,7 @@ Deck ServerDatabase::getDeckByName(userId id, const std::string& deckName)
 		if(deck.getName() == deckName)
 			return deck;
 
+	// Throw an exception here?
 	return Deck();
 }
 
