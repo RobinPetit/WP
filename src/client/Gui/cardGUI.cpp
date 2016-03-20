@@ -1,6 +1,4 @@
-#include <SFML/Graphics.hpp>
-#include <iostream>
-#include "CardGui.hpp"
+#include "client/Gui/CardGui.hpp"
 
 
 using namespace std;
