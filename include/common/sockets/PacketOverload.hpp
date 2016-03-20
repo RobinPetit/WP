@@ -12,6 +12,7 @@
 #include "common/GameData.hpp"
 #include "common/sockets/TransferType.hpp"
 #include "common/sockets/EndGame.hpp"
+#include "common/Ladder.hpp"
 
 template <typename T>
 sf::Packet& operator <<(sf::Packet& packet, const std::vector<T>& vec);
@@ -58,6 +59,10 @@ sf::Packet& operator >>(sf::Packet& packet, CardData& data);
 sf::Packet& operator <<(sf::Packet& packet, const EndGame& endGameInfo);
 
 sf::Packet& operator >>(sf::Packet& packet, EndGame& endGameInfo);
+
+sf::Packet& operator <<(sf::Packet& packet, const Ladder& ladder);
+
+sf::Packet& operator >>(sf::Packet& packet, Ladder& ladder);
 
 // implementation
 

@@ -49,6 +49,8 @@ public:
 	bool isRegistered(const std::string& login);
 	void registerUser(const std::string& login, const std::string& password);
 
+	unsigned countAccounts();
+
 	virtual ~ServerDatabase();
 
 private:
@@ -76,11 +78,12 @@ private:
 	sqlite3_stmt * _deleteDeckByNameStmt;
 	sqlite3_stmt * _editDeckByNameStmt;
 	sqlite3_stmt * _newCardStmt;
+	sqlite3_stmt * _countAccountsStmt;
 
 	// `constexpr std::array::size_type size() const;`
 	// -> I consider this 19 as the definition of the variable, so it is not a magic number
 	// -> future uses have to be _statements.size() -> 19 is written only one time
-	StatementsList<19> _statements
+	StatementsList<20> _statements
 	{
 		{
 			Statement {
@@ -189,6 +192,10 @@ private:
 				&_newCardStmt,
 				"INSERT INTO GivenCard(card, owner) "
 				"	VALUES (?1, ?2);"
+			},
+			Statement {
+				&_countAccountsStmt,
+				"SELECT COUNT (*) FROM Account;"
 			}
 		}
 	};

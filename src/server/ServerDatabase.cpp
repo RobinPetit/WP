@@ -88,16 +88,19 @@ Ladder ServerDatabase::getLadder()
 {
 	std::unique_lock<std::mutex> lock{_dbAccess};
 	sqlite3_reset(_ladderStmt);
-	sqliteThrowExcept(sqlite3_bind_int(_ladderStmt, 1, ladderSize));
+	unsigned nbOfAccounts{std::min(countAccounts(), Ladder::size)};
+	sqliteThrowExcept(sqlite3_bind_int(_ladderStmt, 1, nbOfAccounts));
 
 	Ladder ladder;
 
-	for(size_t i = 0; i < ladder.size() && sqliteThrowExcept(sqlite3_step(_ladderStmt)) == SQLITE_ROW; ++i)
+	for(size_t i = 0; i < nbOfAccounts && sqliteThrowExcept(sqlite3_step(_ladderStmt)) == SQLITE_ROW; ++i)
 	{
-		ladder[i].name = reinterpret_cast<const char *>(sqlite3_column_text(_ladderStmt, 0));
-		ladder[i].victories = sqlite3_column_int(_ladderStmt, 1);
-		ladder[i].defeats = sqlite3_column_int(_ladderStmt, 2);
+		ladder.ladder[i].name = reinterpret_cast<const char *>(sqlite3_column_text(_ladderStmt, 0));
+		ladder.ladder[i].victories = sqlite3_column_int(_ladderStmt, 1);
+		ladder.ladder[i].defeats = sqlite3_column_int(_ladderStmt, 2);
 	}
+
+	ladder.nbOfPlayers = nbOfAccounts;
 
 	return ladder;
 }
@@ -260,6 +263,13 @@ FriendsList ServerDatabase::getAnyFriendsList(userId user, sqlite3_stmt * stmt)
 	}
 
 	return friends;
+}
+
+unsigned ServerDatabase::countAccounts()
+{
+	sqlite3_reset(_countAccountsStmt);
+	assert(sqliteThrowExcept(sqlite3_step(_countAccountsStmt)) == SQLITE_ROW);
+	return sqlite3_column_int(_countAccountsStmt, 0);
 }
 
 ServerDatabase::~ServerDatabase()
