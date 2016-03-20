@@ -70,7 +70,6 @@ void GuiFriendsManagementState::addFriend()
 {
 	static const std::string messageBoxText{"Enter the name of your\nnew friend:"};
 	InputBox::Ptr window{std::make_shared<InputBox>()};
-	std::shared_ptr<std::string> newFriendNamePtr{new std::string()};
 
 	window->setTitle("Title of the window");
 	window->setLabelText(messageBoxText);
@@ -85,7 +84,14 @@ void GuiFriendsManagementState::addFriend()
 	window->setGridSize(childWidth*0.9f, childHeight*0.5f);
 	window->setCallback([this](const std::string& friendName)
 	{
-		_context.client->sendFriendshipRequest(friendName);
+		try
+		{
+			_context.client->sendFriendshipRequest(friendName);
+		}
+		catch(std::runtime_error& e)
+		{
+			displayMessage(e.what());
+		}
 	});
 	_context.gui->add(window);
 }
