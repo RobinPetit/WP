@@ -22,15 +22,15 @@
 /// and a "Ok" button to finish the process.
 ///
 /// \code
-/// 	tgui::Gui *gui{/*...*/};
+///	tgui::Gui *gui{/*...*/};
 ///	// ...
 ///	InputBox::Ptr input{std::make_shared<InputBox>()};
 ///	input->setTitle("My title");
 ///	input->setLabelText("Enter something");
 ///	input->setCallback([](const std::string& editBoxContent)
-/// 	{
-///		std::cout << "The content of the edit box when 'Ok' had "
-///		             "been pressed was " << editBoxContent << '\n';
+///	{
+///	        std::cout << "The content of the edit box when 'Ok' had "
+///	                     "been pressed was " << editBoxContent << '\n';
 ///	});
 ///	// Do think of setting the callback **before** to add the widget otherwise
 ///	// undefined behaviour is applied!
