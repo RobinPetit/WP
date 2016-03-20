@@ -1,6 +1,8 @@
 #ifndef CARDGUI_HPP
 #define CARDGUI_HPP
 
+#include <SFML/Graphics.hpp>
+#include <iostream>
 
 class CardGUI
 {
