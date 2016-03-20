@@ -69,6 +69,8 @@ void StateStack::push()
 	// If we do the first push or if the iterator is at TOS
 	if(_stack.empty() or *_stackIterator == _stack.back())
 	{
+		if(not _stack.empty())
+			(*_stackIterator)->onPush();
 		_stack.emplace_back(new StateType(_context));
 		_stackIterator = _stack.end() - 1;
 	}
