@@ -145,7 +145,7 @@ void GuiFriendsManagementState::treatIndividualRequest(const Friend& friendReque
 			// send to server that the request is accepted
 			_context.client->acceptFriendshipRequest(friendRequest.name);
 			// and add the friend to the list box
-			_friendsListBox->addItem(friendRequest.name);
+			updateFriendListBox();
 		}
 		else if(pressedButtonName == refuseButton)
 			_context.client->acceptFriendshipRequest(friendRequest.name, false);
