@@ -14,6 +14,9 @@ class GuiMainMenuState: public GuiAbstractState, public AbstractMainMenuState
 		/// Constructor
 		GuiMainMenuState(Context& context);
 
+		/// Destructor. Deletes all widgets of this state.
+		~GuiMainMenuState();
+
 		/// Method called when another state is pushed on this one.
 		/// By default, does nothing.
 		/// Hides all the widgets.

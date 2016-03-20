@@ -44,6 +44,13 @@ GuiFriendsManagementState::GuiFriendsManagementState(Context& context):
 	_context.gui->add(_friendsListBox);
 }
 
+GuiFriendsManagementState::~GuiFriendsManagementState()
+{
+	_context.gui->remove(_menuLabel);
+	_friendsListBox->getParent()->remove(_friendsListBox);
+	_buttonsLayout->getParent()->remove(_buttonsLayout);
+}
+
 void GuiFriendsManagementState::onPush()
 {
 	_menuLabel->hide();

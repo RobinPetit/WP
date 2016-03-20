@@ -41,6 +41,12 @@ GuiMainMenuState::GuiMainMenuState(Context& context):
 	_context.gui->add(_layout);
 }
 
+GuiMainMenuState::~GuiMainMenuState()
+{
+	_menuLabel->getParent()->remove(_menuLabel);
+	_layout->getParent()->remove(_layout);
+}
+
 void GuiMainMenuState::onPush()
 {
 	_menuLabel->hide();

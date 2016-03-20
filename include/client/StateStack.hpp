@@ -72,8 +72,7 @@ void StateStack::push()
 		_stack.emplace_back(new StateType(_context));
 		_stackIterator = _stack.end() - 1;
 	}
-	// If we must store another state type at *(_stackIterator + 1)
-	else if(typeid(StateType*) != typeid((_stackIterator + 1)->get()))
+	else
 	{
 		(*_stackIterator)->onPush();
 		_stackIterator++;

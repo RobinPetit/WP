@@ -55,6 +55,12 @@ GuiLadderState::GuiLadderState(Context& context):
 	_context.gui->add(_ladderLayout);
 }
 
+GuiLadderState::~GuiLadderState()
+{
+	_ladderLayout->getParent()->remove(_ladderLayout);
+	_titleLabel->getParent()->remove(_titleLabel);
+}
+
 void GuiLadderState::onPush()
 {
 	_ladderLayout->hide();

@@ -18,6 +18,9 @@ public:
 	/// Constructor
 	GuiFriendsManagementState(Context& context);
 
+	/// Destructor. Deletes all widgets of this state.
+	~GuiFriendsManagementState();
+
 	/// Method called when another state is pushed on this one.
 	/// By default, does nothing.
 	/// Hides all the widgets.

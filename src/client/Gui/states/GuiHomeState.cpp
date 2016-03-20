@@ -51,6 +51,24 @@ GuiHomeState::GuiHomeState(Context& context):
 	_context.gui->add(_grid);
 }
 
+GuiHomeState::~GuiHomeState()
+{
+	_grid->getParent()->remove(_grid);
+	_titleLabel->getParent()->remove(_titleLabel);
+}
+
+void GuiHomeState::onPush()
+{
+	_grid->hide();
+	_titleLabel->hide();
+}
+
+void GuiHomeState::onPop()
+{
+	_grid->show();
+	_titleLabel->show();
+}
+
 void GuiHomeState::connect()
 {
 	try
