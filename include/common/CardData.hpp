@@ -2,7 +2,8 @@
 #define _CARD_DATA_HPP_
 
 #include <vector>
-#include <iostream>
+#include <sstream>
+#include <memory>
 #include "common/Identifiers.hpp" // cardId, deckId...
 #include "common/CardData.inc"
 
@@ -35,15 +36,22 @@ enum PLAYER_CONSTRAINTS : int32_t
 ///How to define an effect:
 typedef std::vector<int> EffectParamsCollection;
 
-struct EffectArgs
+class EffectArgs
 {
-	EffectArgs(const EffectParamsCollection* effect): args(effect), index(0) {};
-	EffectArgs(std::initializer_list<int> effect): args(new EffectParamsCollection(effect)), index(0) {};
-	const EffectParamsCollection* args; // pointer to parameters that define the effect
-	std::size_t index; // index indicating where values should be read
-	int getArg() {std::cout << "arg " << args->at(index) << std::endl; return args->at(index++);}
-	int peekArg() {return args->at(index);}
-	int remainingArgs() {return static_cast<int>(args->size() - index);}
+private:
+	const EffectParamsCollection _args; ///< pointer to parameters that define the effect
+	std::size_t _index; ///< index indicating where values should be read
+public:
+	EffectArgs(const EffectParamsCollection& effect);
+	EffectArgs(const std::initializer_list<int>& effect);
+
+	int getArg();
+
+	int peekArg() const;
+
+	int remainingArgs();
+
+	std::string toString() const;
 };
 //In the following order:
 //EFFECT SUBJECT [+ SUBJECT INDEX] if subject is identified by index (INDX at the end)

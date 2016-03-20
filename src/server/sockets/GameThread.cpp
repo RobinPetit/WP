@@ -14,8 +14,6 @@
 #include <chrono>
 #include <cassert>
 
-extern RandomInteger intGenerator;
-
 constexpr std::chrono::seconds GameThread::_turnTime;
 
 GameThread::GameThread(ServerDatabase& database, userId player1Id, userId player2Id):
@@ -126,9 +124,7 @@ userId GameThread::runGame()
 	while(_running.load())
 	{
 		if (_turnSwap.load())
-		{
 			endTurn();
-		}
 
 		for(auto player : {_activePlayer, _passivePlayer})
 		{
@@ -180,7 +176,10 @@ void GameThread::endGame(userId winnerId, EndGame::Cause cause)
 
 void GameThread::interruptGame()
 {
-	endGame(0, EndGame::Cause::ENDING_SERVER);
+	// verify the game is ended before to interrupt it
+	// (do not end the same game twice)
+	if(_running.load())
+		endGame(0, EndGame::Cause::ENDING_SERVER);
 }
 
 void GameThread::endTurn()
