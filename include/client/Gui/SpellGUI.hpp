@@ -12,5 +12,5 @@ public:
 
 };
 
-#endif //CREATUREGUI_HPP
+#endif //SPELLGUI_HPP
 
