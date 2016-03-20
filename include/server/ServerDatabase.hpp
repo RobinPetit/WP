@@ -124,9 +124,7 @@ private:
 			Statement {
 				&_ladderStmt,
 				"SELECT login, victories, defeats "
-				"	FROM Account "
-				"	ORDER BY CAST(victories AS REAL)/defeats DESC, victories DESC, givingup "
-				"	LIMIT ?1;"
+				"	FROM Account;"
 			},
 			Statement {
 				&_addFriendStmt,

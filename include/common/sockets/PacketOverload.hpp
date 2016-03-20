@@ -60,10 +60,6 @@ sf::Packet& operator <<(sf::Packet& packet, const EndGame& endGameInfo);
 
 sf::Packet& operator >>(sf::Packet& packet, EndGame& endGameInfo);
 
-sf::Packet& operator <<(sf::Packet& packet, const Ladder& ladder);
-
-sf::Packet& operator >>(sf::Packet& packet, Ladder& ladder);
-
 // implementation
 
 template <typename T>

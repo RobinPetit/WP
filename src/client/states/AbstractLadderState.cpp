@@ -17,7 +17,7 @@ AbstractLadderState::AbstractLadderState(StateStack& stateStack, Client& client)
 		std::cout << "Empty ladder loaded.\n";
 		return;
 	}
-	std::sort(_ladder.ladder.begin(), _ladder.ladder.begin() + _ladder.nbOfPlayers, [](const LadderEntry& lhs, const LadderEntry& rhs)
+	std::sort(_ladder.begin(), _ladder.end(), [](const LadderEntry& lhs, const LadderEntry& rhs)
 	{
 		if(lhs.victories + lhs.defeats == 0)
 			return false;

@@ -1,7 +1,9 @@
 #ifndef _LADDER_HPP_
 #define _LADDER_HPP_
 
-#include <array>
+// std-C++ headers
+#include <vector>
+#include <string>
 
 struct LadderEntry
 {
@@ -10,11 +12,6 @@ struct LadderEntry
 	unsigned defeats;
 };
 
-struct Ladder
-{
-	constexpr static unsigned size{20};
-	std::array<LadderEntry, size> ladder;
-	unsigned nbOfPlayers;
-};
+typedef std::vector<LadderEntry> Ladder;
 
 #endif  // _LADDER_HPP_

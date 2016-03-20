@@ -149,15 +149,3 @@ sf::Packet& operator >>(sf::Packet& packet, EndGame& endGameInfo)
 	endGameInfo.cause = static_cast<EndGame::Cause>(convertedCause);
 	return packet;
 }
-
-sf::Packet& operator <<(sf::Packet& packet, const Ladder& ladder)
-{
-	packet << ladder.ladder << ladder.nbOfPlayers;
-	return packet;
-}
-
-sf::Packet& operator >>(sf::Packet& packet, Ladder& ladder)
-{
-	packet >> ladder.ladder >> ladder.nbOfPlayers;
-	return packet;
-}
