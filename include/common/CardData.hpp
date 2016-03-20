@@ -43,7 +43,7 @@ struct EffectArgs
 	std::size_t index; // index indicating where values should be read
 	int getArg() {std::cout << "arg " << args->at(index) << std::endl; return args->at(index++);}
 	int peekArg() {return args->at(index);}
-	int remainingArgs() {return static_cast<int>(args->size()) - index;}
+	int remainingArgs() {return static_cast<int>(args->size() - index);}
 };
 //In the following order:
 //EFFECT SUBJECT [+ SUBJECT INDEX] if subject is identified by index (INDX at the end)
