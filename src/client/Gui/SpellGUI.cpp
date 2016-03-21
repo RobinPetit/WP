@@ -1,4 +1,4 @@
-#include "SpellGUI.hpp"
+#include "client/Gui/SpellGUI.hpp"
 
 
 SpellGUI::SpellGUI(std::string cardIdentifier, int cost, std::vector<EffectParamsCollection> effects)
