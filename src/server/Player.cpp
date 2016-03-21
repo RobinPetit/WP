@@ -394,15 +394,14 @@ void Player::endTurn()
 /*------------------------------ EFFECTS INTERFACE */
 bool Player::applyEffect(Card* usedCard, EffectArgs effect)
 {
-	int subject;  // who the effect applies to
-	try  // check the input
+	// if card has no effect, don't try to apply them
+	if(effect.remainingArgs() == 0)
 	{
-		subject = effect.getArg();
+		// don't forget to send an empty vector or the game crashes
+		askUserToSelectCards({});
+		return true;
 	}
-	catch(std::out_of_range&)
-	{
-		throw std::runtime_error("applyEffect error with cards arguments");
-	}
+	int subject{effect.getArg()};  // who the effect applies to
 
 	_lastCasterCard = usedCard;  // remember last used card
 	_opponent._lastCasterCard = usedCard; // same for opponent
@@ -756,7 +755,6 @@ void Player::setTeamConstraint(EffectArgs effect)
 	{
 		throw std::runtime_error("setTeamConstraint error with cards arguments");
 	}
-
 	switch(casterOptions)
 	{
 		case IF_CASTER_ALIVE:
