@@ -76,10 +76,10 @@ sf::Packet Player::getBoardChanges()
 void Player::setDeck(const Deck& newDeck)
 {
 	std::vector<std::unique_ptr<Card>> loadedCards{Deck::size};
-	for(std::size_t i{0}; i < Deck::size; ++i) // \TODO use database instead
+	for(std::size_t i{0}; i < Deck::size; ++i)
 	{
 		const cardId card{newDeck.getCard(i)};
-		// TODO: test use of database
+		// \TODO: test use of database
 		loadedCards[i].reset(_database.getCard(card));
 	}
 
@@ -87,6 +87,7 @@ void Player::setDeck(const Deck& newDeck)
 	std::shuffle(loadedCards.begin(), loadedCards.end(), std::mt19937(std::random_device()()));
 	for(auto& cardInShuffledDeck: loadedCards)
 		_cardDeck.push(std::move(cardInShuffledDeck));
+	assert(_cardDeck.size() == Deck::size);
 }
 
 void Player::receiveDeck()
@@ -801,6 +802,7 @@ void Player::cardHandToGraveyard(int handIndex)
 
 void Player::cardBoardToGraveyard(int boardIndex)
 {
+	assert(_cardBoard.at(boardIndex)->isOnBoard());
 	_cardBoard.at(boardIndex)->removeFromBoard();
 	// Release the ownership of the board, cast to a Card pointer and give it to the graveyard
 	_cardGraveyard.push_back(std::unique_ptr<Card>(static_cast<Card*>(_cardBoard.at(boardIndex).release())));
