@@ -1,4 +1,4 @@
-#include "CreatureGUI.hpp"
+#include "client/Gui/CreatureGUI.hpp"
 
 
 CreatureGUI::CreatureGUI(std::string cardIdentifier, int cost, int attack, int health, int shield, int shieldType,
