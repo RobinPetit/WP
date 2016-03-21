@@ -67,6 +67,7 @@ public:
 	int getShieldType() const;
 	int getPersonalConstraint(int constraintId) const;
 	int getConstraint(int constraintId) const;
+	bool getConstraintBool(int constraintId) const;
 
 	explicit operator BoardCreatureData() const;
 };
