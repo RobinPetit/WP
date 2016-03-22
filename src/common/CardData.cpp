@@ -255,7 +255,7 @@ const SpellData ALL_SPELLS[] = {
 	{
 		"Flash heal",
 		COST_1,
-		{{CREATURE_SELF_RAND, CE_CHANGE_HEALTH, 1}},
+		{{CREATURE_SELF_RAND, CE_CHANGE_HEALTH, 2}},
 		"Increase a random creature's health of 2 points"
 	},
 	{
