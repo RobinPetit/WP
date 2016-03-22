@@ -90,7 +90,7 @@ VALUES(
 INSERT INTO Effect(owner, parameter0, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6)
 VALUES(
 	(SELECT id FROM Card WHERE name == 'White wizard'),
-	(SELECT id FROM ENUM_VALUES WHERE name == 'CREATURE_SELF_THIS'),
+	(SELECT id FROM ENUM_VALUES WHERE name == 'CREATURE_SELF_TEAM'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CE_SET_CONSTRAINT'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CC_TEMP_BLOCK_ATTACKS'),
 	(2),
