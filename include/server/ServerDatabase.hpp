@@ -9,6 +9,7 @@
 #include "common/Card.hpp"
 #include "server/ServerCardData.hpp"
 
+class Player;
 class Creature;
 class Spell;
 
@@ -22,7 +23,7 @@ public:
 	/// \param filename: relative path to sqlite3 file.
 	explicit ServerDatabase(const std::string& filename = FILENAME);
 
-	Card* getCard(cardId card);
+	Card* getCard(cardId card, Player& player);
 	const CommonCardData* getCardData(cardId card);
 	/// Number of card templates in database
 	cardId countCards();

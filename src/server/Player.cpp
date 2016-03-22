@@ -80,7 +80,7 @@ void Player::setDeck(const Deck& newDeck)
 	{
 		const cardId card{newDeck.getCard(i)};
 		// \TODO: test use of database
-		loadedCards[i].reset(_database.getCard(card));
+		loadedCards[i].reset(_database.getCard(card, *this));
 	}
 
 	// shuffle the deck of cards

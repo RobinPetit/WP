@@ -24,7 +24,7 @@ public:
 	bool isCreature() const;
 	bool isSpell() const;
 
-	virtual ~Card() = default;
+	virtual ~Card() = 0; // To have it pure virtual
 };
 
 #endif //_CARD_COMMON_HPP

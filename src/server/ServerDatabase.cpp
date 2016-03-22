@@ -24,12 +24,16 @@ ServerDatabase::ServerDatabase(const std::string& filename) : Database(filename)
 	createCreatureData();
 }
 
-Card* ServerDatabase::getCard(cardId card)
+Card* ServerDatabase::getCard(cardId card, Player& owner)
 {
 	if(_cardData.count(card) == 0)
 		throw std::runtime_error("The requested card (" + std::to_string(card) + ") does not exist.");
 
-	return new Card(*_cardData.at(card).get());
+	// Do not use ?: operator (http://en.cppreference.com/w/cpp/language/operator_other#Conditional_operator)
+	if (_cardData.at(card)->isCreature())
+		return new Creature(*static_cast<const ServerCreatureData *>(_cardData.at(card).get()), owner);
+	else
+		return new Spell(*static_cast<const ServerSpellData *>(_cardData.at(card).get()));
 }
 
 cardId ServerDatabase::countCards()
