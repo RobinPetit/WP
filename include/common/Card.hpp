@@ -6,6 +6,9 @@
 // WizardPoker headers
 #include "common/CardData.hpp"
 
+
+/// Hold the state an actual card
+/// Should be pure abstract but destructor is needed so I havent method where put =0
 class Card
 {
 protected:
@@ -14,7 +17,7 @@ protected:
 
 public:
 	/// Constructor
-	Card(const CommonCardData&);
+	explicit Card(const CommonCardData&);
 
 	/// Getters
 	int getEnergyCost() const;
@@ -24,7 +27,7 @@ public:
 	bool isCreature() const;
 	bool isSpell() const;
 
-	virtual ~Card() = 0; // To have it pure virtual
+	virtual ~Card() = default;
 };
 
 #endif //_CARD_COMMON_HPP
