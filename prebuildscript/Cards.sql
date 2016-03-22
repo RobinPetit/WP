@@ -20,7 +20,7 @@ VALUES(
 
 INSERT INTO Effect(owner, parameter0, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6)
 VALUES(
-	(SELECT id FROM Card WHERE name == 'Tower guard')-1,
+	(SELECT id FROM Card WHERE name == 'Tower guard'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CREATURE_SELF_THIS')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CE_SET_CONSTRAINT')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CC_TURN_HEALTH_CHANGE')-1,
@@ -43,7 +43,7 @@ VALUES(
 
 INSERT INTO Effect(owner, parameter0, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6)
 VALUES(
-	(SELECT id FROM Card WHERE name == 'Diabolic imp')-1,
+	(SELECT id FROM Card WHERE name == 'Diabolic imp'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CREATURE_SELF_THIS')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CE_SET_CONSTRAINT')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CC_TURN_ATTACK_CHANGE')-1,
@@ -66,7 +66,7 @@ VALUES(
 
 INSERT INTO Effect(owner, parameter0, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6)
 VALUES(
-	(SELECT id FROM Card WHERE name == 'Little Ragnaros')-1,
+	(SELECT id FROM Card WHERE name == 'Little Ragnaros'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'PLAYER_OPPO')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'PE_SET_CONSTRAINT')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'PC_TURN_HEALTH_CHANGE')-1,
@@ -89,7 +89,7 @@ VALUES(
 
 INSERT INTO Effect(owner, parameter0, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6)
 VALUES(
-	(SELECT id FROM Card WHERE name == 'White wizard')-1,
+	(SELECT id FROM Card WHERE name == 'White wizard'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CREATURE_SELF_TEAM')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CE_SET_CONSTRAINT')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CC_TEMP_BLOCK_ATTACKS')-1,
@@ -112,7 +112,7 @@ VALUES(
 
 INSERT INTO Effect(owner, parameter0, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6)
 VALUES(
-	(SELECT id FROM Card WHERE name == 'Greedy imp')-1,
+	(SELECT id FROM Card WHERE name == 'Greedy imp'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'PLAYER_SELF')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'PE_SET_CONSTRAINT')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'PC_TURN_CARDS_PICKED')-1,
@@ -135,7 +135,7 @@ VALUES(
 
 INSERT INTO Effect(owner, parameter0, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6)
 VALUES(
-	(SELECT id FROM Card WHERE name == 'Unbridled bear')-1,
+	(SELECT id FROM Card WHERE name == 'Unbridled bear'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CREATURE_OPPO_TEAM')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CE_CHANGE_SHIELD')-1,
 	(-1),
@@ -169,7 +169,7 @@ VALUES(
 
 INSERT INTO Effect(owner, parameter0, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6)
 VALUES(
-	(SELECT id FROM Card WHERE name == 'White dragon')-1,
+	(SELECT id FROM Card WHERE name == 'White dragon'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CREATURE_SELF_TEAM')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CE_SET_CONSTRAINT')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CC_TURN_ATTACK_CHANGE')-1,
@@ -192,7 +192,7 @@ VALUES(
 
 INSERT INTO Effect(owner, parameter0, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6)
 VALUES(
-	(SELECT id FROM Card WHERE name == 'Mecha spider')-1,
+	(SELECT id FROM Card WHERE name == 'Mecha spider'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CREATURE_OPPO_RAND')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CE_RESET_ATTACK')-1,
 	(1),
@@ -215,7 +215,7 @@ VALUES(
 
 INSERT INTO Effect(owner, parameter0, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6)
 VALUES(
-	(SELECT id FROM Card WHERE name == 'Mirage of hapiness')-1,
+	(SELECT id FROM Card WHERE name == 'Mirage of hapiness'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'PLAYER_OPPO')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'PE_SET_CONSTRAINT')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'PC_TEMP_SPELL_CALL_LIMIT')-1,
@@ -234,7 +234,7 @@ VALUES(
 
 INSERT INTO Effect(owner, parameter0, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6)
 VALUES(
-	(SELECT id FROM Card WHERE name == 'Abracadabra')-1,
+	(SELECT id FROM Card WHERE name == 'Abracadabra'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'PLAYER_OPPO')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'PE_LOSE_HAND_CARDS')-1,
 	(2),
@@ -253,7 +253,7 @@ VALUES(
 
 INSERT INTO Effect(owner, parameter0, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6)
 VALUES(
-	(SELECT id FROM Card WHERE name == 'Block')-1,
+	(SELECT id FROM Card WHERE name == 'Block'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CREATURE_SELF_TEAM')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CE_SET_CONSTRAINT')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CC_TEMP_BLOCK_ATTACKS')-1,
@@ -272,7 +272,7 @@ VALUES(
 
 INSERT INTO Effect(owner, parameter0, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6)
 VALUES(
-	(SELECT id FROM Card WHERE name == 'Care')-1,
+	(SELECT id FROM Card WHERE name == 'Care'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CREATURE_SELF_INDX')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CE_CHANGE_HEALTH')-1,
 	(2),
@@ -291,7 +291,7 @@ VALUES(
 
 INSERT INTO Effect(owner, parameter0, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6)
 VALUES(
-	(SELECT id FROM Card WHERE name == 'Complete Care')-1,
+	(SELECT id FROM Card WHERE name == 'Complete Care'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CREATURE_SELF_INDX')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CE_RESET_HEALTH')-1,
 	(NULL),
@@ -310,7 +310,7 @@ VALUES(
 
 INSERT INTO Effect(owner, parameter0, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6)
 VALUES(
-	(SELECT id FROM Card WHERE name == 'Discard')-1,
+	(SELECT id FROM Card WHERE name == 'Discard'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'PLAYER_OPPO')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'PE_LOSE_HAND_CARDS')-1,
 	(1),
@@ -329,7 +329,7 @@ VALUES(
 
 INSERT INTO Effect(owner, parameter0, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6)
 VALUES(
-	(SELECT id FROM Card WHERE name == 'Sickness')-1,
+	(SELECT id FROM Card WHERE name == 'Sickness'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CREATURE_OPPO_TEAM')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CE_CHANGE_ATTACK')-1,
 	(-1),
@@ -348,7 +348,7 @@ VALUES(
 
 INSERT INTO Effect(owner, parameter0, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6)
 VALUES(
-	(SELECT id FROM Card WHERE name == 'Epidemic')-1,
+	(SELECT id FROM Card WHERE name == 'Epidemic'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CREATURE_OPPO_TEAM')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CE_CHANGE_ATTACK')-1,
 	(-1),
@@ -367,10 +367,10 @@ VALUES(
 
 INSERT INTO Effect(owner, parameter0, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6)
 VALUES(
-	(SELECT id FROM Card WHERE name == 'Flash heal')-1,
+	(SELECT id FROM Card WHERE name == 'Flash heal'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CREATURE_SELF_RAND')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CE_CHANGE_HEALTH')-1,
-	(1),
+	(2),
 	(NULL),
 	(NULL),
 	(NULL),
@@ -386,7 +386,7 @@ VALUES(
 
 INSERT INTO Effect(owner, parameter0, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6)
 VALUES(
-	(SELECT id FROM Card WHERE name == 'Robbery')-1,
+	(SELECT id FROM Card WHERE name == 'Robbery'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CREATURE_OPPO_TEAM')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CE_CHANGE_ATTACK')-1,
 	(-1),
@@ -398,7 +398,7 @@ VALUES(
 
 INSERT INTO Effect(owner, parameter0, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6)
 VALUES(
-	(SELECT id FROM Card WHERE name == 'Robbery')-1,
+	(SELECT id FROM Card WHERE name == 'Robbery'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CREATURE_SELF_TEAM')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CE_CHANGE_ATTACK')-1,
 	(1),
@@ -417,7 +417,7 @@ VALUES(
 
 INSERT INTO Effect(owner, parameter0, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6)
 VALUES(
-	(SELECT id FROM Card WHERE name == 'Grand Theft Card')-1,
+	(SELECT id FROM Card WHERE name == 'Grand Theft Card'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'PLAYER_SELF')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'PE_STEAL_HAND_CARD')-1,
 	(NULL),
