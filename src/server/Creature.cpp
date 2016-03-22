@@ -16,26 +16,14 @@ std::array<std::function<void(Creature&, EffectArgs)>, P_EFFECTS_COUNT> Creature
 	&Creature::changeShield
 };
 
-Creature::Creature(cardId cardIdentifier, Player& owner, int cost, int attack, int health, int shield, int shieldType,
-		std::vector<EffectParamsCollection> effects):
-	Card(cardIdentifier, cost, effects),
-	_attack(attack),
-	_health(health),
-	_shield(shield),
-	_shieldType(shieldType),
+Creature::Creature(const ServerCreatureData& cardData, Player& owner):
+	Card(cardData),
+	_attack(cardData.getAttack()),
+	_health(cardData.getHealth()),
+	_shield(cardData.getShield()),
+	_shieldType(cardData.getShieldType()),
 	_owner(owner)
 {
-
-}
-
-bool Creature::isCreature()
-{
-	return true;
-}
-
-bool Creature::isSpell()
-{
-	return false;
 }
 
 void Creature::moveToBoard()
@@ -105,12 +93,17 @@ void Creature::receiveAttack(Creature& attacker, int attack, int forced, int loo
 		changeHealth({-attack, forced});
 }
 
-/*--------------------------- GETTERS FOR EFFECTS */
+/*--------------------------- EFFECTS INTERFACE */
 void Creature::applyEffectToSelf(EffectArgs effect)
 {
 	assert(effect.remainingArgs() >= 1);
 	const int method = effect.getArg();  // What method is used
 	_effectMethods.at(method)(*this, effect);  // Call the method
+}
+
+const std::vector<EffectParamsCollection>& Creature::getEffects() const
+{
+	return prototype().getEffects();
 }
 
 int Creature::getAttack() const
@@ -184,19 +177,19 @@ void Creature::setConstraint(EffectArgs effect)
 void Creature::resetAttack(EffectArgs /* effect */)
 {
 	// no arguments
-	 _attack = _attackInit;
+	 _attack = prototype().getAttack();
 }
 
 void Creature::resetHealth(EffectArgs /* effect */)
 {
 	// no arguments
-	 _health = _healthInit;
+	 _health = prototype().getHealth();
 }
 
 void Creature::resetShield(EffectArgs /* effect */)
 {
 	// no arguments
-	 _shield = _shieldInit;
+	 _shield = prototype().getShield();
 }
 
 void Creature::changeAttack(EffectArgs effect)
@@ -278,3 +271,10 @@ Creature::operator BoardCreatureData() const
 			BoardCreatureData::shieldTypes[getShieldType()]};
 	return data;
 }
+
+/*--------------------------- PRIVATE METHOD */
+inline const ServerCreatureData& Creature::prototype() const
+{
+	return static_cast<const ServerCreatureData&>(_prototype);
+}
+

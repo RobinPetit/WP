@@ -1,87 +1,6 @@
-// WizardPoker headers
-#include "common/GameData.hpp"
 #include "common/CardData.hpp"
 
-// CommonCardData base class
-CommonCardData::CommonCardData(cardId id, int cost) :
-	_id(id), _cost(cost)
-{
-}
-
-cardId CommonCardData::getId() const
-{
-	return _id;
-}
-
-int CommonCardData::getCost() const
-{
-	return _cost;
-}
-
-
-// CommonCreatureData
-CommonCreatureData::CommonCreatureData(cardId id, int cost,
-                           int attack, int health, int shield, int shieldType) :
-	CommonCardData(id,cost),
-	_attack(attack), _health(health), _shield(shield), _shieldType(shieldType)
-{
-}
-
-int CommonCreatureData::getAttack() const
-{
-	return _attack;
-}
-
-int CommonCreatureData::getHealth() const
-{
-	return _health;
-}
-
-int CommonCreatureData::getShield() const
-{
-	return _shield;
-}
-
-int CommonCreatureData::getShieldType() const
-{
-	return _shieldType;
-}
-
-bool CommonCreatureData::isCreature() const
-{
-	return true;
-}
-
-bool CommonCreatureData::isSpell() const
-{
-	return false;
-}
-
-
-// CommonSpellData
-CommonSpellData::CommonSpellData(cardId id, int cost) :
-	CommonCardData(id,cost)
-{
-}
-
-bool CommonSpellData::isCreature() const
-{
-	return false;
-}
-
-bool CommonSpellData::isSpell() const
-{
-	return true;
-}
-
-
-constexpr std::array<const char *, 4> BoardCreatureData::shieldTypes;
-
-
-// ------------- TO BE DELETED
-
 ///CREATURES
-/*
 const CreatureData ALL_CREATURES[] = {
 	{
 		"Tower guard",
@@ -104,13 +23,13 @@ const CreatureData ALL_CREATURES[] = {
 	{
 		"White wizard",
 		COST_3, ATTACK_7, HEALTH_7, SHIELD_1, SHIELD_NONE,
-		{{CREATURE_SELF_TEAM,CE_SET_CONSTRAINT,CC_TEMP_BLOCK_ATTACKS,2,UNLIMITED_TURNS,NO_CASTER_NEEDED}},
+		{{CREATURE_SELF_THIS,CE_SET_CONSTRAINT,CC_TEMP_BLOCK_ATTACKS,2,UNLIMITED_TURNS,NO_CASTER_NEEDED}},
 		"Blocks the next 2 attacks on your team"
 	},
 	{
  		"Greedy imp",
 		COST_1, ATTACK_2, HEALTH_2, SHIELD_2, SHIELD_ORANGE,
-		{{PLAYER_SELF,PE_SET_CONSTRAINT,PC_TURN_CARDS_PICKED,2,2,NO_CASTER_NEEDED}},
+		{{PLAYER_SELF,PE_SET_CONSTRAINT,PC_TURN_CARDS_PICKED,2,1,NO_CASTER_NEEDED}},
 		"Allows you to draw one more card at the beginning of your next turn"
 	},
 	{
@@ -142,73 +61,71 @@ const CreatureData ALL_CREATURES[] = {
 		COST_2, ATTACK_1, HEALTH_5, SHIELD_3, SHIELD_BLUE,
 		{{PLAYER_OPPO,PE_SET_CONSTRAINT,PC_TEMP_SPELL_CALL_LIMIT,2,UNLIMITED_TURNS,NO_CASTER_NEEDED}},
 		"Your opponent can't play more than 2 spells per turn."
-	}
-*/
-	/*,
+	}/*,
 	{
 		"Armored leprechaun",
 		COST_1, ATTACK_1, HEALTH_3, SHIELD_1, SHIELD_NONE,
 		{{PLAYER_SELF,PE_SET_CONSTRAINT,PC_TURN_CARDS_PICKED,1,1,NO_CASTER_NEEDED}},
 		"Allows you to draw one more card at the beginning of your next turn"
 	},
-  {
-    "Old witch",
-    COST_5, ATTACK_6, HEALTH_5, SHIELD_1, SHIELD_LEGENDARY,
-    {{}},
-    "No effect"
-  },
-  {
-    "Warrior apprentice",
-    COST_1, ATTACK_2, HEALTH_2, SHIELD_1, SHIELD_NONE,
-    {{}},
-    "No effect"
-  },
-  {
-    "Resurrected triceratops",
-    COST_0, ATTACK_0, HEALTH_1, SHIELD_1, SHIELD_NONE,
-    {{}},
-    "No effect"
-  },
-  {
-    "Groot",
-    COST_5, ATTACK_4, HEALTH_7, SHIELD_2, SHIELD_BLUE,
-    {{}},
-    "We are groot."
-  },
-  {
-    "Deathwing",
-    COST_5, ATTACK_9, HEALTH_9, SHIELD_2, SHIELD_LEGENDARY,
-    {{PLAYER_SELF,PE_SET_CONSTRAINT,PC_LIMIT_CARD_USE,0,}},
-    "You can't play any card while this creature is alive."
-  },
-  {
-    "Silver wolf",
-    COST_4, ATTACK_6, HEALTH_5, SHIELD_1, SHIELD_NONE,
-    {{}},
-    "No effect."
-  },
-  {
-    "Kuriboh",
-    COST_1, ATTACK_2, HEALTH_2, SHIELD_1, SHIELD_NONE,
-    {{CREATURE_SELF_TEAM,CE_RESET_SHIELD,2}},
-    "Resets 2 friendly shields."
-  },
-  {
-    "Twin-Headed dog",
-    COST_4, ATTACK_2, HEALTH_2, SHIELD_1, SHIELD_ORANGE,
-    {{CREATURE_SELF_THIS,CE_SET_CONSTRAINT,CE_ADD_ATTACK,1},{CE_SET_CONSTRAINT,CREATURE_SELF,CE_ADD_HEALTH,1}},
-    "Gains 1 HP and 1 ATTACK each turn."
-  },
-  {
-    "Humanoide maid",
-    COST_2, ATTACK_0, HEALTH_5, SHIELD_1, SHIELD_NONE,
-    {{CE_SET_CONSTRAINT,CREATURE_TEAM,CE_ADD_HEALTH,2},{PE_SET_CONSTRAINT,PLAYER_SELF,CE_ADD_HEALTH,2}},
-    "Gives a friendly creature and this creature owner 2 HP each turn."
-  }*/
-  
+
+	{
+		"Old witch",
+		COST_5, ATTACK_6, HEALTH_5, SHIELD_1, SHIELD_LEGENDARY,
+		{{}},
+		"No effect"
+	},
+	{
+		"Warrior apprentice",
+		COST_1, ATTACK_2, HEALTH_2, SHIELD_1, SHIELD_NONE,
+		{{}},
+		"No effect"
+	},
+	{
+		"Resurrected triceratops",
+		COST_0, ATTACK_0, HEALTH_1, SHIELD_1, SHIELD_NONE,
+		{{}},
+		"No effect"
+	},
+	{
+		"Groot",
+		COST_5, ATTACK_4, HEALTH_7, SHIELD_2, SHIELD_BLUE,
+		{{}},
+		"We are groot."
+	},
+	{
+		"Deathwing",
+		COST_5, ATTACK_9, HEALTH_9, SHIELD_2, SHIELD_LEGENDARY,
+		{{PLAYER_SELF,PE_SET_CONSTRAINT,PC_LIMIT_CARD_USE,0,}},
+		"You can't play any card while this creature is alive."
+	},
+	{
+		"Silver wolf",
+		COST_4, ATTACK_6, HEALTH_5, SHIELD_1, SHIELD_NONE,
+		{{}},
+		"No effect."
+	},
+	{
+		"Kuriboh",
+		COST_1, ATTACK_2, HEALTH_2, SHIELD_1, SHIELD_NONE,
+		{{CREATURE_SELF_TEAM,CE_RESET_SHIELD,2}},
+		"Resets 2 friendly shields."
+	},
+	{
+		"Twin-Headed dog",
+		COST_4, ATTACK_2, HEALTH_2, SHIELD_1, SHIELD_ORANGE,
+		{{CREATURE_SELF_THIS,CE_SET_CONSTRAINT,CE_ADD_ATTACK,1},{CE_SET_CONSTRAINT,CREATURE_SELF,CE_ADD_HEALTH,1}},
+		"Gains 1 HP and 1 ATTACK each turn."
+	},
+	{
+		"Humanoide maid",
+		COST_2, ATTACK_0, HEALTH_5, SHIELD_1, SHIELD_NONE,
+		{{CE_SET_CONSTRAINT,CREATURE_TEAM,CE_ADD_HEALTH,2},{PE_SET_CONSTRAINT,PLAYER_SELF,CE_ADD_HEALTH,2}},
+		"Gives a friendly creature and this creature owner 2 HP each turn."
+	}*/
+};
 
 ///SPELLS
-/*
 const SpellData ALL_SPELLS[] = {
 	{
 		"Abracadabra",
@@ -255,7 +172,7 @@ const SpellData ALL_SPELLS[] = {
 	{
 		"Flash heal",
 		COST_1,
-		{{CREATURE_SELF_RAND, CE_CHANGE_HEALTH, 2}},
+		{{CREATURE_SELF_RAND, CE_CHANGE_HEALTH, 1}},
 		"Increase a random creature's health of 2 points"
 	},
 	{
@@ -268,10 +185,8 @@ const SpellData ALL_SPELLS[] = {
 		"Grand Theft Card",
 		COST_1,
 		{{PLAYER_SELF, PE_STEAL_HAND_CARD}},
-		"You steal a random card from the opponent's hand"
-	}
-*/
-/*,
+		"You steal a random card from the opponent''s hand"
+	}/*,
 	// TODO: CE_SELF_HYPNOTIZED NOT CREATED YET
 	{
 		"Hypnosis",
@@ -353,50 +268,8 @@ const SpellData ALL_SPELLS[] = {
 		{{CREATURE_ONE_OPPO, C_TRAP, 3}},
 		"Deal 3 damage or summon two 1/1 snacks"
 	}*/
-/*
 };
-
 
 const std::size_t nbSpells{sizeof(ALL_SPELLS) / sizeof(SpellData)};
 
 const std::size_t nbCreatures{sizeof(ALL_CREATURES) / sizeof(CreatureData)};
-*/
-
-EffectArgs::EffectArgs(const EffectParamsCollection& args):
-	_args(args),
-	_index{0}
-{
-
-}
-
-EffectArgs::EffectArgs(const std::initializer_list<int>& args):
-	_args(args),
-	_index{0}
-{
-
-}
-
-int EffectArgs::getArg()
-{
-	return _args.at(_index++);
-}
-
-int EffectArgs::peekArg() const
-{
-	return _args.at(_index);
-}
-
-int EffectArgs::remainingArgs() const
-{
-	return static_cast<int>(_args.size() - _index);
-}
-
-std::string EffectArgs::toString() const
-{
-	std::stringstream ss;
-	ss << "[";
-	for(size_t i = _index; i < _args.size(); ++i)
-		ss << ((i+1 == _args.size() ? "" : ", ") + _args.at(i));
-	ss << "]";
-	return ss.str();
-}

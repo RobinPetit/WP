@@ -5,10 +5,12 @@
 #include <vector>
 #include <functional>
 // WizardPoker headers
-#include "server/Card.hpp"
+#include "common/Card.hpp"
+#include "server/ServerCardData.hpp"
+#include "server/Player.hpp"
 #include "server/Constraints.hpp"
-#include "common/CardData.hpp"
-#include "common/GameData.hpp"
+#include "common/CardData.hpp" // Why?
+#include "common/GameData.hpp" // Why?
 
 // Forward declarations
 class Player;
@@ -17,9 +19,9 @@ class Player;
 class Creature : public Card
 {
 private:
-	int _attack, _attackInit;
-	int _health, _healthInit;
-	int _shield, _shieldInit;
+	int _attack;
+	int _health;
+	int _shield;
 	int _shieldType;
 
 	Player& _owner;
@@ -40,14 +42,14 @@ private:
 	void changeShield(EffectArgs effect);
 	void forcedChangeHealth(EffectArgs effect);
 
+	/// used to get good prototype type
+	inline const ServerCreatureData& prototype() const;
+
 public:
 	/// Constructors
-	Creature(cardId cardIdentifier, Player& owner, int cost, int attack, int health, int shield, int shieldType,
-			std::vector<EffectParamsCollection> effects);
+	Creature(const ServerCreatureData&, Player& owner);
 
 	/// Player interface
-	virtual bool isCreature() override;
-	virtual bool isSpell() override;
 	void moveToBoard();
 	void removeFromBoard();
 	bool isOnBoard() const;
@@ -56,11 +58,12 @@ public:
 	void leaveTurn();
 
 	void makeAttack(Creature& victim);
-	void receiveAttack(Creature& attacker, int attack, int forced, int loopCount=0);
+	void receiveAttack(Creature& attacker, int attack, int forced, int loopCount = 0);
 
 	/// Effects interface
 	void applyEffectToSelf(EffectArgs effect);
 
+	const std::vector<EffectParamsCollection>& getEffects() const;
 	int getAttack() const;
 	int getHealth() const;
 	int getShield() const;

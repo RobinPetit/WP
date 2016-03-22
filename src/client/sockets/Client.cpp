@@ -4,6 +4,7 @@
 #include <SFML/Network/SocketSelector.hpp>
 // WizardPoker headers
 #include "client/sockets/Client.hpp"
+#include "client/ClientDatabase.hpp"
 #include "client/ErrorCode.hpp"
 #include "client/NonBlockingInput.hpp"
 #include "common/constants.hpp"
@@ -29,6 +30,7 @@ Client::Client():
 	_serverPort(0),
 	_threadLoop(false),
 	_userTerminal(),
+	_database(),
 	_currentConversations(),
 	_inGame(false),
 	_inGameSocket(),
@@ -36,7 +38,6 @@ Client::Client():
 	_inGameOpponentName(),
 	_readyToPlay(false)
 {
-
 }
 
 void Client::connectToServer(const std::string& name, const std::string& password, const sf::IpAddress& address, sf::Uint16 port)
@@ -559,6 +560,21 @@ CardsCollection Client::getCardsCollection()
 	CardsCollection cardCollection;
 	packet >> cardCollection;
 	return cardCollection;
+}
+
+cardId Client::getNumberOfCards()
+{
+	return _database.countCards();
+}
+
+cardId Client::getMaxCardId()
+{
+	return _database.getGreatestCardId();
+}
+
+const CommonCardData* Client::getCardData(cardId id)
+{
+	return _database.getCardData(id);
 }
 
 ////////////////// Others
