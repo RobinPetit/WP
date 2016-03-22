@@ -52,7 +52,7 @@ void Creature::enterTurn()
 	//Creature's turn-based constraints
 	changeAttack({getConstraint(CC_TURN_ATTACK_CHANGE)});
 	changeHealth({getConstraint(CC_TURN_HEALTH_CHANGE)});
-	changeShield({getConstraint(CC_TURN_ATTACK_CHANGE)});
+	changeShield({getConstraint(CC_TURN_SHIELD_CHANGE)});
 }
 
 void Creature::leaveTurn()
