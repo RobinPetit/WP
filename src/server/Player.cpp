@@ -285,6 +285,7 @@ void Player::useCard(int handIndex)
 
 void Player::useCreature(int handIndex, Card* usedCard)
 {
+	assert(usedCard->isCreature());
 	// check if player is allowed to place a creature
 	if (_constraints.getConstraint(PC_TEMP_CREATURE_PLACING_LIMIT) == _turnData.creaturesPlaced)
 	{
@@ -781,6 +782,7 @@ void Player::cardDeckToHand(int amount)
 
 void Player::cardHandToBoard(int handIndex)
 {
+	assert(_cardHand.at(handIndex)->isCreature());
 	// Release the ownership of the hand, cast to a Creature pointer and give it to the board
 	_cardBoard.push_back(std::unique_ptr<Creature>(dynamic_cast<Creature*>(_cardHand.at(handIndex).release())));
 	_cardBoard.back()->moveToBoard();
