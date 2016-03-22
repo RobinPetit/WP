@@ -2,19 +2,18 @@
 #include "client/Gui/states/GuiFriendsManagementState.hpp"
 #include "client/Gui/InputBox.hpp"
 
-const std::vector<ButtonData<GuiFriendsManagementState>> GuiFriendsManagementState::_buttons =
-{
-	{&GuiFriendsManagementState::addFriend, "Add a friend to the list"},
-	{&GuiFriendsManagementState::removeFriend, "Remove selected friend"},
-	{&GuiFriendsManagementState::treatRequests, "Treat friendship requests"},
-	{&GuiFriendsManagementState::startChat, "Chat with selected friend"},
-	{&GuiFriendsManagementState::backMainMenu, "Back to main menu"},
-};
-
 GuiFriendsManagementState::GuiFriendsManagementState(Context& context):
 	AbstractState(context),
 	GuiAbstractState(context),
 	AbstractFriendsManagementState(context),
+	_buttons
+	{
+		{&GuiFriendsManagementState::addFriend, "Add a friend to the list"},
+		{&GuiFriendsManagementState::removeFriend, "Remove selected friend"},
+		{&GuiFriendsManagementState::treatRequests, "Treat friendship requests"},
+		{&GuiFriendsManagementState::startChat, "Chat with selected friend"},
+		{&GuiFriendsManagementState::backMainMenu, "Back to main menu"},
+	},
 	_menuLabel{std::make_shared<tgui::Label>()},
 	_friendsListBox{std::make_shared<tgui::ListBox>()},
 	_buttonsLayout{std::make_shared<tgui::VerticalLayout>()}
@@ -166,4 +165,3 @@ void GuiFriendsManagementState::updateFriendListBox()
 	for(const auto& friendUser : _context.client->getFriends())
 		_friendsListBox->addItem(friendUser.name);
 }
-

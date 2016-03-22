@@ -10,31 +10,25 @@ GuiApplication::GuiApplication():
 {
 	_context.window = &_window;
 	_context.gui = &_gui;
-
-	// Fix a bug that occurs on Theo's computer, showing a "This window does not
-	// respond, do you wanna kill it?" prompt after a few seconds when running
-	// the application
-	sf::Event event;
-	while(_window.pollEvent(event));
+	_window.setKeyRepeatEnabled(false);
+	_window.setFramerateLimit(60);
 }
 
 int GuiApplication::play()
 {
-	_stateStack.push<GuiHomeState>();
-	while(not _stateStack.isEmpty())
+	_stateStack.firstPush<GuiHomeState>();
+	try
 	{
-		_stateStack.display();
-		// Is this try/catch really useful? We do nothing when an exception
-		// is caught, the behavior is almost the same as without try/catch.
-		try
+		while(not _stateStack.isEmpty())
 		{
+			_stateStack.display();
 			_stateStack.handleInput();
 		}
-		catch(std::runtime_error& error)
-		{
-			std::cerr << "Exception caught: " << error.what();
-			return -1;
-		}
+	}
+	catch(std::runtime_error& error)
+	{
+		std::cerr << "Exception caught: " << error.what();
+		return -1;
 	}
 	return 0;
 }

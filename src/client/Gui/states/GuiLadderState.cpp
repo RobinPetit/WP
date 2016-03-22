@@ -3,15 +3,14 @@
 // WizardPoker headers
 #include "client/Gui/states/GuiLadderState.hpp"
 
-const std::vector<ButtonData<GuiLadderState>> GuiLadderState::_buttons =
-{
-	{&GuiLadderState::backMainMenu, "Back to main menu"}
-};
-
 GuiLadderState::GuiLadderState(Context& context):
 	AbstractState(context),
 	GuiAbstractState(context),
 	AbstractLadderState(context),
+	_buttons
+	{
+		{&GuiLadderState::backMainMenu, "Back to main menu"}
+	},
 	_ladderLayout{std::make_shared<tgui::VerticalLayout>()},
 	_titleLabel{std::make_shared<tgui::Label>()}
 {

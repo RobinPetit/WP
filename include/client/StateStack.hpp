@@ -46,6 +46,9 @@ class StateStack
 		template <typename StateType>
 		void push();
 
+		template <typename StateType>
+		void firstPush();
+
 		/// Delete the top state.
 		void pop();
 
@@ -57,29 +60,28 @@ class StateStack
 		bool isEmpty() const;
 
 	private:
-		std::vector<std::unique_ptr<AbstractState>> _stack;  ///< Vector of state.
-		std::vector<std::unique_ptr<AbstractState>>::iterator _stackIterator;  ///< Iterator on _stack.
+		std::vector<AbstractState*> _stack;  ///< Vector of state.
+		std::vector<std::function<void()>> _pendingChanges;
 		Context& _context;
-		bool _empty;  ///< Indicates wether clear() gets called.
+
+		void doPendingChanges();
 };
 
 template <typename StateType>
 void StateStack::push()
 {
-	// If we do the first push or if the iterator is at TOS
-	if(_stack.empty() or *_stackIterator == _stack.back())
+	_pendingChanges.emplace_back([this]()
 	{
 		if(not _stack.empty())
-			(*_stackIterator)->onPush();
+			_stack.back()->onPush();
 		_stack.emplace_back(new StateType(_context));
-		_stackIterator = _stack.end() - 1;
-	}
-	else
-	{
-		(*_stackIterator)->onPush();
-		_stackIterator++;
-		_stackIterator->reset(new StateType(_context));
-	}
+	});
 }
 
-#endif// _STATE_STACK_CLIENT_HPP
+template <typename StateType>
+void StateStack::firstPush()
+{
+	_stack.emplace_back(new StateType(_context));
+}
+
+#endif  // _STATE_STACK_CLIENT_HPP

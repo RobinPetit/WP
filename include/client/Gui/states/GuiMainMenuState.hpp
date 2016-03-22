@@ -30,11 +30,11 @@ class GuiMainMenuState: public GuiAbstractState, public AbstractMainMenuState
 
 	private:
 		////////// Attributes
+		const std::vector<ButtonData<GuiMainMenuState>> _buttons;
+
 		tgui::Label::Ptr _menuLabel;
 
 		tgui::VerticalLayout::Ptr _layout;
-
-		const static std::vector<ButtonData<GuiMainMenuState>> _buttons;
 
 		////////// Methods
 		void findGame();

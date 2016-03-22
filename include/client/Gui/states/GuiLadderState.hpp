@@ -33,7 +33,7 @@ class GuiLadderState : public GuiAbstractState, public AbstractLadderState
 		virtual void onPop() override;
 
 	private:
-		const static std::vector<ButtonData<GuiLadderState>> _buttons;
+		const std::vector<ButtonData<GuiLadderState>> _buttons;
 
 		/// A structure that contains all widgets needed for displaying an entry
 		/// of the ladder in GUI.

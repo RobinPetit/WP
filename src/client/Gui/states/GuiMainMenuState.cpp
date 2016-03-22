@@ -5,21 +5,20 @@
 #include "client/Gui/states/GuiFriendsManagementState.hpp"
 #include "client/Gui/states/GuiLadderState.hpp"
 
-const std::vector<ButtonData<GuiMainMenuState>> GuiMainMenuState::_buttons =
-{
-	{&GuiMainMenuState::findGame, "Enter the matchmaking lobby"},
-	{&GuiMainMenuState::manageDecks, "Manage your decks"},
-	{&GuiMainMenuState::seeCards, "See your collection of cards"},
-	{&GuiMainMenuState::manageFriends, "Manage your friends"},
-	{&GuiMainMenuState::seeLadder, "See the ladder"},
-	{&GuiMainMenuState::logOut, "Log out"},
-	{&GuiMainMenuState::quit, "Quit"},
-};
-
 GuiMainMenuState::GuiMainMenuState(Context& context):
 	AbstractState(context),
 	GuiAbstractState(context),
 	AbstractMainMenuState(context),
+	_buttons
+	{
+		{&GuiMainMenuState::findGame, "Enter the matchmaking lobby"},
+		{&GuiMainMenuState::manageDecks, "Manage your decks"},
+		{&GuiMainMenuState::seeCards, "See your collection of cards"},
+		{&GuiMainMenuState::manageFriends, "Manage your friends"},
+		{&GuiMainMenuState::seeLadder, "See the ladder"},
+		{&GuiMainMenuState::logOut, "Log out"},
+		{&GuiMainMenuState::quit, "Quit"},
+	},
 	_menuLabel{std::make_shared<tgui::Label>()},
 	_layout{std::make_shared<tgui::VerticalLayout>()}
 {
