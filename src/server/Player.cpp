@@ -328,12 +328,13 @@ void Player::useSpell(int handIndex, Card* usedCard)
 
 void Player::attackWithCreature(int attackerIndex, int victimIndex)
 {
+	bool attackOpponent{victimIndex < 0};
 	Creature* attacker;
 	Creature* victim;
 	try //check the input
 	{
 		attacker = _cardBoard.at(attackerIndex).get();
-		if(victimIndex >= 0)
+		if(not attackOpponent)
 			victim = _opponent._cardBoard.at(victimIndex).get();
 	}
 	catch (std::out_of_range&)
@@ -359,7 +360,7 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 	_turnData.creatureAttacks++;
 	_energy -= attacker->getEnergyCost();
 
-	if(victimIndex < 0)
+	if(attackOpponent)
 	{
 		_opponent.changeHealth({-attacker->getAttack()});
 		logOpponentHealth();
