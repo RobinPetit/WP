@@ -21,8 +21,8 @@ GameThread::GameThread(ServerDatabase& database, userId player1Id, userId player
 	_player1Id(player1Id),
 	_player2Id(player2Id),
 	_running(false),
-	_player1(*this, database, _player1Id, _player2),
-	_player2(*this, database, _player2Id, _player1),
+	_player1(*this, database, _player1Id, _player2, _postGameDataPlayer1),
+	_player2(*this, database, _player2Id, _player1, _postGameDataPlayer2),
 	_database(database),
 	_winner{0},
 	_turn(0),
@@ -87,17 +87,27 @@ userId GameThread::playGame(const ClientInformations& player1, const ClientInfor
 	_passivePlayer->setUpGame(false);
 	_timerThread = std::thread(&GameThread::makeTimer, this);
 
-	// run the game
+	// run and time the game
+	std::chrono::steady_clock::time_point startOfGame = std::chrono::steady_clock::now();
 	userId winnerId{runGame()};
+
+	// calculate time duration of the game
+	std::chrono::steady_clock::time_point endOfGame = std::chrono::steady_clock::now();
+    std::size_t gameDuration = std::chrono::duration_cast<std::chrono::seconds>(endOfGame - startOfGame).count();
+    _postGameDataPlayer1.gameDuration = _postGameDataPlayer2.gameDuration = gameDuration;
+
+	// unlock a random new card
+	cardId earnedCardId{_intGenerator.next(static_cast<int>(nbSpells + nbCreatures)) + 1}; // Card indices start to 1 because of SQLite
+	if (_postGameDataPlayer1.playerWon)
+		_postGameDataPlayer1.unlockedCard = earnedCardId;
+	if (_postGameDataPlayer2.playerWon)
+		_postGameDataPlayer2.unlockedCard = earnedCardId;
+
+	if(_endGameCause != EndGame::Cause::ENDING_SERVER)
+		_database.addCard(winnerId, earnedCardId); //TODO DATABASE : add card when receiving postGameData instead
 
 	// Send to the winner he wins and send his new card ID
 	sf::Packet packet;
-	cardId earnedCardId{_intGenerator.next(static_cast<int>(nbSpells + nbCreatures))};
-	++earnedCardId;  // Card indices start to 1 because of SQLite
-	if(_endGameCause != EndGame::Cause::ENDING_SERVER)
-		_database.addCard(winnerId, earnedCardId);
-	// \TODO: change by cardId earnedCardId = _database.unlockNewCard(winnerId) ?
-
 	// Send to the winner he won
 	// EndGame::applyToSelf indicate which player won the game: false mean that
 	// the player who receive this message has won.

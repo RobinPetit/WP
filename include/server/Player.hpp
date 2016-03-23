@@ -21,6 +21,7 @@
 #include "common/sockets/TransferType.hpp"
 #include "common/sockets/EndGame.hpp"
 #include "common/Deck.hpp"
+#include "server/PostGameData.hpp"
 // SFML headers
 #include <SFML/Network/TcpSocket.hpp>
 
@@ -32,7 +33,7 @@ class Player
 public:
 	/*------------------------------ Methods */
 	/// Constructor
-	Player(GameThread& gameThread, ServerDatabase& database, userId id, Player& opponent);
+	Player(GameThread& gameThread, ServerDatabase& database, userId id, Player& opponent, PostGameData& postGameData);
 
 	// Interface for basic gameplay
 	/// Receive the deck sent by the client and put it in the game
@@ -93,6 +94,7 @@ private:
 
 	/*------------------------------ Attributes */
 	GameThread& _gameThread;
+	PostGameData& _postGameData;
 	ServerDatabase& _database;
 
 	Player& _opponent;

@@ -7,14 +7,16 @@
 
 struct PostGameData
 {
-	bool playerWon;
 	bool opponentInDaClub;
-	bool playerQuit;
-	cardId unlockedCard;
-    bool playerStarted;
+	bool playerStarted;
     bool playerTookDamage;
+	bool playerWon;
+	bool playerQuit;
+
+	cardId unlockedCard;
+
     int remainingHealth;
-    std::size_t gameDuration;
+    int gameDuration;
 };
 
 #endif  // _POST_GAME_DATA_SERVER_HPP_

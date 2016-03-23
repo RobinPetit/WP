@@ -54,8 +54,9 @@ private:
 	sf::TcpSocket _specialOutputSocketPlayer2;
 	Player _player1;
 	Player _player2;
+	PostGameData _postGameDataPlayer1;
+	PostGameData _postGameDataPlayer2;
 	ServerDatabase& _database;
-	PostGameData _player1Data, _player2Data;
 
 	userId _winner;
 	EndGame::Cause _endGameCause;
@@ -98,8 +99,8 @@ GameThread::GameThread(ServerDatabase& database, userId player1Id, userId player
 	_player1Id(player1Id),
 	_player2Id(player2Id),
 	_running(true),
-	_player1(*this, database, _player1Id, _player2),
-	_player2(*this, database, _player2Id, _player1),
+	_player1(*this, database, _player1Id, _player2, _postGameDataPlayer1),
+	_player2(*this, database, _player2Id, _player1, _postGameDataPlayer2),
 	_database(database),
 	_winner{0},
 	_turn(0),
