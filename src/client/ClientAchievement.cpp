@@ -5,8 +5,8 @@
 #include "client/AchievementData.hpp"
 
 ClientAchievement::ClientAchievement(const Achievement achievement, const AchievementData achievementData) :
-	_achievement(achievement),
-	_achievementData(achievementData)
+	_achievementData(achievementData),
+	_achievement(achievement)
 {
 }
 
@@ -37,7 +37,7 @@ int ClientAchievement::getCurrentProgress() const
 
 float ClientAchievement::getProgressPercentage() const
 {
-	return static_cast<float>(getCurrentProgress()*100) / getRequiredProgress();
+	return static_cast<float>(static_cast<double>(getCurrentProgress()*100) / getRequiredProgress());
 }
 
 bool ClientAchievement::isUnlocked() const
