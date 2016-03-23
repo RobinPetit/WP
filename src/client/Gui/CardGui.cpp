@@ -1,9 +1,7 @@
 // std-C++ headers
 #include <iostream>
-#include <string>
 // WizardPoker headers
 #include "client/Gui/CardGui.hpp"
-#include <SFML/Graphics.hpp>
 
 const sf::Vector2f CardGui::SIZE{240.f, 360.f};
 const sf::Vector2f CardGui::NAME_POSITION{12.f, 12.f};

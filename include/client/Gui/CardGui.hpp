@@ -1,6 +1,8 @@
 #ifndef CARD_GUI_CLIENT_HPP
 #define CARD_GUI_CLIENT_HPP
 
+// std-C++ headers
+#include <string>
 // External headers
 #include <SFML/Graphics.hpp>
 

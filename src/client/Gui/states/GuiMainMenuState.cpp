@@ -2,6 +2,9 @@
 #include "client/Gui/states/GuiMainMenuState.hpp"
 #include "client/Gui/states/GuiFriendsManagementState.hpp"
 #include "client/Gui/states/GuiLadderState.hpp"
+#include "client/Gui/states/GuiCardsCollectionState.hpp"
+#include "client/Gui/states/GuiDecksManagementState.hpp"
+#include "client/Gui/states/GuiLobbyState.hpp"
 
 GuiMainMenuState::GuiMainMenuState(Context& context):
 	AbstractState(context),
@@ -52,7 +55,7 @@ void GuiMainMenuState::manageDecks()
 
 void GuiMainMenuState::seeCards()
 {
-	// _context.stateStack->push<GuiCardsCollectionState>();
+	_context.stateStack->push<GuiCardsCollectionState>();
 }
 
 void GuiMainMenuState::manageFriends()
