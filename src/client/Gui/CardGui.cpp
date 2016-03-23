@@ -70,10 +70,12 @@ void CardGui::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
 	states.transform.translate(_position);
 	if(_showFront)
-		target.draw(_backView, states);
-	else
+	{
 		target.draw(_picture, states);
-	target.draw(_descriptionText, states);
-	target.draw(_nameText, states);
-	target.draw(_costText, states);
+		target.draw(_descriptionText, states);
+		target.draw(_nameText, states);
+		target.draw(_costText, states);
+	}
+	else
+		target.draw(_backView, states);
 }
