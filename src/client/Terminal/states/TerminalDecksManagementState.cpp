@@ -114,7 +114,7 @@ cardId TerminalDecksManagementState::askForReplacingCard(std::size_t deckIndex)
 	// TODO: even if *for now* database initialization ensure that card ids are consecutive
 	// we shouldn't take this for granted.
 	assert(_client.getMaxCardId() == _client.getNumberOfCards());
-	cardId replacingCard{static_cast<cardId>(askForNumber(0, _client.getNumberOfCards()))};
+	cardId replacingCard{static_cast<cardId>(askForNumber(0, static_cast<std::size_t>(_client.getNumberOfCards())))};
 
 	// Check if the given card is valid
 	if(not _cardsCollection.contains(replacingCard))

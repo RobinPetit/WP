@@ -722,7 +722,6 @@ bool Player::exploitCardEffects(Card* usedCard)
 			? static_cast<Spell *>(usedCard)->getEffects()
 			: static_cast<Creature *>(usedCard)->getEffects()
 	);
-	// If a card has no effect, then send an empty vector to avoid client to crash
 
 	sf::Packet nbOfEffectsPacket;
 	nbOfEffectsPacket << TransferType::GAME_SEND_NB_OF_EFFECTS << static_cast<sf::Uint32>(effects.size());
