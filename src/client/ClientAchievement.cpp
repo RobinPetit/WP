@@ -4,11 +4,10 @@
 #include "common/Achievements.hpp"
 #include "client/AchievementData.hpp"
 
-ClientAchievement::ClientAchievement(const Achievement achievement) :
-	_achievement(achievement)
+ClientAchievement::ClientAchievement(const Achievement achievement, const AchievementData achievementData) :
+	_achievement(achievement),
+	_achievementData(achievementData)
 {
-	///\TODO get good achievementData from database
-	_achievementData = {0,"name","description",42};
 }
 
 std::string ClientAchievement::getName() const

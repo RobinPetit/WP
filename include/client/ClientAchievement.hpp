@@ -10,11 +10,11 @@
 
 class ClientAchievement
 {
-	AchievementData _achievementData;
+	const AchievementData _achievementData;
 	const Achievement _achievement;
 	
 public:
-	explicit ClientAchievement(const Achievement); // TODO: reference? pointer? move?...?
+	explicit ClientAchievement(const Achievement, const AchievementData); // TODO: reference? pointer? move?...?
 	
 	std::string getName() const;
 	std::string getPrettyName() const;
