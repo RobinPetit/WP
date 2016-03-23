@@ -30,9 +30,13 @@ public:
 	virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
 protected:
-	// name, cost, and description
+	/// Description graphical text.
 	sf::Text _descriptionText;
+
+	/// Name graphical text.
 	sf::Text _nameText;
+
+	/// Cost graphical text.
 	sf::Text _costText;
 
 	/// Text font.
@@ -57,6 +61,9 @@ protected:
 
 	sf::RectangleShape _picture;
 	sf::Texture _pictureTexture;
+
+	/// Ease of use method.
+	void setupText(sf::Text& text, const std::string& string, const sf::Vector2f& position) const;
 };
 
 

@@ -15,11 +15,19 @@ public:
 	void setHealth(int value);
 	void setShield(int value);
 
+	/// Draw the object to a render target.
+	virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
+
 private:
-	int _attack;
-	int _health;
-	int _shield;
-	int _shieldType;
+	int _shieldType;// TODO use this
+
+	sf::Text _attackText;
+	sf::Text _healthText;
+	sf::Text _shieldText;
+
+	static const sf::Vector2f ATTACK_POSITION;
+	static const sf::Vector2f HEALTH_POSITION;
+	static const sf::Vector2f SHIELD_POSITION;
 };
 
 #endif  // CREATURE_GUI_CLIENT_HPP

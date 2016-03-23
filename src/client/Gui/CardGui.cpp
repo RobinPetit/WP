@@ -5,10 +5,10 @@
 #include "client/Gui/CardGui.hpp"
 #include <SFML/Graphics.hpp>
 
-const sf::Vector2f CardGui::SIZE{360.f, 240.f};
-const sf::Vector2f CardGui::NAME_POSITION{24.f, 36.f};
-const sf::Vector2f CardGui::COST_POSITION{300.f, 36.f};
-const sf::Vector2f CardGui::DESCRIPTION_POSITION{10.f, 28.f};
+const sf::Vector2f CardGui::SIZE{240.f, 360.f};
+const sf::Vector2f CardGui::NAME_POSITION{12.f, 12.f};
+const sf::Vector2f CardGui::COST_POSITION{200.f, 12.f};
+const sf::Vector2f CardGui::DESCRIPTION_POSITION{300.f, 12.f};
 
 CardGui::CardGui(const std::string& name, const std::string& description, int cost):
 	_position{0.f, 0.f},
@@ -22,23 +22,10 @@ CardGui::CardGui(const std::string& name, const std::string& description, int co
 	_font.loadFromFile("TrueLies.ttf"); // loading chosen font
 
 	// complete cost, name and effects
-	_nameText.setString(name);
-	_nameText.setFillColor(sf::Color::Black);
-	_nameText.setFont(_font);
-	_descriptionText.setCharacterSize(CHAR_SIZE);
-	_nameText.setPosition(NAME_POSITION + _position);
-
-	_costText.setString(std::to_string(cost));
+	setupText(_nameText, name, NAME_POSITION);
+	setupText(_costText, std::to_string(cost), COST_POSITION);
 	_costText.setFillColor(sf::Color::Red);
-	_costText.setFont(_font);
-	_costText.setCharacterSize(CHAR_SIZE);
-	_costText.setPosition(COST_POSITION + _position);
-
-	_descriptionText.setString(description);
-	_descriptionText.setFillColor(sf::Color::Black);
-	_descriptionText.setFont(_font);
-	_descriptionText.setCharacterSize(CHAR_SIZE);
-	_descriptionText.setPosition(DESCRIPTION_POSITION + _position);
+	setupText(_descriptionText, description, DESCRIPTION_POSITION);
 }
 
 void CardGui::setCost(int cost)
@@ -78,4 +65,13 @@ void CardGui::draw(sf::RenderTarget &target, sf::RenderStates states) const
 	}
 	else
 		target.draw(_backView, states);
+}
+
+void CardGui::setupText(sf::Text& text, const std::string& string, const sf::Vector2f& position) const
+{
+	text.setString(string);
+	text.setFillColor(sf::Color::Black);
+	text.setFont(_font);
+	text.setCharacterSize(CHAR_SIZE);
+	text.setPosition(position);
 }

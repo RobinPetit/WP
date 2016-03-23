@@ -3,8 +3,13 @@
 // WizardPoker header
 #include "client/Gui/CreatureGui.hpp"
 
+const sf::Vector2f CreatureGui::ATTACK_POSITION{12.f, 12.f};
+const sf::Vector2f CreatureGui::HEALTH_POSITION{12.f, 12.f};
+const sf::Vector2f CreatureGui::SHIELD_POSITION{12.f, 12.f};
+
 CreatureGui::CreatureGui(const std::string& name, const std::string& description, int cost, int attack, int health, int shield, int shieldType):
-	CardGui(name, description, cost)
+	CardGui(name, description, cost),
+	_shieldType{shieldType}
 {
 	if(!_pictureTexture.loadFromFile("frontCreature.png"))
 	{
@@ -15,23 +20,31 @@ CreatureGui::CreatureGui(const std::string& name, const std::string& description
 	_picture.setTexture(&_pictureTexture);
 	_picture.setSize(SIZE);
 
-	_attack = attack;
-	_health = health;
-	_shield = shield;
-	_shieldType = shieldType;
+	setupText(_attackText, "Att: " + std::to_string(attack), ATTACK_POSITION);
+	setupText(_healthText, "Hea: " + std::to_string(health), HEALTH_POSITION);
+	setupText(_shieldText, "Shi: " + std::to_string(shield), SHIELD_POSITION);
 }
 
 void CreatureGui::setAttack(int value)
 {
-	_attack = value;
+	_attackText.setString("Att: " + std::to_string(value));
 }
 
 void CreatureGui::setHealth(int value)
 {
-	_health = value;
+	_healthText.setString("Hea: " + std::to_string(value));
 }
 
 void CreatureGui::setShield(int value)
 {
-	_shield = value;
+	_shieldText.setString("Shi: " + std::to_string(value));
+}
+
+void CreatureGui::draw(sf::RenderTarget &target, sf::RenderStates states) const
+{
+	CardGui::draw(target, states);
+	states.transform.translate(getPosition());
+	target.draw(_attackText, states);
+	target.draw(_healthText, states);
+	target.draw(_shieldText, states);
 }
