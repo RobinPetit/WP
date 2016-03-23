@@ -25,7 +25,7 @@ std::string ClientAchievement::getPrettyName() const
 
 std::string ClientAchievement::getDescription() const
 {
-	return "TODO: ClientAchievement::getDescription";
+	return _achievementData.description;
 }
 
 int ClientAchievement::getRequiredProgress() const
