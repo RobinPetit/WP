@@ -99,12 +99,20 @@ void AbstractGame::useCard()
 		_client.getGameSocket().send(actionPacket);
 		// receive amount of selection to make
 		_client.getGameSocket().receive(actionPacket);
-		// ask and send the additionnal inputs to the server
-		if(not treatAdditionnalInputs(actionPacket))
-			return;
+		TransferType responseHeader;
+		actionPacket >> responseHeader;
+		assert(responseHeader == TransferType::GAME_SEND_NB_OF_EFFECTS);
+		sf::Uint32 nbOfEffects;
+		actionPacket >> nbOfEffects;
+		for(sf::Uint32 i{0}; i < nbOfEffects; ++i)
+		{
+			_client.getGameSocket().receive(actionPacket);
+			// ask and send the additionnal inputs to the server
+			if(not treatAdditionnalInputs(actionPacket))
+				return;
+		}
 		// receive status of operation from server
 		_client.getGameSocket().receive(actionPacket);
-		TransferType responseHeader;
 		actionPacket >> responseHeader;
 		switch(responseHeader)
 		{

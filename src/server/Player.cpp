@@ -723,8 +723,11 @@ bool Player::exploitCardEffects(Card* usedCard)
 			: static_cast<Creature *>(usedCard)->getEffects()
 	);
 	// If a card has no effect, then send an empty vector to avoid client to crash
-	if(effects.empty())
-		askUserToSelectCards({});
+
+	sf::Packet nbOfEffectsPacket;
+	nbOfEffectsPacket << TransferType::GAME_SEND_NB_OF_EFFECTS << static_cast<sf::Uint32>(effects.size());
+	_socketToClient.send(nbOfEffectsPacket);
+
 	for(const auto& effect: effects) //for each effect of the card
 		if(not applyEffect(usedCard, effect)) //apply it
 			return false;
