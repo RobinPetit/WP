@@ -205,7 +205,7 @@ const CreatureData ALL_CREATURES[] = {
     {{CE_SET_CONSTRAINT,CREATURE_TEAM,CE_ADD_HEALTH,2},{PE_SET_CONSTRAINT,PLAYER_SELF,CE_ADD_HEALTH,2}},
     "Gives a friendly creature and this creature owner 2 HP each turn."
   }*/
-  
+
 
 ///SPELLS
 /*
@@ -396,7 +396,7 @@ std::string EffectArgs::toString() const
 	std::stringstream ss;
 	ss << "[";
 	for(size_t i = _index; i < _args.size(); ++i)
-		ss << ((i+1 == _args.size() ? "" : ", ") + _args.at(i));
+		ss << _args.at(i) << (i+1 == _args.size() ? "" : ", ");
 	ss << "]";
 	return ss.str();
 }
