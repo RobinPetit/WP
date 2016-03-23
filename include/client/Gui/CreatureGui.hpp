@@ -1,10 +1,9 @@
+#ifndef CREATURE_GUI_CLIENT_HPP
+#define CREATURE_GUI_CLIENT_HPP
 
-#ifndef CREATUREGUI_HPP
-#define CREATUREGUI_HPP
+#include "client/Gui/CardGUI.hpp"
 
-#include "CardGUI.hpp"
-
-class CreatureGUI: public CardGUI
+class CreatureGui: public CardGui
 {
 private:
     int _attack;
@@ -14,7 +13,7 @@ private:
 
 public:
 	/// Constructor
-	CreatureGUI(std::string cardIdentifier, int cost, int attack, int health, int shield, int shieldType,
+	CreatureGui(std::string cardIdentifier, int cost, int attack, int health, int shield, int shieldType,
 			std::vector<EffectParamsCollection> effects) // Taking only the required informations for the GUI
 
 
@@ -25,4 +24,4 @@ public:
 
 };
 
-#endif //CREATUREGUI_HPP
+#endif  // CREATURE_GUI_CLIENT_HPP

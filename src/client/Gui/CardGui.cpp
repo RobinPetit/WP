@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 
-CardGUI::CardGUI(std::string effects, std::string name, std::string cost)
+CardGui::CardGui(std::string effects, std::string name, std::string cost)
 {
     _backTexture.loadFromFile("back.png");
     _backTexture.setSmooth(true); // enable smooth borders
@@ -24,11 +24,8 @@ CardGUI::CardGUI(std::string effects, std::string name, std::string cost)
     //~ TODO ADDING PICTURE TO CONSTRUCTOR
 
 }
-CardGUI::void drawBack()
+CardGui::void drawBack()
 {
     /*Just drawing the back of the cards without any other element */
     _backView.draw()
 }
-
-
-

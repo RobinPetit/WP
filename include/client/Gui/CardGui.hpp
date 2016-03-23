@@ -1,8 +1,7 @@
-#ifndef CARDGUI_HPP
-#define CARDGUI_HPP
+#ifndef CARD_GUI_CLIENT_HPP
+#define CARD_GUI_CLIENT_HPP
 
-
-class CardGUI
+class CardGui
 {
 private:
     // name,cost, and effects
@@ -34,7 +33,7 @@ private:
 
 
 public:
-    CardGUI(std::string effects, std::string name, std::string cost);
+    CardGui(std::string effects, std::string name, std::string cost);
 
     /// Getters
     inline sf::Text   getEffects() {return _effects;}
@@ -51,4 +50,4 @@ public:
 
 
 
-#endif //CARDGUI_HPP
+#endif  // CARD_GUI_CLIENT_HPP

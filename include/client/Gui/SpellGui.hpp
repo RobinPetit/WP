@@ -1,16 +1,14 @@
+#ifndef SPELL_GUI_CLIENT_HPP
+#define SPELL_GUI_CLIENT_HPP
 
-#ifndef SPELLGUI_HPP
-#define SPELLGUI_HPP
+#include "client/Gui/CardGui.hpp"
 
-#include "CardGUI.hpp"
-
-class SpellGUI: public CardGUI
+class SpellGui: public CardGui
 {
 public:
 	/// Constructor
-	SpellGUI(std::string cardIdentifier, int cost, std::vector<EffectParamsCollection> effects) // Taking only the required informations for the GUI
+	SpellGui(std::string cardIdentifier, int cost, std::vector<EffectParamsCollection> effects) // Taking only the required informations for the GUI
 
 };
 
-#endif //SPELLGUI_HPP
-
+#endif  // SPELL_GUI_CLIENT_HPP

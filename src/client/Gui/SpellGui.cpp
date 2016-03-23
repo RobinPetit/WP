@@ -1,7 +1,7 @@
 #include "client/Gui/SpellGUI.hpp"
 
 
-SpellGUI::SpellGUI(std::string cardIdentifier, int cost, std::vector<EffectParamsCollection> effects)
+SpellGui::SpellGui(std::string cardIdentifier, int cost, std::vector<EffectParamsCollection> effects)
 {
     if (!_backTexture.loadFromFile("back.png"))
         {
@@ -22,4 +22,3 @@ SpellGUI::SpellGUI(std::string cardIdentifier, int cost, std::vector<EffectParam
     _cost = cost;
     _effects = effects;
 }
-
