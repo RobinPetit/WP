@@ -126,9 +126,9 @@ SELECT "Accounts";
 
 SELECT "Accounts/Tables";
 CREATE TABLE Account (
-	id INTEGER PRIMARY KEY ASC,
-	login TEXT UNIQUE NOT NULL,
-	password BLOB NOT NULL,
+	id                          INTEGER PRIMARY KEY ASC,
+	login                       TEXT UNIQUE NOT NULL,
+	password                    BLOB NOT NULL,
 	victories                   INTEGER NOT NULL DEFAULT 0,
 	defeats                     INTEGER NOT NULL DEFAULT 0,
 	givingup                    INTEGER NOT NULL DEFAULT 0,
@@ -143,14 +143,6 @@ CREATE TABLE Account (
 	closeWins                   INTEGER DEFAULT 0,
 	betterLuckNextTimeUnlocked  INTEGER DEFAULT 0, -- boolean
 	bestLadderPosition          INTEGER DEFAULT 0
-	-- ##cards
-	-- a way to store cards in the same table would have been:
-	-- card1 INTEGER CHECK (card1 >= 0) DEFAULT 0
-	-- card2 INTEGER CHECK (card2 >= 0) DEFAULT 0
-	-- ...
-	-- with a new column by new card.
-	--
-	-- another way to store cards is to use another table: GivenCard
 );
 
 CREATE TABLE GivenCard ( -- 20 first cards are not stored (everyone own its)
@@ -163,6 +155,13 @@ CREATE TABLE GivenCard ( -- 20 first cards are not stored (everyone own its)
 );
 
 CREATE INDEX givenCardOwner ON GivenCard(owner);
+
+CREATE TABLE Achievement (
+	id               INTEGER PRIMARY KEY ASC,
+	name             TEXT UNIQUE NOT NULL,
+	description      TEXT,
+	progressRequired INTEGER CHECK(progressRequired > 0) NOT NULL
+);
 
 SELECT "Accounts/Trigger";
 CREATE TRIGGER defaultDeckToNewAccount
