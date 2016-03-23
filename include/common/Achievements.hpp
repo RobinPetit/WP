@@ -4,17 +4,14 @@
 // std-C++ headers
 #include <vector>
 #include <string>
+// WizardPoker headers
+#include "common/Identifiers.hpp"
 
-class Achievement
+struct Achievement
 {
-private:
-	std::string _name;
-	std::string _description;
-	bool _unlocked;
-	std::size_t _progressCurrent, _progressRequired;
-public:
-	std::string getName() const;
-	std::string getDescription() const;
+	AchievementId id;
+	bool unlocked;
+	sf::Int64 currentProgress;
 };
 
 typedef std::vector<Achievement> AchievementList;
