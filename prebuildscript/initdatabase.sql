@@ -165,6 +165,8 @@ CREATE TABLE Achievement (
 	progressRequired INTEGER CHECK(progressRequired > 0) NOT NULL DEFAULT 1
 );
 
+CREATE INDEX achievementId ON Achievement(id);
+
 SELECT "Accounts/Trigger";
 CREATE TRIGGER defaultDeckToNewAccount
 	AFTER INSERT ON Account
