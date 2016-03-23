@@ -1,4 +1,5 @@
 // WizardPoker headers
+#include "client/sockets/Client.hpp"
 #include "client/Gui/states/GuiFriendsManagementState.hpp"
 #include "client/Gui/InputBox.hpp"
 

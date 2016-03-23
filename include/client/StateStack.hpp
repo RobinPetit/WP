@@ -3,14 +3,11 @@
 
 // std-C++ headers
 #include <stack>
-#include <string>
+#include <queue>
 #include <memory>
 #include <functional>
-#include <typeinfo>
-// SFML headers
-#include <SFML/System.hpp>
 // WizardPoker headers
-#include "client/sockets/Client.hpp"
+#include "client/Context.hpp"
 #include "client/AbstractState.hpp"
 
 //Forward declarations
@@ -60,8 +57,8 @@ class StateStack
 		bool isEmpty() const;
 
 	private:
-		std::vector<AbstractState*> _stack;  ///< Vector of state.
-		std::vector<std::function<void()>> _pendingChanges;
+		std::stack<std::unique_ptr<AbstractState>> _stack;  ///< Vector of state.
+		std::queue<std::function<void()>> _pendingChanges;
 		Context& _context;
 
 		void doPendingChanges();
@@ -70,18 +67,18 @@ class StateStack
 template <typename StateType>
 void StateStack::push()
 {
-	_pendingChanges.emplace_back([this]()
+	_pendingChanges.emplace([this]()
 	{
 		if(not _stack.empty())
-			_stack.back()->onPush();
-		_stack.emplace_back(new StateType(_context));
+			_stack.top()->onPush();
+		_stack.emplace(new StateType(_context));
 	});
 }
 
 template <typename StateType>
 void StateStack::firstPush()
 {
-	_stack.emplace_back(new StateType(_context));
+	_stack.emplace(new StateType(_context));
 }
 
 #endif  // _STATE_STACK_CLIENT_HPP

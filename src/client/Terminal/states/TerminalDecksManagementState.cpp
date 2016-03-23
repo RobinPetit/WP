@@ -2,6 +2,7 @@
 #include <iostream>
 // WizardPoker headers
 #include "common/CardData.hpp"
+#include "client/sockets/Client.hpp"
 #include "client/Terminal/states/TerminalDecksManagementState.hpp"
 
 TerminalDecksManagementState::TerminalDecksManagementState(Context& context):

@@ -1,6 +1,7 @@
 // std-C++ headers
 #include <iostream>
 // WizardPoker headers
+#include "client/sockets/Client.hpp"
 #include "client/Terminal/TerminalGame.hpp"
 #include "client/Terminal/states/TerminalLobbyState.hpp"
 

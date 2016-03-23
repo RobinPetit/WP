@@ -1,5 +1,3 @@
-// std-C++ headers
-#include <iostream>
 // WizardPoker headers
 #include "client/Gui/states/GuiLadderState.hpp"
 

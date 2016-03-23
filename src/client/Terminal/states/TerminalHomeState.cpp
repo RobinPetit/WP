@@ -1,6 +1,7 @@
 // std-C++ headers
 #include <iostream>
 // WizardPoker headers
+#include "client/sockets/Client.hpp"
 #include "common/UnableToConnectException.hpp"
 #include "client/Terminal/states/TerminalMainMenuState.hpp"
 #include "client/Terminal/states/TerminalHomeState.hpp"

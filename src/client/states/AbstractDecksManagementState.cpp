@@ -1,8 +1,9 @@
 // std-C++ headers
 #include <iostream>
 // WizardPoker headers
-#include "client/states/AbstractDecksManagementState.hpp"
+#include "client/sockets/Client.hpp"
 #include "client/StateStack.hpp"
+#include "client/states/AbstractDecksManagementState.hpp"
 
 AbstractDecksManagementState::AbstractDecksManagementState(Context& context):
 	AbstractState(context)

@@ -11,33 +11,30 @@ StateStack::StateStack(Context& context):
 
 void StateStack::display()
 {
-	_stack.back()->display();
+	_stack.top()->display();
 }
 
 void StateStack::handleInput()
 {
-	_stack.back()->handleInput();
+	_stack.top()->handleInput();
 	doPendingChanges();
 }
 
 void StateStack::pop()
 {
-	_pendingChanges.emplace_back([this]()
+	_pendingChanges.emplace([this]()
 	{
-		delete _stack.back();
-		_stack.pop_back();
+		_stack.pop();
 		if(not _stack.empty())
-			_stack.back()->onPop();
+			_stack.top()->onPop();
 	});
 }
 
 void StateStack::clear()
 {
-	_pendingChanges.emplace_back([this]()
+	_pendingChanges.emplace([this]()
 	{
-		for(auto& ptr : _stack)
-			delete ptr;
-		_stack.clear();
+		decltype(_stack)().swap(_stack);
 	});
 }
 
@@ -48,7 +45,9 @@ bool StateStack::isEmpty() const
 
 void StateStack::doPendingChanges()
 {
-	for(auto& pendingChange : _pendingChanges)
-		pendingChange();
-	_pendingChanges.clear();
+	while(not _pendingChanges.empty())
+	{
+		_pendingChanges.front()();
+		_pendingChanges.pop();
+	}
 }
