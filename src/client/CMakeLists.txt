@@ -23,13 +23,13 @@ set(SOURCES
 		"Terminal/TerminalApplication.cpp"
 		## States
 		"Terminal/TerminalAbstractState.cpp"
+		"Terminal/states/TerminalHomeState.cpp"
+		"Terminal/states/TerminalMainMenuState.cpp"
 		"Terminal/states/TerminalCardsCollectionState.cpp"
 		"Terminal/states/TerminalDecksManagementState.cpp"
 		"Terminal/states/TerminalFriendsManagementState.cpp"
 		"Terminal/states/TerminalLadderState.cpp"
 		"Terminal/states/TerminalLobbyState.cpp"
-		"Terminal/states/TerminalMainMenuState.cpp"
-		"Terminal/states/TerminalHomeState.cpp"
 		## Game
 		"Terminal/TerminalGame.cpp"
 
@@ -40,8 +40,11 @@ set(SOURCES
 		"Gui/GuiAbstractState.cpp"
 		"Gui/states/GuiHomeState.cpp"
 		"Gui/states/GuiMainMenuState.cpp"
+		"Gui/states/GuiCardsCollectionState.cpp"
+		"Gui/states/GuiDecksManagementState.cpp"
 		"Gui/states/GuiFriendsManagementState.cpp"
 		"Gui/states/GuiLadderState.cpp"
+		"Gui/states/GuiLobbyState.cpp"
 	)
 
 set(CLIENT_NAME "${PROJECT_NAME}_client")

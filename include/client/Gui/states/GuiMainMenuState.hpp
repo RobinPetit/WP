@@ -7,7 +7,7 @@
 #include "client/Gui/GuiAbstractState.hpp"
 #include "client/states/AbstractMainMenuState.hpp"
 
-/// Main menu in GUI Interface
+/// Main menu in GUI interface.
 class GuiMainMenuState: public GuiAbstractState, public AbstractMainMenuState
 {
 	public:

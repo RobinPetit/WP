@@ -55,4 +55,4 @@ class GuiLadderState : public GuiAbstractState, public AbstractLadderState
 		tgui::Label::Ptr _titleLabel;
 };
 
-#endif// _GUI_LADDER_STATE_CLIENT_HPP
+#endif  // _GUI_LADDER_STATE_CLIENT_HPP

@@ -7,7 +7,7 @@
 #include "client/Gui/GuiAbstractState.hpp"
 #include "client/states/AbstractHomeState.hpp"
 
-/// Final class for the home in the terminal.
+/// Final class for the home with the GUI.
 class GuiHomeState : public GuiAbstractState, public AbstractHomeState
 {
 	public:
