@@ -11,7 +11,24 @@
 GuiAbstractState::GuiAbstractState(Context& context):
 	AbstractState(context)
 {
+}
 
+GuiAbstractState::~GuiAbstractState()
+{
+	for(auto& widget : _rootWidgets)
+		widget->getParent()->remove(widget);
+}
+
+void GuiAbstractState::onPush()
+{
+	for(auto& widget : _rootWidgets)
+		widget->hide();
+}
+
+void GuiAbstractState::onPop()
+{
+	for(auto& widget : _rootWidgets)
+		widget->show();
 }
 
 void GuiAbstractState::display()
@@ -61,4 +78,9 @@ void GuiAbstractState::displayMessage(const std::string& message)
 		if(buttonName == okButtonText)
 			messageBox->destroy();
 	});
+}
+
+void GuiAbstractState::registerRootWidgets(std::vector<tgui::Widget::Ptr>&& widgets)
+{
+	std::swap(_rootWidgets, widgets);
 }

@@ -48,24 +48,8 @@ GuiHomeState::GuiHomeState(Context& context):
 	_grid->addWidget(_connectButton, 2, 0);
 	_grid->addWidget(_createAccountButton, 2, 1);
 	_context.gui->add(_grid);
-}
 
-GuiHomeState::~GuiHomeState()
-{
-	_grid->getParent()->remove(_grid);
-	_titleLabel->getParent()->remove(_titleLabel);
-}
-
-void GuiHomeState::onPush()
-{
-	_grid->hide();
-	_titleLabel->hide();
-}
-
-void GuiHomeState::onPop()
-{
-	_grid->show();
-	_titleLabel->show();
+	registerRootWidgets({_grid, _titleLabel});
 }
 
 void GuiHomeState::connect()

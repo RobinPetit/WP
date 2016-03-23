@@ -18,20 +18,6 @@ class GuiLadderState : public GuiAbstractState, public AbstractLadderState
 		/// Constructor.
 		GuiLadderState(Context& context);
 
-		/// Destructor. Deletes all widgets of this state.
-		~GuiLadderState();
-
-		/// Method called when another state is pushed on this one.
-		/// By default, does nothing.
-		/// Hides all the widgets.
-		virtual void onPush() override;
-
-		/// Method called when this state become the TOS again (e.g. this method
-		/// is called on the HomeState instance when we log out from the main
-		/// menu state).
-		/// Shows all the widgets again.
-		virtual void onPop() override;
-
 	private:
 		const std::vector<ButtonData<GuiLadderState>> _buttons;
 

@@ -22,6 +22,19 @@ class GuiAbstractState : virtual public AbstractState
 		/// \param context The context of the application.
 		GuiAbstractState(Context& context);
 
+		/// Destructor. Deletes all root widgets of this state.
+		virtual ~GuiAbstractState() override;
+
+		/// Method called when another state is pushed on this one.
+		/// Hides all root widgets.
+		virtual void onPush() override;
+
+		/// Method called when this state become the TOS again (e.g. this method
+		/// is called on the HomeState instance when we log out from the main
+		/// menu state).
+		/// Shows all root widgets again.
+		virtual void onPop() override;
+
 		/// The display function.
 		/// It must do all things related to drawing or printing stuff on the
 		/// screen.
@@ -41,16 +54,18 @@ class GuiAbstractState : virtual public AbstractState
 		/// a container.
 		/// \param buttonsData The vector of buttons data to create.
 		/// \param container A pointer to container to add the buttons to.
-		/// \note We are using a template for the container rather than
-		/// tgui::Container, because we also have to accept tgui::Gui, which is
-		/// not a tgui::Container.
-		template <class StateType, class ContainerPtr>
-		void setupButtons(const std::vector<ButtonData<StateType>>& buttons, ContainerPtr& container);
+		template <class StateType>
+		void setupButtons(const std::vector<ButtonData<StateType>>& buttons, tgui::Container::Ptr container);
+
+		void registerRootWidgets(std::vector<tgui::Widget::Ptr>&& widgets);
+
+	private:
+		std::vector<tgui::Widget::Ptr> _rootWidgets;
 };
 
 
-template <class StateType, class ContainerPtr>
-void GuiAbstractState::setupButtons(const std::vector<ButtonData<StateType>>& buttons, ContainerPtr& container)
+template <class StateType>
+void GuiAbstractState::setupButtons(const std::vector<ButtonData<StateType>>& buttons, tgui::Container::Ptr container)
 {
 	for(auto& button : buttons)
 	{

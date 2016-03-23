@@ -23,7 +23,7 @@ GuiLadderState::GuiLadderState(Context& context):
 	_context.gui->add(_titleLabel);
 
 	// Make the button(s)
-	setupButtons(_buttons, _context.gui);
+	setupButtons(_buttons, std::static_pointer_cast<tgui::Container>(_context.gui->getContainer()));
 	_buttons[0].button->setPosition(windowWidth/5.f, windowHeight * 8.f/10.f);
 	_buttons[0].button->setSize(windowWidth * 3.f/5.f, windowHeight * 1/10.f);
 
@@ -50,24 +50,8 @@ GuiLadderState::GuiLadderState(Context& context):
 	_ladderLayout->setPosition(windowWidth/5.f, windowHeight * 1.2f/10.f);
 	_ladderLayout->setSize(windowWidth * 3.f/5.f, windowHeight * 6.5f/10.f);
 	_context.gui->add(_ladderLayout);
-}
 
-GuiLadderState::~GuiLadderState()
-{
-	_ladderLayout->getParent()->remove(_ladderLayout);
-	_titleLabel->getParent()->remove(_titleLabel);
-}
-
-void GuiLadderState::onPush()
-{
-	_ladderLayout->hide();
-	_titleLabel->hide();
-}
-
-void GuiLadderState::onPop()
-{
-	_ladderLayout->show();
-	_titleLabel->show();
+	registerRootWidgets({_ladderLayout, _titleLabel, _buttons[0].button});
 }
 
 GuiLadderState::GuiLadderEntry::GuiLadderEntry():

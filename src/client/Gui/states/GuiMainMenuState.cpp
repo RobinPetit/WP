@@ -34,26 +34,10 @@ GuiMainMenuState::GuiMainMenuState(Context& context):
 
 	_layout->setPosition(windowWidth/5, windowHeight/5);
 	_layout->setSize(windowWidth*3/5, windowHeight*3/5);
-	setupButtons(_buttons, _layout);
+	setupButtons(_buttons, std::static_pointer_cast<tgui::Container>(_layout));
 	_context.gui->add(_layout);
-}
 
-GuiMainMenuState::~GuiMainMenuState()
-{
-	_menuLabel->getParent()->remove(_menuLabel);
-	_layout->getParent()->remove(_layout);
-}
-
-void GuiMainMenuState::onPush()
-{
-	_menuLabel->hide();
-	_layout->hide();
-}
-
-void GuiMainMenuState::onPop()
-{
-	_menuLabel->show();
-	_layout->show();
+	registerRootWidgets({_menuLabel, _layout});
 }
 
 void GuiMainMenuState::findGame()

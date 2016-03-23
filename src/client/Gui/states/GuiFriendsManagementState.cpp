@@ -35,7 +35,7 @@ GuiFriendsManagementState::GuiFriendsManagementState(Context& context):
 	// Make the buttons
 	_buttonsLayout->setPosition(windowWidth/2.f, windowHeight/5.f);
 	_buttonsLayout->setSize(windowWidth*(1.f/2.f - 1.f/5.f), windowHeight*3.f/4.f);
-	setupButtons(_buttons, _buttonsLayout);
+	setupButtons(_buttons, std::static_pointer_cast<tgui::Container>(_buttonsLayout));
 	_context.gui->add(_buttonsLayout);
 
 	// Make the friends list box
@@ -43,27 +43,8 @@ GuiFriendsManagementState::GuiFriendsManagementState(Context& context):
 	_friendsListBox->setSize(windowWidth*(1.f/2.f - 1.f/5.f), windowHeight*3.f/4.f);
 	updateFriendListBox();
 	_context.gui->add(_friendsListBox);
-}
 
-GuiFriendsManagementState::~GuiFriendsManagementState()
-{
-	_context.gui->remove(_menuLabel);
-	_friendsListBox->getParent()->remove(_friendsListBox);
-	_buttonsLayout->getParent()->remove(_buttonsLayout);
-}
-
-void GuiFriendsManagementState::onPush()
-{
-	_menuLabel->hide();
-	_friendsListBox->hide();
-	_buttonsLayout->hide();
-}
-
-void GuiFriendsManagementState::onPop()
-{
-	_menuLabel->show();
-	_friendsListBox->show();
-	_buttonsLayout->show();
+	registerRootWidgets({_menuLabel, _friendsListBox, _buttonsLayout});
 }
 
 void GuiFriendsManagementState::addFriend()
