@@ -4,7 +4,7 @@
 
 int TerminalApplication::play()
 {
-	_stateStack.push<TerminalHomeState>();
+	_stateStack.firstPush<TerminalHomeState>();
 	while(not _stateStack.isEmpty())
 	{
 		system("clear");
