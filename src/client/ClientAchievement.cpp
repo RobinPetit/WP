@@ -15,7 +15,7 @@ ClientAchievement::ClientAchievement(const Achievement achievement, const Achiev
 
 std::string ClientAchievement::getName() const
 {
-	return "TODO: ClientAchievement::getName";
+	return _achievementData.name;
 }
 
 std::string ClientAchievement::getPrettyName() const
