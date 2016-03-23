@@ -45,5 +45,5 @@ float ClientAchievement::getProgressPercentage() const
 
 bool ClientAchievement::isUnlocked() const
 {
-	return false; ///\TODO
+	return _achievement.unlocked;
 }
