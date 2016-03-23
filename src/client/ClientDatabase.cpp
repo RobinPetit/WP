@@ -117,6 +117,22 @@ cardId ClientDatabase::countSpells()
 	return _spellCount;
 }
 
+AchievementData ClientDatabase::getAchievementData(AchievementId id)
+{
+	sqlite3_reset(_getAchievementDataStmt);
+	sqliteThrowExcept(sqlite3_bind_int64(_getAchievementDataStmt, 1, id));
+
+	assert(sqliteThrowExcept(sqlite3_step(_getAchievementDataStmt)) == SQLITE_ROW);
+
+	return AchievementData
+	{
+		id,
+		reinterpret_cast<const char *>(sqlite3_column_text(_getAchievementDataStmt, 0)), // name
+		reinterpret_cast<const char *>(sqlite3_column_text(_getAchievementDataStmt, 1)), // description
+		sqlite3_column_int(_getAchievementDataStmt, 2) // progressRequired
+	};
+}
+
 
 ClientDatabase::~ClientDatabase()
 {
