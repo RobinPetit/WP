@@ -11,6 +11,7 @@
 #include "server/ServerDatabase.hpp"
 #include "common/sockets/EndGame.hpp"
 #include "common/random/RandomInteger.hpp"
+#include "server/PostGameData.hpp"
 // SFML headers
 #include <SFML/Network/TcpSocket.hpp>
 
@@ -54,6 +55,7 @@ private:
 	Player _player1;
 	Player _player2;
 	ServerDatabase& _database;
+	PostGameData _player1Data, _player2Data;
 
 	userId _winner;
 	EndGame::Cause _endGameCause;
