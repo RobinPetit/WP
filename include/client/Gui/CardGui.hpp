@@ -16,6 +16,11 @@ public:
 	/// Setters
 	void setCost(int cost);
 
+	/// Set which side of the card is drawn when the card is displayed.
+	/// \param true to show the front (with the image, title, ...), false to
+	/// show the back.
+	void setShownSide(bool showFront);
+
 protected:
 	// name,cost, and effects
 	sf::Text _descriptionText;
@@ -33,6 +38,7 @@ protected:
 	static constexpr std::size_t CHAR_SIZE = 20;
 
 	sf::Vector2f _position;
+	bool _showFront;
 
 	sf::RectangleShape _backView;
 	sf::Texture _backTexture;

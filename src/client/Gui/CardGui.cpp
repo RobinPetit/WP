@@ -11,7 +11,8 @@ const sf::Vector2f CardGui::COST_POSITION{300.f, 36.f};
 const sf::Vector2f CardGui::DESCRIPTION_POSITION{10.f, 28.f};
 
 CardGui::CardGui(const std::string& name, const std::string& description, int cost):
-	_position{0.f, 0.f}
+	_position{0.f, 0.f},
+	_showFront{true}
 {
 	_backTexture.loadFromFile("back.png");
 	_backTexture.setSmooth(true); // enable smooth borders
@@ -43,4 +44,9 @@ CardGui::CardGui(const std::string& name, const std::string& description, int co
 void CardGui::setCost(int cost)
 {
 	_costText.setString(std::to_string(cost));
+}
+
+void CardGui::setShownSide(bool showFront)
+{
+	_showFront = showFront;
 }
