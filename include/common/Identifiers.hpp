@@ -15,4 +15,8 @@ typedef sf::Int64 deckId;
 /// database, and is used by the class Server to identify an user.
 typedef sf::Int64 userId;
 
+/// The identifier of an achievement, this is the identifier that is encoded in the
+/// database, and is used by the class Client to identify an achievement.
+typedef sf::Int64 AchievementId; //See how beautiful it is with the upper case at the beginning ?
+
 #endif  // _IDENTIFIERS_COMMON_HPP
