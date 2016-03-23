@@ -7,7 +7,7 @@ const sf::Vector2f CreatureGui::ATTACK_POSITION{12.f, 12.f};
 const sf::Vector2f CreatureGui::HEALTH_POSITION{12.f, 12.f};
 const sf::Vector2f CreatureGui::SHIELD_POSITION{12.f, 12.f};
 
-CreatureGui::CreatureGui(const std::string& name, const std::string& description, int cost, int attack, int health, int shield, int shieldType):
+CreatureGui::CreatureGui(const std::string& name, const std::string& description, int cost, int attack, int health, int shield, ShieldType shieldType):
 	CardGui(name, description, cost),
 	_shieldType{shieldType}
 {
@@ -23,6 +23,24 @@ CreatureGui::CreatureGui(const std::string& name, const std::string& description
 	setupText(_attackText, "Att: " + std::to_string(attack), ATTACK_POSITION);
 	setupText(_healthText, "Hea: " + std::to_string(health), HEALTH_POSITION);
 	setupText(_shieldText, "Shi: " + std::to_string(shield), SHIELD_POSITION);
+	switch(_shieldType)
+	{
+		case SHIELD_BLUE:
+			_shieldText.setFillColor(sf::Color::Blue);
+			break;
+
+		case SHIELD_ORANGE:
+			_shieldText.setFillColor(sf::Color::Blue);
+			break;
+
+		case SHIELD_LEGENDARY:
+			_healthText.setFillColor(sf::Color(200, 200, 200));
+			break;
+
+		default:
+			// By default, the text is black, this is fine
+			break;
+	}
 }
 
 void CreatureGui::setAttack(int value)
