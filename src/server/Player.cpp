@@ -76,27 +76,18 @@ sf::Packet Player::getBoardChanges()
 void Player::setDeck(const Deck& newDeck)
 {
 	std::vector<std::unique_ptr<Card>> loadedCards{Deck::size};
-	for(std::size_t i{0}; i < Deck::size; ++i) // \TODO use database instead
+	for(std::size_t i{0}; i < Deck::size; ++i)
 	{
 		const cardId card{newDeck.getCard(i)};
-		// FIXME For now, we consider that cardId <= 10 are creatures,
-		// and higher cardId are spells. THIS SHOULD BE FIXED.
-		if(card <= 10)
-		{
-			const CreatureData& creat = ALL_CREATURES[card-1];
-			loadedCards[i].reset(new Creature(card, *this, creat.cost, creat.attack, creat.health, creat.shield, creat.shieldType, creat.effects));
-		}
-		else
-		{
-			const SpellData& spell = ALL_SPELLS[card - 11];
-			loadedCards[i].reset(new Spell(card, spell.cost, spell.effects));
-		}
+		// \TODO: test use of database
+		loadedCards[i].reset(_database.getCard(card, *this));
 	}
 
 	// shuffle the deck of cards
 	std::shuffle(loadedCards.begin(), loadedCards.end(), std::mt19937(std::random_device()()));
 	for(auto& cardInShuffledDeck: loadedCards)
 		_cardDeck.push(std::move(cardInShuffledDeck));
+	assert(_cardDeck.size() == Deck::size);
 }
 
 void Player::receiveDeck()
@@ -294,6 +285,7 @@ void Player::useCard(int handIndex)
 
 void Player::useCreature(int handIndex, Card* usedCard)
 {
+	assert(usedCard->isCreature());
 	// check if player is allowed to place a creature
 	if (_constraints.getConstraint(PC_TEMP_CREATURE_PLACING_LIMIT) == _turnData.creaturesPlaced)
 	{
@@ -336,12 +328,13 @@ void Player::useSpell(int handIndex, Card* usedCard)
 
 void Player::attackWithCreature(int attackerIndex, int victimIndex)
 {
+	bool attackOpponent{victimIndex < 0};
 	Creature* attacker;
 	Creature* victim;
 	try //check the input
 	{
 		attacker = _cardBoard.at(attackerIndex).get();
-		if(victimIndex >= 0)
+		if(not attackOpponent)
 			victim = _opponent._cardBoard.at(victimIndex).get();
 	}
 	catch (std::out_of_range&)
@@ -367,7 +360,7 @@ void Player::attackWithCreature(int attackerIndex, int victimIndex)
 	_turnData.creatureAttacks++;
 	_energy -= attacker->getEnergyCost();
 
-	if(victimIndex < 0)
+	if(attackOpponent)
 	{
 		_opponent.changeHealth({-attacker->getAttack()});
 		logOpponentHealth();
@@ -394,13 +387,7 @@ void Player::endTurn()
 /*------------------------------ EFFECTS INTERFACE */
 bool Player::applyEffect(Card* usedCard, EffectArgs effect)
 {
-	// if card has no effect, don't try to apply them
-	if(effect.remainingArgs() == 0)
-	{
-		// don't forget to send an empty vector or the game crashes
-		askUserToSelectCards({});
-		return true;
-	}
+	assert(effect.remainingArgs() != 0);
 	int subject{effect.getArg()};  // who the effect applies to
 
 	_lastCasterCard = usedCard;  // remember last used card
@@ -558,7 +545,6 @@ void Player::setConstraint(EffectArgs effect)
 	{
 		throw std::runtime_error("Player::setConstraint error with cards arguments");
 	}
-
 	switch(casterOptions)
 	{
 		case IF_CASTER_ALIVE:
@@ -729,7 +715,17 @@ void Player::changeHealth(EffectArgs effect)
 
 bool Player::exploitCardEffects(Card* usedCard)
 {
-	const std::vector<EffectParamsCollection>& effects(usedCard->getEffects());
+	// Maybe I should have use multiple inheritance to avoid this
+	const std::vector<EffectParamsCollection>& effects(
+		usedCard->isSpell()
+			? static_cast<Spell *>(usedCard)->getEffects()
+			: static_cast<Creature *>(usedCard)->getEffects()
+	);
+
+	sf::Packet nbOfEffectsPacket;
+	nbOfEffectsPacket << TransferType::GAME_SEND_NB_OF_EFFECTS << static_cast<sf::Uint32>(effects.size());
+	_socketToClient.send(nbOfEffectsPacket);
+
 	for(const auto& effect: effects) //for each effect of the card
 		if(not applyEffect(usedCard, effect)) //apply it
 			return false;
@@ -782,8 +778,9 @@ void Player::cardDeckToHand(int amount)
 
 void Player::cardHandToBoard(int handIndex)
 {
+	assert(_cardHand.at(handIndex)->isCreature());
 	// Release the ownership of the hand, cast to a Creature pointer and give it to the board
-	_cardBoard.push_back(std::unique_ptr<Creature>(dynamic_cast<Creature*>(_cardHand.at(handIndex).release())));
+	_cardBoard.push_back(std::unique_ptr<Creature>(static_cast<Creature*>(_cardHand.at(handIndex).release())));
 	_cardBoard.back()->moveToBoard();
 	_cardHand.erase(_cardHand.begin() + handIndex);
 	logHandState();
@@ -803,6 +800,7 @@ void Player::cardHandToGraveyard(int handIndex)
 
 void Player::cardBoardToGraveyard(int boardIndex)
 {
+	assert(_cardBoard.at(boardIndex)->isOnBoard());
 	_cardBoard.at(boardIndex)->removeFromBoard();
 	// Release the ownership of the board, cast to a Card pointer and give it to the graveyard
 	_cardGraveyard.push_back(std::unique_ptr<Card>(static_cast<Card*>(_cardBoard.at(boardIndex).release())));

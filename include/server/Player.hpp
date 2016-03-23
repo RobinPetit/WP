@@ -10,12 +10,12 @@
 #include <atomic>
 #include <memory>
 // WizardPoker headers
-#include "server/Card.hpp"
+#include "common/Card.hpp"
 #include "server/Spell.hpp"
 #include "server/Creature.hpp"
 #include "server/Constraints.hpp"
 #include "server/ServerDatabase.hpp"
-#include "common/CardData.hpp"
+#include "server/ServerCardData.hpp"
 #include "common/GameData.hpp"
 #include "common/Identifiers.hpp"  // userId
 #include "common/sockets/TransferType.hpp"

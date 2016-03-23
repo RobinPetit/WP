@@ -1,15 +1,15 @@
 #ifndef _CARD_DATA_HPP_
 #define _CARD_DATA_HPP_
 
-#include <string>
 #include <vector>
 #include <sstream>
 #include <memory>
-#include "common/Identifiers.hpp"
+#include "common/Identifiers.hpp" // cardId, deckId...
 #include "common/CardData.inc"
 
 constexpr int UNLIMITED_TURNS = 100;
 
+//TODO?: move to a server specific file?
 ///How to define an effect:
 typedef std::vector<int> EffectParamsCollection;
 
@@ -55,34 +55,87 @@ public:
 	std::string toString() const;
 };
 
-///Creature struct
-struct CreatureData
+// Common(Card|Creature|Spell)Data classes
+/// CommonCardData class: hold data of a card template (i.e. a card out-game).
+/// Common part to the client and server
+
+
+
+class CommonCardData
 {
-	std::string name;
-	CostValue cost;
-	AttackValue attack;
-	HealthValue health;
-	ShieldValue shield;
-	ShieldType shieldType;
-	std::vector<EffectParamsCollection> effects;
-	std::string description;
+protected:
+	cardId _id;
+  // use int instead of enum because
+  // int is used in code
+  // and static_cast from int to enum do not ensure that the value is valid
+  // enum E{E0,E1}; E e(static_cast<E>(42)); //Code compiled without warning by gcc
+  // so use ...Value enums add need of static_cast everywhere without any advantage.
+  // The purpose of the enums in CardData.inc is (only) to have Cards.sql readable.
+  // TODO? overload operator for enums to be able to use enums everywhere
+	int _cost;
+
+public:
+	/// Constructor
+	CommonCardData(cardId, int cost);
+
+	/// Getters
+	// I don't know why I get 'W used but never defined' and 'undefined reference to' when I inline?
+	cardId getId() const;
+	int getCost() const;
+
+	/// Methods
+	virtual bool isCreature() const = 0;
+	virtual bool isSpell() const = 0;
+
+	virtual ~CommonCardData() = default;
 };
 
-///Spell struct
-struct SpellData
+
+class CommonCreatureData : public CommonCardData
 {
-	std::string name;
-	CostValue cost;
-	std::vector<EffectParamsCollection> effects;
-	std::string description;
+protected:
+	int _attack;
+	int _health;
+	int _shield;
+	int _shieldType;
+
+public:
+	/// Constructor
+	CommonCreatureData(cardId, int cost,
+	                   int attack, int health, int shield, int shieldType);
+
+	/// Getters
+	// I don't know why I get 'W used but never defined' and 'undefined reference to' when I inline?
+	int getAttack() const;
+	int getHealth() const;
+	int getShield() const;
+	int getShieldType() const;
+
+	/// Methods
+	virtual bool isCreature() const override;
+	virtual bool isSpell() const override;
+
+	virtual ~CommonCreatureData() = default;
 };
 
-extern const CreatureData ALL_CREATURES[];
 
-extern const SpellData ALL_SPELLS[];
+class CommonSpellData : public CommonCardData
+{
+public:
+	/// Constructor
+	CommonSpellData(cardId, int cost);
 
-extern const std::size_t nbSpells;
+	/// Methods
+	virtual bool isCreature() const override;
+	virtual bool isSpell() const override;
 
-extern const std::size_t nbCreatures;
+	virtual ~CommonSpellData() = default;
+};
+
+// forward declaration of classes actually used by server and client
+//class ClientCreatureData;
+//class ClientSpellData;
+//class ServerCreatureData;
+//class ServerSpellData;
 
 #endif  // _CARD_DATA_HPP
