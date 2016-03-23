@@ -21,21 +21,11 @@
 #include <string>
 
 Client::Client():
-	_socket(),
 	_chatListenerPort(0),
 	_isConnected(false),
-	_name(),
-	_listenerThread(),
-	_serverAddress(),
 	_serverPort(0),
 	_threadLoop(false),
-	_userTerminal(),
-	_database(),
-	_currentConversations(),
 	_inGame(false),
-	_inGameSocket(),
-	_inGameListeningSocket(),
-	_inGameOpponentName(),
 	_readyToPlay(false)
 {
 }
