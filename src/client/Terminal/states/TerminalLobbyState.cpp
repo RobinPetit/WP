@@ -29,9 +29,9 @@ void TerminalLobbyState::startGame()
 		waitForEnter();
 		return;
 	}
+	std::cout << "Let's find you an opponent\n";
 	if(_client.startGame())
 	{
-		std::cout << "Let's find you an opponent\n";
 		TerminalGame game{_client};
 		game.init();
 		game.play();
