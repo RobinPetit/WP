@@ -68,6 +68,7 @@ const sf::Vector2f& CardGui::getPosition() const
 
 void CardGui::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
+	states.transform.translate(_position);
 	if(_showFront)
 		target.draw(_backView, states);
 	else
