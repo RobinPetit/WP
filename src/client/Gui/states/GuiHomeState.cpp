@@ -81,6 +81,7 @@ void GuiHomeState::connect()
 					throw;
 			}
 		}
+		_context.window->setTitle("WizardPoker (" + userName + ")");
 		_context.stateStack->push<GuiMainMenuState>();
 	}
 	catch(const std::runtime_error& e)
