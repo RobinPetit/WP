@@ -174,6 +174,10 @@ bool AbstractGame::treatAdditionnalInputs(sf::Packet& actionPacket)
 		case CardToSelect::OPPO_HAND:
 			indices.push_back(askOppoHandIndex());
 			break;
+
+		default:
+			std::cerr << "ERROR: UNKNOWN VALUE: " << static_cast<std::underlying_type<CardToSelect>::type>(input) << std::endl;
+			break;
 		}
 	}
 	sf::Packet indicesPacket;
@@ -349,7 +353,6 @@ void AbstractGame::endGame(sf::Packet& transmission)
 
 void AbstractGame::handlePacket(sf::Packet& transmission)
 {
-	// TODO: std::couts here are debug. To remove
 	TransferType type;
 	while(not transmission.endOfPacket())
 	{
@@ -372,9 +375,6 @@ void AbstractGame::handlePacket(sf::Packet& transmission)
 
 		case TransferType::GAME_PLAYER_ENERGY_UPDATED:
 		{
-			// energy (and health and others) are transmitted through the network as 32 bit
-			// unsigned integers. So be sure to receive the exact same thing to avoid encoding
-			// errors and then set it in the "real" attribute
 			std::lock_guard<std::mutex> lock{_accessEnergy};
 			_selfEnergy = receiveFromPacket<sf::Uint32>(transmission);
 		}

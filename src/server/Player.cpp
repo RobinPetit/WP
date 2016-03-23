@@ -387,13 +387,7 @@ void Player::endTurn()
 /*------------------------------ EFFECTS INTERFACE */
 bool Player::applyEffect(Card* usedCard, EffectArgs effect)
 {
-	// if card has no effect, don't try to apply them
-	if(effect.remainingArgs() == 0)
-	{
-		// don't forget to send an empty vector or the game crashes
-		askUserToSelectCards({});
-		return true;
-	}
+	assert(effect.remainingArgs() != 0);
 	int subject{effect.getArg()};  // who the effect applies to
 
 	_lastCasterCard = usedCard;  // remember last used card
@@ -728,7 +722,9 @@ bool Player::exploitCardEffects(Card* usedCard)
 			? static_cast<Spell *>(usedCard)->getEffects()
 			: static_cast<Creature *>(usedCard)->getEffects()
 	);
-
+	// If a card has no effect, then send an empty vector to avoid client to crash
+	if(effects.empty())
+		askUserToSelectCards({});
 	for(const auto& effect: effects) //for each effect of the card
 		if(not applyEffect(usedCard, effect)) //apply it
 			return false;
