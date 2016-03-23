@@ -24,20 +24,15 @@ protected:
 
 	//loading characters font
 	sf::Font _font;
+
 	// Arbitrary shape
-	static constexpr float LENGTH = 360.f;
-	static constexpr float WIDTH  = 240.f;
-
-	static constexpr float NAME_POSITION_X = 24.f;
-	static constexpr float NAME_POSITION_Y = 36.f;
-
-	static constexpr float EFFECTS_POSITION_X = 10.f;
-	static constexpr float EFFECTS_POSITION_Y = 28.f;
-
+	static const sf::Vector2f SIZE;
+	static const sf::Vector2f NAME_POSITION;
+	static const sf::Vector2f DESCRIPTION_POSITION;
 	static constexpr std::size_t CHAR_SIZE = 20;
 
-	/* Back view texture and sprite only, because the front
-	one depends on if it's a spell or creature card*/
+	sf::Vector2f _position;
+
 	sf::RectangleShape _backView;
 	sf::Texture _backTexture;
 

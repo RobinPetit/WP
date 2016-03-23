@@ -10,9 +10,10 @@ CreatureGui::CreatureGui(const std::string& name, const std::string& description
 	{
 		std::cerr << "Error front loading" ;
 		return;
-	} // Standard protocol SFML 2.0 error (CF documentation)
+	} // Standard SFML 2.0 error protocol (CF documentation)
 	_pictureTexture.setSmooth(true);
 	_picture.setTexture(&_pictureTexture);
+	_picture.setSize(SIZE);
 
 	_attack = attack;
 	_health = health;

@@ -10,7 +10,8 @@ SpellGui::SpellGui(const std::string& name, const std::string& description, int 
 	{
 		std::cerr << "Unable to load frontSpell.png\n";
 		return;
-	}  // Standard protocol SFML 2.0 error (CF documentation)
+	}  // Standard SFML 2.0 error protocol (CF documentation)
 	_pictureTexture.setSmooth(true);
 	_picture.setTexture(&_pictureTexture);
+	_picture.setSize(SIZE);
 }
