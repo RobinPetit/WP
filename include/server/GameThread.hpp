@@ -87,6 +87,8 @@ private:
 	void createPlayers();
 	void endTurn();
 
+	void sendFinalMessage(sf::TcpSocket& specialSocket, PostGameData& postGameData, cardId earnedCardId);
+
 	void useCard(int cardIndex);
 	void attackWithCreature(int attackerIndex, int victimIndex);
 };

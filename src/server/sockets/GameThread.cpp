@@ -98,34 +98,35 @@ userId GameThread::playGame(const ClientInformations& player1, const ClientInfor
 
 	// unlock a random new card
 	cardId earnedCardId{_database.getRandomCardId()};
-	if (_postGameDataPlayer1.playerWon)
-		_postGameDataPlayer1.unlockedCard = earnedCardId;
-	if (_postGameDataPlayer2.playerWon)
-		_postGameDataPlayer2.unlockedCard = earnedCardId;
 
-	if(_endGameCause != EndGame::Cause::ENDING_SERVER)
-		_database.addCard(winnerId, earnedCardId); //TODO DATABASE : add card when receiving postGameData instead
+	sendFinalMessage(_specialOutputSocketPlayer1, _postGameDataPlayer1, earnedCardId);
+	sendFinalMessage(_specialOutputSocketPlayer2, _postGameDataPlayer2, earnedCardId);
 
-	// Send to the winner he won
-	// EndGame::applyToSelf indicate which player won the game: false mean that
-	// the player who receive this message has won.
-	sf::Packet packet;
-	packet << TransferType::GAME_OVER << EndGame{_endGameCause, false} << earnedCardId;
-	sf::TcpSocket& winnerSocket{winnerId == _player1Id ? _specialOutputSocketPlayer1 : _specialOutputSocketPlayer2};
-	winnerSocket.send(packet);
-
-	// Send to the loser he lost (do NOT send a card index thus)
-	packet.clear();
-	packet << TransferType::GAME_OVER << EndGame{_endGameCause, true};
-	sf::TcpSocket& loserSocket{winnerId == _player1Id ? _specialOutputSocketPlayer2 : _specialOutputSocketPlayer1};
-	loserSocket.send(packet);
+	//TODO DATABASE : send _postGameData for each player, will unlock cards for winner
 
 	return winnerId;
 }
 
+void GameThread::sendFinalMessage(sf::TcpSocket& specialSocket, PostGameData& postGameData, cardId earnedCardId)
+{
+    sf::Packet packet;
+
+	// EndGame::applyToSelf indicate which player won the game: false mean that
+	// the player who receive this message has won.
+    if (postGameData.playerWon) // send card message + card id if player won
+    {
+		postGameData.unlockedCard = earnedCardId;
+		packet << TransferType::GAME_OVER << EndGame{_endGameCause, false} << earnedCardId;
+	}
+	else // send message if player lost
+	{
+		packet << TransferType::GAME_OVER << EndGame{_endGameCause, true};
+	}
+	specialSocket.send(packet);
+}
+
 userId GameThread::runGame()
 {
-
 	// call explicitely enterTurn for the first player because this method
 	// is only called when there is a turn swapping. So first turn is never
 	// **officially** started
