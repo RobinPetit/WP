@@ -1,5 +1,7 @@
 #include "client/ClientAchievement.hpp"
 
+// std-C++ headers
+#include <cassert>
 // WizardPoker headers
 #include "common/Achievements.hpp"
 #include "client/AchievementData.hpp"
@@ -8,6 +10,7 @@ ClientAchievement::ClientAchievement(const Achievement achievement, const Achiev
 	_achievementData(achievementData),
 	_achievement(achievement)
 {
+	assert(_achievementData.id == _achievement.id);
 }
 
 std::string ClientAchievement::getName() const
