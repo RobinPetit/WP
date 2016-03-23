@@ -26,15 +26,15 @@ CreatureGui::CreatureGui(const std::string& name, const std::string& description
 	switch(_shieldType)
 	{
 		case SHIELD_BLUE:
-			_shieldText.setFillColor(sf::Color::Blue);
+			_shieldText.setColor(sf::Color::Blue);
 			break;
 
 		case SHIELD_ORANGE:
-			_shieldText.setFillColor(sf::Color::Blue);
+			_shieldText.setColor(sf::Color::Blue);
 			break;
 
 		case SHIELD_LEGENDARY:
-			_healthText.setFillColor(sf::Color(200, 200, 200));
+			_healthText.setColor(sf::Color(200, 200, 200));
 			break;
 
 		default:
