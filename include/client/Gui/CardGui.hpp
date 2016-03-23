@@ -4,7 +4,7 @@
 // External headers
 #include <SFML/Graphics.hpp>
 
-class CardGui
+class CardGui : public sf::Drawable
 {
 public:
 	/// Constructor.
@@ -21,13 +21,21 @@ public:
 	/// show the back.
 	void setShownSide(bool showFront);
 
+	/// Positioning interface.
+	void setPosition(float x, float y);
+	void setPosition(const sf::Vector2f& position);
+	const sf::Vector2f& getPosition() const;
+
+	/// Draw the object to a render target.
+	virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
+
 protected:
-	// name,cost, and effects
+	// name, cost, and description
 	sf::Text _descriptionText;
 	sf::Text _nameText;
 	sf::Text _costText;
 
-	//loading characters font
+	/// Text font.
 	sf::Font _font;
 
 	// Arbitrary shape
@@ -37,7 +45,11 @@ protected:
 	static const sf::Vector2f DESCRIPTION_POSITION;
 	static constexpr std::size_t CHAR_SIZE = 20;
 
+	/// Current position of the card.
 	sf::Vector2f _position;
+
+	/// True when showing the front (with the image, title, ...), false when
+	/// showing the back.
 	bool _showFront;
 
 	sf::RectangleShape _backView;

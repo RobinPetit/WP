@@ -50,3 +50,29 @@ void CardGui::setShownSide(bool showFront)
 {
 	_showFront = showFront;
 }
+
+void CardGui::setPosition(float x, float y)
+{
+	setPosition({x, y});
+}
+
+void CardGui::setPosition(const sf::Vector2f& position)
+{
+	_position = position;
+}
+
+const sf::Vector2f& CardGui::getPosition() const
+{
+	return _position;
+}
+
+void CardGui::draw(sf::RenderTarget &target, sf::RenderStates states) const
+{
+	if(_showFront)
+		target.draw(_backView, states);
+	else
+		target.draw(_picture, states);
+	target.draw(_descriptionText, states);
+	target.draw(_nameText, states);
+	target.draw(_costText, states);
+}
