@@ -35,7 +35,7 @@ int ClientAchievement::getRequiredProgress() const
 
 int ClientAchievement::getCurrentProgress() const
 {
-	return 4; ///\TODO
+	return _achievement.currentProgress;
 }
 
 float ClientAchievement::getProgressPercentage() const
