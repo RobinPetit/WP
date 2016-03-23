@@ -1,24 +1,20 @@
-#include "client/Gui/CreatureGUI.hpp"
+// std-C++ headers
+#include <iostream>
+// WizardPoker header
+#include "client/Gui/CreatureGui.hpp"
 
-CreatureGui::CreatureGui(std::string cardIdentifier, int cost, int attack, int health, int shield, int shieldType,
-			std::vector<EffectParamsCollection> effects)
+CreatureGui::CreatureGui(const std::string& name, const std::string& description, int cost, int attack, int health, int shield, int shieldType):
+	CardGui(name, description, cost)
 {
-    if (!_backTexture.loadFromFile("back.png"))
-        {
-            std::cout << "Error back loading" ;
-        }// Standarde protocole SFML 2.0 error ( CF documentations )
-    _frontTexture.setSmooth(true); // enable smooth borders
+	if(!_pictureTexture.loadFromFile("frontCreature.png"))
+	{
+		std::cerr << "Error front loading" ;
+		return;
+	} // Standard protocol SFML 2.0 error (CF documentation)
+	_pictureTexture.setSmooth(true);
+	_picture.setTexture(&_pictureTexture);
 
-    if (!_frontTexture.loadFromFile("frontCreature.png"))
-        {
-            std::cout << "Error front loading" ;
-        }// Standarde protocole SFML 2.0 error ( CF documentations )
-    _frontTexture.setSmooth(true);
-
-    _backView.setTexture(_backTexture);
-    _frontView.setTexture(_frontTexture);
-
-    _attack = attack;
+	_attack = attack;
 	_health = health;
 	_shield = shield;
 	_shieldType = shieldType;

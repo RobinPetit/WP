@@ -1,24 +1,16 @@
-#include "client/Gui/SpellGUI.hpp"
+// std-C++ headers
+#include <iostream>
+// WizardPoker header
+#include "client/Gui/SpellGui.hpp"
 
-
-SpellGui::SpellGui(std::string cardIdentifier, int cost, std::vector<EffectParamsCollection> effects)
+SpellGui::SpellGui(const std::string& name, const std::string& description, int cost):
+	CardGui(name, description, cost)
 {
-    if (!_backTexture.loadFromFile("back.png"))
-        {
-            std::cout << "Error back loading" ;
-        }// Standarde protocole SFML 2.0 error ( CF documentations )
-    _frontTexture.setSmooth(true); // enable smooth borders
-
-    if (!_frontTexture.loadFromFile("frontSpell.png"))
-        {
-            std::cout << "Error front loading" ;
-        }// Standarde protocole SFML 2.0 error ( CF documentations )
-    _frontTexture.setSmooth(true);
-
-    _backView.setTexture(_backTexture);
-    _frontView.setTexture(_frontTexture);
-
-    _cardID = cardIdentifier;
-    _cost = cost;
-    _effects = effects;
+	if(!_pictureTexture.loadFromFile("frontSpell.png"))
+	{
+		std::cerr << "Unable to load frontSpell.png\n";
+		return;
+	}  // Standard protocol SFML 2.0 error (CF documentation)
+	_pictureTexture.setSmooth(true);
+	_picture.setTexture(&_pictureTexture);
 }

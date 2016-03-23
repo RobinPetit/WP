@@ -1,13 +1,14 @@
 #ifndef SPELL_GUI_CLIENT_HPP
 #define SPELL_GUI_CLIENT_HPP
 
+// WizardPoker headers
 #include "client/Gui/CardGui.hpp"
 
 class SpellGui: public CardGui
 {
 public:
 	/// Constructor
-	SpellGui(std::string cardIdentifier, int cost, std::vector<EffectParamsCollection> effects) // Taking only the required informations for the GUI
+	SpellGui(const std::string& name, const std::string& description, int cost);
 
 };
 
