@@ -501,7 +501,7 @@ std::vector<Deck> Client::getDecks()
 void Client::handleDeckEditing(const Deck& editedDeck)
 {
 	if(!_isConnected)
-		throw NotConnectedException("unable to get the decks list.");
+		throw NotConnectedException("unable to send deck editing to the server.");
 	sf::Packet packet;
 	// send that friends list is asked
 	packet << TransferType::EDIT_DECK << editedDeck;
@@ -516,7 +516,7 @@ void Client::handleDeckEditing(const Deck& editedDeck)
 void Client::handleDeckCreation(const Deck& createdDeck)
 {
 	if(!_isConnected)
-		throw NotConnectedException("unable to get the decks list.");
+		throw NotConnectedException("unable to send deck creation to the server.");
 	sf::Packet packet;
 	// send that friends list is asked
 	packet << TransferType::CREATE_DECK << createdDeck;
@@ -525,13 +525,13 @@ void Client::handleDeckCreation(const Deck& createdDeck)
 	TransferType responseHeader;
 	packet >> responseHeader;
 	if(responseHeader != TransferType::ACKNOWLEDGE)
-		throw std::runtime_error("unable to send deck editing to the server.");
+		throw std::runtime_error("unable to send deck creation to the server.");
 }
 
 void Client::handleDeckDeletion(const std::string& deletedDeckName)
 {
 	if(!_isConnected)
-		throw NotConnectedException("unable to get the decks list.");
+		throw NotConnectedException("unable to send deck deletion to the server.");
 	sf::Packet packet;
 	// send that friends list is asked
 	packet << TransferType::DELETE_DECK << deletedDeckName;
@@ -540,13 +540,13 @@ void Client::handleDeckDeletion(const std::string& deletedDeckName)
 	TransferType responseHeader;
 	packet >> responseHeader;
 	if(responseHeader != TransferType::ACKNOWLEDGE)
-		throw std::runtime_error("unable to send deck deleting to the server.");
+		throw std::runtime_error("unable to send deck deletion to the server.");
 }
 
 CardsCollection Client::getCardsCollection()
 {
 	if(!_isConnected)
-		throw NotConnectedException("unable to get the decks list.");
+		throw NotConnectedException("unable to get the card collection.");
 	sf::Packet packet;
 	// send that friends list is asked
 	packet << TransferType::ASK_CARDS_COLLECTION;
@@ -561,12 +561,12 @@ CardsCollection Client::getCardsCollection()
 	return cardCollection;
 }
 
-////////////////// Others
+////////////////// Other
 
 Ladder Client::getLadder()
 {
 	if(!_isConnected)
-		throw NotConnectedException("unable to get the decks list.");
+		throw NotConnectedException("unable to get the ladder.");
 	sf::Packet packet;
 	// send that friends list is asked
 	packet << TransferType::ASK_LADDER;
@@ -579,4 +579,22 @@ Ladder Client::getLadder()
 	Ladder ladder;
 	packet >> ladder;
 	return ladder;
+}
+
+AchievementList Client::getAchievements()
+{
+	if(!_isConnected)
+		throw NotConnectedException("unable to get the achievement list.");
+	sf::Packet packet;
+	// send that achievements list is asked
+	packet << TransferType::ASK_ACHIEVEMENTS;
+	_socket.send(packet);
+	_socket.receive(packet);
+	TransferType responseHeader;
+	packet >> responseHeader;
+	if(responseHeader != TransferType::ACKNOWLEDGE)
+		throw std::runtime_error("unable to get the achievement list.");
+	AchievementList achievements;
+	packet >> achievements;
+	return achievements;
 }
