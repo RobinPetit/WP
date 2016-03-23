@@ -33,8 +33,6 @@ public:
 	/// Functions which stops the running thread (abortion)
 	void interruptGame();
 
-	void establishSockets(const ClientInformations& player1, const ClientInformations& player2);
-
 	userId playGame(const ClientInformations& player1, const ClientInformations& player2);
 
 	void endGame(userId winnerId, EndGame::Cause cause);
@@ -58,13 +56,13 @@ private:
 	PostGameData _postGameDataPlayer2;
 	ServerDatabase& _database;
 
-	userId _winner;
+	userId _winnerId;
 	EndGame::Cause _endGameCause;
 
-	Player *_activePlayer;
-	Player *_passivePlayer;
+	Player* _activePlayer;
+	Player* _passivePlayer;
+
 	int _turn;
-	bool _turnCanEnd;
 	bool _verbose=true;
 
 	std::thread _timerThread;
@@ -78,7 +76,7 @@ private:
 	static constexpr std::chrono::seconds _turnTime{120};
 
 	/*------------------------------ Methods */
-	userId runGame();
+	void runGame();
 
 	void setSocket(sf::TcpSocket& socket, sf::TcpSocket& specialSocket, const ClientInformations& player);
 
@@ -86,6 +84,8 @@ private:
 
 	void createPlayers();
 	void endTurn();
+
+	void sendFinalMessage(sf::TcpSocket& specialSocket, PostGameData& postGameData, cardId earnedCardId);
 
 	void useCard(int cardIndex);
 	void attackWithCreature(int attackerIndex, int victimIndex);
@@ -102,9 +102,8 @@ GameThread::GameThread(ServerDatabase& database, userId player1Id, userId player
 	_player1(*this, database, _player1Id, _player2, _postGameDataPlayer1),
 	_player2(*this, database, _player2Id, _player1, _postGameDataPlayer2),
 	_database(database),
-	_winner{0},
+	_winnerId{0},
 	_turn(0),
-	_turnCanEnd(false),
 	_turnSwap{false}
 {
 	createPlayers();
