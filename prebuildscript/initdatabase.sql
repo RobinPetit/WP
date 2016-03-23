@@ -6,7 +6,11 @@
 --    execute '.read "CardData.sql"' to import enums from C++ code
 --    then use the same commands than the Cards.sql file
 
+-- TODO: Do not forget accounts (by CREATE TABLE IF NOT EXISTS and INSERT OR REPLACE)
 -- TODO: ondeleteaccount, ondeletecard
+-- TODO: use WITH instead of JOINS
+
+-- NOTE: The database was designed before the database courses, sorry for the mistakes
 
 .header off
 .log stderr
@@ -125,9 +129,20 @@ CREATE TABLE Account (
 	id INTEGER PRIMARY KEY ASC,
 	login TEXT UNIQUE NOT NULL,
 	password BLOB NOT NULL,
-	victories INTEGER NOT NULL DEFAULT 0,
-	defeats INTEGER NOT NULL DEFAULT 0,
-	givingup INTEGER NOT NULL DEFAULT 0
+	victories                   INTEGER NOT NULL DEFAULT 0,
+	defeats                     INTEGER NOT NULL DEFAULT 0,
+	givingup                    INTEGER NOT NULL DEFAULT 0,
+	-- ##achievements
+	secondsSpentPlaying         INTEGER DEFAULT 0,
+	maxVictoriesInARow          INTEGER DEFAULT 0,
+	isInDaClub                  INTEGER DEFAULT 0, -- boolean
+	ragequits                   INTEGER DEFAULT 0,
+	maxStartsInARow             INTEGER DEFAULT 0,
+	maxDaysPlayedInARow         INTEGER DEFAULT 0,
+	perfectWins                 INTEGER DEFAULT 0,
+	closeWins                   INTEGER DEFAULT 0,
+	betterLuckNextTimeUnlocked  INTEGER DEFAULT 0, -- boolean
+	bestLadderPosition          INTEGER DEFAULT 0
 	-- ##cards
 	-- a way to store cards in the same table would have been:
 	-- card1 INTEGER CHECK (card1 >= 0) DEFAULT 0
@@ -299,7 +314,7 @@ INSERT INTO Account(login, password) VALUES('Eve','E');
 
 SELECT "Create testing friendships";
 INSERT INTO FriendRequest
-	VALUES(1,2); -- testing to testting2
+	VALUES(1,2); -- testing to testing2
 INSERT INTO FriendRequest
 	VALUES(2,1); -- testing2 to testing -> confirm
 INSERT INTO FriendRequest(from_, to_)
