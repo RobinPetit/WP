@@ -33,8 +33,6 @@ public:
 	/// Functions which stops the running thread (abortion)
 	void interruptGame();
 
-	void establishSockets(const ClientInformations& player1, const ClientInformations& player2);
-
 	userId playGame(const ClientInformations& player1, const ClientInformations& player2);
 
 	void endGame(userId winnerId, EndGame::Cause cause);

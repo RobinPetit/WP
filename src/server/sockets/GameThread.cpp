@@ -52,12 +52,6 @@ void GameThread::printVerbose(std::string message)
 		std::cout << "\tgame 0 - " + message << std::endl;
 }
 
-void GameThread::establishSockets(const ClientInformations& player1, const ClientInformations& player2)
-{
-	setSocket(_player1.getSocket(), _specialOutputSocketPlayer1, player1);
-	setSocket(_player2.getSocket(), _specialOutputSocketPlayer2, player2);
-}
-
 void GameThread::setSocket(sf::TcpSocket& socket, sf::TcpSocket& specialSocket, const ClientInformations& player)
 {
 	sf::TcpSocket tmpSocket;
@@ -78,7 +72,9 @@ void GameThread::setSocket(sf::TcpSocket& socket, sf::TcpSocket& specialSocket, 
 
 userId GameThread::playGame(const ClientInformations& player1, const ClientInformations& player2)
 {
-	establishSockets(player1, player2);
+	setSocket(_player1.getSocket(), _specialOutputSocketPlayer1, player1);
+	setSocket(_player2.getSocket(), _specialOutputSocketPlayer2, player2);
+
 	_activePlayer->receiveDeck(); // ask the client for a deck to load
 	_passivePlayer->receiveDeck();
 
