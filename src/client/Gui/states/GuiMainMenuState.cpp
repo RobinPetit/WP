@@ -2,6 +2,7 @@
 #include "client/Gui/states/GuiMainMenuState.hpp"
 #include "client/Gui/states/GuiFriendsManagementState.hpp"
 #include "client/Gui/states/GuiLadderState.hpp"
+#include "client/Gui/states/GuiLobbyState.hpp"
 
 GuiMainMenuState::GuiMainMenuState(Context& context):
 	AbstractState(context),
@@ -42,7 +43,7 @@ GuiMainMenuState::GuiMainMenuState(Context& context):
 
 void GuiMainMenuState::findGame()
 {
-	// _context.stateStack->push<GuiLobbyState>();
+	_context.stateStack->push<GuiLobbyState>();
 }
 
 void GuiMainMenuState::manageDecks()
