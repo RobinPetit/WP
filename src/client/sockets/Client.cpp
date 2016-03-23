@@ -199,7 +199,10 @@ bool Client::isGameStarted(std::string& opponentName)
 	bool ret{_socket.receive(opponentPacket) == sf::Socket::Done};
 	_socket.setBlocking(true);
 	if(ret)
+	{
 		opponentPacket >> opponentName;
+		_inGame = true;
+	}
 	return ret;
 }
 
