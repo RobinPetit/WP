@@ -59,10 +59,10 @@ private:
 	userId _winnerId;
 	EndGame::Cause _endGameCause;
 
-	Player *_activePlayer;
-	Player *_passivePlayer;
+	Player* _activePlayer;
+	Player* _passivePlayer;
+
 	int _turn;
-	bool _turnCanEnd;
 	bool _verbose=true;
 
 	std::thread _timerThread;
@@ -104,7 +104,6 @@ GameThread::GameThread(ServerDatabase& database, userId player1Id, userId player
 	_database(database),
 	_winnerId{0},
 	_turn(0),
-	_turnCanEnd(false),
 	_turnSwap{false}
 {
 	createPlayers();

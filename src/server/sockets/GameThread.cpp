@@ -26,7 +26,6 @@ GameThread::GameThread(ServerDatabase& database, userId player1Id, userId player
 	_database(database),
 	_winnerId{0},
 	_turn(0),
-	_turnCanEnd(false),
 	_turnSwap{false}
 {
 	createPlayers();
