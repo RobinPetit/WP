@@ -1,5 +1,6 @@
 #ifndef _ACHIEVEMENTS_COMMON_HPP_
 #define _ACHIEVEMENTS_COMMON_HPP_
+//NOTE: the file should be achievement.hpp (singular)
 
 // std-C++ headers
 #include <vector>
