@@ -30,7 +30,7 @@ std::string ClientAchievement::getDescription() const
 
 int ClientAchievement::getRequiredProgress() const
 {
-	return 42; ///\TODO
+	return _achievementData.requiredProgress;
 }
 
 int ClientAchievement::getCurrentProgress() const
