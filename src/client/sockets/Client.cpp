@@ -4,6 +4,7 @@
 #include <SFML/Network/SocketSelector.hpp>
 // WizardPoker headers
 #include "client/sockets/Client.hpp"
+#include "client/ClientDatabase.hpp"
 #include "client/ErrorCode.hpp"
 #include "client/NonBlockingInput.hpp"
 #include "common/constants.hpp"
@@ -29,6 +30,7 @@ Client::Client():
 	_serverPort(0),
 	_threadLoop(false),
 	_userTerminal(),
+	_database(),
 	_currentConversations(),
 	_inGame(false),
 	_inGameSocket(),
@@ -36,7 +38,6 @@ Client::Client():
 	_inGameOpponentName(),
 	_readyToPlay(false)
 {
-
 }
 
 void Client::connectToServer(const std::string& name, const std::string& password, const sf::IpAddress& address, sf::Uint16 port)
@@ -87,6 +88,7 @@ void Client::sendConnectionToken(const std::string& password)
 		throw std::runtime_error("unidentified server response.");
 	}
 }
+
 void Client::sendRegisteringToken(const std::string& name, const std::string& password, sf::TcpSocket& socket)
 {
 	sf::Packet packet;
@@ -131,6 +133,16 @@ void Client::initServer(const std::string& name, const sf::IpAddress& address, s
 	else
 		initListener();  // creates the new thread which listens for entring chat conenctions
 	sf::sleep(SOCKET_TIME_SLEEP);  // wait a quarter second to let the listening thread init the port
+}
+
+void Client::connectionLost()
+{
+	_isConnected = false;
+}
+
+bool Client::isConnected()
+{
+	return _isConnected;
 }
 
 std::string Client::shrinkName(const std::string& name)
@@ -547,6 +559,21 @@ CardsCollection Client::getCardsCollection()
 	CardsCollection cardCollection;
 	packet >> cardCollection;
 	return cardCollection;
+}
+
+cardId Client::getNumberOfCards()
+{
+	return _database.countCards();
+}
+
+cardId Client::getMaxCardId()
+{
+	return _database.getGreatestCardId();
+}
+
+const CommonCardData* Client::getCardData(cardId id)
+{
+	return _database.getCardData(id);
 }
 
 ////////////////// Others

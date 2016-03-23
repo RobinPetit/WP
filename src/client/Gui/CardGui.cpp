@@ -22,7 +22,7 @@ CardGui::CardGui(const std::string& name, const std::string& description, int co
 	// complete cost, name and effects
 	setupText(_nameText, name, NAME_POSITION);
 	setupText(_costText, std::to_string(cost), COST_POSITION);
-	_costText.setFillColor(sf::Color::Red);
+	_costText.setColor(sf::Color::Red);
 	setupText(_descriptionText, description, DESCRIPTION_POSITION);
 }
 
@@ -68,7 +68,7 @@ void CardGui::draw(sf::RenderTarget &target, sf::RenderStates states) const
 void CardGui::setupText(sf::Text& text, const std::string& string, const sf::Vector2f& position) const
 {
 	text.setString(string);
-	text.setFillColor(sf::Color::Black);
+	text.setColor(sf::Color::Black);
 	text.setFont(_font);
 	text.setCharacterSize(CHAR_SIZE);
 	text.setPosition(position);

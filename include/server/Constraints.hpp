@@ -2,7 +2,7 @@
 #define _CONSTRAINTS_HPP_
 
 #include <vector>
-#include "common/CardData.hpp"
+#include "server/ServerCardData.hpp"
 
 class Creature;
 
@@ -42,7 +42,7 @@ const std::vector<ConstraintDefaultValue> playerDefaultConstraints =
 	//turn-based constraints
 	{1, ConstraintValueOption::VALUE_FIXED, ConstraintOrderOption::GET_LAST},          //PC_TURN_CARDS_PICKED
 	{1, ConstraintValueOption::VALUE_FIXED, ConstraintOrderOption::GET_LAST},          //PC_TURN_ENERGY_INIT_CHANGE
-	{1, ConstraintValueOption::VALUE_FIXED, ConstraintOrderOption::GET_SUM},           //PC_TURN_ENERGY_CHANGE
+	{0, ConstraintValueOption::VALUE_FIXED, ConstraintOrderOption::GET_SUM},           //PC_TURN_ENERGY_CHANGE
 	{0, ConstraintValueOption::VALUE_FIXED, ConstraintOrderOption::GET_SUM},           //PC_TURN_HEALTH_CHANGE
 	{-5, ConstraintValueOption::VALUE_FIXED, ConstraintOrderOption::GET_SUM},          //PC_TURN_HEALTH_CHANGE_DECK_EMPTY
 	//passive constraints

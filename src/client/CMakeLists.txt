@@ -1,6 +1,8 @@
 set(SOURCES
-		# Unspecialized files
 		"client.cpp"
+		"ClientCardData.cpp"
+		"ClientCreature.cpp"
+		"ClientSpell.cpp"
 		"ClientDatabase.cpp"
 		"AbstractApplication.cpp"
 		## sockets

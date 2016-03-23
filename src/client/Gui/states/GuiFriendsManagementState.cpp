@@ -13,6 +13,7 @@ GuiFriendsManagementState::GuiFriendsManagementState(Context& context):
 		{&GuiFriendsManagementState::removeFriend, "Remove selected friend"},
 		{&GuiFriendsManagementState::treatRequests, "Treat friendship requests"},
 		{&GuiFriendsManagementState::startChat, "Chat with selected friend"},
+		{&GuiFriendsManagementState::updateFriendListBox, "Refresh list"},
 		{&GuiFriendsManagementState::backMainMenu, "Back to main menu"},
 	},
 	_menuLabel{std::make_shared<tgui::Label>()},

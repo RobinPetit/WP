@@ -45,7 +45,7 @@ GuiMainMenuState::GuiMainMenuState(Context& context):
 
 void GuiMainMenuState::findGame()
 {
-	// _context.stateStack->push<GuiLobbyState>();
+	_context.stateStack->push<GuiLobbyState>();
 }
 
 void GuiMainMenuState::manageDecks()
