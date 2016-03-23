@@ -102,22 +102,22 @@ cardId ClientDatabase::getGreatestCardId()
 	return sqlite3_column_int(_getGreatestCardIdStmt, 0);
 }
 
-cardId ClientDatabase::countCards()
+cardId ClientDatabase::countCards() const
 {
 	return _cardCount;
 }
 
-cardId ClientDatabase::countCreatures()
+cardId ClientDatabase::countCreatures() const
 {
 	return _creatureCount;
 }
 
-cardId ClientDatabase::countSpells()
+cardId ClientDatabase::countSpells() const
 {
 	return _spellCount;
 }
 
-AchievementData ClientDatabase::getAchievementData(AchievementId id)
+AchievementData ClientDatabase::getAchievementData(AchievementId id) const
 {
 	sqlite3_reset(_getAchievementDataStmt);
 	sqliteThrowExcept(sqlite3_bind_int64(_getAchievementDataStmt, 1, id));

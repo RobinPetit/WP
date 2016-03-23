@@ -23,11 +23,11 @@ public:
 	std::vector<cardId> getFirstCardIds(unsigned count);
 	cardId getGreatestCardId();
 
-	cardId countCards();
-	cardId countCreatures();
-	cardId countSpells();
+	cardId countCards() const;
+	cardId countCreatures() const;
+	cardId countSpells() const;
 
-	AchievementData getAchievementData(AchievementId id);
+	AchievementData getAchievementData(AchievementId id) const;
 
 	virtual ~ClientDatabase();
 
