@@ -84,17 +84,12 @@ userId GameThread::playGame(const ClientInformations& player1, const ClientInfor
 	_timerThread = std::thread(&GameThread::makeTimer, this);
 
 	// run and time the game
-	std::chrono::steady_clock::time_point startOfGame = std::chrono::steady_clock::now();
 	runGame();
-
-	// calculate time duration of the game
-	std::chrono::steady_clock::time_point endOfGame = std::chrono::steady_clock::now();
-    std::size_t gameDuration = std::chrono::duration_cast<std::chrono::seconds>(endOfGame - startOfGame).count();
-    _postGameDataPlayer1.gameDuration = _postGameDataPlayer2.gameDuration = gameDuration;
 
 	// unlock a random new card
 	cardId earnedCardId{_database.getRandomCardId()};
 
+	// send last message to both players
 	sendFinalMessage(_specialOutputSocketPlayer1, _postGameDataPlayer1, earnedCardId);
 	sendFinalMessage(_specialOutputSocketPlayer2, _postGameDataPlayer2, earnedCardId);
 
@@ -123,6 +118,9 @@ void GameThread::sendFinalMessage(sf::TcpSocket& specialSocket, PostGameData& po
 
 void GameThread::runGame()
 {
+	// used to calculate time duration of the game
+	std::chrono::steady_clock::time_point startOfGame = std::chrono::steady_clock::now();
+
 	// call explicitely enterTurn for the first player because this method
 	// is only called when there is a turn swapping. So first turn is never
 	// **officially** started
@@ -170,6 +168,12 @@ void GameThread::runGame()
 		}
 		sf::sleep(sf::milliseconds(50));
 	}
+
+	// calculate duration of the game
+	std::chrono::steady_clock::time_point endOfGame = std::chrono::steady_clock::now();
+    std::size_t gameDuration = std::chrono::duration_cast<std::chrono::seconds>(endOfGame - startOfGame).count();
+    _postGameDataPlayer1.gameDuration = _postGameDataPlayer2.gameDuration = gameDuration;
+
 	assert((_winnerId != 0) xor (_endGameCause == EndGame::Cause::ENDING_SERVER));
 }
 
