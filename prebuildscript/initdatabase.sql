@@ -135,13 +135,15 @@ CREATE TABLE Account (
 	-- ##achievements
 	secondsSpentPlaying         INTEGER DEFAULT 0,
 	maxVictoriesInARow          INTEGER DEFAULT 0,
-	isInDaClub                  INTEGER DEFAULT 0, -- boolean
+	lastWasVictory              INTEGER DEFAULT 0, -- boolean
+	gameWithInDaClub            INTEGER DEFAULT 0,
 	ragequits                   INTEGER DEFAULT 0,
 	maxStartsInARow             INTEGER DEFAULT 0,
 	maxDaysPlayedInARow         INTEGER DEFAULT 0,
+	lastGameDateTime            INTEGER DEFAULT 0,
 	perfectWins                 INTEGER DEFAULT 0,
 	closeWins                   INTEGER DEFAULT 0,
-	betterLuckNextTimeUnlocked  INTEGER DEFAULT 0, -- boolean
+	maxSameCardCounter          INTEGER DEFAULT 0,
 	bestLadderPosition          INTEGER DEFAULT 0
 );
 
