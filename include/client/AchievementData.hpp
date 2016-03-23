@@ -12,7 +12,7 @@ struct AchievementData
 	AchievementId id;
 	std::string name;
 	std::string description;
-	sf::Int64 progressRequired; // sf::Int64 to be able to operate with Achievement::currentProgress
+	sf::Int64 requiredProgress; // sf::Int64 to be able to operate with Achievement::currentProgress
 };
 
 #endif // _ACHIEVEMENT_DATA_CLIENT_HPP
