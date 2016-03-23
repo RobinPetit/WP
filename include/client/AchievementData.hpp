@@ -6,7 +6,8 @@
 // WizardPoker headers
 #include "common/Identifiers.hpp"
 
-/// Created by ClientDatabase::getAchievementData(AchievementId id) (\TODO)
+/// Used by ClientAchivement
+/// and created by ClientDatabase::getAchievementData(AchievementId id) (\TODO)
 struct AchievementData
 {
 	AchievementId id;

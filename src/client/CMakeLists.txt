@@ -3,6 +3,7 @@ set(SOURCES	"client.cpp"
 		"ClientCreature.cpp"
 		"ClientSpell.cpp"
 		"ClientDatabase.cpp"
+		"ClientAchievement.cpp"
 		# sockets
 		"sockets/Client.cpp"
 		"NonBlockingInput.cpp"
