@@ -1,8 +1,17 @@
 #ifndef _SERVER_DATABASE_SERVER_HPP
 #define _SERVER_DATABASE_SERVER_HPP
 
+#include <map>
+#include <memory>
+
 #include "common/Database.hpp"
 #include "common/Identifiers.hpp"
+#include "common/Card.hpp"
+#include "server/ServerCardData.hpp"
+
+class Player;
+class Creature;
+class Spell;
 
 // for the moment login and name are used for the same string
 
@@ -13,6 +22,12 @@ public:
 	/// Constructor
 	/// \param filename: relative path to sqlite3 file.
 	explicit ServerDatabase(const std::string& filename = FILENAME);
+
+	Card* getCard(cardId card, Player& player);
+	const CommonCardData* getCardData(cardId card);
+	/// Number of card templates in database
+	cardId countCards();
+	cardId getRandomCardId();
 
 	userId getUserId(const std::string& login);
 	std::string getLogin(userId id);
@@ -42,6 +57,7 @@ public:
 	std::vector<Deck> getDecks(userId id);
 	Deck getDeckByName(userId id, const std::string& deckName);
 	void createDeck(userId id, const Deck& deck);
+	std::vector<cardId> getFirstCardIds(unsigned count); // TODO use it in Deck constructor
 	void deleteDeckByName(userId id, const std::string& deckName);
 	void editDeck(userId id, const Deck& deck); // Deck should contains the deckId
 
@@ -56,8 +72,13 @@ public:
 private:
 	/// Default relative path to sqlite3 file
 	static const char FILENAME[];
+	std::map<const cardId, const std::unique_ptr<const CommonCardData> > _cardData;
 
 	FriendsList getAnyFriendsList(userId id, sqlite3_stmt * stmt);
+	/// Add a card to _cards;
+	void createSpellData();
+	void createCreatureData();
+	std::vector<EffectParamsCollection> createCardEffects(cardId id);
 
 	sqlite3_stmt * _friendListStmt;
 	sqlite3_stmt * _userIdStmt;
@@ -77,13 +98,18 @@ private:
 	sqlite3_stmt * _createDeckStmt;
 	sqlite3_stmt * _deleteDeckByNameStmt;
 	sqlite3_stmt * _editDeckByNameStmt;
+	sqlite3_stmt * _getSpellCardsStmt;
+	sqlite3_stmt * _getCreatureCardsStmt;
+	sqlite3_stmt * _getCardEffectsStmt;
 	sqlite3_stmt * _newCardStmt;
 	sqlite3_stmt * _countAccountsStmt;
+	sqlite3_stmt * _getFirstCardIdsStmt;
+	sqlite3_stmt * _countCardsStmt;
+	sqlite3_stmt * _getRandomCardIdStmt;
 
 	// `constexpr std::array::size_type size() const;`
-	// -> I consider this 19 as the definition of the variable, so it is not a magic number
-	// -> future uses have to be _statements.size() -> 19 is written only one time
-	StatementsList<20> _statements
+	// -> future uses have to be _statements.size() -> 26 is written only one time
+	StatementsList<26> _statements
 	{
 		{
 			Statement {
@@ -187,9 +213,38 @@ private:
 				"	WHERE owner == ?22 AND name == ?1;" // name <- ?1 because complete query should be `...SET name = ?1...`
 			},
 			Statement {
+				&_getSpellCardsStmt,
+				"SELECT id, cost FROM SpellCard;"
+			},
+			Statement {
+				&_getCreatureCardsStmt,
+				"SELECT id, cost, attack, health, shield, shieldType FROM CreatureCard;"
+			},
+			Statement { // 20
+				&_getCardEffectsStmt,
+				"SELECT parameter0, parameter1, parameter2, parameter3,"
+				"	parameter4, parameter5, parameter6 "
+				"FROM Effect WHERE owner == ?1;"
+			},
+			Statement {
 				&_newCardStmt,
 				"INSERT INTO GivenCard(card, owner) "
 				"	VALUES (?1, ?2);"
+			},
+			Statement {
+				&_getFirstCardIdsStmt,
+				"SELECT id "
+				"	FROM FullCard "
+				"	ORDER BY id "
+				"	LIMIT ?1;"
+			},
+			Statement {
+				&_countCardsStmt,
+				"SELECT count() FROM FullCard;"
+			},
+			Statement {
+				&_getRandomCardIdStmt,
+				"SELECT id FROM FullCard ORDER BY random() LIMIT 1;"
 			},
 			Statement {
 				&_countAccountsStmt,

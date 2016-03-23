@@ -97,7 +97,7 @@ userId GameThread::playGame(const ClientInformations& player1, const ClientInfor
     _postGameDataPlayer1.gameDuration = _postGameDataPlayer2.gameDuration = gameDuration;
 
 	// unlock a random new card
-	cardId earnedCardId{_intGenerator.next(static_cast<int>(nbSpells + nbCreatures)) + 1}; // Card indices start to 1 because of SQLite
+	cardId earnedCardId{_database.getRandomCardId()};
 	if (_postGameDataPlayer1.playerWon)
 		_postGameDataPlayer1.unlockedCard = earnedCardId;
 	if (_postGameDataPlayer2.playerWon)
@@ -106,11 +106,10 @@ userId GameThread::playGame(const ClientInformations& player1, const ClientInfor
 	if(_endGameCause != EndGame::Cause::ENDING_SERVER)
 		_database.addCard(winnerId, earnedCardId); //TODO DATABASE : add card when receiving postGameData instead
 
-	// Send to the winner he wins and send his new card ID
-	sf::Packet packet;
 	// Send to the winner he won
 	// EndGame::applyToSelf indicate which player won the game: false mean that
 	// the player who receive this message has won.
+	sf::Packet packet;
 	packet << TransferType::GAME_OVER << EndGame{_endGameCause, false} << earnedCardId;
 	sf::TcpSocket& winnerSocket{winnerId == _player1Id ? _specialOutputSocketPlayer1 : _specialOutputSocketPlayer2};
 	winnerSocket.send(packet);

@@ -21,10 +21,13 @@
 
 struct Statement : private std::pair<sqlite3_stmt **, const char *> // I dont care that it is a std::pair (this is just for implementation) and I prefer apply maximum restrictions rule
 {
-	Statement(first_type statement, second_type query)
+	constexpr Statement(const first_type& statement, const second_type& query)
 		: std::pair<first_type, second_type>(statement, query)
-	{
-	}
+	{}
+
+	/*Statement(std::piecewise_construct_t, std::tuple<first_type> statement, std::tuple<second_type> query)
+		: std::pair<first_type, second_type>(std::piecewise_construct, statement, query)
+	{}*/ // unused for now
 
 	sqlite3_stmt ** statement()
 	{

@@ -165,8 +165,11 @@ CREATE TABLE Achievement (
 	progressRequired INTEGER CHECK(progressRequired > 0) NOT NULL DEFAULT 1
 );
 
--- Create achievement
+-- Create achievements
 .read "Achievements.sql"
+
+-- TODO: do not keep in server database informations used only by client
+--       (name and descriptions of cards and achievements)
 
 CREATE INDEX achievementId ON Achievement(id);
 
@@ -371,6 +374,7 @@ SELECT 'SELECT "CLIENT/Cards/Tables";';
 .dump Card
 .dump Creature
 .dump Effect
+.dump Achievement
 .output stdout
 
 -----------------------------------------------------------

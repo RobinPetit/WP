@@ -99,12 +99,20 @@ void AbstractGame::useCard()
 		_client.getGameSocket().send(actionPacket);
 		// receive amount of selection to make
 		_client.getGameSocket().receive(actionPacket);
-		// ask and send the additionnal inputs to the server
-		if(not treatAdditionnalInputs(actionPacket))
-			return;
+		TransferType responseHeader;
+		actionPacket >> responseHeader;
+		assert(responseHeader == TransferType::GAME_SEND_NB_OF_EFFECTS);
+		sf::Uint32 nbOfEffects;
+		actionPacket >> nbOfEffects;
+		for(sf::Uint32 i{0}; i < nbOfEffects; ++i)
+		{
+			_client.getGameSocket().receive(actionPacket);
+			// ask and send the additionnal inputs to the server
+			if(not treatAdditionnalInputs(actionPacket))
+				return;
+		}
 		// receive status of operation from server
 		_client.getGameSocket().receive(actionPacket);
-		TransferType responseHeader;
 		actionPacket >> responseHeader;
 		switch(responseHeader)
 		{
@@ -173,6 +181,10 @@ bool AbstractGame::treatAdditionnalInputs(sf::Packet& actionPacket)
 
 		case CardToSelect::OPPO_HAND:
 			indices.push_back(askOppoHandIndex());
+			break;
+
+		default:
+			std::cerr << "ERROR: UNKNOWN VALUE: " << static_cast<std::underlying_type<CardToSelect>::type>(input) << std::endl;
 			break;
 		}
 	}
@@ -349,7 +361,6 @@ void AbstractGame::endGame(sf::Packet& transmission)
 
 void AbstractGame::handlePacket(sf::Packet& transmission)
 {
-	// TODO: std::couts here are debug. To remove
 	TransferType type;
 	while(not transmission.endOfPacket())
 	{
@@ -372,9 +383,6 @@ void AbstractGame::handlePacket(sf::Packet& transmission)
 
 		case TransferType::GAME_PLAYER_ENERGY_UPDATED:
 		{
-			// energy (and health and others) are transmitted through the network as 32 bit
-			// unsigned integers. So be sure to receive the exact same thing to avoid encoding
-			// errors and then set it in the "real" attribute
 			std::lock_guard<std::mutex> lock{_accessEnergy};
 			_selfEnergy = receiveFromPacket<sf::Uint32>(transmission);
 		}
@@ -428,34 +436,36 @@ void AbstractGame::handlePacket(sf::Packet& transmission)
 	}
 }
 
-///////////////TODO: USE DATABASE INSTEAD
 const std::string& AbstractGame::getCardName(cardId id)
 {
-	if (id<=10)
-		return ALL_CREATURES[id-1].name;
-	else
-		return ALL_SPELLS[id-11].name;
+	const CommonCardData* card = _client.getCardData(id);
+	// Maybe I should have use multiple inheritance to avoid this
+	return card->isSpell()
+		? static_cast<const ClientSpellData*>(card)->getName()
+		: static_cast<const ClientCreatureData*>(card)->getName();
 }
 
 CostValue AbstractGame::getCardCost(cardId id)
 {
-	if (id<=10)
-		return ALL_CREATURES[id-1].cost;
-	else
-		return ALL_SPELLS[id-11].cost;
+	const CommonCardData* card = _client.getCardData(id);
+	// Maybe I should have use multiple inheritance to avoid this
+	return card->isSpell()
+		? static_cast<CostValue>(static_cast<const ClientSpellData*>(card)->getCost())
+		: static_cast<CostValue>(static_cast<const ClientCreatureData*>(card)->getCost());
 }
 
 const std::string& AbstractGame::getCardDescription(cardId id)
 {
-	if (id<=10)
-		return ALL_CREATURES[id-1].description;
-	else
-		return ALL_SPELLS[id-11].description;
+	const CommonCardData* card = _client.getCardData(id);
+	// Maybe I should have use multiple inheritance to avoid this
+	return card->isSpell()
+		? static_cast<const ClientSpellData*>(card)->getDescription()
+		: static_cast<const ClientCreatureData*>(card)->getDescription();
 }
 
 bool AbstractGame::isSpell(cardId id)
 {
-	return id > 10;
+	return _client.getCardData(id)->isSpell();
 }
 
 template <typename FixedSizeIntegerType>
