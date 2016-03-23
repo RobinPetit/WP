@@ -36,7 +36,7 @@ const CommonCardData* ClientDatabase::getCardData(cardId id)
 {
 	auto found = _cards.find(id);
 
-	if(found == _cards.end())
+	if(found == _cards.end()) // not found: create and return
 	{
 		sqlite3_reset(_getCardStmt);
 		sqliteThrowExcept(sqlite3_bind_int64(_getCardStmt, 1, id));
@@ -44,7 +44,6 @@ const CommonCardData* ClientDatabase::getCardData(cardId id)
 		assert(sqliteThrowExcept(sqlite3_step(_getCardStmt)) == SQLITE_ROW);
 
 		CommonCardData * cardData;
-		ClientSpellData test(1, "Nom", 2, "Description"); // TODO delete
 
 		if(sqlite3_column_type(_getCardStmt, 4) == SQLITE_NULL) // Spell
 		{
@@ -74,7 +73,7 @@ const CommonCardData* ClientDatabase::getCardData(cardId id)
 		                          std::unique_ptr<CommonCardData>(cardData)
 		                      )).first->second.get();
 	}
-	else
+	else // card already created
 	{
 		return found->second.get();
 	}
