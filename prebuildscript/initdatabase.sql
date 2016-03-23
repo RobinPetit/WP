@@ -159,10 +159,10 @@ CREATE TABLE GivenCard ( -- 20 first cards are not stored (everyone own its)
 CREATE INDEX givenCardOwner ON GivenCard(owner);
 
 CREATE TABLE Achievement (
-	id               INTEGER PRIMARY KEY ASC,
+	id               INTEGER UNIQUE NOT NULL,
 	name             TEXT UNIQUE NOT NULL,
 	description      TEXT,
-	progressRequired INTEGER CHECK(progressRequired > 0) NOT NULL
+	progressRequired INTEGER CHECK(progressRequired > 0) NOT NULL DEFAULT 1
 );
 
 SELECT "Accounts/Trigger";
