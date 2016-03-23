@@ -8,6 +8,7 @@
 #include "common/Database.hpp"
 #include "common/Card.hpp"
 #include "client/ClientCardData.hpp"
+#include "client/AchievementData.hpp"
 
 /// Interface to the client database.
 class ClientDatabase : public Database
@@ -22,9 +23,11 @@ public:
 	std::vector<cardId> getFirstCardIds(unsigned count);
 	cardId getGreatestCardId();
 
-	cardId countCards();
-	cardId countCreatures();
-	cardId countSpells();
+	cardId countCards() const;
+	cardId countCreatures() const;
+	cardId countSpells() const;
+
+	AchievementData getAchievementData(AchievementId id) const;
 
 	virtual ~ClientDatabase();
 
@@ -43,8 +46,9 @@ private:
 	sqlite3_stmt * _countSpellsStmt;
 	sqlite3_stmt * _getFirstCardIdsStmt;
 	sqlite3_stmt * _getGreatestCardIdStmt;
+	sqlite3_stmt * _getAchievementDataStmt;
 	//TODO (server too) separate startup statement from long-life statement to save (a few) memory
-	StatementsList<6> _statements
+	StatementsList<7> _statements
 	{
 		{
 			Statement {
@@ -79,6 +83,12 @@ private:
 				"	FROM FullCard "
 				"	ORDER BY id DESC "
 				"	LIMIT 1;"
+			},
+			Statement {
+				&_getAchievementDataStmt,
+				"SELECT name, description, progressRequired "
+				"	FROM Achievement "
+				"	WHERE id == ?1;"
 			}
 		}
 	};
