@@ -23,12 +23,14 @@ void GuiAbstractState::onPush()
 {
 	for(auto& widget : _rootWidgets)
 		widget->hide();
+	AbstractState::onPush();
 }
 
 void GuiAbstractState::onPop()
 {
 	for(auto& widget : _rootWidgets)
 		widget->show();
+	AbstractState::onPop();
 }
 
 void GuiAbstractState::display()

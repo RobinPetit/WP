@@ -57,9 +57,16 @@ class GuiAbstractState : virtual public AbstractState
 		template <class StateType>
 		void setupButtons(const std::vector<ButtonData<StateType>>& buttons, tgui::Container::Ptr container);
 
+		/// Tell which widgets are the main widgets, the ones that need to be
+		/// hidden/shown/removed when the state stack is modified. This may be
+		/// the main layout, the title label, and so on. The overload of onPush,
+		/// onPop and of the destructor will then manage these widgets
+		/// accordingly.
+		/// \param widgets The root widgets.
 		void registerRootWidgets(std::vector<tgui::Widget::Ptr>&& widgets);
 
 	private:
+		/// See \ref registerRootWidget for explanation of this attribute.
 		std::vector<tgui::Widget::Ptr> _rootWidgets;
 };
 
