@@ -5,12 +5,16 @@
 #include <vector>
 #include <string>
 
-struct Achievement
+class Achievement
 {
-	std::string name;
-	std::string description;
-	bool unlocked;
-	bool secret;
+private:
+	std::string _name;
+	std::string _description;
+	bool _unlocked;
+	std::size_t _progressCurrent, _progressRequired;
+public:
+	std::string getName() const;
+	std::string getDescription() const;
 };
 
 typedef std::vector<Achievement> AchievementList;
