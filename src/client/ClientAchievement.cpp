@@ -20,7 +20,7 @@ std::string ClientAchievement::getName() const
 
 std::string ClientAchievement::getPrettyName() const
 {
-	return "TODO: ClientAchievement::getPrettyName";
+	return getName() + ' ' + (_unlocked ? "✔" : std::string("(") + getProgressPercentage() + ")" );
 }
 
 std::string ClientAchievement::getDescription() const
