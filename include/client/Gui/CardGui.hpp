@@ -30,6 +30,15 @@ public:
 	virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
 protected:
+	static const sf::Vector2f SIZE;
+
+	sf::RectangleShape _picture;
+	sf::Texture _pictureTexture;
+
+	/// Ease of use method.
+	void setupText(sf::Text& text, const std::string& string, const sf::Vector2f& position) const;
+
+private:
 	/// Description graphical text.
 	sf::Text _descriptionText;
 
@@ -43,7 +52,6 @@ protected:
 	sf::Font _font;
 
 	// Arbitrary shape
-	static const sf::Vector2f SIZE;
 	static const sf::Vector2f NAME_POSITION;
 	static const sf::Vector2f COST_POSITION;
 	static const sf::Vector2f DESCRIPTION_POSITION;
@@ -58,12 +66,6 @@ protected:
 
 	sf::RectangleShape _backView;
 	sf::Texture _backTexture;
-
-	sf::RectangleShape _picture;
-	sf::Texture _pictureTexture;
-
-	/// Ease of use method.
-	void setupText(sf::Text& text, const std::string& string, const sf::Vector2f& position) const;
 };
 
 
