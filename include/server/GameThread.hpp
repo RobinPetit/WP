@@ -58,7 +58,7 @@ private:
 	PostGameData _postGameDataPlayer2;
 	ServerDatabase& _database;
 
-	userId _winner;
+	userId _winnerId;
 	EndGame::Cause _endGameCause;
 
 	Player *_activePlayer;
@@ -78,7 +78,7 @@ private:
 	static constexpr std::chrono::seconds _turnTime{120};
 
 	/*------------------------------ Methods */
-	userId runGame();
+	void runGame();
 
 	void setSocket(sf::TcpSocket& socket, sf::TcpSocket& specialSocket, const ClientInformations& player);
 
@@ -104,7 +104,7 @@ GameThread::GameThread(ServerDatabase& database, userId player1Id, userId player
 	_player1(*this, database, _player1Id, _player2, _postGameDataPlayer1),
 	_player2(*this, database, _player2Id, _player1, _postGameDataPlayer2),
 	_database(database),
-	_winner{0},
+	_winnerId{0},
 	_turn(0),
 	_turnCanEnd(false),
 	_turnSwap{false}

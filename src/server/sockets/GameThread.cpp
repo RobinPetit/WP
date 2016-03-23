@@ -24,7 +24,7 @@ GameThread::GameThread(ServerDatabase& database, userId player1Id, userId player
 	_player1(*this, database, _player1Id, _player2, _postGameDataPlayer1),
 	_player2(*this, database, _player2Id, _player1, _postGameDataPlayer2),
 	_database(database),
-	_winner{0},
+	_winnerId{0},
 	_turn(0),
 	_turnCanEnd(false),
 	_turnSwap{false}
@@ -89,7 +89,7 @@ userId GameThread::playGame(const ClientInformations& player1, const ClientInfor
 
 	// run and time the game
 	std::chrono::steady_clock::time_point startOfGame = std::chrono::steady_clock::now();
-	userId winnerId{runGame()};
+	runGame();
 
 	// calculate time duration of the game
 	std::chrono::steady_clock::time_point endOfGame = std::chrono::steady_clock::now();
@@ -104,7 +104,7 @@ userId GameThread::playGame(const ClientInformations& player1, const ClientInfor
 
 	//TODO DATABASE : send _postGameData for each player, will unlock cards for winner
 
-	return winnerId;
+	return _winnerId;
 }
 
 void GameThread::sendFinalMessage(sf::TcpSocket& specialSocket, PostGameData& postGameData, cardId earnedCardId)
@@ -125,7 +125,7 @@ void GameThread::sendFinalMessage(sf::TcpSocket& specialSocket, PostGameData& po
 	specialSocket.send(packet);
 }
 
-userId GameThread::runGame()
+void GameThread::runGame()
 {
 	// call explicitely enterTurn for the first player because this method
 	// is only called when there is a turn swapping. So first turn is never
@@ -174,14 +174,13 @@ userId GameThread::runGame()
 		}
 		sf::sleep(sf::milliseconds(50));
 	}
-	assert((_winner != 0) xor (_endGameCause == EndGame::Cause::ENDING_SERVER));
-	return _winner;
+	assert((_winnerId != 0) xor (_endGameCause == EndGame::Cause::ENDING_SERVER));
 }
 
 void GameThread::endGame(userId winnerId, EndGame::Cause cause)
 {
 	std::cout << "Game is asked to end\n";
-	_winner = winnerId;
+	_winnerId = winnerId;
 	_endGameCause = cause;
 	_running.store(false);
 }
