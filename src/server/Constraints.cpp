@@ -69,7 +69,7 @@ int Constraints::getValue(int constraintId, unsigned valueIndex) const
 			_timedValues.at(constraintId).at(valueIndex).value--;
 			break;
 		default:
-			// no nothing to value
+			// do nothing to value
 			break;
 	}
 	return value;

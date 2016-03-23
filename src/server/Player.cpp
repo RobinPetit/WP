@@ -545,7 +545,6 @@ void Player::setConstraint(EffectArgs effect)
 	{
 		throw std::runtime_error("Player::setConstraint error with cards arguments");
 	}
-
 	switch(casterOptions)
 	{
 		case IF_CASTER_ALIVE:

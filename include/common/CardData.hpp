@@ -9,26 +9,6 @@
 
 constexpr int UNLIMITED_TURNS = 100;
 
-//TODO: move to appropriate file
-/// Player constraints
-enum PLAYER_CONSTRAINTS : int32_t
-{
-    //turn-by-turn
-    PC_TURN_CARDS_PICKED = 0,          //amount of cards to pick each turn
-    PC_TURN_ENERGY_INIT_CHANGE,        //amount of points added to init value each turn
-    PC_TURN_ENERGY_CHANGE,             //amount of energy points added each turn
-    PC_TURN_HEALTH_CHANGE,             //amount of health points added each turn
-    PC_TURN_HEALTH_CHANGE_DECK_EMPTY,  //amount of health points taken each turn when deck is empty
-    //passive
-    PC_TEMP_CARD_USE_LIMIT,            //limit for using cards
-    PC_TEMP_SPELL_CALL_LIMIT,          //limit for calling spells
-    PC_TEMP_CREATURE_ATTACK_LIMIT,     //limit for attacking with creatures
-    PC_TEMP_CREATURE_PLACING_LIMIT,    //limit for placing creatures on board
-    PC_TEMP_CREATURE_BOARD_LIMIT,      //limit for number of creatures on the board
-    //count
-    P_CONSTRAINTS_COUNT
-};
-
 //TODO?: move to a server specific file?
 ///How to define an effect:
 typedef std::vector<int> EffectParamsCollection;
