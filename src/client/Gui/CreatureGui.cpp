@@ -20,3 +20,18 @@ CreatureGui::CreatureGui(const std::string& name, const std::string& description
 	_shield = shield;
 	_shieldType = shieldType;
 }
+
+void CreatureGui::setAttack(int value)
+{
+	_attack = value;
+}
+
+void CreatureGui::setHealth(int value)
+{
+	_health = value;
+}
+
+void CreatureGui::setShield(int value)
+{
+	_shield = value;
+}

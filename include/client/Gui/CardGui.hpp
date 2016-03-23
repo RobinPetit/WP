@@ -14,7 +14,7 @@ public:
 	virtual ~CardGui() = default;
 
 	/// Setters
-	void setCost(int cost) {_costText.setString(std::to_string(cost));}
+	void setCost(int cost);
 
 protected:
 	// name,cost, and effects
@@ -28,6 +28,7 @@ protected:
 	// Arbitrary shape
 	static const sf::Vector2f SIZE;
 	static const sf::Vector2f NAME_POSITION;
+	static const sf::Vector2f COST_POSITION;
 	static const sf::Vector2f DESCRIPTION_POSITION;
 	static constexpr std::size_t CHAR_SIZE = 20;
 

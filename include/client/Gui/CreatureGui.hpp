@@ -11,9 +11,9 @@ public:
 	CreatureGui(const std::string& name, const std::string& description, int cost, int attack, int health, int shield, int shieldType);
 
 	/// Setters
-	void setAttack(int value) {_attack = value;}
-	void setHealth(int value) {_health = value;}
-	void setShield(int value) {_shield = value;}
+	void setAttack(int value);
+	void setHealth(int value);
+	void setShield(int value);
 
 private:
 	int _attack;
