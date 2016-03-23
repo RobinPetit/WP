@@ -7,6 +7,8 @@
 // WizardPoker headers
 #include "common/Identifiers.hpp"
 
+/// Used to send to a client his progress about an achievement
+/// \see AchievementData and ClientAchievement client classes
 struct Achievement
 {
 	AchievementId id;
