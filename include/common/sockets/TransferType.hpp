@@ -103,7 +103,10 @@ enum class TransferType : sf::Uint32
 	/// Used when the user want to use a card in a game
 	GAME_USE_CARD,
 
-	/// Used when the user want to attack with one of its creatures
+	/// Used when the server wants to send to the player how many inputs requests he'll receive
+	GAME_SEND_NB_OF_EFFECTS,
+
+	/// Used when the user wants to attack with one of its creatures
 	GAME_ATTACK_WITH_CREATURE,
 
 	/// Used when the player quits while playing a game

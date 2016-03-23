@@ -26,8 +26,8 @@ AbstractLadderState::AbstractLadderState(Context& context):
 		else if(rhs.victories + rhs.defeats == 0)
 			return true;
 		else
-			return (static_cast<double>(lhs.victories) / static_cast<double>(lhs.victories + lhs.defeats))
-					> (static_cast<double>(rhs.victories) / static_cast<double>(rhs.victories + rhs.defeats));
+			return (static_cast<double>(lhs.victories + 1) / (lhs.defeats + 1))
+			        > (static_cast<double>(rhs.victories + 1) / (rhs.defeats + 1));
 	});
 }
 

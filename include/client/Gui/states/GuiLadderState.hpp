@@ -45,7 +45,8 @@ class GuiLadderState : public GuiAbstractState, public AbstractLadderState
 		};
 
 		/// The list of all lines of the ladder that will be displayed.
-		std::array<GuiLadderEntry, std::tuple_size<decltype(_ladder)>::value> _guiLadder;
+		//std::array<GuiLadderEntry, std::tuple_size<decltype(_ladder)>::value> _guiLadder;
+		std::vector<GuiLadderEntry> _guiLadder;
 
 		/// The first line of the ladder (the top line with the names of the
 		/// columns).

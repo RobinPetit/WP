@@ -360,15 +360,25 @@ void Server::startGame(std::size_t idx)
 			return it.second.id == playerId;
 		};
 	};
+	userId player1Id = selfThread->_player1Id;
+	userId player2Id = selfThread->_player2Id;
 
-	const auto& player1{std::find_if(_clients.begin(), _clients.end(), finderById(selfThread->_player1Id))};
-	const auto& player2{std::find_if(_clients.begin(), _clients.end(), finderById(selfThread->_player2Id))};
+	const auto& player1{std::find_if(_clients.begin(), _clients.end(), finderById(player1Id))};
+	const auto& player2{std::find_if(_clients.begin(), _clients.end(), finderById(player2Id))};
+
+	std::string player1Name = userToString(player1);
+	std::string player2Name = userToString(player2);
+
 	std::cout << "Game " << idx << " is starting: " + userToString(player1) + " vs. " + userToString(player2) + "\n";
-	userId winnerId{selfThread->startGame(player1->second, player2->second)};
+	userId winnerId{selfThread->playGame(player1->second, player2->second)};
+
 	// \TODO: change personnal scores
-	const auto& winner{winnerId == selfThread->_player1Id ? player1 : player2};
-	const auto& loser{winnerId == selfThread->_player1Id ? player2 : player1};
-	std::cout << winner->first << " won and " << loser->first << " lost\n";
+	if (winnerId == player1Id)
+		std::cout << player1Name << " won and " << player2Name << " lost\n";
+	else if (winnerId == player2Id)
+		std::cout << player2Name << " won and " << player1Name << " lost\n";
+	else
+		std::cout << "there was no winner amongst players " << player1Name << " and " << player2Name << "\n";
 }
 
 void Server::createGame(userId Id1, userId Id2)

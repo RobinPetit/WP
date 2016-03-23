@@ -24,6 +24,12 @@ void TerminalLobbyState::display()
 
 void TerminalLobbyState::startGame()
 {
+	if(not _context.client->isConnected())
+	{
+		std::cout << "You can't play: you're not connected!\n";
+		waitForEnter();
+		return;
+	}
 	std::cout << "Let's find you an opponent\n";
 	if(_context.client->startGame())
 	{

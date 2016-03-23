@@ -1,5 +1,6 @@
 // std-C++ headers
 #include <iostream>
+#include <cassert>
 // WizardPoker headers
 #include "common/CardData.hpp"
 #include "client/sockets/Client.hpp"
@@ -111,7 +112,10 @@ cardId TerminalDecksManagementState::askForReplacingCard(std::size_t deckIndex)
 	for(const auto& card : _cardsCollection)
 		std::cout << static_cast<std::size_t>(card) << ". " << card << "\n";
 	std::cout << "Which card do you want to put in you deck? ";
-	cardId replacingCard{static_cast<cardId>(askForNumber(0, nbSpells + nbCreatures))};
+	// TODO: even if *for now* database initialization ensure that card ids are consecutive
+	// we shouldn't take this for granted.
+	assert(_context.client->getMaxCardId() == _context.client->getNumberOfCards());
+	cardId replacingCard{static_cast<cardId>(askForNumber(0, static_cast<std::size_t>(_context.client->getNumberOfCards())))};
 
 	// Check if the given card is valid
 	if(not _cardsCollection.contains(replacingCard))

@@ -34,21 +34,19 @@ GuiLadderState::GuiLadderState(Context& context):
 	_ladderHeader.playedGamesLabel->setText("Played");
 	_ladderLayout->add(_ladderHeader.layout);
 
-	std::size_t i{0};
-	for(auto& guiLadderEntry : _guiLadder)
+	for(std::size_t i{0}; i < _ladder.size(); ++i)
 	{
-		// Fill the fields
+		GuiLadderEntry guiLadderEntry;
 		guiLadderEntry.rankLabel->setText(std::to_string(i + 1) + ".");
 		guiLadderEntry.playerNameLabel->setText(_ladder[i].name);
 		guiLadderEntry.wonGamesLabel->setText(std::to_string(_ladder[i].victories));
 		guiLadderEntry.playedGamesLabel->setText(std::to_string(_ladder[i].victories + _ladder[i].defeats));
-		i++;
 
 		_ladderLayout->add(guiLadderEntry.layout);
 	}
 
 	_ladderLayout->setPosition(windowWidth/5.f, windowHeight * 1.2f/10.f);
-	_ladderLayout->setSize(windowWidth * 3.f/5.f, windowHeight * 6.5f/10.f);
+	_ladderLayout->setSize(windowWidth * 3.5f/5.f, windowHeight * 6.5f/10.f);
 	_context.gui->add(_ladderLayout);
 
 	registerRootWidgets({_ladderLayout, _titleLabel, _buttons[0].button});
