@@ -79,6 +79,7 @@ public:
 	void editDeck(userId id, const Deck& deck); // Deck should contains the deckId
 
 	//////////////// Achievements
+	/// Unlock new card and achievements
 	AchievementList newAchievements(const PostGameData&, userId);
 	int getWithInDaClub(userId);
 	Ladder getLadder();

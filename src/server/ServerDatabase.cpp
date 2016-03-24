@@ -382,6 +382,8 @@ unsigned ServerDatabase::countAccounts()
 // Achievements
 AchievementList ServerDatabase::newAchievements(const PostGameData& postGame, userId user)
 {
+	if (postGame.playerWon)
+		addCard(user,getRandomCardId);
 	return _achievementManager.newAchievements(postGame, user);
 }
 
