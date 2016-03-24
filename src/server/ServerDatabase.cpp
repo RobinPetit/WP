@@ -451,6 +451,25 @@ void ServerDatabase::addVictories(userId user, int victories)
 	addToAchievementProgress(user, victories, _addVictoriesStmt);
 }
 
+int ServerDatabase::getVictoriesInARow(userId user)
+{
+	return getAchievementProgress(user, _getVictoriesInARowStmt);
+}
+
+void ServerDatabase::addVictoriesInARow(userId user, int victories)
+{
+	assert(victories >= 0);
+
+	if(victories > 0)
+		victories += getVictoriesInARow(user);
+
+	sqlite3_reset(_setVictoriesInARowStmt);
+	sqliteThrowExcept(sqlite3_bind_int(_setVictoriesInARowStmt, 1, victories));
+	sqliteThrowExcept(sqlite3_bind_int64(_setVictoriesInARowStmt, 2, user));
+
+	assert(sqliteThrowExcept(sqlite3_step(_setVictoriesInARowStmt)) == SQLITE_DONE);
+}
+
 
 int ServerDatabase::getAchievementProgress(userId user, sqlite3_stmt* stmt)
 {

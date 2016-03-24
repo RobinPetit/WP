@@ -98,7 +98,7 @@ private:
 			int PostGameData::*toAddValue;
 			int (ServerDatabase::*getMethod)(userId);
 		};
-		std::array<AchievementData, 2> _achievementsData
+		std::array<AchievementData, 3> _achievementsData
 		{
 			{
 				AchievementData {
@@ -112,6 +112,12 @@ private:
 					&ServerDatabase::addVictories,
 					&PostGameData::playerWon,
 					&ServerDatabase::getVictories
+				},
+				AchievementData {
+					3,
+					&ServerDatabase::addVictoriesInARow,
+					&PostGameData::playerWon,
+					&ServerDatabase::getVictoriesInARow
 				}
 			}
 		};
@@ -149,10 +155,12 @@ private:
 	int getAchievementProgress(userId id, sqlite3_stmt * stmt);
 	int getTimeSpent(userId);
 	int getVictories(userId);
+	int getVictoriesInARow(userId);
 
 	void addToAchievementProgress(userId id, int value, sqlite3_stmt * stmt);
 	void addTimeSpent(userId, int seconds);
 	void addVictories(userId, int victories);
+	void addVictoriesInARow(userId, int victories);
 
 	sqlite3_stmt * _friendListStmt;
 	sqlite3_stmt * _userIdStmt;
@@ -187,13 +195,15 @@ private:
 	sqlite3_stmt * _ladderStmt;
 	sqlite3_stmt * _getTimeSpentStmt;
 	sqlite3_stmt * _getVictoriesStmt;
+	sqlite3_stmt * _getVictoriesInARowStmt;
 
 	sqlite3_stmt * _addTimeSpentStmt;
 	sqlite3_stmt * _addVictoriesStmt;
+	sqlite3_stmt * _setVictoriesInARowStmt;
 
 	// `constexpr std::array::size_type size() const;`
 	// -> future uses have to be _statements.size() -> 33 is written only one time
-	StatementsList<33> _statements
+	StatementsList<35> _statements
 	{
 		{
 			Statement {
@@ -372,6 +382,18 @@ private:
 				&_addVictoriesStmt,
 				"UPDATE Account "
 				"	SET victories = victories + ?1 "
+				"	WHERE id == ?2;"
+			},
+			Statement {
+				&_getVictoriesInARowStmt,
+				"SELECT maxVictoriesInARow "
+				"	FROM Account "
+				"	WHERE id == ?1;"
+			},
+			Statement {
+				&_setVictoriesInARowStmt,
+				"UPDATE Account "
+				"	SET maxVictoriesInARow = ?1 "
 				"	WHERE id == ?2;"
 			}
 		}
