@@ -14,6 +14,7 @@
 #include "common/Terminal.hpp"
 #include "common/Database.hpp"  // FriendsList typedef
 #include "common/Achievements.hpp"  // AchievementList typedef
+#include "client/ClientAchievement.hpp"
 #include "common/CardsCollection.hpp"
 #include "common/Deck.hpp"
 #include "client/ClientDatabase.hpp"
@@ -145,7 +146,8 @@ public:
 	Ladder getLadder();
 
 	/// Used when the user wants to check his achievements
-	AchievementList getAchievements();
+	ClientAchievementList getAchievements(AchievementList newAchievements);
+	ClientAchievementList getAchievements();
 
 	/// Used to wait sleeping until the atomic boolean readyToPlay is set to true
 	void waitTillReadyToPlay();

@@ -78,8 +78,8 @@ userId GameThread::playGame(const ClientInformations& player1, const ClientInfor
 	AchievementList newAchievementsPlayer2 = _database.newAchievements(_postGameDataPlayer2, _player2Id);
 
 	// send last message to both players
-	sendFinalMessage(_specialOutputSocketPlayer1, _postGameDataPlayer1, earnedCardId);
-	sendFinalMessage(_specialOutputSocketPlayer2, _postGameDataPlayer2, earnedCardId);
+	sendFinalMessage(_specialOutputSocketPlayer1, _postGameDataPlayer1, earnedCardId, newAchievementsPlayer1);
+	sendFinalMessage(_specialOutputSocketPlayer2, _postGameDataPlayer2, earnedCardId, newAchievementsPlayer2);
 
 	return _winnerId;
 }
@@ -225,20 +225,19 @@ void GameThread::makeTimer()
 	}
 }
 
-void GameThread::sendFinalMessage(sf::TcpSocket& specialSocket, PostGameData& postGameData, cardId earnedCardId)
+void GameThread::sendFinalMessage(sf::TcpSocket& specialSocket, PostGameData& postGameData, cardId earnedCardId, AchievementList& newAchievements)
 {
     sf::Packet packet;
 
-	// EndGame::applyToSelf indicate which player won the game: false mean that
-	// the player who receive this message has won.
-    if (postGameData.playerWon) // send card message + card id if player won
+	// EndGame::applyToSelf indicate which player won the game: false means the player himself won
+    if (postGameData.playerWon) // send card message + unlocked card + new achievements
     {
 		postGameData.unlockedCard = earnedCardId;
-		packet << TransferType::GAME_OVER << EndGame{_endGameCause, false} << earnedCardId;
+		packet << TransferType::GAME_OVER << EndGame{_endGameCause, false} << earnedCardId << newAchievements;
 	}
-	else // send message if player lost
+	else // if player lost : send message + new achievements
 	{
-		packet << TransferType::GAME_OVER << EndGame{_endGameCause, true};
+		packet << TransferType::GAME_OVER << EndGame{_endGameCause, true} << newAchievements;
 	}
 	specialSocket.send(packet);
 }

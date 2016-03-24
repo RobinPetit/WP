@@ -13,6 +13,7 @@
 #include "common/GameData.hpp"
 #include "common/Identifiers.hpp"
 #include "common/sockets/TransferType.hpp"
+#include "client/ClientAchievement.hpp"
 
 /// The class representing the gameplay for the client
 class AbstractGame
@@ -85,6 +86,8 @@ class AbstractGame
 		virtual void displayGame() = 0;
 
 		virtual void displayMessage(const std::string& message) = 0;
+
+		virtual void displayAchievements(ClientAchievementList& newAchievements) = 0;
 
 		// game "inputs"
 		virtual int askSelfHandIndex() = 0;

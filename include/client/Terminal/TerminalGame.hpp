@@ -21,6 +21,7 @@ private:
 	void displayBoardCreatureVector(const std::vector<BoardCreatureData>& cardVector, bool displayDescription=false);
 
 	void displayMessage(const std::string& message) override;
+	void displayAchievements(ClientAchievementList& newAchievements) override;
 
 	// Requests user for additional input
 	int askIndex(std::size_t upperBound, const std::string& inputMessage);

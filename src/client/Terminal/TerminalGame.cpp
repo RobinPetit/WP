@@ -31,6 +31,20 @@ void TerminalGame::displayMessage(const std::string& message)
 	std::cout << message << "\n";
 }
 
+void TerminalGame::displayAchievements(ClientAchievementList& newAchievements)
+{
+	if (newAchievements.size()==0)
+		std::cout << "You have no new achievements" << std::endl;
+	else
+	{
+		for (std::size_t i=0; i<newAchievements.size(); i++)
+		{
+			std::cout << " * " << newAchievements.at(i).getPrettyName() << std::endl;
+			std::cout << "   " << newAchievements.at(i).getDescription() << std::endl;
+		}
+	}
+}
+
 // TODO: rename this to be consistent
 
 void TerminalGame::displayOptions()
