@@ -477,7 +477,17 @@ int ServerDatabase::getWithInDaClub(userId user)
 
 void ServerDatabase::addWithInDaClub(userId user, int withInDaClub)
 {
-	return addToAchievementProgress(user, withInDaClub, _addWithInDaClubStmt);
+	addToAchievementProgress(user, withInDaClub, _addWithInDaClubStmt);
+}
+
+int ServerDatabase::getRagequits(userId user)
+{
+	return getAchievementProgress(user, _getRagequitsStmt);
+}
+
+void ServerDatabase::addRagequits(userId user, int ragequits)
+{
+	addToAchievementProgress(user, ragequits, _addRagequitsStmt);
 }
 
 
