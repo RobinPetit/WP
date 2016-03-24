@@ -13,7 +13,7 @@
 struct Achievement
 {
 	AchievementId id;
-	bool unlocked;
+	// bool unlocked; // uneeded
 	sf::Int64 currentProgress;
 };
 
