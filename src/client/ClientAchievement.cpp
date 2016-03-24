@@ -20,7 +20,7 @@ std::string ClientAchievement::getName() const
 
 std::string ClientAchievement::getPrettyName() const
 {
-	return getName() + ' ' + (isUnlocked() ? "✔" : std::string("(") + std::to_string(getProgressPercentage()) + ")" );
+	return getName() + ' ' + (isUnlocked() ? "✔" : std::string("(") + std::to_string(getProgressPercentage()) + ")");
 }
 
 std::string ClientAchievement::getDescription() const
@@ -40,7 +40,7 @@ int ClientAchievement::getCurrentProgress() const
 
 float ClientAchievement::getProgressPercentage() const
 {
-	return static_cast<float>(static_cast<double>(getCurrentProgress()*100) / getRequiredProgress());
+	return static_cast<float>(static_cast<double>(getCurrentProgress() * 100) / getRequiredProgress());
 }
 
 bool ClientAchievement::isUnlocked() const
