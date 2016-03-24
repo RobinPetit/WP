@@ -3,6 +3,7 @@
 #include "client/Gui/GuiApplication.hpp"
 
 GuiApplication::GuiApplication():
+	AbstractApplication(true),
 	_videoMode{800, 600},
 	_windowTitle{"Wizard Poker"},
 	_window{_videoMode, _windowTitle},

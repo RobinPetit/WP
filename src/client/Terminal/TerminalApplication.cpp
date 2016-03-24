@@ -2,6 +2,12 @@
 #include "client/Terminal/states/TerminalHomeState.hpp"
 #include "client/Terminal/TerminalApplication.hpp"
 
+TerminalApplication::TerminalApplication():
+	AbstractApplication(false)
+{
+
+}
+
 int TerminalApplication::play()
 {
 	_stateStack.firstPush<TerminalHomeState>();

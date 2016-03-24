@@ -8,7 +8,10 @@
 class TerminalApplication : public AbstractApplication
 {
 	public:
-		/// Playe the game.
+		/// Constructor
+		TerminalApplication();
+
+		/// Plays the game.
 		virtual int play() override;
 };
 

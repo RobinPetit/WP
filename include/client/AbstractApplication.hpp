@@ -15,8 +15,9 @@
 class AbstractApplication
 {
 	public:
-		/// Constructor.
-		AbstractApplication();
+		/// Constructor
+		/// \param isGui A boolean telling whther the application is gui or not
+		AbstractApplication(bool isGui);
 
 		/// Destructor.
 		virtual ~AbstractApplication() = default;

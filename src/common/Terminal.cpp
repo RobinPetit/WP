@@ -8,17 +8,6 @@
 // SFML headers
 #include <SFML/System/Sleep.hpp>
 
-enum
-{
-	// Linux terminals
-	GNOME=0,
-	MATE,
-	// Windows "terminal"
-	CMD,
-	NO_KNOWN_TERMINAL,
-	TERMINALS_LENGTH
-};
-
 const std::string Terminal::_terminalNames[TERMINALS_LENGTH] =
 {
 	// Linux
@@ -29,6 +18,8 @@ const std::string Terminal::_terminalNames[TERMINALS_LENGTH] =
 	"<None>",
 };
 
+const std::string Terminal::_tmpTerminalsFileName = "_terminals.tmp";
+
 Terminal::Terminal():
 	_idx(NO_KNOWN_TERMINAL)
 {
@@ -37,10 +28,10 @@ Terminal::Terminal():
 	for(int idx = TERMINAL_LIST_BEGIN; idx < TERMINAL_LIST_END; ++idx)
 		terms += _terminalNames[idx] + " ";
 	terms += _terminalNames[TERMINAL_LIST_END];
-	system(("which " + terms + ">_terminals.tmp").c_str());
+	system(("which " + terms + ">" + _tmpTerminalsFileName).c_str());
 	sf::sleep(sf::milliseconds(100));  // give time to the `which` program
 	std::ifstream result;
-	result.open("_terminals.tmp");
+	result.open(_tmpTerminalsFileName.c_str());
 	std::string firstLine;
 	std::getline(result, firstLine);
 	if(firstLine != "")
@@ -58,7 +49,7 @@ Terminal::Terminal():
 		}
 	}
 	result.close();
-	remove("_terminals.tmp");
+	remove(_tmpTerminalsFileName.c_str());
 #else
 	_idx = CMD;
 #endif
@@ -74,13 +65,13 @@ bool Terminal::hasKnownTerminal() const
 	return _idx != NO_KNOWN_TERMINAL;
 }
 
-std::string Terminal::startProgram(const std::string& name, const std::initializer_list<const std::string>& args) const
+std::string Terminal::startProgram(const std::string& name, const std::initializer_list<const std::string>& args, bool openInNewTerminal) const
 {
-	if(!hasKnownTerminal())
+	if(openInNewTerminal and not hasKnownTerminal())
 		throw std::runtime_error("Unable to start new program: no known terminal on this computer");
 	std::string command;
 #ifdef __linux__
-	command = getTerminalName() + " -x ./" + name;
+	command = (openInNewTerminal ? (getTerminalName() + " -x ") : "") + "./" + name;
 #else
 	command = "start " + name;
 #endif

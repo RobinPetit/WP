@@ -31,7 +31,8 @@ public:
 	/// This function returns the right command to start a new program
 	/// \param name A string containing the name of the program to be started
 	/// \param args A list representing the parameters given to the called program
-	std::string startProgram(const std::string& name, const std::initializer_list<const std::string>& args) const;
+	/// \param openInNewTerminal A boolean telling whether or not a terminal must be started
+	std::string startProgram(const std::string& name, const std::initializer_list<const std::string>& args, bool openInNewTerminal) const;
 
 	/// This function clears the content of the terminal
 	static void clearScreen();
@@ -42,10 +43,22 @@ public:
 	static std::string setBold(const std::string& message);
 
 private:
+	static const std::string _tmpTerminalsFileName;
 	/// The list of the handled terminals
 	static const std::string _terminalNames[];
 	/// The index of the found terminal in _terminalNames
 	int _idx;
+
+	enum
+	{
+		// Linux terminals
+		GNOME=0,
+		MATE,
+		// Windows "terminal"
+		CMD,
+		NO_KNOWN_TERMINAL,
+		TERMINALS_LENGTH
+	};
 };
 
 #endif // _TERMINAL_COMMON_HPP_
