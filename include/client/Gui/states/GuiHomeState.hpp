@@ -19,7 +19,6 @@ class GuiHomeState : public GuiAbstractState, public AbstractHomeState
 		void createAccount();
 
 		// Attributes
-		tgui::Label::Ptr _titleLabel;
 		tgui::Label::Ptr _userNameLabel;
 		tgui::Label::Ptr _passwordLabel;
 		tgui::EditBox::Ptr _userNameEditBox;

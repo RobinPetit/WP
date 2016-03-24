@@ -8,7 +8,6 @@ GuiHomeState::GuiHomeState(Context& context):
 	AbstractState(context),
 	GuiAbstractState(context),
 	AbstractHomeState(context),
-	_titleLabel{std::make_shared<tgui::Label>()},
 	_userNameLabel{std::make_shared<tgui::Label>()},
 	_passwordLabel{std::make_shared<tgui::Label>()},
 	_userNameEditBox{std::make_shared<tgui::EditBox>()},
@@ -23,11 +22,7 @@ GuiHomeState::GuiHomeState(Context& context):
 	auto windowWidth(tgui::bindWidth(*_context.gui));
 	auto windowHeight(tgui::bindHeight(*_context.gui));
 
-	// Make the title
-	_titleLabel->setText("Wizard Poker");
-	_titleLabel->setTextSize(40);
-	_titleLabel->setPosition(windowWidth / 2 - tgui::bindWidth(_titleLabel) / 2, 60);
-	_context.gui->add(_titleLabel);
+	makeTitle("WizardPoker", 40);
 
 	// Configure the widgets
 	_userNameLabel->setText("User name:");
@@ -56,7 +51,7 @@ GuiHomeState::GuiHomeState(Context& context):
 	_grid->addWidget(_createAccountButton, 2, 1);
 	_context.gui->add(_grid);
 
-	registerRootWidgets({_grid, _titleLabel});
+	registerRootWidgets({_grid});
 	_userNameEditBox->focus();  // Focus the user name edit box by default
 }
 

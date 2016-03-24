@@ -53,7 +53,6 @@ class GuiLadderState : public GuiAbstractState, public AbstractLadderState
 		GuiLadderEntry _ladderHeader;
 
 		tgui::VerticalLayout::Ptr _ladderLayout;
-		tgui::Label::Ptr _titleLabel;
 };
 
 #endif  // _GUI_LADDER_STATE_CLIENT_HPP

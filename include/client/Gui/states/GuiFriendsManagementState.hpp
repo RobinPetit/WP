@@ -23,7 +23,6 @@ class GuiFriendsManagementState : public GuiAbstractState, public AbstractFriend
 		////////// Attributes
 		const std::vector<ButtonData<GuiFriendsManagementState>> _buttons;
 
-		tgui::Label::Ptr _menuLabel;
 		tgui::ListBox::Ptr _friendsListBox;
 		tgui::VerticalLayout::Ptr _buttonsLayout;
 

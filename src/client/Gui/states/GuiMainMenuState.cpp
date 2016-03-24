@@ -20,7 +20,6 @@ GuiMainMenuState::GuiMainMenuState(Context& context):
 		{&GuiMainMenuState::logOut, "Log out"},
 		{&GuiMainMenuState::quit, "Quit"},
 	},
-	_menuLabel{std::make_shared<tgui::Label>()},
 	_layout{std::make_shared<tgui::VerticalLayout>()}
 {
 	// Get a bound version of the window size
@@ -29,18 +28,14 @@ GuiMainMenuState::GuiMainMenuState(Context& context):
 	auto windowWidth(tgui::bindWidth(*_context.gui));
 	auto windowHeight(tgui::bindHeight(*_context.gui));
 
-	_menuLabel->setText("Main Menu");
-	_menuLabel->setTextSize(30);
-	// center the label on the X axis
-	_menuLabel->setPosition(windowWidth/2 - tgui::bindWidth(_menuLabel)/2, 40);
-	_context.gui->add(_menuLabel);
+	makeTitle("Main Menu");
 
 	_layout->setPosition(windowWidth/5, windowHeight/5);
 	_layout->setSize(windowWidth*3/5, windowHeight*3/5);
 	setupButtons(_buttons, std::static_pointer_cast<tgui::Container>(_layout));
 	_context.gui->add(_layout);
 
-	registerRootWidgets({_menuLabel, _layout});
+	registerRootWidgets({_layout});
 }
 
 void GuiMainMenuState::findGame()
