@@ -31,6 +31,8 @@ class GameThread;
 class Player
 {
 public:
+	PostGameData& postGameData;
+
 	/*------------------------------ Methods */
 	/// Constructor
 	Player(GameThread& gameThread, ServerDatabase& database, userId id, Player& opponent, PostGameData& postGameData);
@@ -94,7 +96,6 @@ private:
 
 	/*------------------------------ Attributes */
 	GameThread& _gameThread;
-	PostGameData& _postGameData;
 	ServerDatabase& _database;
 
 	Player& _opponent;

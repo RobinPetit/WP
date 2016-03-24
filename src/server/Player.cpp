@@ -29,7 +29,7 @@ std::array<std::function<void(Player&, EffectArgs)>, P_EFFECTS_COUNT> Player::_e
 
 Player::Player(GameThread& gameThread, ServerDatabase& database, userId id, Player& opponent, PostGameData& postGameData):
 	_gameThread(gameThread),
-	_postGameData(postGameData),
+	postGameData(postGameData),
 	_database(database),
 	_opponent(opponent),
 	_id(id),
@@ -114,8 +114,8 @@ void Player::setUpGame(bool isActivePlayer)
 	printVerbose(std::string("Player::setUpGame(") + (isActivePlayer ? "true" : "false") + ")");
 
 	// post game data
-	_postGameData.opponentInDaClub = _database.getWithInDaClub(_opponent.getId());
-	_postGameData.playerStarted = isActivePlayer;
+	postGameData.opponentInDaClub = _database.getWithInDaClub(_opponent.getId());
+	postGameData.playerStarted = isActivePlayer;
 
 	// init Player's data
 	cardDeckToHand(_initialSupplementOfCards);  // start with a few cards in hand
@@ -183,8 +183,8 @@ void Player::leaveTurn()
 void Player::finishGame(bool hasWon, EndGame::Cause cause)
 {
 	//post game data
-	_postGameData.playerWon = hasWon;
-	_postGameData.remainingHealth = _health;
+	postGameData.playerWon = hasWon;
+	postGameData.remainingHealth = _health;
 
 	_gameThread.endGame(hasWon ? getId() : _opponent.getId(), cause);
 }
@@ -204,7 +204,8 @@ sf::Socket::Status Player::tryReceiveClientInput()
 
 	if(type == TransferType::GAME_QUIT_GAME)
 	{
-		_postGameData.playerQuit=true;
+		postGameData.playerQuit=true;
+		_opponent.postGameData.playerWon=true;
 		finishGame(false, EndGame::Cause::QUITTED);
 	}
 	else
@@ -709,7 +710,7 @@ void Player::changeHealth(EffectArgs effect)
 
 	// post game data
 	if (points < 0)
-		_postGameData.playerTookDamage=true;
+		postGameData.playerTookDamage=true;
 
 	_health += points;
 	if(_health <= 0)
