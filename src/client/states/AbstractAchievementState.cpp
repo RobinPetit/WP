@@ -7,17 +7,16 @@
 AbstractAchievementState::AbstractAchievementState(StateStack& stateStack, Client& client):
 	AbstractState(stateStack, client)
 {
-	/*
 	try
 	{
-		_ladder = _client.getLadder();
+		_achievements = _client.getAchievements();
 	}
 	catch(const std::runtime_error& e)
 	{
 		std::cout << "Error: " << e.what() << "\n";
-		std::cout << "Empty ladder loaded.\n";
+		std::cout << "Empty achievement list loaded.\n";
 		return;
-	}*/
+	}
 }
 
 void AbstractAchievementState::backMainMenu()

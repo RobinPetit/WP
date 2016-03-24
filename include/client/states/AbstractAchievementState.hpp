@@ -3,6 +3,8 @@
 
 // WizardPoker headers
 #include "client/AbstractState.hpp"
+#include "common/Achievements.hpp"
+#include "client/ClientAchievement.hpp"
 
 /// Abstract version of the achievement state.
 class AbstractAchievementState : virtual public AbstractState
@@ -14,7 +16,7 @@ class AbstractAchievementState : virtual public AbstractState
 	protected:
 		void backMainMenu();
 
-		//Ladder _ladder;
+		ClientAchievementList _achievements;
 };
 
 #endif  // _ABSTRACT_ACHIEVEMENT_STATE_CLIENT_HPP

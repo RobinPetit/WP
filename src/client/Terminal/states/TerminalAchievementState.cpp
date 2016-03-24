@@ -14,13 +14,10 @@ TerminalAchievementState::TerminalAchievementState(StateStack& stateStack, Clien
 void TerminalAchievementState::display()
 {
 	std::cout << "Here are your achievements:\n";
-	/*unsigned i{0};
-	for(const auto& ladderEntry : _ladder)
-		std::cout << ++i << ". " << ladderEntry.name
-		          << " (" << ladderEntry.victories + 1
-		          << "/" << (ladderEntry.defeats + 1)
-		          << ")\n";
-	std::cout << std::string(40, '*') << "\n";
-	// Display the actions*/
+	for (std::size_t i=0; i<_achievements.size(); i++)
+	{
+		std::cout << " * " << _achievements.at(i).getPrettyName() << std::endl;
+		std::cout << "   " << _achievements.at(i).getDescription() << std::endl;
+	}
 	TerminalAbstractState::display();
 }
