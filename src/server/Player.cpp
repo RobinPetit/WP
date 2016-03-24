@@ -114,7 +114,7 @@ void Player::setUpGame(bool isActivePlayer)
 	printVerbose(std::string("Player::setUpGame(") + (isActivePlayer ? "true" : "false") + ")");
 
 	// post game data
-	_postGameData.opponentInDaClub = false; // DATABASE TODO : request isInDaClub for opponent
+	_postGameData.opponentInDaClub = _database.getWithInDaClub(_opponent.getId());
 	_postGameData.playerStarted = isActivePlayer;
 
 	// init Player's data
