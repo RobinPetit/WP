@@ -80,6 +80,7 @@ public:
 
 	//////////////// Achievements
 	AchievementList newAchievements(const PostGameData&, userId);
+	int getWithInDaClub(userId);
 	Ladder getLadder();
 
 	virtual ~ServerDatabase();
@@ -169,7 +170,6 @@ private:
 	int getTimeSpent(userId);
 	int getVictories(userId);
 	int getVictoriesInARow(userId);
-	int getWithInDaClub(userId);
 	int getRagequits(userId);
 
 	void addToAchievementProgress(userId id, int value, sqlite3_stmt * stmt);
