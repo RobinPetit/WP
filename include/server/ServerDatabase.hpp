@@ -130,7 +130,7 @@ private:
 				AchievementsListItem {
 					5,
 					&ServerDatabase::addRagequits,
-					&PostGameData::playerQuit,
+					&PostGameData::playerRageQuit,
 					&ServerDatabase::getRagequits
 				},
 				AchievementsListItem {

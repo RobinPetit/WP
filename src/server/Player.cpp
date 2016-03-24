@@ -204,7 +204,6 @@ sf::Socket::Status Player::tryReceiveClientInput()
 
 	if(type == TransferType::GAME_QUIT_GAME)
 	{
-		postGameData.playerQuit=true;
 		_opponent.postGameData.playerWon=true;
 		finishGame(false, EndGame::Cause::QUITTED);
 	}

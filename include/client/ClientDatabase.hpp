@@ -8,7 +8,7 @@
 #include "common/Database.hpp"
 #include "common/Card.hpp"
 #include "client/ClientCardData.hpp"
-#include "client/AchievementData.hpp"
+#include "client/ClientAchievement.hpp"
 
 /// Interface to the client database.
 class ClientDatabase : public Database

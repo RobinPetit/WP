@@ -145,7 +145,7 @@ void GameThread::runGame()
 				std::cerr << "Lost connection with a player\n";
 				//winner is the player who's still connected
                 otherPlayer->postGameData.playerWon = true;
-                player->postGameData.playerQuit = true;
+                player->postGameData.playerRageQuit = true;
 
 				userId winnerId = player == _activePlayer ? _passivePlayer->getId() : _activePlayer->getId();
 				endGame(winnerId, EndGame::Cause::LOST_CONNECTION);

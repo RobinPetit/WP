@@ -3,9 +3,6 @@
 // std-C++ headers
 #include <cassert>
 #include <string>
-// WizardPoker headers
-#include "common/Achievements.hpp"
-#include "client/AchievementData.hpp"
 
 ClientAchievement::ClientAchievement(const Achievement achievement, const AchievementData achievementData) :
 	_achievementData(achievementData),

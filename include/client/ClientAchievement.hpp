@@ -6,7 +6,16 @@
 // WizardPoker headers
 #include "common/Identifiers.hpp"
 #include "common/Achievements.hpp"
-#include "client/AchievementData.hpp"
+
+
+/// created by ClientDatabase::getAchievementData(AchievementId id) (\TODO)
+struct AchievementData
+{
+	AchievementId id;
+	std::string name;
+	std::string description;
+	sf::Int64 requiredProgress; // sf::Int64 to be able to operate with Achievement::currentProgress
+};
 
 class ClientAchievement
 {
