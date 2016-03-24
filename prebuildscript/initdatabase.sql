@@ -135,7 +135,6 @@ CREATE TABLE Account (
 	-- ##achievements
 	secondsSpentPlaying         INTEGER DEFAULT 0,
 	maxVictoriesInARow          INTEGER DEFAULT 0,
-	lastWasVictory              INTEGER DEFAULT 0, -- boolean
 	gameWithInDaClub            INTEGER DEFAULT 0,
 	ragequits                   INTEGER DEFAULT 0,
 	maxStartsInARow             INTEGER DEFAULT 0,
