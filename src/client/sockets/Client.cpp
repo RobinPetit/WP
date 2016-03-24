@@ -20,13 +20,14 @@
 #include <atomic>
 #include <string>
 
-Client::Client():
-	_chatListenerPort(0),
-	_isConnected(false),
-	_serverPort(0),
-	_threadLoop(false),
-	_inGame(false),
-	_readyToPlay(false)
+Client::Client(bool isGui):
+	_chatListenerPort{0},
+	_isConnected{false},
+	_serverPort{0},
+	_threadLoop{false},
+	_isGui{isGui},
+	_inGame{false},
+	_readyToPlay{false}
 {
 }
 
@@ -380,7 +381,9 @@ void Client::startConversation(const std::string& playerName) const
 		throw std::runtime_error("chatting with yourself is not allowed.");
 	else if(!isFriend(playerName))
 		throw std::runtime_error("you are only allowed to chat with your friends.");
-	std::string cmd{_userTerminal.startProgram(
+	std::string cmd
+	{
+		_userTerminal.startProgram(
 		"WizardPoker_chat",
 		{
 			"caller",  // parameter 1 is caller/callee
@@ -388,8 +391,10 @@ void Client::startConversation(const std::string& playerName) const
 			std::to_string(_serverPort),  // parameter 3 is the port to connect to
 			_name,  // parameter 4 is caller's name
 			playerName, // parameter 5 is callee's name
+			(_isGui ? "gui" : "terminal")
 			// there is not more parameters!
-		})};
+		})
+	};
 	system(cmd.c_str());
 }
 
@@ -448,7 +453,8 @@ void Client::startChat(sf::Packet& transmission)
 			std::to_string(address),
 			std::to_string(port),
 			selfName,
-			otherName
+			otherName,
+			(_isGui ? "gui" : "terminal")
 		});
 	system(cmd.c_str());
 }

@@ -22,7 +22,7 @@ class Client final
 {
 public:
 	/// Constructor
-	Client();
+	Client(bool Gui);
 
 	/// Destructor
 	~Client();
@@ -184,6 +184,8 @@ private:
 	Terminal _userTerminal;
 	/// Hold informations about the cards
 	ClientDatabase _database;
+	/// Tells whether the program is running as GUI of Terminal
+	bool _isGui;
 
 	///////// Friend related attributes
 

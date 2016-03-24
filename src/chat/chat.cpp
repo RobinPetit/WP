@@ -8,14 +8,17 @@
 // std-C++ headers
 #include <cassert>
 #include <iostream>
+#include <memory>
 
 int main(int argc, char **argv)
 {
-	assert(argc == 6);
-
-	// TODO: give one more parameter to know if we need to use GUIChat or TerminalChat
-	GuiChat chat(argv);
-	chat.start();
+	assert(argc == 7);
+	std::unique_ptr<AbstractChat> chatManager;
+	if(std::string(argv[6]) == "gui")
+		chatManager.reset(new GuiChat(argv));
+	else
+		chatManager.reset(new TerminalChat(argv));
+	chatManager->start();
 
 	return EXIT_SUCCESS;
 }
