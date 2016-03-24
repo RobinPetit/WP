@@ -51,7 +51,7 @@ void GameThread::printVerbose(std::string message)
 	if (not _verbose)
 		return;
 
-	std::istringstream iss("game 0" + message);
+	std::istringstream iss("game n " + message);
     std::string line;
     while (std::getline(iss, line))
     {
@@ -82,9 +82,8 @@ userId GameThread::playGame(const ClientInformations& player1, const ClientInfor
 	cardId earnedCardId{_database.getRandomCardId()};
 
 	// display player's post game data
-	_postGameDataPlayer1.display();
-	//printVerbose(std::string("Player1's Post Game Data : \n") + _postGameDataPlayer1.display());
-    //printVerbose(std::string("Player2's Post Game Data : \n") + _postGameDataPlayer2.display());
+	printVerbose(std::string("Player1's Post Game Data : \n") + _postGameDataPlayer1.display());
+    printVerbose(std::string("Player2's Post Game Data : \n") + _postGameDataPlayer2.display());
 
 	// send postGameData to database, receive new unlocked achievements
 	AchievementList newAchievementsPlayer1 = _database.newAchievements(_postGameDataPlayer1, _player1Id);
