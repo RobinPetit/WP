@@ -81,6 +81,7 @@ public:
 	//////////////// Achievements
 	/// Unlock new card and achievements
 	AchievementList newAchievements(const PostGameData&, userId);
+	AchievementList getAchievements();
 	int getWithInDaClub(userId);
 	Ladder getLadder();
 

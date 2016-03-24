@@ -226,6 +226,9 @@ void Server::receiveData()
 		case TransferType::ASK_LADDER:
 			sendLadder(it);
 			break;
+		case TransferType::ASK_ACHIEVEMENTS:
+			sendAchievements(it);
+			break;
 		default:
 			std::cerr << "Error: unknown code " << static_cast<sf::Uint32>(type) << std::endl;
 			break;
@@ -658,6 +661,22 @@ void Server::sendLadder(const _iterator& it)
 	catch(const std::runtime_error& e)
 	{
 		std::cout << "sendLadder error: " << e.what() << "\n";
+		response << TransferType::FAILURE;
+	}
+	it->second.socket->send(response);
+}
+
+void Server::sendAchievements(const _iterator& it)
+{
+	sf::Packet response;
+	try
+	{
+		AchievementList achievements{_database.getAchievements()};
+		response << TransferType::ACKNOWLEDGE << achievements;
+	}
+	catch(const std::runtime_error& e)
+	{
+		std::cout << "sendAchievements error: " << e.what() << "\n";
 		response << TransferType::FAILURE;
 	}
 	it->second.socket->send(response);
