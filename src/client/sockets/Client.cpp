@@ -236,6 +236,15 @@ sf::TcpSocket& Client::getGameListeningSocket()
 	return _inGameListeningSocket;
 }
 
+void Client::endGame()
+{
+	_inGame.store(false);
+	_inGameSocket.disconnect();
+	_inGameListeningSocket.disconnect();
+	_inGameOpponentName = "";
+	_readyToPlay.store(false);
+}
+
 void Client::waitTillReadyToPlay()
 {
 	static const sf::Time awaitingDelay(sf::milliseconds(50));  // arbitrary

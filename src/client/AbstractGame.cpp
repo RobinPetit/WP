@@ -279,6 +279,7 @@ void AbstractGame::quit()
 AbstractGame::~AbstractGame()
 {
 	quit();
+	_client.endGame();
 }
 
 //////////////// special data receival

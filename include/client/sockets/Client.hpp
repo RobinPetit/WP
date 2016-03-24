@@ -110,6 +110,10 @@ public:
 	/// \throw std::runtime_error if the method is called and no game has started
 	sf::TcpSocket& getGameListeningSocket();
 
+	/// Method to call when a game has ended to allow the client to return to a non-game
+	/// internal status
+	void endGame();
+
 	/// The function used to rest assured all conections are stopped and the client is
 	/// not waiting for entering chat connections anymore
 	void quit();
