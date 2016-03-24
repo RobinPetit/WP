@@ -51,6 +51,39 @@ void GameThread::printVerbose(std::string message)
 		std::cout << "\tgame 0 - " + message << std::endl;
 }
 
+userId GameThread::playGame(const ClientInformations& player1, const ClientInformations& player2)
+{
+	setSocket(_player1.getSocket(), _specialOutputSocketPlayer1, player1);
+	setSocket(_player2.getSocket(), _specialOutputSocketPlayer2, player2);
+
+	// ask the clients to choose their decks
+	_activePlayer->receiveDeck();
+	_passivePlayer->receiveDeck();
+
+	// initialize player's data and send "game starting" signal
+	_activePlayer->setUpGame(true);
+	_passivePlayer->setUpGame(false);
+
+	// start the thread that times out slow players
+	_timerThread = std::thread(&GameThread::makeTimer, this);
+
+	// run and time the game
+	runGame();
+
+	// unlock a random new card
+	cardId earnedCardId{_database.getRandomCardId()};
+
+	// send postGameData to database, receive new unlocked achievements
+	AchievementList newAchievementsPlayer1 = _database.newAchievements(_postGameDataPlayer1, _player1Id);
+	AchievementList newAchievementsPlayer2 = _database.newAchievements(_postGameDataPlayer2, _player2Id);
+
+	// send last message to both players
+	sendFinalMessage(_specialOutputSocketPlayer1, _postGameDataPlayer1, earnedCardId);
+	sendFinalMessage(_specialOutputSocketPlayer2, _postGameDataPlayer2, earnedCardId);
+
+	return _winnerId;
+}
+
 void GameThread::setSocket(sf::TcpSocket& socket, sf::TcpSocket& specialSocket, const ClientInformations& player)
 {
 	sf::TcpSocket tmpSocket;
@@ -67,53 +100,6 @@ void GameThread::setSocket(sf::TcpSocket& socket, sf::TcpSocket& specialSocket, 
 	// not blocking the main client thread (eg: END_OF_TURN, BOARD_UPDATE, etc.)
 	if(listener.accept(specialSocket) != sf::Socket::Done)
 		std::cerr << "Error while creating game thread special socket\n";
-}
-
-userId GameThread::playGame(const ClientInformations& player1, const ClientInformations& player2)
-{
-	setSocket(_player1.getSocket(), _specialOutputSocketPlayer1, player1);
-	setSocket(_player2.getSocket(), _specialOutputSocketPlayer2, player2);
-
-	_activePlayer->receiveDeck(); // ask the client for a deck to load
-	_passivePlayer->receiveDeck();
-
-	// initialize player's data and send "game starting" signal
-	_activePlayer->setUpGame(true);
-	_passivePlayer->setUpGame(false);
-	_timerThread = std::thread(&GameThread::makeTimer, this);
-
-	// run and time the game
-	runGame();
-
-	// unlock a random new card
-	cardId earnedCardId{_database.getRandomCardId()};
-
-	// send last message to both players
-	sendFinalMessage(_specialOutputSocketPlayer1, _postGameDataPlayer1, earnedCardId);
-	sendFinalMessage(_specialOutputSocketPlayer2, _postGameDataPlayer2, earnedCardId);
-
-	AchievementList newAchievementsPlayer1 = _database.newAchievements(_postGameDataPlayer1, _player1Id);
-	AchievementList newAchievementsPlayer2 = _database.newAchievements(_postGameDataPlayer2, _player2Id);
-
-	return _winnerId;
-}
-
-void GameThread::sendFinalMessage(sf::TcpSocket& specialSocket, PostGameData& postGameData, cardId earnedCardId)
-{
-    sf::Packet packet;
-
-	// EndGame::applyToSelf indicate which player won the game: false mean that
-	// the player who receive this message has won.
-    if (postGameData.playerWon) // send card message + card id if player won
-    {
-		postGameData.unlockedCard = earnedCardId;
-		packet << TransferType::GAME_OVER << EndGame{_endGameCause, false} << earnedCardId;
-	}
-	else // send message if player lost
-	{
-		packet << TransferType::GAME_OVER << EndGame{_endGameCause, true};
-	}
-	specialSocket.send(packet);
 }
 
 void GameThread::runGame()
@@ -193,6 +179,11 @@ void GameThread::interruptGame()
 		endGame(0, EndGame::Cause::ENDING_SERVER);
 }
 
+void GameThread::swapTurns()
+{
+	_turnSwap.store(true);
+}
+
 void GameThread::endTurn()
 {
 	// send to both players their turn swapped
@@ -216,11 +207,6 @@ void GameThread::endTurn()
 	_turnSwap.store(false);
 }
 
-void GameThread::swapTurns()
-{
-	_turnSwap.store(true);
-}
-
 // Function only called by a new thread
 void GameThread::makeTimer()
 {
@@ -237,6 +223,24 @@ void GameThread::makeTimer()
 
 		swapTurns();
 	}
+}
+
+void GameThread::sendFinalMessage(sf::TcpSocket& specialSocket, PostGameData& postGameData, cardId earnedCardId)
+{
+    sf::Packet packet;
+
+	// EndGame::applyToSelf indicate which player won the game: false mean that
+	// the player who receive this message has won.
+    if (postGameData.playerWon) // send card message + card id if player won
+    {
+		postGameData.unlockedCard = earnedCardId;
+		packet << TransferType::GAME_OVER << EndGame{_endGameCause, false} << earnedCardId;
+	}
+	else // send message if player lost
+	{
+		packet << TransferType::GAME_OVER << EndGame{_endGameCause, true};
+	}
+	specialSocket.send(packet);
 }
 
 GameThread::~GameThread()

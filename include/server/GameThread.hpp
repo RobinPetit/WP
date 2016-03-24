@@ -30,14 +30,13 @@ public:
 	template <class F, class ...Args>
 	explicit GameThread(ServerDatabase& database, userId player1Id, userId player2Id, F&& f, Args&&... args);
 
-	/// Functions which stops the running thread (abortion)
-	void interruptGame();
-
+	/// Interface for Server
 	userId playGame(const ClientInformations& player1, const ClientInformations& player2);
+	void interruptGame(); ///< Stops the running thread (abort)
 
-	void endGame(userId winnerId, EndGame::Cause cause);
-
-	void swapTurns();
+	/// Interface for Player
+	void endGame(userId winnerId, EndGame::Cause cause); ///< quit the game
+	void swapTurns(); ///< end his turn
 
 	RandomInteger& getGenerator();
 	void printVerbose(std::string message);
@@ -76,19 +75,17 @@ private:
 	static constexpr std::chrono::seconds _turnTime{120};
 
 	/*------------------------------ Methods */
+	void createPlayers();
+
 	void runGame();
 
 	void setSocket(sf::TcpSocket& socket, sf::TcpSocket& specialSocket, const ClientInformations& player);
 
 	void makeTimer();
 
-	void createPlayers();
 	void endTurn();
 
 	void sendFinalMessage(sf::TcpSocket& specialSocket, PostGameData& postGameData, cardId earnedCardId);
-
-	void useCard(int cardIndex);
-	void attackWithCreature(int attackerIndex, int victimIndex);
 };
 
 /*------------------------------ Template code */
