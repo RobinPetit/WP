@@ -68,17 +68,8 @@ public:
 
 	unsigned countAccounts();
 
-	// Achievements
-	int getRequired(AchievementId);
-	bool wasNotified(userId, AchievementId);
-	void setNotified(userId, AchievementId);
-
+	//Achievements
 	Ladder getLadder();
-	int getTimeSpent(userId);
-	int getVictories(userId);
-
-	void addTimeSpent(userId, int seconds);
-	void addVictories(userId, int victories);
 
 	virtual ~ServerDatabase();
 
@@ -92,7 +83,20 @@ private:
 	void createSpellData();
 	void createCreatureData();
 	std::vector<EffectParamsCollection> createCardEffects(cardId id);
+
 	// Achievements
+	// this methods should be used only by the nested class AchievementManager
+	// so I put this in private and declare AchievementManager (which is usable only by the ServerDatabase class)
+	// as a friend
+	int getRequired(AchievementId);
+	bool wasNotified(userId, AchievementId);
+	void setNotified(userId, AchievementId);
+	int getTimeSpent(userId);
+	int getVictories(userId);
+
+	void addTimeSpent(userId, int seconds);
+	void addVictories(userId, int victories);
+
 	int getAchievementProgress(userId id, sqlite3_stmt * stmt);
 	void addToAchievementProgress(userId id, int value, sqlite3_stmt * stmt);
 
@@ -319,6 +323,7 @@ private:
 		}
 	};
 
+	friend class AchievementManager;
 	class AchievementManager;
 };
 
