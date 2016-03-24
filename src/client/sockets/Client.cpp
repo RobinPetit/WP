@@ -21,21 +21,11 @@
 #include <string>
 
 Client::Client():
-	_socket(),
 	_chatListenerPort(0),
 	_isConnected(false),
-	_name(),
-	_listenerThread(),
-	_serverAddress(),
 	_serverPort(0),
 	_threadLoop(false),
-	_userTerminal(),
-	_database(),
-	_currentConversations(),
 	_inGame(false),
-	_inGameSocket(),
-	_inGameListeningSocket(),
-	_inGameOpponentName(),
 	_readyToPlay(false)
 {
 }
@@ -184,11 +174,8 @@ Client::~Client()
 
 ///////// Game management
 
-bool Client::startGame()
+void Client::enterLobby()
 {
-	static const std::string cancelWaitingString{"q"};
-	NonBlockingInput input;
-	std::cout << "Entering the lobby. Type '" << cancelWaitingString << "' to leave.\n";
 	// send a request for the server to place the client in its internal lobby
 	sf::Packet packet;
 	packet << TransferType::GAME_REQUEST;
@@ -196,30 +183,27 @@ bool Client::startGame()
 	// use a selector to
 	sf::SocketSelector selector;
 	selector.add(_socket);
-	bool loop{true};
-	// wait for a server response (opponent found) or a user entry to leave
-	while(loop)
+}
+
+void Client::leaveLobby()
+{
+	sf::Packet leavingPacket;
+	leavingPacket << TransferType::GAME_CANCEL_REQUEST;
+	_socket.send(leavingPacket);
+}
+
+bool Client::isGameStarted(std::string& opponentName)
+{
+	sf::Packet opponentPacket;
+	_socket.setBlocking(false);
+	bool ret{_socket.receive(opponentPacket) == sf::Socket::Done};
+	_socket.setBlocking(true);
+	if(ret)
 	{
-		// if the server found an opponent
-		if(selector.wait(sf::milliseconds(50)))
-		{
-			loop = false;
-			_socket.receive(packet);
-			packet >> _inGameOpponentName;
-			std::cout << "opponent found: " << _inGameOpponentName << std::endl;
-			_inGame = true;
-		}
-		// if the player typed something and it is the right string
-		else if(input.waitForData(0.05) && input.receiveStdinData() == cancelWaitingString)
-		{
-			loop =  _inGame = false;
-			// send a request to leave the lobby
-			packet.clear();
-			packet << TransferType::GAME_CANCEL_REQUEST;
-			_socket.send(packet);
-		}
+		opponentPacket >> opponentName;
+		_inGame = true;
 	}
-	return _inGame;
+	return ret;
 }
 
 sf::TcpSocket& Client::getGameSocket()

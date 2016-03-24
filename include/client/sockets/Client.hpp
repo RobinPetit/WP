@@ -97,8 +97,18 @@ public:
 
 	////////// Game management
 
-	/// \TODO Complete this method (and its signature)
-	bool startGame();
+	/// Function to call to enter the waiting lobby
+	void enterLobby();
+
+	/// Tells whether or not an answer has been received from the server about
+	/// a found opponent to start a game
+	/// \param opponentName A string where the name of the found opponent is set
+	/// \return True if an opponent has been found (the opponent's name is then
+	/// stored in \a opponentName)
+	bool isGameStarted(std::string& opponentName);
+
+	/// Function to call to leave the waiting lobby
+	void leaveLobby();
 
 	/// Used to ask (from the menus for instance) the socket used in game
 	/// \throw std::runtime_error if the method is called and no game has started

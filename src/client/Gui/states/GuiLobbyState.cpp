@@ -1,5 +1,8 @@
 // WizardPoker headers
 #include "client/Gui/states/GuiLobbyState.hpp"
+#include "client/sockets/Client.hpp"
+// std-C++ headers
+#include <chrono>
 
 GuiLobbyState::GuiLobbyState(Context& context):
 	AbstractState(context),
@@ -12,7 +15,8 @@ GuiLobbyState::GuiLobbyState(Context& context):
 	},
 	_cancelButton{std::make_shared<tgui::Button>()},
 	_menuLabel{std::make_shared<tgui::Label>()},
-	_buttonsLayout{std::make_shared<tgui::VerticalLayout>()}
+	_buttonsLayout{std::make_shared<tgui::VerticalLayout>()},
+	_play{false}
 {
 	// Get a bound version of the window size
 	// Passing this to setPosition or setSize will make the widget automatically
@@ -33,7 +37,14 @@ GuiLobbyState::GuiLobbyState(Context& context):
 	_cancelButton->setText("Cancel");
 	_cancelButton->setPosition(windowWidth/5.f, windowHeight*3.f/5.f);
 	_cancelButton->setSize(windowWidth/5.f, windowHeight/5.f);
-	_cancelButton->disable();
+	_cancelButton->connect("pressed", [this]()
+	{
+		_context.client->leaveLobby();
+		displayMessage("You quitted the lobby");
+		resetButtons();
+		_play = false;
+	});
+	_cancelButton->hide();
 	_buttonsLayout->add(_cancelButton);
 	_context.gui->add(_buttonsLayout);
 
@@ -42,5 +53,37 @@ GuiLobbyState::GuiLobbyState(Context& context):
 
 void GuiLobbyState::findAGame()
 {
-	displayMessage("Ok");
+	if(not _context.client->isConnected())
+	{
+		displayMessage("You can't play: you're not connected");
+		return;
+	}
+	_play = true;
+	_context.client->enterLobby();
+	setButtonsAsWaiting();
+	std::string opponentName;
+	while(_play and not _context.client->isGameStarted(opponentName))
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(50));
+		handleInput();
+	}
+	resetButtons();
+	if(_play)
+		displayMessage("Let's start a game with " + opponentName);
+}
+
+void GuiLobbyState::resetButtons()
+{
+	for(auto& button : _buttons)
+		button.button->show();
+	_cancelButton->hide();
+	display();
+}
+
+void GuiLobbyState::setButtonsAsWaiting()
+{
+	for(auto& button : _buttons)
+		button.button->hide();
+	_cancelButton->show();
+	display();
 }

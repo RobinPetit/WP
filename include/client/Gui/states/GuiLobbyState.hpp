@@ -25,9 +25,14 @@ class GuiLobbyState : public GuiAbstractState, public AbstractLobbyState
 		tgui::Label::Ptr _menuLabel;
 		tgui::VerticalLayout::Ptr _buttonsLayout;
 
+		bool _play;
+
 		////////// Methods
 
 		void findAGame();
+
+		void resetButtons();
+		void setButtonsAsWaiting();
 };
 
 #endif  // _GUI_LOBBY_STATE_CLIENT_HPP
