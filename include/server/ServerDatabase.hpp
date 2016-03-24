@@ -71,6 +71,11 @@ public:
 	void setNotified(userId, AchievementId);
 
 	Ladder getLadder();
+	int getTimeSpent(userId);
+	int getVictories(userId);
+
+	void addTimeSpent(userId, int seconds);
+	void addVictories(userId, int victories);
 
 	virtual ~ServerDatabase();
 
@@ -84,6 +89,9 @@ private:
 	void createSpellData();
 	void createCreatureData();
 	std::vector<EffectParamsCollection> createCardEffects(cardId id);
+	// Achievements
+	int getAchievementProgress(userId id, sqlite3_stmt * stmt);
+	void addToAchievementProgress(userId id, int value, sqlite3_stmt * stmt);
 
 	sqlite3_stmt * _friendListStmt;
 	sqlite3_stmt * _userIdStmt;
@@ -116,10 +124,15 @@ private:
 	sqlite3_stmt * _setNotifiedStmt;
 
 	sqlite3_stmt * _ladderStmt;
+	sqlite3_stmt * _getTimeSpentStmt;
+	sqlite3_stmt * _getVictoriesStmt;
+
+	sqlite3_stmt * _addTimeSpentStmt;
+	sqlite3_stmt * _addVictoriesStmt;
 
 	// `constexpr std::array::size_type size() const;`
-	// -> future uses have to be _statements.size() -> 29 is written only one time
-	StatementsList<29> _statements
+	// -> future uses have to be _statements.size() -> 33 is written only one time
+	StatementsList<33> _statements
 	{
 		{
 			Statement {
@@ -275,6 +288,30 @@ private:
 				&_ladderStmt,
 				"SELECT login, victories, defeats "
 				"	FROM Account;"
+			},
+			Statement {
+				&_getTimeSpentStmt,
+				"SELECT secondsSpentPlaying "
+				"	FROM Account "
+				"	WHERE id == ?1"
+			},
+			Statement {
+				&_getVictoriesStmt,
+				"SELECT victories "
+				"	FROM Account "
+				"	WHERE id == ?1"
+			},
+			Statement {
+				&_addTimeSpentStmt,
+				"UPDATE Account "
+				"	SET secondsSpentPlaying = secondsSpentPlaying + ?1 "
+				"	WHERE id == ?2;"
+			},
+			Statement { // 32
+				&_addVictoriesStmt,
+				"UPDATE Account "
+				"	SET victories = victories + ?1 "
+				"	WHERE id == ?2;"
 			}
 		}
 	};

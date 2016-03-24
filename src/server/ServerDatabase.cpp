@@ -424,6 +424,46 @@ Ladder ServerDatabase::getLadder()
 	return ladder;
 }
 
+int ServerDatabase::getTimeSpent(userId user)
+{
+	return getAchievementProgress(user, _getTimeSpentStmt);
+}
+
+int ServerDatabase::getVictories(userId user)
+{
+	return getAchievementProgress(user, _getVictoriesStmt);
+}
+
+void ServerDatabase::addTimeSpent(userId user, int seconds)
+{
+	addToAchievementProgress(user, seconds, _addTimeSpentStmt);
+}
+
+void ServerDatabase::addVictories(userId user, int victories)
+{
+	addToAchievementProgress(user, victories, _addVictoriesStmt);
+}
+
+
+int ServerDatabase::getAchievementProgress(userId user, sqlite3_stmt* stmt)
+{
+	sqlite3_reset(stmt);
+	sqliteThrowExcept(sqlite3_bind_int64(stmt, 1, user));
+
+	assert(sqliteThrowExcept(sqlite3_step(stmt)) == SQLITE_ROW);
+
+	return sqlite3_column_int(stmt, 0);
+}
+
+void ServerDatabase::addToAchievementProgress(userId user, int value, sqlite3_stmt* stmt)
+{
+	sqlite3_reset(stmt);
+	sqliteThrowExcept(sqlite3_bind_int(stmt, 1, value));
+	sqliteThrowExcept(sqlite3_bind_int64(stmt, 2, user));
+
+	assert(sqliteThrowExcept(sqlite3_step(stmt)) == SQLITE_DONE);
+}
+
 ServerDatabase::~ServerDatabase()
 {
 	// TODO: move it to Database::~Database
