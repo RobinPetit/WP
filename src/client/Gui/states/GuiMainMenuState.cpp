@@ -30,8 +30,8 @@ GuiMainMenuState::GuiMainMenuState(Context& context):
 
 	makeTitle("Main Menu");
 
-	_layout->setPosition(windowWidth/5, windowHeight/5);
-	_layout->setSize(windowWidth*3/5, windowHeight*3/5);
+	_layout->setPosition(windowWidth/5.f, windowHeight/5.f);
+	_layout->setSize(windowWidth*3.f/5.f, windowHeight*3.f/5.f);
 	setupButtons(_buttons, std::static_pointer_cast<tgui::Container>(_layout));
 	_context.gui->add(_layout);
 

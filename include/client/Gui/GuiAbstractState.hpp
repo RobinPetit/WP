@@ -65,7 +65,12 @@ class GuiAbstractState : virtual public AbstractState
 		/// \param widgets The root widgets.
 		void registerRootWidgets(std::vector<tgui::Widget::Ptr>&& widgets);
 
-		void makeTitle(const std::string& title, unsigned int size = 30U);
+		/// Add a widget for the title, this widget is added to the root
+		/// widgets.
+		/// \param title The string to put in the widget.
+		/// \param size The size of the characters.
+		/// \param y The distance from the top of the window.
+		void makeTitle(const std::string& title, unsigned int size = 30U, float y = 50.f);
 
 	private:
 		/// See \ref registerRootWidget for explanation of this attribute.

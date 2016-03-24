@@ -35,7 +35,7 @@ GuiFriendsManagementState::GuiFriendsManagementState(Context& context):
 	_context.gui->add(_buttonsLayout);
 
 	// Make the friends list box
-	_friendsListBox->setPosition(windowWidth/5, windowHeight/5);
+	_friendsListBox->setPosition(windowWidth/5.f, windowHeight/5.f);
 	_friendsListBox->setSize(windowWidth*(1.f/2.f - 1.f/5.f), windowHeight*3.f/4.f);
 	updateFriendListBox();
 	_context.gui->add(_friendsListBox);

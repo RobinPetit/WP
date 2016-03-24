@@ -22,7 +22,7 @@ GuiHomeState::GuiHomeState(Context& context):
 	auto windowWidth(tgui::bindWidth(*_context.gui));
 	auto windowHeight(tgui::bindHeight(*_context.gui));
 
-	makeTitle("WizardPoker", 40);
+	makeTitle("WizardPoker", 40U);
 
 	// Configure the widgets
 	_userNameLabel->setText("User name:");
@@ -41,8 +41,8 @@ GuiHomeState::GuiHomeState(Context& context):
 	_createAccountButton->connect("Pressed", &GuiHomeState::createAccount, this);
 
 	// Add the widgets to the grid
-	_grid->setPosition(windowWidth / 4, windowHeight / 4);
-	_grid->setSize(windowWidth / 2, windowHeight / 2);
+	_grid->setPosition(windowWidth/4.f, windowHeight/4.f);
+	_grid->setSize(windowWidth/2.f, windowHeight/2.f);
 	_grid->addWidget(_userNameLabel, 0, 0, {0, 0, 0, 0}, tgui::Grid::Alignment::Up);
 	_grid->addWidget(_userNameEditBox, 0, 1, {0, 0, 0, 0}, tgui::Grid::Alignment::Up);
 	_grid->addWidget(_passwordLabel, 1, 0, {0, 0, 0, 0}, tgui::Grid::Alignment::Up);

@@ -15,7 +15,7 @@ GuiLadderState::GuiLadderState(Context& context):
 	auto windowHeight(tgui::bindHeight(*_context.gui));
 
 	// Make the title
-	makeTitle("Ladder");
+	makeTitle("Ladder", 30U, 30.f);
 
 	// Make the button(s)
 	setupButtons(_buttons, std::static_pointer_cast<tgui::Container>(_context.gui->getContainer()));
