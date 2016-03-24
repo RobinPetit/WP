@@ -541,7 +541,9 @@ AchievementList ServerDatabase::AchievementManager::newAchievements(const PostGa
 	for(size_t i = 0; i < _achievementsData.size(); ++i)
 	{
 		// update
-		(_database.*(_achievementsData[i].addMethod))(user, postGame.*(_achievementsData[i].toAddValue));
+		if(_achievementsData[i].addMethod != nullptr)
+			(_database.*(_achievementsData[i].addMethod))(user, postGame.*(_achievementsData[i].toAddValue));
+
 		// get new value
 		int currentProgress = (_database.*(_achievementsData[i].getMethod))(user);
 
