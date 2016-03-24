@@ -671,7 +671,8 @@ void Server::sendAchievements(const _iterator& it)
 	sf::Packet response;
 	try
 	{
-		AchievementList achievements{_database.getAchievements()};
+		const userId id{_database.getUserId(it->first)};
+		AchievementList achievements{_database.getAchievements(id)};
 		response << TransferType::ACKNOWLEDGE << achievements;
 	}
 	catch(const std::runtime_error& e)
