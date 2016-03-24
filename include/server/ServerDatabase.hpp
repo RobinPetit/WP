@@ -79,7 +79,9 @@ public:
 	void editDeck(userId id, const Deck& deck); // Deck should contains the deckId
 
 	//////////////// Achievements
+	/// Unlock new card and achievements
 	AchievementList newAchievements(const PostGameData&, userId);
+	int getWithInDaClub(userId);
 	Ladder getLadder();
 
 	virtual ~ServerDatabase();
@@ -98,7 +100,7 @@ private:
 			int PostGameData::*toAddValue;
 			int (ServerDatabase::*getMethod)(userId);
 		};
-		std::array<AchievementData, 4> _achievementsData
+		std::array<AchievementData, 5> _achievementsData
 		{
 			{
 				AchievementData {
@@ -124,6 +126,12 @@ private:
 					&ServerDatabase::addWithInDaClub,
 					&PostGameData::opponentInDaClub,
 					&ServerDatabase::getWithInDaClub
+				},
+				AchievementData {
+					5,
+					&ServerDatabase::addRagequits,
+					&PostGameData::playerQuit,
+					&ServerDatabase::getRagequits
 				}
 			}
 		};
@@ -163,13 +171,14 @@ private:
 	int getTimeSpent(userId);
 	int getVictories(userId);
 	int getVictoriesInARow(userId);
-	int getWithInDaClub(userId);
+	int getRagequits(userId);
 
 	void addToAchievementProgress(userId id, int value, sqlite3_stmt * stmt);
 	void addTimeSpent(userId, int seconds);
 	void addVictories(userId, int victories);
 	void addVictoriesInARow(userId, int victories);
 	void addWithInDaClub(userId, int withInDaClub);
+	void addRagequits(userId, int ragequits);
 
 	sqlite3_stmt * _friendListStmt;
 	sqlite3_stmt * _userIdStmt;
@@ -206,15 +215,17 @@ private:
 	sqlite3_stmt * _getVictoriesStmt;
 	sqlite3_stmt * _getVictoriesInARowStmt;
 	sqlite3_stmt * _getWithInDaClubStmt;
+	sqlite3_stmt * _getRagequitsStmt;
 
 	sqlite3_stmt * _addTimeSpentStmt;
 	sqlite3_stmt * _addVictoriesStmt;
 	sqlite3_stmt * _setVictoriesInARowStmt;
 	sqlite3_stmt * _addWithInDaClubStmt;
+	sqlite3_stmt * _addRagequitsStmt;
 
 	// `constexpr std::array::size_type size() const;`
 	// -> future uses have to be _statements.size() -> 33 is written only one time
-	StatementsList<37> _statements
+	StatementsList<39> _statements
 	{
 		{
 			Statement {
@@ -417,6 +428,18 @@ private:
 				&_addWithInDaClubStmt,
 				"UPDATE Account "
 				"	SET gameWithInDaClub = gameWithInDaClub + ?1 "
+				"	WHERE id == ?2;"
+			},
+			Statement {
+				&_getRagequitsStmt,
+				"SELECT ragequits "
+				"	FROM Account "
+				"	WHERE id == ?1;"
+			},
+			Statement {
+				&_addRagequitsStmt,
+				"UPDATE Account "
+				"	SET ragequits = ragequits + ?1 "
 				"	WHERE id == ?2;"
 			}
 		}

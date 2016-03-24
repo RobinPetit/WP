@@ -382,6 +382,8 @@ unsigned ServerDatabase::countAccounts()
 // Achievements
 AchievementList ServerDatabase::newAchievements(const PostGameData& postGame, userId user)
 {
+	if (postGame.playerWon)
+		addCard(user,getRandomCardId);
 	return _achievementManager.newAchievements(postGame, user);
 }
 
@@ -477,7 +479,17 @@ int ServerDatabase::getWithInDaClub(userId user)
 
 void ServerDatabase::addWithInDaClub(userId user, int withInDaClub)
 {
-	return addToAchievementProgress(user, withInDaClub, _addWithInDaClubStmt);
+	addToAchievementProgress(user, withInDaClub, _addWithInDaClubStmt);
+}
+
+int ServerDatabase::getRagequits(userId user)
+{
+	return getAchievementProgress(user, _getRagequitsStmt);
+}
+
+void ServerDatabase::addRagequits(userId user, int ragequits)
+{
+	addToAchievementProgress(user, ragequits, _addRagequitsStmt);
 }
 
 
