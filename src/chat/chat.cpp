@@ -10,8 +10,20 @@
 #include <iostream>
 #include <memory>
 
+#ifdef __linux__
+extern "C"
+{
+# include <X11/Xlib.h>
+}
+#else
+#endif
+
 int main(int argc, char **argv)
 {
+#ifdef __linux__
+	XInitThreads();
+#else
+#endif
 	assert(argc == 7);
 	std::unique_ptr<AbstractChat> chatManager;
 	if(std::string(argv[6]) == "gui")

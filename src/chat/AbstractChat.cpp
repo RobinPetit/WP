@@ -118,15 +118,13 @@ void AbstractChat::treatMessage(const std::string& message)
 void AbstractChat::endDiscussion()
 {
 	_running.store(false);
-	// if being the first friend to leave the chat
-	if(_friendPresence.load())
-	{
-		// then send a "goodbye message"
-		sf::Packet goodbyePacket;
-		goodbyePacket << TransferType::CHAT_QUIT;
-		_out.send(goodbyePacket);
-	}
-	// otherwise, don't send anything since no one will receive it
+	// if friend already left, send nothing
+	if(not _friendPresence.load())
+		return;
+	// otherwise send a "goodbye message"
+	sf::Packet goodbyePacket;
+	goodbyePacket << TransferType::CHAT_QUIT;
+	_out.send(goodbyePacket);
 }
 
 void AbstractChat::input()
@@ -175,7 +173,7 @@ void AbstractChat::friendQuit()
 	_listening.store(false);
 	display(_friendName, "left the discussion");
 	_friendPresence.store(false);
-	//_in.disconnect();
+	_in.disconnect();
 	_out.disconnect();
 }
 

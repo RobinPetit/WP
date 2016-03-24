@@ -393,7 +393,8 @@ void Client::startConversation(const std::string& playerName) const
 			playerName, // parameter 5 is callee's name
 			(_isGui ? "gui" : "terminal")
 			// there is not more parameters!
-		})
+		},
+		not _isGui)
 	};
 	system(cmd.c_str());
 }
@@ -454,7 +455,8 @@ void Client::startChat(sf::Packet& transmission)
 			selfName,
 			otherName,
 			(_isGui ? "gui" : "terminal")
-		});
+		},
+		not _isGui);
 	system(cmd.c_str());
 }
 
