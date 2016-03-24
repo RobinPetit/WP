@@ -100,7 +100,7 @@ private:
 			int PostGameData::*toAddValue;
 			int (ServerDatabase::*getMethod)(userId);
 		};
-		std::array<AchievementData, 5> _achievementsData
+		std::array<AchievementData, 6> _achievementsData
 		{
 			{
 				AchievementData {
@@ -132,6 +132,11 @@ private:
 					&ServerDatabase::addRagequits,
 					&PostGameData::playerQuit,
 					&ServerDatabase::getRagequits
+				},
+				AchievementData {
+					6,
+					nullptr, nullptr,
+					&ServerDatabase::ownAllCards
 				}
 			}
 		};
@@ -172,6 +177,7 @@ private:
 	int getVictories(userId);
 	int getVictoriesInARow(userId);
 	int getRagequits(userId);
+	int ownAllCards(userId);
 
 	void addToAchievementProgress(userId id, int value, sqlite3_stmt * stmt);
 	void addTimeSpent(userId, int seconds);
@@ -216,6 +222,7 @@ private:
 	sqlite3_stmt * _getVictoriesInARowStmt;
 	sqlite3_stmt * _getWithInDaClubStmt;
 	sqlite3_stmt * _getRagequitsStmt;
+	sqlite3_stmt * _ownAllCardsStmt;
 
 	sqlite3_stmt * _addTimeSpentStmt;
 	sqlite3_stmt * _addVictoriesStmt;
@@ -225,7 +232,7 @@ private:
 
 	// `constexpr std::array::size_type size() const;`
 	// -> future uses have to be _statements.size() -> 33 is written only one time
-	StatementsList<39> _statements
+	StatementsList<40> _statements
 	{
 		{
 			Statement {
@@ -441,6 +448,12 @@ private:
 				"UPDATE Account "
 				"	SET ragequits = ragequits + ?1 "
 				"	WHERE id == ?2;"
+			},
+			Statement {
+				///\TODO I'm not yet familiar with aggregations
+				&_ownAllCardsStmt,
+				"SELECT min(Card.id IN (SELECT GivenCard.card FROM GivenCard WHERE owner == ?1)) "
+				"	FROM Card;"
 			}
 		}
 	};

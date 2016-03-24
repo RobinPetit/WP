@@ -493,6 +493,11 @@ void ServerDatabase::addRagequits(userId user, int ragequits)
 	addToAchievementProgress(user, ragequits, _addRagequitsStmt);
 }
 
+int ServerDatabase::ownAllCards(userId user)
+{
+	return getAchievementProgress(user, _ownAllCardsStmt);
+}
+
 
 int ServerDatabase::getAchievementProgress(userId user, sqlite3_stmt* stmt)
 {
