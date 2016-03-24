@@ -388,14 +388,9 @@ AchievementList ServerDatabase::newAchievements(const PostGameData& postGame, us
 	return _achievementManager.newAchievements(postGame, user);
 }
 
-AchievementList ServerDatabase::getAchievements()
+AchievementList ServerDatabase::getAchievements(userId user)
 {
-	AchievementList allAchievements;
-    for (std::size_t i=1; i<13; i++)
-    {
-		allAchievements.push_back({i, 0}); //TODO : replace by actual IDs and progress values !!!!!!!!!!!!!!!!
-    }
-    return allAchievements;
+	return _achievementManager.allAchievements(user);
 }
 
 Ladder ServerDatabase::getLadder()
@@ -571,8 +566,12 @@ AchievementList ServerDatabase::AchievementManager::newAchievements(const PostGa
 	return achievements;
 }
 
-AchievementList ServerDatabase::AchievementManager::unlockedAchievements(userId user)
+AchievementList ServerDatabase::AchievementManager::allAchievements(userId user)
 {
-	std::cerr << "TODO: ServerDatabase::AchievementManager::unlockedAchievements" << std::endl;
-	return AchievementList();
+	AchievementList achievements;
+
+	for(size_t i = 0; i < _achievementsList.size(); ++i)
+			achievements.emplace_back(Achievement {_achievementsList[i].id, (_database.*(_achievementsList[i].getMethod))(user)});
+
+	return achievements;
 }
