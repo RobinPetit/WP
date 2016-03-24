@@ -420,9 +420,7 @@ bool ServerDatabase::wasNotified(userId user, AchievementId achievement)
 	sqliteThrowExcept(sqlite3_bind_int64(_wasNotifiedStmt, 1, user));
 	sqliteThrowExcept(sqlite3_bind_int64(_wasNotifiedStmt, 2, achievement));
 
-	assert(sqliteThrowExcept(sqlite3_step(_wasNotifiedStmt)) == SQLITE_ROW);
-
-	return sqlite3_column_int(_wasNotifiedStmt, 0);
+	return sqliteThrowExcept(sqlite3_step(_wasNotifiedStmt)) == SQLITE_ROW;
 }
 
 void ServerDatabase::setNotified(userId user, AchievementId achievement)
