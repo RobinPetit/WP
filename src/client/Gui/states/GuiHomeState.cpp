@@ -30,13 +30,20 @@ GuiHomeState::GuiHomeState(Context& context):
 	_context.gui->add(_titleLabel);
 
 	// Configure the widgets
-	_userNameLabel->setText("Username:");
+	_userNameLabel->setText("User name:");
+	// Focus the password edit box when pressing enter in user name edit box
+	_userNameEditBox->connect("ReturnKeyPressed", [this]()
+	{
+		_passwordEditBox->focus();
+	});
 	_passwordLabel->setText("Password:");
+	// Connect when pressing enter in the password edit box
+	_passwordEditBox->connect("ReturnKeyPressed", &GuiHomeState::connect, this);
 	_passwordEditBox->setPasswordCharacter('*');  // Display only stars in the edit box
 	_connectButton->setText("Connect");
-	_connectButton->connect("pressed", &GuiHomeState::connect, this);
+	_connectButton->connect("Pressed", &GuiHomeState::connect, this);
 	_createAccountButton->setText("Create an account");
-	_createAccountButton->connect("pressed", &GuiHomeState::createAccount, this);
+	_createAccountButton->connect("Pressed", &GuiHomeState::createAccount, this);
 
 	// Add the widgets to the grid
 	_grid->setPosition(windowWidth / 4, windowHeight / 4);
@@ -50,6 +57,7 @@ GuiHomeState::GuiHomeState(Context& context):
 	_context.gui->add(_grid);
 
 	registerRootWidgets({_grid, _titleLabel});
+	_userNameEditBox->focus();  // Focus the user name edit box by default
 }
 
 void GuiHomeState::connect()
