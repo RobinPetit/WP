@@ -7,11 +7,15 @@
 -- Do not reuse already used id, even if not currently used!
 -- Do not change already defined id
 
+-- TODO : 
+-- 6 : counter should be the total when the game is released
+-- 7 : counter was changed to be more relevant (highest position in ladder, in percent), but nothing was implemented
+
 INSERT INTO Achievement(id, name, description, progressRequired) VALUES
 (
 	1,
 	"Felt like a year",
-	"Spend 365 minutes playing",
+	"Spend 365 minutes playing (21900 seconds)",
 	365*60
 ),
 (
