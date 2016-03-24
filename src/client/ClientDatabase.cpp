@@ -122,7 +122,7 @@ AchievementData ClientDatabase::getAchievementData(AchievementId id) const
 	sqlite3_reset(_getAchievementDataStmt);
 	sqliteThrowExcept(sqlite3_bind_int64(_getAchievementDataStmt, 1, id));
 
-	//assert(sqliteThrowExcept(sqlite3_step(_getAchievementDataStmt)) == SQLITE_ROW); //TODO : assert fails
+	assert(sqliteThrowExcept(sqlite3_step(_getAchievementDataStmt)) == SQLITE_ROW);
 
 	return AchievementData
 	{
