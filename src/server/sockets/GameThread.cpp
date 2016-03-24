@@ -49,7 +49,7 @@ RandomInteger& GameThread::getGenerator()
 void GameThread::printVerbose(std::string message)
 {
 	if (not _verbose)
-		return
+		return;
 
 	std::istringstream iss("game 0" + message);
     std::string line;
@@ -80,6 +80,11 @@ userId GameThread::playGame(const ClientInformations& player1, const ClientInfor
 
 	// unlock a random new card
 	cardId earnedCardId{_database.getRandomCardId()};
+
+	// display player's post game data
+	_postGameDataPlayer1.display();
+	//printVerbose(std::string("Player1's Post Game Data : \n") + _postGameDataPlayer1.display());
+    //printVerbose(std::string("Player2's Post Game Data : \n") + _postGameDataPlayer2.display());
 
 	// send postGameData to database, receive new unlocked achievements
 	AchievementList newAchievementsPlayer1 = _database.newAchievements(_postGameDataPlayer1, _player1Id);
@@ -167,9 +172,6 @@ void GameThread::runGame()
 	std::chrono::steady_clock::time_point endOfGame = std::chrono::steady_clock::now();
     std::size_t gameDuration = std::chrono::duration_cast<std::chrono::seconds>(endOfGame - startOfGame).count();
     _postGameDataPlayer1.gameDuration = _postGameDataPlayer2.gameDuration = gameDuration;
-
-    printVerbose(std::string("Player1's Post Game Data : \n") + _postGameDataPlayer1.toString())
-    printVerbose(std::string("Player1's Post Game Data : \n") + _postGameDataPlayer1.toString())
 
 	assert((_winnerId != 0) xor (_endGameCause == EndGame::Cause::ENDING_SERVER));
 }
