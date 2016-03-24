@@ -85,8 +85,6 @@ void AbstractChat::connectAsCallee()
 	_listener.accept(_in);
 }
 
-#include <iostream>
-
 void AbstractChat::start()
 {
 	connect();
