@@ -63,7 +63,7 @@ void CreatureGui::setShield(int value)
 void CreatureGui::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
 	CardGui::draw(target, states);
-	states.transform.translate(getPosition());
+	states.transform.combine(getTransform());
 	target.draw(_healthText, states);
 	target.draw(_attackText, states);
 	target.draw(_shieldText, states);

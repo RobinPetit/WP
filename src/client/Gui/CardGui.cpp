@@ -11,7 +11,6 @@ constexpr char CardGui::BACK_IMAGE_PATH[];
 constexpr char CardGui::FONT_PATH[];
 
 CardGui::CardGui(const std::string& name, const std::string& description, int cost):
-	_position{0.f, 0.f},
 	_showFront{true}
 {
 	if(!_backTexture.loadFromFile(BACK_IMAGE_PATH))
@@ -57,24 +56,9 @@ sf::Vector2f CardGui::getSize()
 	return SIZE;
 }
 
-void CardGui::setPosition(float x, float y)
-{
-	setPosition({x, y});
-}
-
-void CardGui::setPosition(const sf::Vector2f& position)
-{
-	_position = position;
-}
-
-const sf::Vector2f& CardGui::getPosition() const
-{
-	return _position;
-}
-
 void CardGui::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
-	states.transform.translate(_position);
+	states.transform.combine(getTransform());
 	if(_showFront)
 	{
 		target.draw(_picture, states);
