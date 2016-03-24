@@ -34,21 +34,21 @@ INSERT INTO Achievement(id, name, description, progressRequired) VALUES
 ),
 (
 	5,
-	"Threw it on the ground",
-	"Lose a game by destroying your computer, or find some other way (do not trust the system)",
+	"Rage Quit",
+	"Calm down, Michael",
 	1
 ),
 (
 	6,
 	"Legen-wait for it...",
-	"Unlock all day cards (beginner cards not counted)",
+	"Unlock all of the cards",
 	1
 ),
 (
 	7,
 	"...dary!",
-	"Make it to the top 1% of the ladder",
-	1
+	"Make it to the top 1% of the ladder (be better than 99%)",
+	99
 ),
 (
 	8,
@@ -58,8 +58,8 @@ INSERT INTO Achievement(id, name, description, progressRequired) VALUES
 ),
 (
 	9,
-	"You lucky dog",
-	"Get to play first 5 times in a row",
+	"J*** in my pants",
+	"Get to play first, 5 times in a row",
 	5
 ),
 (
