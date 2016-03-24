@@ -311,13 +311,16 @@ void ServerDatabase::createSpellData()
 		cardId id(sqlite3_column_int64(_getSpellCardsStmt, 0));
 
 		_cardData.emplace(
-		    std::make_pair<>(
-		        id,
-		        std::unique_ptr<CommonCardData>(new ServerSpellData(
-		                id, sqlite3_column_int(_getSpellCardsStmt, 1), // cost
-		                std::vector<EffectParamsCollection>(createCardEffects(id)) // effects
-		                                        ))
-		    )
+			std::make_pair<>(
+				id,
+				std::unique_ptr<CommonCardData>(
+					new ServerSpellData(
+						id,
+						sqlite3_column_int(_getSpellCardsStmt, 1), // cost
+						std::vector<EffectParamsCollection>(createCardEffects(id)) // effects
+					)
+				)
+			)
 		);
 	}
 }
@@ -332,18 +335,20 @@ void ServerDatabase::createCreatureData()
 		cardId id(sqlite3_column_int64(_getCreatureCardsStmt, 0));
 
 		_cardData.emplace(
-		    std::make_pair<>(
-		        id,
-		        std::unique_ptr<CommonCardData>(new ServerCreatureData(
-		                id,
-		                sqlite3_column_int(_getCreatureCardsStmt, 1), // cost
-		                std::vector<EffectParamsCollection>(createCardEffects(id)), // effects
-		                sqlite3_column_int(_getCreatureCardsStmt, 2), // attack
-		                sqlite3_column_int(_getCreatureCardsStmt, 3), // health
-		                sqlite3_column_int(_getCreatureCardsStmt, 4), // shield
-		                sqlite3_column_int(_getCreatureCardsStmt, 5) // shieldType
-		                                        ))
-		    )
+			std::make_pair<>(
+				id,
+				std::unique_ptr<CommonCardData>(
+					new ServerCreatureData(
+						id,
+						sqlite3_column_int(_getCreatureCardsStmt, 1),  // cost
+						std::vector<EffectParamsCollection>(createCardEffects(id)),  // effects
+						sqlite3_column_int(_getCreatureCardsStmt, 2),  // attack
+						sqlite3_column_int(_getCreatureCardsStmt, 3),  // health
+						sqlite3_column_int(_getCreatureCardsStmt, 4),  // shield
+						sqlite3_column_int(_getCreatureCardsStmt, 5)  // shieldType
+					)
+				)
+			)
 		);
 	}
 }

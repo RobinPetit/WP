@@ -28,8 +28,8 @@ std::array<std::function<void(Player&, EffectArgs)>, P_EFFECTS_COUNT> Player::_e
 };
 
 Player::Player(GameThread& gameThread, ServerDatabase& database, userId id, Player& opponent, PostGameData& postGameData):
+	_postGameData(postGameData),
 	_gameThread(gameThread),
-	postGameData(postGameData),
 	_database(database),
 	_opponent(opponent),
 	_id(id),
@@ -114,8 +114,8 @@ void Player::setUpGame(bool isActivePlayer)
 	printVerbose(std::string("Player::setUpGame(") + (isActivePlayer ? "true" : "false") + ")");
 
 	// post game data
-	postGameData.opponentInDaClub = _database.getWithInDaClub(_opponent.getId());
-	postGameData.playerStarted = isActivePlayer;
+	_postGameData.opponentInDaClub = _database.getWithInDaClub(_opponent.getId());
+	_postGameData.playerStarted = isActivePlayer;
 
 	// init Player's data
 	cardDeckToHand(_initialSupplementOfCards);  // start with a few cards in hand
@@ -183,8 +183,8 @@ void Player::leaveTurn()
 void Player::finishGame(bool hasWon, EndGame::Cause cause)
 {
 	//post game data
-	postGameData.playerWon = hasWon;
-	postGameData.remainingHealth = _health;
+	_postGameData.playerWon = hasWon;
+	_postGameData.remainingHealth = _health;
 
 	_gameThread.endGame(hasWon ? getId() : _opponent.getId(), cause);
 }
@@ -204,7 +204,7 @@ sf::Socket::Status Player::tryReceiveClientInput()
 
 	if(type == TransferType::GAME_QUIT_GAME)
 	{
-		_opponent.postGameData.playerWon=true;
+		_opponent._postGameData.playerWon=true;
 		finishGame(false, EndGame::Cause::QUITTED);
 	}
 	else
@@ -527,12 +527,12 @@ const Card* Player::getLastCaster() const
 
 sf::TcpSocket& Player::getSocket()
 {
-    return _socketToClient;
+	return _socketToClient;
 }
 
 void Player::printVerbose(std::string message)
 {
-    _gameThread.printVerbose("player " + std::to_string(getId()) + " - "+ message);
+	_gameThread.printVerbose("player " + std::to_string(getId()) + " - "+ message);
 }
 
 /*------------------------------ EFFECTS (PRIVATE) */
@@ -709,7 +709,7 @@ void Player::changeHealth(EffectArgs effect)
 
 	// post game data
 	if (points < 0)
-		postGameData.playerTookDamage=true;
+		_postGameData.playerTookDamage=true;
 
 	_health += points;
 	if(_health <= 0)
@@ -919,7 +919,7 @@ void Player::logOpponentHealth()
 	}
 	catch (...)  // In case _opponent is not initialized yet
 	{
-        _pendingBoardChanges << TransferType::GAME_OPPONENT_HEALTH_UPDATED << static_cast<sf::Uint32>(_healthInit);
+		_pendingBoardChanges << TransferType::GAME_OPPONENT_HEALTH_UPDATED << static_cast<sf::Uint32>(_healthInit);
 	}
 }
 

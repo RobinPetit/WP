@@ -616,11 +616,11 @@ ClientAchievementList Client::getAchievements()
 
 ClientAchievementList Client::getAchievements(AchievementList newAchievements)
 {
-    ClientAchievementList clientAchievements;
-    for (std::size_t i=0; i<newAchievements.size(); i++)
-    {
+	ClientAchievementList clientAchievements;
+	for (std::size_t i=0; i<newAchievements.size(); i++)
+	{
 		const auto& id = newAchievements.at(i).id;
-        clientAchievements.push_back(ClientAchievement(newAchievements.at(i), _database.getAchievementData(id)));
+		clientAchievements.push_back(ClientAchievement(newAchievements.at(i), _database.getAchievementData(id)));
 	}
 	return clientAchievements;
 }

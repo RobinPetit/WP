@@ -28,12 +28,12 @@ std::string ClientAchievement::getDescription() const
 
 int ClientAchievement::getRequiredProgress() const
 {
-	return _achievementData.requiredProgress;
+	return static_cast<int>(_achievementData.requiredProgress);
 }
 
 int ClientAchievement::getCurrentProgress() const
 {
-	return _achievement.currentProgress;
+	return static_cast<int>(_achievement.currentProgress);
 }
 
 bool ClientAchievement::isUnlocked() const

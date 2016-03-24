@@ -10,8 +10,7 @@ PostGameData::PostGameData() :
 	remainingHealth(0),
 	gameDuration(0)
 {
-	assert((int) false == 0);
-	assert((int) true == 1);
+	assert(static_cast<int>(false) == 0 and static_cast<int>(true) == 1);
 }
 
 std::string PostGameData::display()

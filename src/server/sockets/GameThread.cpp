@@ -52,11 +52,9 @@ void GameThread::printVerbose(std::string message)
 		return;
 
 	std::istringstream iss("game n " + message);
-    std::string line;
-    while (std::getline(iss, line))
-    {
-        std::cout << "\t" << line << std::endl; //print each line with indentation
-    }
+	std::string line;
+	while (std::getline(iss, line))
+		std::cout << "\t" << line << std::endl;  //print each line with indentation
 }
 
 userId GameThread::playGame(const ClientInformations& player1, const ClientInformations& player2)
@@ -85,7 +83,7 @@ userId GameThread::playGame(const ClientInformations& player1, const ClientInfor
 
 	// display player's post game data
 	printVerbose(std::string("Player1's Post Game Data : \n") + _postGameDataPlayer1.display());
-    printVerbose(std::string("Player2's Post Game Data : \n") + _postGameDataPlayer2.display());
+	printVerbose(std::string("Player2's Post Game Data : \n") + _postGameDataPlayer2.display());
 
 	// send postGameData to database, receive new unlocked achievements
 	AchievementList newAchievementsPlayer1 = _database.newAchievements(_postGameDataPlayer1, _player1Id);
@@ -144,8 +142,8 @@ void GameThread::runGame()
 			{
 				std::cerr << "Lost connection with a player\n";
 				//winner is the player who's still connected
-                otherPlayer->postGameData.playerWon = true;
-                player->postGameData.playerRageQuit = true;
+				otherPlayer->_postGameData.playerWon = true;
+				player->_postGameData.playerRageQuit = true;
 
 				userId winnerId = player == _activePlayer ? _passivePlayer->getId() : _activePlayer->getId();
 				endGame(winnerId, EndGame::Cause::LOST_CONNECTION);
@@ -176,8 +174,8 @@ void GameThread::runGame()
 
 	// calculate duration of the game
 	std::chrono::steady_clock::time_point endOfGame = std::chrono::steady_clock::now();
-    std::size_t gameDuration = std::chrono::duration_cast<std::chrono::seconds>(endOfGame - startOfGame).count();
-    _postGameDataPlayer1.gameDuration = _postGameDataPlayer2.gameDuration = gameDuration;
+	std::size_t gameDuration = static_cast<std::size_t>(std::chrono::duration_cast<std::chrono::seconds>(endOfGame - startOfGame).count());
+	_postGameDataPlayer1.gameDuration = _postGameDataPlayer2.gameDuration = gameDuration;
 
 	assert((_winnerId != 0) xor (_endGameCause == EndGame::Cause::ENDING_SERVER));
 }
@@ -246,17 +244,13 @@ void GameThread::makeTimer()
 
 void GameThread::sendFinalMessage(sf::TcpSocket& specialSocket, PostGameData& postGameData, cardId earnedCardId, AchievementList& newAchievements)
 {
-    sf::Packet packet;
+	sf::Packet packet;
 
 	// EndGame::applyToSelf indicate which player won the game: false means the player himself won
-    if (postGameData.playerWon) // send card message + unlocked card + new achievements
-    {
+	if (postGameData.playerWon)  // send card message + unlocked card + new achievements
 		packet << TransferType::GAME_OVER << EndGame{_endGameCause, false} << earnedCardId << newAchievements;
-	}
 	else // if player lost : send message + new achievements
-	{
 		packet << TransferType::GAME_OVER << EndGame{_endGameCause, true} << newAchievements;
-	}
 	specialSocket.send(packet);
 }
 

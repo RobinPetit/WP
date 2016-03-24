@@ -31,7 +31,7 @@ class GameThread;
 class Player
 {
 public:
-	PostGameData& postGameData;
+	PostGameData& _postGameData;
 
 	/*------------------------------ Methods */
 	/// Constructor

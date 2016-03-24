@@ -45,26 +45,26 @@ const CommonCardData* ClientDatabase::getCardData(cardId id)
 
 		CommonCardData * cardData;
 
-		if(sqlite3_column_type(_getCardStmt, 4) == SQLITE_NULL) // Spell
+		if(sqlite3_column_type(_getCardStmt, 4) == SQLITE_NULL)  // Spell
 		{
 			cardData = new ClientSpellData(
-			    id,
-			    reinterpret_cast<const char *>(sqlite3_column_text(_getCardStmt, 0)), // name
-			    sqlite3_column_int(_getCardStmt, 1), // cost
-			    reinterpret_cast<const char *>(sqlite3_column_text(_getCardStmt, 2)) // description
+				id,
+				reinterpret_cast<const char *>(sqlite3_column_text(_getCardStmt, 0)),  // name
+				sqlite3_column_int(_getCardStmt, 1),  // cost
+				reinterpret_cast<const char *>(sqlite3_column_text(_getCardStmt, 2))  // description
 			);
 		}
 		else // Creature
 		{
 			cardData = new ClientCreatureData(
-			    id,
-			    reinterpret_cast<const char *>(sqlite3_column_text(_getCardStmt, 0)), // name
-			    sqlite3_column_int(_getCardStmt, 1), // cost
-			    reinterpret_cast<const char *>(sqlite3_column_text(_getCardStmt, 2)), // description
-			    sqlite3_column_int(_getCardStmt, 3), // attack
-			    sqlite3_column_int(_getCardStmt, 4), // health
-			    sqlite3_column_int(_getCardStmt, 5), // shield
-			    sqlite3_column_int(_getCardStmt, 6) // shieldType
+				id,
+				reinterpret_cast<const char *>(sqlite3_column_text(_getCardStmt, 0)),  // name
+				sqlite3_column_int(_getCardStmt, 1),  // cost
+				reinterpret_cast<const char *>(sqlite3_column_text(_getCardStmt, 2)),  // description
+				sqlite3_column_int(_getCardStmt, 3),  // attack
+				sqlite3_column_int(_getCardStmt, 4),  // health
+				sqlite3_column_int(_getCardStmt, 5),  // shield
+				sqlite3_column_int(_getCardStmt, 6)  // shieldType
 			);
 		}
 
