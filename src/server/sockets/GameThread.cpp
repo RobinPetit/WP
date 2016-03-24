@@ -92,7 +92,8 @@ userId GameThread::playGame(const ClientInformations& player1, const ClientInfor
 	sendFinalMessage(_specialOutputSocketPlayer1, _postGameDataPlayer1, earnedCardId);
 	sendFinalMessage(_specialOutputSocketPlayer2, _postGameDataPlayer2, earnedCardId);
 
-	//TODO DATABASE : send _postGameData for each player, will unlock cards for winner
+	AchievementList newAchievementsPlayer1 = _database.newAchievements(_postGameDataPlayer1, _player1Id);
+	AchievementList newAchievementsPlayer2 = _database.newAchievements(_postGameDataPlayer2, _player2Id);
 
 	return _winnerId;
 }
