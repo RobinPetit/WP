@@ -436,14 +436,14 @@ int ServerDatabase::getTimeSpent(userId user)
 	return getAchievementProgress(user, _getTimeSpentStmt);
 }
 
-int ServerDatabase::getVictories(userId user)
-{
-	return getAchievementProgress(user, _getVictoriesStmt);
-}
-
 void ServerDatabase::addTimeSpent(userId user, int seconds)
 {
 	addToAchievementProgress(user, seconds, _addTimeSpentStmt);
+}
+
+int ServerDatabase::getVictories(userId user)
+{
+	return getAchievementProgress(user, _getVictoriesStmt);
 }
 
 void ServerDatabase::addVictories(userId user, int victories)

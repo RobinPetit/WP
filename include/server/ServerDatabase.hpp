@@ -354,13 +354,13 @@ private:
 				&_getTimeSpentStmt,
 				"SELECT secondsSpentPlaying "
 				"	FROM Account "
-				"	WHERE id == ?1"
+				"	WHERE id == ?1;"
 			},
 			Statement {
 				&_getVictoriesStmt,
 				"SELECT victories "
 				"	FROM Account "
-				"	WHERE id == ?1"
+				"	WHERE id == ?1;"
 			},
 			Statement {
 				&_addTimeSpentStmt,
