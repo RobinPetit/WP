@@ -369,10 +369,12 @@ void Server::startGame(std::size_t idx)
 	std::string player1Name = userToString(player1);
 	std::string player2Name = userToString(player2);
 
+	// start the game
 	std::cout << "Game " << idx << " is starting: " + userToString(player1) + " vs. " + userToString(player2) + "\n";
 	userId winnerId{selfThread->playGame(player1->second, player2->second)};
+	assert(winnerId==player1Id or winnerId==player2Id or winnerId==0);
 
-	// \TODO: change personnal scores
+	// display which players won, if any
 	if (winnerId == player1Id)
 		std::cout << player1Name << " won and " << player2Name << " lost\n";
 	else if (winnerId == player2Id)
