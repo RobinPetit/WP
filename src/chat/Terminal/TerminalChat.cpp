@@ -6,8 +6,6 @@
 // SFML headers
 #include <SFML/Network/Packet.hpp>
 
-
-
 TerminalChat::TerminalChat(const char * const argv[6]):
 	AbstractChat(argv)
 {
