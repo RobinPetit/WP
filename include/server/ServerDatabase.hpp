@@ -93,47 +93,47 @@ private:
 	{
 		ServerDatabase& _database;
 
-		struct AchievementData
+		struct AchievementsListItem
 		{
 			AchievementId id;
 			void (ServerDatabase::*addMethod)(userId, int);
 			int PostGameData::*toAddValue;
 			int (ServerDatabase::*getMethod)(userId);
 		};
-		std::array<AchievementData, 6> _achievementsData
+		std::array<AchievementsListItem, 6> _achievementsList
 		{
 			{
-				AchievementData {
+				AchievementsListItem {
 					1,
 					&ServerDatabase::addTimeSpent,
 					&PostGameData::gameDuration,
 					&ServerDatabase::getTimeSpent
 				},
-				AchievementData {
+				AchievementsListItem {
 					2,
 					&ServerDatabase::addVictories,
 					&PostGameData::playerWon,
 					&ServerDatabase::getVictories
 				},
-				AchievementData {
+				AchievementsListItem {
 					3,
 					&ServerDatabase::addVictoriesInARow,
 					&PostGameData::playerWon,
 					&ServerDatabase::getVictoriesInARow
 				},
-				AchievementData {
+				AchievementsListItem {
 					4,
 					&ServerDatabase::addWithInDaClub,
 					&PostGameData::opponentInDaClub,
 					&ServerDatabase::getWithInDaClub
 				},
-				AchievementData {
+				AchievementsListItem {
 					5,
 					&ServerDatabase::addRagequits,
 					&PostGameData::playerQuit,
 					&ServerDatabase::getRagequits
 				},
-				AchievementData {
+				AchievementsListItem {
 					6,
 					nullptr, nullptr,
 					&ServerDatabase::ownAllCards

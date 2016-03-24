@@ -543,20 +543,20 @@ AchievementList ServerDatabase::AchievementManager::newAchievements(const PostGa
 {
 	AchievementList achievements;
 
-	for(size_t i = 0; i < _achievementsData.size(); ++i)
+	for(size_t i = 0; i < _achievementsList.size(); ++i)
 	{
 		// update
-		if(_achievementsData[i].addMethod != nullptr)
-			(_database.*(_achievementsData[i].addMethod))(user, postGame.*(_achievementsData[i].toAddValue));
+		if(_achievementsList[i].addMethod != nullptr)
+			(_database.*(_achievementsList[i].addMethod))(user, postGame.*(_achievementsList[i].toAddValue));
 
 		// get new value
-		int currentProgress = (_database.*(_achievementsData[i].getMethod))(user);
+		int currentProgress = (_database.*(_achievementsList[i].getMethod))(user);
 
-		if(!_database.wasNotified(user, _achievementsData[i].id)
-		        && currentProgress >= _database.getRequired(_achievementsData[i].id))
+		if(!_database.wasNotified(user, _achievementsList[i].id)
+		        && currentProgress >= _database.getRequired(_achievementsList[i].id))
 		{
-			_database.setNotified(user, _achievementsData[i].id);
-			achievements.emplace_back(Achievement {_achievementsData[i].id, currentProgress});
+			_database.setNotified(user, _achievementsList[i].id);
+			achievements.emplace_back(Achievement {_achievementsList[i].id, currentProgress});
 		}
 	}
 
