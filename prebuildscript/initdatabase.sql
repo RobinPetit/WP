@@ -168,10 +168,18 @@ CREATE TABLE Achievement (
 -- Create achievements
 .read "Achievements.sql"
 
+CREATE INDEX achievementId ON Achievement(id);
+
 -- TODO: do not keep in server database informations used only by client
 --       (name and descriptions of cards and achievements)
 
-CREATE INDEX achievementId ON Achievement(id);
+CREATE TABLE NotifiedAchievement (
+	-- Wether an user was already notified that he unlock an achievement
+	owner INTEGER REFERENCES Account,
+	achievement INTEGER REFERENCES Achievement(id),
+	UNIQUE(owner,achievement)
+);
+
 
 SELECT "Accounts/Trigger";
 CREATE TRIGGER defaultDeckToNewAccount

@@ -2,6 +2,8 @@
 --    insert into this file
 -- To add achievements to an existing database, use sqlite3 shell interface
 
+-- /!\ Update include/server/ServerDatabase.hpp when updating this file
+
 -- Do not reuse already used id, even if not currently used!
 -- Do not change already defined id
 
