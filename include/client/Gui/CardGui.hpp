@@ -23,6 +23,11 @@ public:
 	/// show the back.
 	void setShownSide(bool showFront);
 
+	/// Returns the size of a card. Since all cards have the same size, this
+	/// method is static.
+	/// \return the size of a card.
+	static sf::Vector2f getSize();
+
 	/// Positioning interface.
 	void setPosition(float x, float y);
 	void setPosition(const sf::Vector2f& position);
@@ -69,6 +74,12 @@ private:
 
 	/// Character size.
 	static constexpr std::size_t CHAR_SIZE = 20;
+
+	/// Path to the font.
+	static constexpr char FONT_PATH[] = "../resources/client/FreeSans.otf";
+
+	/// Path to the image of the back side of a card.
+	static constexpr char BACK_IMAGE_PATH[] = "../resources/client/back.png";
 
 	/// Current position of the card.
 	sf::Vector2f _position;

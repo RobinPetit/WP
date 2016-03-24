@@ -3,17 +3,18 @@
 // WizardPoker header
 #include "client/Gui/CreatureGui.hpp"
 
-const sf::Vector2f CreatureGui::ATTACK_POSITION{12.f, 12.f};
-const sf::Vector2f CreatureGui::HEALTH_POSITION{12.f, 12.f};
-const sf::Vector2f CreatureGui::SHIELD_POSITION{12.f, 12.f};
+const sf::Vector2f CreatureGui::ATTACK_POSITION{12.f, 40.f};
+const sf::Vector2f CreatureGui::HEALTH_POSITION{80.f, 40.f};
+const sf::Vector2f CreatureGui::SHIELD_POSITION{160.f, 40.f};
+constexpr char CreatureGui::FRONT_IMAGE_PATH[];
 
 CreatureGui::CreatureGui(const std::string& name, const std::string& description, int cost, int attack, int health, int shield, ShieldType shieldType):
 	CardGui(name, description, cost),
 	_shieldType{shieldType}
 {
-	if(!_pictureTexture.loadFromFile("frontCreature.png"))
+	if(!_pictureTexture.loadFromFile(FRONT_IMAGE_PATH))
 	{
-		std::cerr << "Error front loading" ;
+		std::cerr << "Unable to load " << FRONT_IMAGE_PATH << "\n";
 		return;
 	} // Standard SFML 2.0 error protocol (CF documentation)
 	_pictureTexture.setSmooth(true);

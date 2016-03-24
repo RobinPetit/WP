@@ -28,5 +28,20 @@ GuiCardsCollectionState::GuiCardsCollectionState(Context& context):
 	_buttons[0].button->setPosition(windowWidth/5.f, windowHeight * 8.f/10.f);
 	_buttons[0].button->setSize(windowWidth * 3.f/5.f, windowHeight * 1/10.f);
 
-	registerRootWidgets({_titleLabel, _buttons[0].button});
+	_creatureCanvas->setPosition(0, 0);
+	_creatureCanvas->setSize(400, 400);
+	_creatureCanvas->clear(sf::Color::Transparent);
+	_creatureCanvas->draw(_testCreature);
+	_creatureCanvas->display();
+	_context.gui->add(_creatureCanvas);
+
+	_spellCanvas->setPosition(400, 0);
+	_spellCanvas->setSize(400, 400);
+	_spellCanvas->clear(sf::Color::Transparent);
+	_testSpell.setShownSide(false);
+	_spellCanvas->draw(_testSpell);
+	_spellCanvas->display();
+	_context.gui->add(_spellCanvas);
+
+	registerRootWidgets({_titleLabel, _buttons[0].button, _creatureCanvas, _spellCanvas});
 }

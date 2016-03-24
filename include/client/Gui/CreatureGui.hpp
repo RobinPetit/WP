@@ -44,6 +44,9 @@ private:
 
 	/// Position of the shield text.
 	static const sf::Vector2f SHIELD_POSITION;
+
+	/// Path of the image of the front side for a creature.
+	static constexpr char FRONT_IMAGE_PATH[] = "../resources/client/creatureFront.png";
 };
 
 #endif  // CREATURE_GUI_CLIENT_HPP

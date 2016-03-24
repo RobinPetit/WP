@@ -6,24 +6,37 @@
 const sf::Vector2f CardGui::SIZE{240.f, 360.f};
 const sf::Vector2f CardGui::NAME_POSITION{12.f, 12.f};
 const sf::Vector2f CardGui::COST_POSITION{200.f, 12.f};
-const sf::Vector2f CardGui::DESCRIPTION_POSITION{300.f, 12.f};
+const sf::Vector2f CardGui::DESCRIPTION_POSITION{36.f, 240.f};
+constexpr char CardGui::BACK_IMAGE_PATH[];
+constexpr char CardGui::FONT_PATH[];
 
 CardGui::CardGui(const std::string& name, const std::string& description, int cost):
 	_position{0.f, 0.f},
 	_showFront{true}
 {
-	_backTexture.loadFromFile("back.png");
+	if(!_backTexture.loadFromFile(BACK_IMAGE_PATH))
+	{
+		std::cerr << "Unable to load " << BACK_IMAGE_PATH << "\n";
+		return;
+	}
 	_backTexture.setSmooth(true); // enable smooth borders
 	_backView.setSize(SIZE);
 	_backView.setTexture(&_backTexture);
 
-	_font.loadFromFile("TrueLies.ttf"); // loading chosen font
+	if(!_font.loadFromFile(FONT_PATH))
+	{
+		std::cerr << "Unable to load " << FONT_PATH << "\n";
+		return;
+	}
 
 	// complete cost, name and effects
 	setupText(_nameText, name, NAME_POSITION);
+	_nameText.setStyle(sf::Text::Bold);
 	setupText(_costText, std::to_string(cost), COST_POSITION);
-	_costText.setColor(sf::Color::Red);
+	_costText.setStyle(sf::Text::Bold | sf::Text::Underlined);
+	_costText.setColor(sf::Color(200, 0, 0));
 	setupText(_descriptionText, description, DESCRIPTION_POSITION);
+	_descriptionText.setStyle(sf::Text::Italic);
 }
 
 void CardGui::setCost(int cost)
@@ -34,6 +47,11 @@ void CardGui::setCost(int cost)
 void CardGui::setShownSide(bool showFront)
 {
 	_showFront = showFront;
+}
+
+sf::Vector2f CardGui::getSize()
+{
+	return SIZE;
 }
 
 void CardGui::setPosition(float x, float y)
