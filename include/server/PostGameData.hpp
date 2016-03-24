@@ -2,8 +2,10 @@
 #define _POST_GAME_DATA_SERVER_HPP_
 
 // std-C++ headers
-#include <vector>
 #include <string>
+#include <cassert>
+// WizardPoker headers
+#include "common/Identifiers.hpp"
 
 struct PostGameData
 {
@@ -18,6 +20,8 @@ struct PostGameData
 
 	int remainingHealth;
 	int gameDuration;
+	PostGameData();
+	std::string display();
 };
 
 #endif  // _POST_GAME_DATA_SERVER_HPP_

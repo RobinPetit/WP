@@ -596,7 +596,7 @@ Ladder Client::getLadder()
 	return ladder;
 }
 
-AchievementList Client::getAchievements()
+ClientAchievementList Client::getAchievements()
 {
 	if(!_isConnected)
 		throw NotConnectedException("unable to get the achievement list.");
@@ -611,5 +611,16 @@ AchievementList Client::getAchievements()
 		throw std::runtime_error("unable to get the achievement list.");
 	AchievementList achievements;
 	packet >> achievements;
-	return achievements;
+	return getAchievements(achievements);
+}
+
+ClientAchievementList Client::getAchievements(AchievementList newAchievements)
+{
+    ClientAchievementList clientAchievements;
+    for (std::size_t i=0; i<newAchievements.size(); i++)
+    {
+		const auto& id = newAchievements.at(i).id;
+        clientAchievements.push_back(ClientAchievement(newAchievements.at(i), _database.getAchievementData(id)));
+	}
+	return clientAchievements;
 }

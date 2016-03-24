@@ -13,6 +13,7 @@
 #include <iostream>
 #include <chrono>
 #include <cassert>
+#include <sstream>
 
 constexpr std::chrono::seconds GameThread::_turnTime;
 
@@ -47,8 +48,15 @@ RandomInteger& GameThread::getGenerator()
 
 void GameThread::printVerbose(std::string message)
 {
-	if (_verbose)
-		std::cout << "\tgame 0 - " + message << std::endl;
+	if (not _verbose)
+		return;
+
+	std::istringstream iss("game n " + message);
+    std::string line;
+    while (std::getline(iss, line))
+    {
+        std::cout << "\t" << line << std::endl; //print each line with indentation
+    }
 }
 
 userId GameThread::playGame(const ClientInformations& player1, const ClientInformations& player2)
@@ -73,13 +81,17 @@ userId GameThread::playGame(const ClientInformations& player1, const ClientInfor
 	// unlock a random new card
 	cardId earnedCardId{_database.getRandomCardId()};
 
+	// display player's post game data
+	printVerbose(std::string("Player1's Post Game Data : \n") + _postGameDataPlayer1.display());
+    printVerbose(std::string("Player2's Post Game Data : \n") + _postGameDataPlayer2.display());
+
 	// send postGameData to database, receive new unlocked achievements
 	AchievementList newAchievementsPlayer1 = _database.newAchievements(_postGameDataPlayer1, _player1Id);
 	AchievementList newAchievementsPlayer2 = _database.newAchievements(_postGameDataPlayer2, _player2Id);
 
 	// send last message to both players
-	sendFinalMessage(_specialOutputSocketPlayer1, _postGameDataPlayer1, earnedCardId);
-	sendFinalMessage(_specialOutputSocketPlayer2, _postGameDataPlayer2, earnedCardId);
+	sendFinalMessage(_specialOutputSocketPlayer1, _postGameDataPlayer1, earnedCardId, newAchievementsPlayer1);
+	sendFinalMessage(_specialOutputSocketPlayer2, _postGameDataPlayer2, earnedCardId, newAchievementsPlayer2);
 
 	return _winnerId;
 }
@@ -225,20 +237,19 @@ void GameThread::makeTimer()
 	}
 }
 
-void GameThread::sendFinalMessage(sf::TcpSocket& specialSocket, PostGameData& postGameData, cardId earnedCardId)
+void GameThread::sendFinalMessage(sf::TcpSocket& specialSocket, PostGameData& postGameData, cardId earnedCardId, AchievementList& newAchievements)
 {
     sf::Packet packet;
 
-	// EndGame::applyToSelf indicate which player won the game: false mean that
-	// the player who receive this message has won.
-    if (postGameData.playerWon) // send card message + card id if player won
+	// EndGame::applyToSelf indicate which player won the game: false means the player himself won
+    if (postGameData.playerWon) // send card message + unlocked card + new achievements
     {
 		postGameData.unlockedCard = earnedCardId;
-		packet << TransferType::GAME_OVER << EndGame{_endGameCause, false} << earnedCardId;
+		packet << TransferType::GAME_OVER << EndGame{_endGameCause, false} << earnedCardId << newAchievements;
 	}
-	else // send message if player lost
+	else // if player lost : send message + new achievements
 	{
-		packet << TransferType::GAME_OVER << EndGame{_endGameCause, true};
+		packet << TransferType::GAME_OVER << EndGame{_endGameCause, true} << newAchievements;
 	}
 	specialSocket.send(packet);
 }

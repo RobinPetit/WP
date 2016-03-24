@@ -12,18 +12,19 @@ class ClientAchievement
 {
 	const AchievementData _achievementData;
 	const Achievement _achievement;
-	
+
 public:
 	explicit ClientAchievement(const Achievement, const AchievementData); // TODO: reference? pointer? move?...?
-	
+
 	std::string getName() const;
 	std::string getPrettyName() const;
 	std::string getDescription() const;
 	int getRequiredProgress() const;
 	int getCurrentProgress() const;
-	float getProgressPercentage() const;
-	
+
 	bool isUnlocked() const;
 };
+
+typedef std::vector<ClientAchievement> ClientAchievementList;
 
 #endif // _CLIENT_ACHIEVEMENT_CLIENT_HPP

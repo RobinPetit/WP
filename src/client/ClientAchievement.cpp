@@ -2,6 +2,7 @@
 
 // std-C++ headers
 #include <cassert>
+#include <string>
 // WizardPoker headers
 #include "common/Achievements.hpp"
 #include "client/AchievementData.hpp"
@@ -20,7 +21,7 @@ std::string ClientAchievement::getName() const
 
 std::string ClientAchievement::getPrettyName() const
 {
-	return getName() + ' ' + (isUnlocked() ? "✔" : std::string("(") + std::to_string(getProgressPercentage()) + "%)");
+	return getName() + (isUnlocked() ? " ✔" : std::string(" (") + std::to_string(getCurrentProgress()) + "/" + std::to_string(getRequiredProgress()) + ")");
 }
 
 std::string ClientAchievement::getDescription() const
@@ -36,11 +37,6 @@ int ClientAchievement::getRequiredProgress() const
 int ClientAchievement::getCurrentProgress() const
 {
 	return _achievement.currentProgress;
-}
-
-float ClientAchievement::getProgressPercentage() const
-{
-	return static_cast<float>(static_cast<double>(getCurrentProgress() * 100) / getRequiredProgress());
 }
 
 bool ClientAchievement::isUnlocked() const
