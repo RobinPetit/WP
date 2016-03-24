@@ -5,6 +5,8 @@
 // std-C++ headers
 #include <sstream>
 
+const std::wstring AbstractChat::_quitString = L":quit";
+
 AbstractChat::AbstractChat(const char * const argv[6]):
 	_selfName{argv[4]},
 	_friendName{argv[5]},
@@ -95,7 +97,7 @@ void AbstractChat::start()
 	output();
 }
 
-void AbstractChat::treatMessage(const std::string& message)
+void AbstractChat::treatMessage(const std::wstring& message)
 {
 	// special inputs start with ':'
 	if(message[0] != ':')
@@ -109,7 +111,7 @@ void AbstractChat::treatMessage(const std::string& message)
 		}
 		display(_selfName, message);
 	}
-	else if(message == ":quit")
+	else if(message == _quitString)
 		endDiscussion();
 }
 
@@ -130,7 +132,7 @@ void AbstractChat::input()
 	_listening.store(true);
 	_in.setBlocking(false);
 	sf::Packet inputPacket;
-	std::string message;
+	std::wstring message;
 
 	while(_listening.load())
 	{
@@ -169,7 +171,7 @@ void AbstractChat::input()
 void AbstractChat::friendQuit()
 {
 	_listening.store(false);
-	display(_friendName, "left the discussion");
+	display(_friendName, L"left the discussion");
 	_friendPresence.store(false);
 	_in.disconnect();
 	_out.disconnect();
