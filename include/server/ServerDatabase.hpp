@@ -81,7 +81,7 @@ public:
 	//////////////// Achievements
 	/// Unlock new card and achievements
 	AchievementList newAchievements(const PostGameData&, userId);
-	AchievementList getAchievements();
+	AchievementList getAchievements(userId);
 	int getWithInDaClub(userId);
 	Ladder getLadder();
 
@@ -147,7 +147,7 @@ private:
 
 		///\TODO use smart pointer as return type value
 		AchievementList newAchievements(const PostGameData&, userId);
-		AchievementList unlockedAchievements(userId);
+		AchievementList allAchievements(userId);
 	};
 
 	/// Default relative path to sqlite3 file
