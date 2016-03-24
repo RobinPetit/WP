@@ -15,10 +15,10 @@ public:
 	/// Destructor.
 	virtual ~CardGui() = default;
 
-	/// Setw the cost of the card.
+	/// Sets the cost of the card.
 	void setCost(int cost);
 
-	/// Setw which side of the card is drawn when the card is displayed.
+	/// Sets which side of the card is drawn when the card is displayed.
 	/// \param true to show the front (with the image, title, ...), false to
 	/// show the back.
 	void setShownSide(bool showFront);
@@ -74,6 +74,9 @@ private:
 
 	/// Character size.
 	static constexpr std::size_t CHAR_SIZE = 20;
+
+	/// Description character size.
+	static constexpr std::size_t DESCRIPTION_CHAR_SIZE = 12;
 
 	/// Path to the font.
 	static constexpr char FONT_PATH[] = "../resources/client/FreeSans.otf";

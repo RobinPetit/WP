@@ -1,5 +1,6 @@
 // WizardPoker headers
 #include "client/Gui/states/GuiCardsCollectionState.hpp"
+#include "client/Gui/CreatureGui.hpp"
 
 GuiCardsCollectionState::GuiCardsCollectionState(Context& context):
 	AbstractState(context),
@@ -25,4 +26,5 @@ GuiCardsCollectionState::GuiCardsCollectionState(Context& context):
 	_buttons[0].button->setSize(windowWidth * 3.f/5.f, windowHeight * 1/10.f);
 
 	registerRootWidgets({_titleLabel, _buttons[0].button});
+
 }
