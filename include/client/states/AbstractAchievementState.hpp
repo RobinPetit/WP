@@ -3,7 +3,6 @@
 
 // WizardPoker headers
 #include "client/AbstractState.hpp"
-#include "common/Achievements.hpp"
 #include "client/ClientAchievement.hpp"
 
 /// Abstract version of the achievement state.

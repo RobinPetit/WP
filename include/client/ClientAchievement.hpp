@@ -5,7 +5,7 @@
 #include <string>
 // WizardPoker headers
 #include "common/Identifiers.hpp"
-#include "common/Achievements.hpp"
+#include "common/Achievement.hpp"
 
 
 /// created by ClientDatabase::getAchievementData(AchievementId id) (\TODO)

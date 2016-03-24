@@ -13,7 +13,7 @@
 #include "common/sockets/TransferType.hpp"
 #include "common/sockets/EndGame.hpp"
 #include "common/Ladder.hpp"
-#include "common/Achievements.hpp"
+#include "common/Achievement.hpp"
 
 template <typename T>
 sf::Packet& operator <<(sf::Packet& packet, const std::vector<T>& vec);

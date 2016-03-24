@@ -13,7 +13,7 @@
 // WizardPoker headers
 #include "common/Terminal.hpp"
 #include "common/Database.hpp"  // FriendsList typedef
-#include "common/Achievements.hpp"  // AchievementList typedef
+#include "common/Achievement.hpp"  // AchievementList typedef
 #include "client/ClientAchievement.hpp"
 #include "common/CardsCollection.hpp"
 #include "common/Deck.hpp"

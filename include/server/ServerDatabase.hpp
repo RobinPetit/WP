@@ -9,7 +9,7 @@
 #include "common/Database.hpp"
 #include "common/Identifiers.hpp"
 #include "common/Card.hpp"
-#include "common/Achievements.hpp"
+#include "common/Achievement.hpp"
 #include "server/ServerCardData.hpp"
 #include "server/PostGameData.hpp"
 
