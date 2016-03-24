@@ -80,6 +80,8 @@ userId GameThread::playGame(const ClientInformations& player1, const ClientInfor
 
 	// unlock a random new card
 	cardId earnedCardId{_database.getRandomCardId()};
+	if (_postGameDataPlayer1.playerWon) _postGameDataPlayer1.unlockedCard = earnedCardId;
+	if (_postGameDataPlayer2.playerWon) _postGameDataPlayer2.unlockedCard = earnedCardId;
 
 	// display player's post game data
 	printVerbose(std::string("Player1's Post Game Data : \n") + _postGameDataPlayer1.display());
@@ -132,6 +134,8 @@ void GameThread::runGame()
 
 		for(auto player : {_activePlayer, _passivePlayer})
 		{
+			auto otherPlayer{ player == _activePlayer ? _passivePlayer : _activePlayer };
+
 			sf::TcpSocket& specialSocket{player == &_player1 ? _specialOutputSocketPlayer1 : _specialOutputSocketPlayer2};
 
 			auto status{player->tryReceiveClientInput()}; // get input
@@ -140,6 +144,9 @@ void GameThread::runGame()
 			{
 				std::cerr << "Lost connection with a player\n";
 				//winner is the player who's still connected
+                otherPlayer->postGameData.playerWon = true;
+                player->postGameData.playerQuit = true;
+
 				userId winnerId = player == _activePlayer ? _passivePlayer->getId() : _activePlayer->getId();
 				endGame(winnerId, EndGame::Cause::LOST_CONNECTION);
 				break;
@@ -244,7 +251,6 @@ void GameThread::sendFinalMessage(sf::TcpSocket& specialSocket, PostGameData& po
 	// EndGame::applyToSelf indicate which player won the game: false means the player himself won
     if (postGameData.playerWon) // send card message + unlocked card + new achievements
     {
-		postGameData.unlockedCard = earnedCardId;
 		packet << TransferType::GAME_OVER << EndGame{_endGameCause, false} << earnedCardId << newAchievements;
 	}
 	else // if player lost : send message + new achievements
