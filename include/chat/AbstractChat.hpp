@@ -72,6 +72,8 @@ private:
 	/// A string containing "caller" or "callee" depending on the parameters
 	std::string _role;
 
+	std::atomic_bool _listening;
+
 	/// The port to connect to
 	sf::Uint16 _remotePort;
 
@@ -104,6 +106,9 @@ private:
 	/// The function called the the listening thread, awaiting for friend
 	/// messages and partiular signals (leaving for example)
 	void input();
+
+	/// Method to call when a signal is received telling that the friend leaves
+	void friendQuit();
 };
 
 #endif  // _ABSTRACT_CHAT_

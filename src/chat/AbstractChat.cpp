@@ -10,7 +10,8 @@ AbstractChat::AbstractChat(const char * const argv[6]):
 	_friendName{argv[5]},
 	_running{false},
 	_address{argv[2]},
-	_role{argv[1]}
+	_role{argv[1]},
+	_listening{false}
 {
 	std::stringstream(argv[3]) >> _remotePort;
 }
@@ -84,6 +85,8 @@ void AbstractChat::connectAsCallee()
 	_listener.accept(_in);
 }
 
+#include <iostream>
+
 void AbstractChat::start()
 {
 	connect();
@@ -128,11 +131,12 @@ void AbstractChat::endDiscussion()
 
 void AbstractChat::input()
 {
+	_listening.store(true);
 	_in.setBlocking(false);
 	sf::Packet inputPacket;
 	std::string message;
 
-	while(_running.load())
+	while(_listening.load())
 	{
 		sf::Socket::Status status{_in.receive(inputPacket)};
 		// If no packet wassent by friend, wait 1/10 s
@@ -152,18 +156,27 @@ void AbstractChat::input()
 				break;
 
 			case TransferType::CHAT_QUIT:
-				display(_friendName, "left the discussion");
-				_friendPresence.store(false);
+				friendQuit();
 				break;
 
 			default:
 				throw std::runtime_error("AbstractChat::input: Wrong header");
 			}
 		}
-		// if status is Error or Disconnected, stop everything, an error occured
-		else
+		else if(status == sf::Socket::Disconnected)
+			friendQuit();
+		else  // status == sf::Socket::Error
 			throw std::runtime_error("AbstractChat::input: Error in received status");
 	}
+}
+
+void AbstractChat::friendQuit()
+{
+	_listening.store(false);
+	display(_friendName, "left the discussion");
+	_friendPresence.store(false);
+	//_in.disconnect();
+	_out.disconnect();
 }
 
 AbstractChat::~AbstractChat()

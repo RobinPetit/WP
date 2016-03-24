@@ -50,12 +50,11 @@ void GuiChat::handleSendButtonCallback()
 
 void GuiChat::display(const std::string& name, const std::string& message)
 {
-	//if(_friendPresence.load())
-	if(_chatBox)
+	if(_friendPresence.load())
 		_chatBox->addLine(name + ": " + message);
-	//else
+	else
 		// Display the line in grey
-		//_chatBox->addLine(name + ": " + message, sf::Color(127, 127, 127));
+		_chatBox->addLine(name + ": " + message, sf::Color(127, 127, 127));
 }
 
 void GuiChat::output()
