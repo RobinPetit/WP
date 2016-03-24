@@ -41,8 +41,6 @@ public:
 		return getAnyFriendsList(id, _friendshipRequestsStmt);
 	}
 
-	Ladder getLadder();
-
 	void addFriend(userId id1, userId id2);
 	void removeFriend(userId id1, userId id2);
 	bool areFriend(userId id1, userId id2);
@@ -67,6 +65,9 @@ public:
 
 	unsigned countAccounts();
 
+	// Achievements
+	Ladder getLadder();
+
 	virtual ~ServerDatabase();
 
 private:
@@ -86,7 +87,6 @@ private:
 	sqlite3_stmt * _friendshipRequestsStmt;
 	sqlite3_stmt * _decksStmt;
 	sqlite3_stmt * _cardsCollectionStmt;
-	sqlite3_stmt * _ladderStmt;
 	sqlite3_stmt * _addFriendStmt;
 	sqlite3_stmt * _removeFriendStmt;
 	sqlite3_stmt * _areFriendStmt;
@@ -106,6 +106,8 @@ private:
 	sqlite3_stmt * _getFirstCardIdsStmt;
 	sqlite3_stmt * _countCardsStmt;
 	sqlite3_stmt * _getRandomCardIdStmt;
+	// achievements
+	sqlite3_stmt * _ladderStmt;
 
 	// `constexpr std::array::size_type size() const;`
 	// -> future uses have to be _statements.size() -> 26 is written only one time
@@ -148,21 +150,16 @@ private:
 				"	ORDER BY card;"
 			},
 			Statement {
-				&_ladderStmt,
-				"SELECT login, victories, defeats "
-				"	FROM Account;"
-			},
-			Statement {
 				&_addFriendStmt,
 				"INSERT INTO Friend "
 				"	VALUES(?1,?2);" // TRIGGER addFriend will remove obselete friendshipRequests
 			},
-			Statement { // 8
+			Statement {
 				&_removeFriendStmt,
 				"DELETE FROM Friend "
 				"	WHERE(first == ?1 AND second == ?2);" // With ?1 < ?2. See initdatabase.sql for reason
 			},
-			Statement {
+			Statement { // 8
 				&_areFriendStmt,
 				"SELECT 1 FROM Friendship "
 				"	WHERE(first == ?1 AND second == ?2);"
@@ -177,12 +174,12 @@ private:
 				"DELETE FROM FriendRequest "
 				"	WHERE from_ == ?1 AND to_ == ?2;"
 			},
-			Statement { // 12
+			Statement {
 				&_isFriendshipRequestSentStmt,
 				"SELECT 1 FROM FriendRequest "
 				"	WHERE from_ == ?1 AND to_ == ?2;"
 			},
-			Statement {
+			Statement { // 12
 				&_registerUserStmt,
 				"INSERT INTO Account(login, password) "
 				"	VALUES(?1,?2);"
@@ -199,12 +196,12 @@ private:
 				"	VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, "
 				"		?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22);"
 			},
-			Statement { // 16
+			Statement {
 				&_deleteDeckByNameStmt,
 				"DELETE FROM Deck "
 				"	WHERE owner == ?1 and name == ?2;"
 			},
-			Statement {
+			Statement { // 16
 				&_editDeckByNameStmt,
 				"UPDATE Deck "
 				"	SET card0 = ?2, card1 = ?3, card2 = ?4, card3 = ?5, card4 = ?6, card5 = ?7, card6 = ?8, "
@@ -220,13 +217,13 @@ private:
 				&_getCreatureCardsStmt,
 				"SELECT id, cost, attack, health, shield, shieldType FROM CreatureCard;"
 			},
-			Statement { // 20
+			Statement {
 				&_getCardEffectsStmt,
 				"SELECT parameter0, parameter1, parameter2, parameter3,"
 				"	parameter4, parameter5, parameter6 "
 				"FROM Effect WHERE owner == ?1;"
 			},
-			Statement {
+			Statement { // 20
 				&_newCardStmt,
 				"INSERT INTO GivenCard(card, owner) "
 				"	VALUES (?1, ?2);"
@@ -246,9 +243,14 @@ private:
 				&_getRandomCardIdStmt,
 				"SELECT id FROM FullCard ORDER BY random() LIMIT 1;"
 			},
-			Statement {
+			Statement { // 24
 				&_countAccountsStmt,
 				"SELECT COUNT (*) FROM Account;"
+			},
+			Statement {
+				&_ladderStmt,
+				"SELECT login, victories, defeats "
+				"	FROM Account;"
 			}
 		}
 	};

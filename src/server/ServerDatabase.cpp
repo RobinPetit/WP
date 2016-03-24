@@ -30,7 +30,7 @@ Card* ServerDatabase::getCard(cardId card, Player& owner)
 		throw std::runtime_error("The requested card (" + std::to_string(card) + ") does not exist.");
 
 	// Do not use ?: operator (http://en.cppreference.com/w/cpp/language/operator_other#Conditional_operator)
-	if (_cardData.at(card)->isCreature())
+	if(_cardData.at(card)->isCreature())
 		return new Creature(*static_cast<const ServerCreatureData *>(_cardData.at(card).get()), owner);
 	else
 		return new Spell(*static_cast<const ServerSpellData *>(_cardData.at(card).get()));
@@ -117,23 +117,6 @@ void ServerDatabase::addCard(userId id, cardId card)
 	sqliteThrowExcept(sqlite3_bind_int64(_newCardStmt, 2, id));
 
 	assert(sqliteThrowExcept(sqlite3_step(_newCardStmt)) == SQLITE_DONE);
-}
-
-Ladder ServerDatabase::getLadder()
-{
-	std::unique_lock<std::mutex> lock {_dbAccess};
-	sqlite3_reset(_ladderStmt);
-
-	Ladder ladder(countAccounts());
-
-	for(size_t i = 0; i < ladder.size() && sqliteThrowExcept(sqlite3_step(_ladderStmt)) == SQLITE_ROW; ++i)
-	{
-		ladder.at(i).name = reinterpret_cast<const char *>(sqlite3_column_text(_ladderStmt, 0));
-		ladder.at(i).victories = sqlite3_column_int(_ladderStmt, 1);
-		ladder.at(i).defeats = sqlite3_column_int(_ladderStmt, 2);
-	}
-
-	return ladder;
 }
 
 void ServerDatabase::addFriend(userId userId1, userId userId2)
@@ -328,9 +311,9 @@ void ServerDatabase::createSpellData()
 		    std::make_pair<>(
 		        id,
 		        std::unique_ptr<CommonCardData>(new ServerSpellData(
-		                                  id, sqlite3_column_int(_getSpellCardsStmt, 1), // cost
-		                                  std::vector<EffectParamsCollection>(createCardEffects(id)) // effects
-		                              ))
+		                id, sqlite3_column_int(_getSpellCardsStmt, 1), // cost
+		                std::vector<EffectParamsCollection>(createCardEffects(id)) // effects
+		                                        ))
 		    )
 		);
 	}
@@ -349,14 +332,14 @@ void ServerDatabase::createCreatureData()
 		    std::make_pair<>(
 		        id,
 		        std::unique_ptr<CommonCardData>(new ServerCreatureData(
-		                                  id,
-		                                  sqlite3_column_int(_getCreatureCardsStmt, 1), // cost
-		                                  std::vector<EffectParamsCollection>(createCardEffects(id)), // effects
-		                                  sqlite3_column_int(_getCreatureCardsStmt, 2), // attack
-		                                  sqlite3_column_int(_getCreatureCardsStmt, 3), // health
-		                                  sqlite3_column_int(_getCreatureCardsStmt, 4), // shield
-		                                  sqlite3_column_int(_getCreatureCardsStmt, 5) // shieldType
-		                              ))
+		                id,
+		                sqlite3_column_int(_getCreatureCardsStmt, 1), // cost
+		                std::vector<EffectParamsCollection>(createCardEffects(id)), // effects
+		                sqlite3_column_int(_getCreatureCardsStmt, 2), // attack
+		                sqlite3_column_int(_getCreatureCardsStmt, 3), // health
+		                sqlite3_column_int(_getCreatureCardsStmt, 4), // shield
+		                sqlite3_column_int(_getCreatureCardsStmt, 5) // shieldType
+		                                        ))
 		    )
 		);
 	}
@@ -391,6 +374,24 @@ unsigned ServerDatabase::countAccounts()
 	sqlite3_reset(_countAccountsStmt);
 	assert(sqliteThrowExcept(sqlite3_step(_countAccountsStmt)) == SQLITE_ROW);
 	return sqlite3_column_int(_countAccountsStmt, 0);
+}
+
+// Achievements
+Ladder ServerDatabase::getLadder()
+{
+	std::unique_lock<std::mutex> lock {_dbAccess};
+	sqlite3_reset(_ladderStmt);
+
+	Ladder ladder(countAccounts());
+
+	for(size_t i = 0; i < ladder.size() && sqliteThrowExcept(sqlite3_step(_ladderStmt)) == SQLITE_ROW; ++i)
+	{
+		ladder.at(i).name = reinterpret_cast<const char *>(sqlite3_column_text(_ladderStmt, 0));
+		ladder.at(i).victories = sqlite3_column_int(_ladderStmt, 1);
+		ladder.at(i).defeats = sqlite3_column_int(_ladderStmt, 2);
+	}
+
+	return ladder;
 }
 
 ServerDatabase::~ServerDatabase()
