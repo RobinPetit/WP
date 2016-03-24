@@ -3,15 +3,14 @@
 // WizardPoker headers
 #include "client/Gui/CardGui.hpp"
 
-const sf::Vector2f CardGui::SIZE{240.f, 360.f};
-const sf::Vector2f CardGui::NAME_POSITION{12.f, 12.f};
-const sf::Vector2f CardGui::COST_POSITION{200.f, 12.f};
-const sf::Vector2f CardGui::DESCRIPTION_POSITION{36.f, 240.f};
+const sf::Vector2f CardGui::SIZE{260.f, 360.f};
+const sf::Vector2f CardGui::NAME_POSITION{20.f, 17.f};
+const sf::Vector2f CardGui::COST_POSITION{220.f, 17.f};
+const sf::Vector2f CardGui::DESCRIPTION_POSITION{26.f, 273.f};
 constexpr char CardGui::BACK_IMAGE_PATH[];
 constexpr char CardGui::FONT_PATH[];
 
 CardGui::CardGui(const std::string& name, const std::string& description, int cost):
-	_position{0.f, 0.f},
 	_showFront{true}
 {
 	if(!_backTexture.loadFromFile(BACK_IMAGE_PATH))
@@ -32,11 +31,14 @@ CardGui::CardGui(const std::string& name, const std::string& description, int co
 	// complete cost, name and effects
 	setupText(_nameText, name, NAME_POSITION);
 	_nameText.setStyle(sf::Text::Bold);
+
 	setupText(_costText, std::to_string(cost), COST_POSITION);
 	_costText.setStyle(sf::Text::Bold | sf::Text::Underlined);
-	_costText.setColor(sf::Color(200, 0, 0));
+	_costText.setColor(sf::Color(0, 0, 100));
+
 	setupText(_descriptionText, description, DESCRIPTION_POSITION);
 	_descriptionText.setStyle(sf::Text::Italic);
+	_descriptionText.setCharacterSize(DESCRIPTION_CHAR_SIZE);
 }
 
 void CardGui::setCost(int cost)
@@ -54,24 +56,9 @@ sf::Vector2f CardGui::getSize()
 	return SIZE;
 }
 
-void CardGui::setPosition(float x, float y)
-{
-	setPosition({x, y});
-}
-
-void CardGui::setPosition(const sf::Vector2f& position)
-{
-	_position = position;
-}
-
-const sf::Vector2f& CardGui::getPosition() const
-{
-	return _position;
-}
-
 void CardGui::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
-	states.transform.translate(_position);
+	states.transform.combine(getTransform());
 	if(_showFront)
 	{
 		target.draw(_picture, states);

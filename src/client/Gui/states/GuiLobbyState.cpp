@@ -14,7 +14,6 @@ GuiLobbyState::GuiLobbyState(Context& context):
 		{&GuiLobbyState::quit, "Back to previous menu"},
 	},
 	_cancelButton{std::make_shared<tgui::Button>()},
-	_menuLabel{std::make_shared<tgui::Label>()},
 	_buttonsLayout{std::make_shared<tgui::VerticalLayout>()},
 	_play{false}
 {
@@ -24,11 +23,7 @@ GuiLobbyState::GuiLobbyState(Context& context):
 	auto windowWidth(tgui::bindWidth(*_context.gui));
 	auto windowHeight(tgui::bindHeight(*_context.gui));
 
-	_menuLabel->setText("Welcome to the Lobby Menu");
-	_menuLabel->setTextSize(30);
-	// center the label on the X axis
-	_menuLabel->setPosition(windowWidth/2 - tgui::bindWidth(_menuLabel)/2, 40);
-	_context.gui->add(_menuLabel);
+	makeTitle("Welcome to the Lobby Menu");
 
 	_buttonsLayout->setPosition(windowWidth/5.f, windowHeight/5.f);
 	_buttonsLayout->setSize(windowWidth*3.f/5.f, windowHeight*3.f/5.f);
@@ -48,7 +43,7 @@ GuiLobbyState::GuiLobbyState(Context& context):
 	_buttonsLayout->add(_cancelButton);
 	_context.gui->add(_buttonsLayout);
 
-	registerRootWidgets({_menuLabel, _buttonsLayout});
+	registerRootWidgets({_buttonsLayout});
 }
 
 void GuiLobbyState::findAGame()

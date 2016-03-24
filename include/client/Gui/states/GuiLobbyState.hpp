@@ -22,7 +22,6 @@ class GuiLobbyState : public GuiAbstractState, public AbstractLobbyState
 
 		tgui::Button::Ptr _cancelButton;
 
-		tgui::Label::Ptr _menuLabel;
 		tgui::VerticalLayout::Ptr _buttonsLayout;
 
 		bool _play;

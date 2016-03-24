@@ -6,7 +6,7 @@
 // External headers
 #include <SFML/Graphics.hpp>
 
-class CardGui : public sf::Drawable
+class CardGui : public sf::Drawable, public sf::Transformable
 {
 public:
 	/// Constructor.
@@ -15,10 +15,10 @@ public:
 	/// Destructor.
 	virtual ~CardGui() = default;
 
-	/// Setw the cost of the card.
+	/// Sets the cost of the card.
 	void setCost(int cost);
 
-	/// Setw which side of the card is drawn when the card is displayed.
+	/// Sets which side of the card is drawn when the card is displayed.
 	/// \param true to show the front (with the image, title, ...), false to
 	/// show the back.
 	void setShownSide(bool showFront);
@@ -27,11 +27,6 @@ public:
 	/// method is static.
 	/// \return the size of a card.
 	static sf::Vector2f getSize();
-
-	/// Positioning interface.
-	void setPosition(float x, float y);
-	void setPosition(const sf::Vector2f& position);
-	const sf::Vector2f& getPosition() const;
 
 	/// Draws the object to a render target.
 	virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
@@ -75,14 +70,14 @@ private:
 	/// Character size.
 	static constexpr std::size_t CHAR_SIZE = 20;
 
+	/// Description character size.
+	static constexpr std::size_t DESCRIPTION_CHAR_SIZE = 12;
+
 	/// Path to the font.
 	static constexpr char FONT_PATH[] = "../resources/client/FreeSans.otf";
 
 	/// Path to the image of the back side of a card.
 	static constexpr char BACK_IMAGE_PATH[] = "../resources/client/back.png";
-
-	/// Current position of the card.
-	sf::Vector2f _position;
 
 	/// True when showing the front (with the image, title, ...), false when
 	/// showing the back.

@@ -9,18 +9,13 @@ GuiLadderState::GuiLadderState(Context& context):
 	{
 		{&GuiLadderState::backMainMenu, "Back to main menu"}
 	},
-	_ladderLayout{std::make_shared<tgui::VerticalLayout>()},
-	_titleLabel{std::make_shared<tgui::Label>()}
+	_ladderLayout{std::make_shared<tgui::VerticalLayout>()}
 {
 	auto windowWidth(tgui::bindWidth(*_context.gui));
 	auto windowHeight(tgui::bindHeight(*_context.gui));
 
 	// Make the title
-	_titleLabel->setText("Ladder");
-	_titleLabel->setTextSize(30);
-	// center the label on the X axis
-	_titleLabel->setPosition(windowWidth/2.f - tgui::bindWidth(_titleLabel)/2.f, 40);
-	_context.gui->add(_titleLabel);
+	makeTitle("Ladder", 30U, 30.f);
 
 	// Make the button(s)
 	setupButtons(_buttons, std::static_pointer_cast<tgui::Container>(_context.gui->getContainer()));
@@ -49,7 +44,7 @@ GuiLadderState::GuiLadderState(Context& context):
 	_ladderLayout->setSize(windowWidth * 3.5f/5.f, windowHeight * 6.5f/10.f);
 	_context.gui->add(_ladderLayout);
 
-	registerRootWidgets({_ladderLayout, _titleLabel, _buttons[0].button});
+	registerRootWidgets({_ladderLayout, _buttons[0].button});
 }
 
 GuiLadderState::GuiLadderEntry::GuiLadderEntry():

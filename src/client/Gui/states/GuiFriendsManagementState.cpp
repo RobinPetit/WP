@@ -16,7 +16,6 @@ GuiFriendsManagementState::GuiFriendsManagementState(Context& context):
 		{&GuiFriendsManagementState::updateFriendListBox, "Refresh list"},
 		{&GuiFriendsManagementState::backMainMenu, "Back to main menu"},
 	},
-	_menuLabel{std::make_shared<tgui::Label>()},
 	_friendsListBox{std::make_shared<tgui::ListBox>()},
 	_buttonsLayout{std::make_shared<tgui::VerticalLayout>()}
 {
@@ -27,11 +26,7 @@ GuiFriendsManagementState::GuiFriendsManagementState(Context& context):
 	auto windowHeight(tgui::bindHeight(*_context.gui));
 
 	// Make the label
-	_menuLabel->setText("Friends management menu");
-	_menuLabel->setTextSize(30);
-	// center the label on the X axis
-	_menuLabel->setPosition(windowWidth/2.f - tgui::bindWidth(_menuLabel)/2.f, 40);
-	_context.gui->add(_menuLabel);
+	makeTitle("Friends management menu");
 
 	// Make the buttons
 	_buttonsLayout->setPosition(windowWidth/2.f, windowHeight/5.f);
@@ -40,12 +35,12 @@ GuiFriendsManagementState::GuiFriendsManagementState(Context& context):
 	_context.gui->add(_buttonsLayout);
 
 	// Make the friends list box
-	_friendsListBox->setPosition(windowWidth/5, windowHeight/5);
+	_friendsListBox->setPosition(windowWidth/5.f, windowHeight/5.f);
 	_friendsListBox->setSize(windowWidth*(1.f/2.f - 1.f/5.f), windowHeight*3.f/4.f);
 	updateFriendListBox();
 	_context.gui->add(_friendsListBox);
 
-	registerRootWidgets({_menuLabel, _friendsListBox, _buttonsLayout});
+	registerRootWidgets({_friendsListBox, _buttonsLayout});
 }
 
 void GuiFriendsManagementState::addFriend()

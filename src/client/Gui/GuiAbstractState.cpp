@@ -84,5 +84,16 @@ void GuiAbstractState::displayMessage(const std::string& message)
 
 void GuiAbstractState::registerRootWidgets(std::vector<tgui::Widget::Ptr>&& widgets)
 {
-	std::swap(_rootWidgets, widgets);
+	// Move to content of widgets to the back of _rootWidgets
+	std::move(widgets.begin(), widgets.end(), std::back_inserter(_rootWidgets));
+}
+
+void GuiAbstractState::makeTitle(const std::string& title, unsigned int size, float y)
+{
+	tgui::Label::Ptr titleLabel{std::make_shared<tgui::Label>()};
+	titleLabel->setText(title);
+	titleLabel->setTextSize(size);
+	titleLabel->setPosition((tgui::bindWidth(*_context.gui) - tgui::bindWidth(titleLabel)) / 2.f, y);
+	_context.gui->add(titleLabel);
+	registerRootWidgets({titleLabel});
 }
