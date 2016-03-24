@@ -13,6 +13,7 @@
 #include <iostream>
 #include <chrono>
 #include <cassert>
+#include <sstream>
 
 constexpr std::chrono::seconds GameThread::_turnTime;
 
@@ -47,8 +48,15 @@ RandomInteger& GameThread::getGenerator()
 
 void GameThread::printVerbose(std::string message)
 {
-	if (_verbose)
-		std::cout << "\tgame 0 - " + message << std::endl;
+	if (not _verbose)
+		return
+
+	std::istringstream iss("game 0" + message);
+    std::string line;
+    while (std::getline(iss, line))
+    {
+        std::cout << "\t" << line << std::endl; //print each line with indentation
+    }
 }
 
 userId GameThread::playGame(const ClientInformations& player1, const ClientInformations& player2)
@@ -159,6 +167,9 @@ void GameThread::runGame()
 	std::chrono::steady_clock::time_point endOfGame = std::chrono::steady_clock::now();
     std::size_t gameDuration = std::chrono::duration_cast<std::chrono::seconds>(endOfGame - startOfGame).count();
     _postGameDataPlayer1.gameDuration = _postGameDataPlayer2.gameDuration = gameDuration;
+
+    printVerbose(std::string("Player1's Post Game Data : \n") + _postGameDataPlayer1.toString())
+    printVerbose(std::string("Player1's Post Game Data : \n") + _postGameDataPlayer1.toString())
 
 	assert((_winnerId != 0) xor (_endGameCause == EndGame::Cause::ENDING_SERVER));
 }
