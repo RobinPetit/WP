@@ -17,6 +17,15 @@ It is better to do an out-of-source build:
 	cmake ..
 	make
 
+Also, this project requires the following libraries/programs:
+
++ cmake version >= 3.0.2 ([download](https://cmake.org/download/) (take last in case of doubt));
++ make;
++ SFML version 2.3.2. ([download](http://www.sfml-dev.org/download/sfml/2.3.2/) and [documentation](http://www.sfml-dev.org/documentation/2.3.2/));
++ TGUI version 0.7 ([download](https://tgui.eu/download/) (also compilable from [github sources](https://github.com/texus/TGUI)) and [documentation](https://tgui.eu/documentation/v0.7/));
++ SQLite 3 (`apt-get install libsqlite3-dev`);
++ (SFML may require an update from OpenGL/GLUT with `apt-get install freeglut3`).
+
 
 ## Usual workflow
 
@@ -74,17 +83,19 @@ line wraps.
 ## Directories structure
 
 There are 3 main directories:
-* `SRD`
-* `include`
-* `src`
+
++ `SRD`;
++ `include`;
++ `src`.
 
 All the files that are related the the SRD go in the directory `SRD`.
 All the header files (`.hpp` and `.inl`) go in the directory `include`.
 All the implementation files (`.cpp`) go in the directory `src`.
 `include` and `src` directories have three subdirectories:
-* `client`
-* `server`
-* `common`
+
++ `client`;
++ `server`;
++ `common`.
 
 The files that belong exclusively to the client, exclusively to the server,
 or to both, go the the corresponding subdirectory.
@@ -234,3 +245,4 @@ depending on the directory of the file.
 		_myInt = newMyInt;
 	}
 ```
+
