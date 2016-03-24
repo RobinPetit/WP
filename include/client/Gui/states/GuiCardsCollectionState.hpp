@@ -19,10 +19,6 @@ class GuiCardsCollectionState : public GuiAbstractState, public AbstractCardsCol
 	private:
 		const std::vector<ButtonData<GuiCardsCollectionState>> _buttons;
 		tgui::Label::Ptr _titleLabel;
-		CreatureGui _testCreature;
-		tgui::Canvas::Ptr _creatureCanvas;
-		SpellGui _testSpell;
-		tgui::Canvas::Ptr _spellCanvas;
 };
 
 #endif  // _GUI_CARDS_COLLECTION_STATE_CLIENT_HPP
