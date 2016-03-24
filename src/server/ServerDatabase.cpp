@@ -391,9 +391,9 @@ AchievementList ServerDatabase::newAchievements(const PostGameData& postGame, us
 AchievementList ServerDatabase::getAchievements()
 {
 	AchievementList allAchievements;
-    for (std::size_t i=0; i<13; i++)
+    for (std::size_t i=1; i<13; i++)
     {
-		allAchievements.push_back({i+1, 0}); //TODO : replace by actual IDs and progress values !!!!!!!!!!!!!!!!
+		allAchievements.push_back({i, 0}); //TODO : replace by actual IDs and progress values !!!!!!!!!!!!!!!!
     }
     return allAchievements;
 }
