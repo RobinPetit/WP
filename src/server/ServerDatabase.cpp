@@ -476,3 +476,33 @@ ServerDatabase::~ServerDatabase()
 			          << ": " << sqlite3_errstr(errcode)
 			          << std::endl;
 }
+
+
+
+ServerDatabase::AchievementManager::AchievementManager(ServerDatabase& database) :
+	_database(database)
+{
+
+}
+
+AchievementList ServerDatabase::AchievementManager::newAchievements(const PostGameData& postGame, userId user)
+{
+	AchievementList achievements;
+
+	for(size_t i = 0; i < _achievementsData.size(); ++i)
+	{
+		// update
+		(_database.*(_achievementsData[i].addMethod))(user, postGame.*(_achievementsData[i].toAddValue));
+		// get new value
+		int currentProgress = (_database.*(_achievementsData[i].getMethod))(user);
+
+		if(!_database.wasNotified(user, _achievementsData[i].id)
+		        && currentProgress >= _database.getRequired(_achievementsData[i].id))
+		{
+			_database.setNotified(user, _achievementsData[i].id);
+			achievements.emplace_back(Achievement {_achievementsData[i].id, currentProgress});
+		}
+	}
+
+	return achievements;
+}

@@ -1,13 +1,16 @@
 #ifndef _SERVER_DATABASE_SERVER_HPP
 #define _SERVER_DATABASE_SERVER_HPP
 
+#include <array>
 #include <map>
 #include <memory>
 
 #include "common/Database.hpp"
 #include "common/Identifiers.hpp"
 #include "common/Card.hpp"
+#include "common/Achievements.hpp"
 #include "server/ServerCardData.hpp"
+#include "server/PostGameData.hpp"
 
 class Player;
 class Creature;
@@ -315,6 +318,38 @@ private:
 			}
 		}
 	};
+
+	class AchievementManager;
+};
+
+class ServerDatabase::AchievementManager
+{
+	ServerDatabase& _database;
+
+	struct AchievementData
+	{
+		AchievementId id;
+		void (ServerDatabase::*addMethod)(userId, int);
+		int PostGameData::*toAddValue;
+		int (ServerDatabase::*getMethod)(userId);
+	};
+	std::array<AchievementData, 1> _achievementsData
+	{
+		{
+			AchievementData {
+				1,
+				&ServerDatabase::addTimeSpent,
+				&PostGameData::gameDuration,
+				&ServerDatabase::getTimeSpent
+			}
+		}
+	};
+
+public:
+	AchievementManager(ServerDatabase&);
+
+	///\TODO use smart pointer as return type value
+	AchievementList newAchievements(const PostGameData&, userId);
 };
 
 #endif //_DATABASE_SERVER_HPP
