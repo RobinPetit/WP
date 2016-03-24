@@ -1,10 +1,11 @@
 #ifndef _SERVER_DATABASE_SERVER_HPP
 #define _SERVER_DATABASE_SERVER_HPP
 
+// std-C++ headers
 #include <array>
 #include <map>
 #include <memory>
-
+// WizardPoker headers
 #include "common/Database.hpp"
 #include "common/Identifiers.hpp"
 #include "common/Card.hpp"
@@ -13,12 +14,15 @@
 #include "server/PostGameData.hpp"
 
 class Player;
+// Cards
 class Creature;
 class Spell;
 
-// for the moment login and name are used for the same string
+// for now login and name are used for the same string
 
 /// Interface to the server database.
+/// In comments I will use Card Template to talk about a card 'out-game'
+/// and Card to talk about a card 'in-game', with a owner...
 class ServerDatabase : public Database
 {
 public:
@@ -26,15 +30,25 @@ public:
 	/// \param filename: relative path to sqlite3 file.
 	explicit ServerDatabase(const std::string& filename = FILENAME);
 
+	//////////////// Cards
+	/// Card* to be deallocated by the caller
 	Card* getCard(cardId card, Player& player);
 	const CommonCardData* getCardData(cardId card);
 	/// Number of card templates in database
 	cardId countCards();
+	/// Get a valid id of a card template
 	cardId getRandomCardId();
 
+	//////////////// Users
 	userId getUserId(const std::string& login);
 	std::string getLogin(userId id);
+	bool areIdentifiersValid(const std::string& login, const std::string& password);
+	bool isRegistered(const std::string& login);
+	void registerUser(const std::string& login, const std::string& password);
 
+	unsigned countAccounts();
+
+	//////////////// Friends
 	inline FriendsList getFriendsList(userId id)
 	{
 		return getAnyFriendsList(id, _friendListStmt);
@@ -52,9 +66,11 @@ public:
 	void removeFriendshipRequest(userId from, userId to);
 	bool isFriendshipRequestSent(userId from, userId to);
 
+	//////////////// CardCollections
 	CardsCollection getCardsCollection(userId id);
 	void addCard(userId id, cardId card);
 
+	//////////////// Decks
 	std::vector<Deck> getDecks(userId id);
 	Deck getDeckByName(userId id, const std::string& deckName);
 	void createDeck(userId id, const Deck& deck);
@@ -62,43 +78,81 @@ public:
 	void deleteDeckByName(userId id, const std::string& deckName);
 	void editDeck(userId id, const Deck& deck); // Deck should contains the deckId
 
-	bool areIdentifiersValid(const std::string& login, const std::string& password);
-	bool isRegistered(const std::string& login);
-	void registerUser(const std::string& login, const std::string& password);
-
-	unsigned countAccounts();
-
-	//Achievements
+	//////////////// Achievements
+	AchievementList newAchievements(const PostGameData&, userId);
 	Ladder getLadder();
 
 	virtual ~ServerDatabase();
 
 private:
+	friend class AchievementManager;
+	/// A part of the database which perform computation of achievements
+	class AchievementManager
+	{
+		ServerDatabase& _database;
+
+		struct AchievementData
+		{
+			AchievementId id;
+			void (ServerDatabase::*addMethod)(userId, int);
+			int PostGameData::*toAddValue;
+			int (ServerDatabase::*getMethod)(userId);
+		};
+		std::array<AchievementData, 2> _achievementsData
+		{
+			{
+				AchievementData {
+					1,
+					&ServerDatabase::addTimeSpent,
+					&PostGameData::gameDuration,
+					&ServerDatabase::getTimeSpent
+				},
+				AchievementData {
+					2,
+					&ServerDatabase::addVictories,
+					&PostGameData::playerWon,
+					&ServerDatabase::getVictories
+				}
+			}
+		};
+
+	public:
+		AchievementManager(ServerDatabase&);
+
+		///\TODO use smart pointer as return type value
+		AchievementList newAchievements(const PostGameData&, userId);
+	};
+
 	/// Default relative path to sqlite3 file
 	static const char FILENAME[];
 	std::map<const cardId, const std::unique_ptr<const CommonCardData> > _cardData;
+	AchievementManager _achievementManager;
 
+	/// Used by getFriendsList and getAnyFriendsList
 	FriendsList getAnyFriendsList(userId id, sqlite3_stmt * stmt);
-	/// Add a card to _cards;
+
+	/// Add a card to _cards (used by contructor)
 	void createSpellData();
+	/// Add a card to _cards (used by contructor)
 	void createCreatureData();
+	/// Used by createSpellData() and createCreatureData()
 	std::vector<EffectParamsCollection> createCardEffects(cardId id);
 
-	// Achievements
+	//////////////// Achievements
 	// this methods should be used only by the nested class AchievementManager
 	// so I put this in private and declare AchievementManager (which is usable only by the ServerDatabase class)
 	// as a friend
 	int getRequired(AchievementId);
 	bool wasNotified(userId, AchievementId);
 	void setNotified(userId, AchievementId);
+
+	int getAchievementProgress(userId id, sqlite3_stmt * stmt);
 	int getTimeSpent(userId);
 	int getVictories(userId);
 
+	void addToAchievementProgress(userId id, int value, sqlite3_stmt * stmt);
 	void addTimeSpent(userId, int seconds);
 	void addVictories(userId, int victories);
-
-	int getAchievementProgress(userId id, sqlite3_stmt * stmt);
-	void addToAchievementProgress(userId id, int value, sqlite3_stmt * stmt);
 
 	sqlite3_stmt * _friendListStmt;
 	sqlite3_stmt * _userIdStmt;
@@ -322,45 +376,6 @@ private:
 			}
 		}
 	};
-
-	friend class AchievementManager;
-	class AchievementManager;
-};
-
-class ServerDatabase::AchievementManager
-{
-	ServerDatabase& _database;
-
-	struct AchievementData
-	{
-		AchievementId id;
-		void (ServerDatabase::*addMethod)(userId, int);
-		int PostGameData::*toAddValue;
-		int (ServerDatabase::*getMethod)(userId);
-	};
-	std::array<AchievementData, 2> _achievementsData
-	{
-		{
-			AchievementData {
-				1,
-				&ServerDatabase::addTimeSpent,
-				&PostGameData::gameDuration,
-				&ServerDatabase::getTimeSpent
-			},
-			AchievementData {
-				2,
-				&ServerDatabase::addVictories,
-				&PostGameData::playerWon,
-				&ServerDatabase::getVictories
-			}
-		}
-	};
-
-public:
-	AchievementManager(ServerDatabase&);
-
-	///\TODO use smart pointer as return type value
-	AchievementList newAchievements(const PostGameData&, userId);
 };
 
 #endif //_DATABASE_SERVER_HPP

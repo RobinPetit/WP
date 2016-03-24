@@ -14,7 +14,10 @@
 #define AUTO_QUERY_LENGTH -1
 
 const char ServerDatabase::FILENAME[] = "../resources/server/database.db";
-ServerDatabase::ServerDatabase(const std::string& filename) : Database(filename), _cardData()
+ServerDatabase::ServerDatabase(const std::string& filename) :
+	Database(filename),
+	_cardData(),
+	_achievementManager(*this)
 {
 	for(size_t i = 0; i < _statements.size(); ++i)
 		prepareStmt(_statements[i]);
@@ -377,6 +380,27 @@ unsigned ServerDatabase::countAccounts()
 }
 
 // Achievements
+AchievementList ServerDatabase::newAchievements(const PostGameData& postGame, userId user)
+{
+	return _achievementManager.newAchievements(postGame, user);
+}
+
+Ladder ServerDatabase::getLadder()
+{
+	std::unique_lock<std::mutex> lock {_dbAccess};
+	sqlite3_reset(_ladderStmt);
+
+	Ladder ladder(countAccounts());
+
+	for(size_t i = 0; i < ladder.size() && sqliteThrowExcept(sqlite3_step(_ladderStmt)) == SQLITE_ROW; ++i)
+	{
+		ladder.at(i).name = reinterpret_cast<const char *>(sqlite3_column_text(_ladderStmt, 0));
+		ladder.at(i).victories = sqlite3_column_int(_ladderStmt, 1);
+		ladder.at(i).defeats = sqlite3_column_int(_ladderStmt, 2);
+	}
+
+	return ladder;
+}
 int ServerDatabase::getRequired(AchievementId achievement)
 {
 	sqlite3_reset(_getRequiredStmt);
@@ -405,23 +429,6 @@ void ServerDatabase::setNotified(userId user, AchievementId achievement)
 	sqliteThrowExcept(sqlite3_bind_int64(_setNotifiedStmt, 2, achievement));
 
 	assert(sqliteThrowExcept(sqlite3_step(_setNotifiedStmt)) == SQLITE_DONE);
-}
-
-Ladder ServerDatabase::getLadder()
-{
-	std::unique_lock<std::mutex> lock {_dbAccess};
-	sqlite3_reset(_ladderStmt);
-
-	Ladder ladder(countAccounts());
-
-	for(size_t i = 0; i < ladder.size() && sqliteThrowExcept(sqlite3_step(_ladderStmt)) == SQLITE_ROW; ++i)
-	{
-		ladder.at(i).name = reinterpret_cast<const char *>(sqlite3_column_text(_ladderStmt, 0));
-		ladder.at(i).victories = sqlite3_column_int(_ladderStmt, 1);
-		ladder.at(i).defeats = sqlite3_column_int(_ladderStmt, 2);
-	}
-
-	return ladder;
 }
 
 int ServerDatabase::getTimeSpent(userId user)
