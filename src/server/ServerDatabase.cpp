@@ -470,6 +470,16 @@ void ServerDatabase::addVictoriesInARow(userId user, int victories)
 	assert(sqliteThrowExcept(sqlite3_step(_setVictoriesInARowStmt)) == SQLITE_DONE);
 }
 
+int ServerDatabase::getWithInDaClub(userId user)
+{
+	return getAchievementProgress(user, _getWithInDaClubStmt);
+}
+
+void ServerDatabase::addWithInDaClub(userId user, int withInDaClub)
+{
+	return addToAchievementProgress(user, withInDaClub, _addWithInDaClubStmt);
+}
+
 
 int ServerDatabase::getAchievementProgress(userId user, sqlite3_stmt* stmt)
 {

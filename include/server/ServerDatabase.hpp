@@ -98,7 +98,7 @@ private:
 			int PostGameData::*toAddValue;
 			int (ServerDatabase::*getMethod)(userId);
 		};
-		std::array<AchievementData, 3> _achievementsData
+		std::array<AchievementData, 4> _achievementsData
 		{
 			{
 				AchievementData {
@@ -118,6 +118,12 @@ private:
 					&ServerDatabase::addVictoriesInARow,
 					&PostGameData::playerWon,
 					&ServerDatabase::getVictoriesInARow
+				},
+				AchievementData {
+					4,
+					&ServerDatabase::addWithInDaClub,
+					&PostGameData::opponentInDaClub,
+					&ServerDatabase::getWithInDaClub
 				}
 			}
 		};
@@ -156,11 +162,13 @@ private:
 	int getTimeSpent(userId);
 	int getVictories(userId);
 	int getVictoriesInARow(userId);
+	int getWithInDaClub(userId);
 
 	void addToAchievementProgress(userId id, int value, sqlite3_stmt * stmt);
 	void addTimeSpent(userId, int seconds);
 	void addVictories(userId, int victories);
 	void addVictoriesInARow(userId, int victories);
+	void addWithInDaClub(userId, int withInDaClub);
 
 	sqlite3_stmt * _friendListStmt;
 	sqlite3_stmt * _userIdStmt;
@@ -196,14 +204,16 @@ private:
 	sqlite3_stmt * _getTimeSpentStmt;
 	sqlite3_stmt * _getVictoriesStmt;
 	sqlite3_stmt * _getVictoriesInARowStmt;
+	sqlite3_stmt * _getWithInDaClubStmt;
 
 	sqlite3_stmt * _addTimeSpentStmt;
 	sqlite3_stmt * _addVictoriesStmt;
 	sqlite3_stmt * _setVictoriesInARowStmt;
+	sqlite3_stmt * _addWithInDaClubStmt;
 
 	// `constexpr std::array::size_type size() const;`
 	// -> future uses have to be _statements.size() -> 33 is written only one time
-	StatementsList<35> _statements
+	StatementsList<37> _statements
 	{
 		{
 			Statement {
@@ -394,6 +404,18 @@ private:
 				&_setVictoriesInARowStmt,
 				"UPDATE Account "
 				"	SET maxVictoriesInARow = ?1 "
+				"	WHERE id == ?2;"
+			},
+			Statement {
+				&_getWithInDaClubStmt,
+				"SELECT gameWithInDaClub "
+				"	FROM Account "
+				"	WHERE id == ?1;"
+			},
+			Statement {
+				&_addWithInDaClubStmt,
+				"UPDATE Account "
+				"	SET gameWithInDaClub = gameWithInDaClub + ?1 "
 				"	WHERE id == ?2;"
 			}
 		}
