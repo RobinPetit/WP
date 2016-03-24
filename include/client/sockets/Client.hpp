@@ -13,6 +13,8 @@
 // WizardPoker headers
 #include "common/Terminal.hpp"
 #include "common/Database.hpp"  // FriendsList typedef
+#include "common/Achievement.hpp"  // AchievementList typedef
+#include "client/ClientAchievement.hpp"
 #include "common/CardsCollection.hpp"
 #include "common/Deck.hpp"
 #include "client/ClientDatabase.hpp"
@@ -142,6 +144,10 @@ public:
 
 	/// Used when the user wants the ladder
 	Ladder getLadder();
+
+	/// Used when the user wants to check his achievements
+	ClientAchievementList getAchievements(AchievementList newAchievements);
+	ClientAchievementList getAchievements();
 
 	/// Used to wait sleeping until the atomic boolean readyToPlay is set to true
 	void waitTillReadyToPlay();

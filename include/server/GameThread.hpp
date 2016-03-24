@@ -11,6 +11,7 @@
 #include "server/ServerDatabase.hpp"
 #include "common/sockets/EndGame.hpp"
 #include "common/random/RandomInteger.hpp"
+#include "server/PostGameData.hpp"
 // SFML headers
 #include <SFML/Network/TcpSocket.hpp>
 
@@ -29,16 +30,13 @@ public:
 	template <class F, class ...Args>
 	explicit GameThread(ServerDatabase& database, userId player1Id, userId player2Id, F&& f, Args&&... args);
 
-	/// Functions which stops the running thread (abortion)
-	void interruptGame();
-
-	void establishSockets(const ClientInformations& player1, const ClientInformations& player2);
-
+	/// Interface for Server
 	userId playGame(const ClientInformations& player1, const ClientInformations& player2);
+	void interruptGame(); ///< Stops the running thread (abort)
 
-	void endGame(userId winnerId, EndGame::Cause cause);
-
-	void swapTurns();
+	/// Interface for Player
+	void endGame(userId winnerId, EndGame::Cause cause); ///< quit the game
+	void swapTurns(); ///< end his turn
 
 	RandomInteger& getGenerator();
 	void printVerbose(std::string message);
@@ -53,15 +51,17 @@ private:
 	sf::TcpSocket _specialOutputSocketPlayer2;
 	Player _player1;
 	Player _player2;
+	PostGameData _postGameDataPlayer1;
+	PostGameData _postGameDataPlayer2;
 	ServerDatabase& _database;
 
-	userId _winner;
+	userId _winnerId;
 	EndGame::Cause _endGameCause;
 
-	Player *_activePlayer;
-	Player *_passivePlayer;
+	Player* _activePlayer;
+	Player* _passivePlayer;
+
 	int _turn;
-	bool _turnCanEnd;
 	bool _verbose=true;
 
 	std::thread _timerThread;
@@ -75,17 +75,17 @@ private:
 	static constexpr std::chrono::seconds _turnTime{120};
 
 	/*------------------------------ Methods */
-	userId runGame();
+	void createPlayers();
+
+	void runGame();
 
 	void setSocket(sf::TcpSocket& socket, sf::TcpSocket& specialSocket, const ClientInformations& player);
 
 	void makeTimer();
 
-	void createPlayers();
 	void endTurn();
 
-	void useCard(int cardIndex);
-	void attackWithCreature(int attackerIndex, int victimIndex);
+	void sendFinalMessage(sf::TcpSocket& specialSocket, PostGameData& postGameData, cardId earnedCardId, AchievementList& newAchievements);
 };
 
 /*------------------------------ Template code */
@@ -96,12 +96,11 @@ GameThread::GameThread(ServerDatabase& database, userId player1Id, userId player
 	_player1Id(player1Id),
 	_player2Id(player2Id),
 	_running(true),
-	_player1(*this, database, _player1Id, _player2),
-	_player2(*this, database, _player2Id, _player1),
+	_player1(*this, database, _player1Id, _player2, _postGameDataPlayer1),
+	_player2(*this, database, _player2Id, _player1, _postGameDataPlayer2),
 	_database(database),
-	_winner{0},
+	_winnerId{0},
 	_turn(0),
-	_turnCanEnd(false),
 	_turnSwap{false}
 {
 	createPlayers();

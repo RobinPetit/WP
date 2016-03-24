@@ -14,7 +14,10 @@
 #define AUTO_QUERY_LENGTH -1
 
 const char ServerDatabase::FILENAME[] = "../resources/server/database.db";
-ServerDatabase::ServerDatabase(const std::string& filename) : Database(filename), _cardData()
+ServerDatabase::ServerDatabase(const std::string& filename) :
+	Database(filename),
+	_cardData(),
+	_achievementManager(*this)
 {
 	for(size_t i = 0; i < _statements.size(); ++i)
 		prepareStmt(_statements[i]);
@@ -30,7 +33,7 @@ Card* ServerDatabase::getCard(cardId card, Player& owner)
 		throw std::runtime_error("The requested card (" + std::to_string(card) + ") does not exist.");
 
 	// Do not use ?: operator (http://en.cppreference.com/w/cpp/language/operator_other#Conditional_operator)
-	if (_cardData.at(card)->isCreature())
+	if(_cardData.at(card)->isCreature())
 		return new Creature(*static_cast<const ServerCreatureData *>(_cardData.at(card).get()), owner);
 	else
 		return new Spell(*static_cast<const ServerSpellData *>(_cardData.at(card).get()));
@@ -117,23 +120,6 @@ void ServerDatabase::addCard(userId id, cardId card)
 	sqliteThrowExcept(sqlite3_bind_int64(_newCardStmt, 2, id));
 
 	assert(sqliteThrowExcept(sqlite3_step(_newCardStmt)) == SQLITE_DONE);
-}
-
-Ladder ServerDatabase::getLadder()
-{
-	std::unique_lock<std::mutex> lock {_dbAccess};
-	sqlite3_reset(_ladderStmt);
-
-	Ladder ladder(countAccounts());
-
-	for(size_t i = 0; i < ladder.size() && sqliteThrowExcept(sqlite3_step(_ladderStmt)) == SQLITE_ROW; ++i)
-	{
-		ladder.at(i).name = reinterpret_cast<const char *>(sqlite3_column_text(_ladderStmt, 0));
-		ladder.at(i).victories = sqlite3_column_int(_ladderStmt, 1);
-		ladder.at(i).defeats = sqlite3_column_int(_ladderStmt, 2);
-	}
-
-	return ladder;
 }
 
 void ServerDatabase::addFriend(userId userId1, userId userId2)
@@ -328,9 +314,9 @@ void ServerDatabase::createSpellData()
 		    std::make_pair<>(
 		        id,
 		        std::unique_ptr<CommonCardData>(new ServerSpellData(
-		                                  id, sqlite3_column_int(_getSpellCardsStmt, 1), // cost
-		                                  std::vector<EffectParamsCollection>(createCardEffects(id)) // effects
-		                              ))
+		                id, sqlite3_column_int(_getSpellCardsStmt, 1), // cost
+		                std::vector<EffectParamsCollection>(createCardEffects(id)) // effects
+		                                        ))
 		    )
 		);
 	}
@@ -349,14 +335,14 @@ void ServerDatabase::createCreatureData()
 		    std::make_pair<>(
 		        id,
 		        std::unique_ptr<CommonCardData>(new ServerCreatureData(
-		                                  id,
-		                                  sqlite3_column_int(_getCreatureCardsStmt, 1), // cost
-		                                  std::vector<EffectParamsCollection>(createCardEffects(id)), // effects
-		                                  sqlite3_column_int(_getCreatureCardsStmt, 2), // attack
-		                                  sqlite3_column_int(_getCreatureCardsStmt, 3), // health
-		                                  sqlite3_column_int(_getCreatureCardsStmt, 4), // shield
-		                                  sqlite3_column_int(_getCreatureCardsStmt, 5) // shieldType
-		                              ))
+		                id,
+		                sqlite3_column_int(_getCreatureCardsStmt, 1), // cost
+		                std::vector<EffectParamsCollection>(createCardEffects(id)), // effects
+		                sqlite3_column_int(_getCreatureCardsStmt, 2), // attack
+		                sqlite3_column_int(_getCreatureCardsStmt, 3), // health
+		                sqlite3_column_int(_getCreatureCardsStmt, 4), // shield
+		                sqlite3_column_int(_getCreatureCardsStmt, 5) // shieldType
+		                                        ))
 		    )
 		);
 	}
@@ -393,6 +379,148 @@ unsigned ServerDatabase::countAccounts()
 	return sqlite3_column_int(_countAccountsStmt, 0);
 }
 
+// Achievements
+AchievementList ServerDatabase::newAchievements(const PostGameData& postGame, userId user)
+{
+	if(postGame.playerWon)
+		addCard(user, getRandomCardId());
+
+	return _achievementManager.newAchievements(postGame, user);
+}
+
+AchievementList ServerDatabase::getAchievements(userId user)
+{
+	return _achievementManager.allAchievements(user);
+}
+
+Ladder ServerDatabase::getLadder()
+{
+	std::unique_lock<std::mutex> lock {_dbAccess};
+	sqlite3_reset(_ladderStmt);
+
+	Ladder ladder(countAccounts());
+
+	for(size_t i = 0; i < ladder.size() && sqliteThrowExcept(sqlite3_step(_ladderStmt)) == SQLITE_ROW; ++i)
+	{
+		ladder.at(i).name = reinterpret_cast<const char *>(sqlite3_column_text(_ladderStmt, 0));
+		ladder.at(i).victories = sqlite3_column_int(_ladderStmt, 1);
+		ladder.at(i).defeats = sqlite3_column_int(_ladderStmt, 2);
+	}
+
+	return ladder;
+}
+int ServerDatabase::getRequired(AchievementId achievement)
+{
+	sqlite3_reset(_getRequiredStmt);
+	sqliteThrowExcept(sqlite3_bind_int64(_getRequiredStmt, 1, achievement));
+
+	assert(sqliteThrowExcept(sqlite3_step(_getRequiredStmt)) == SQLITE_ROW);
+
+	return sqlite3_column_int(_getRequiredStmt, 0);
+}
+
+bool ServerDatabase::wasNotified(userId user, AchievementId achievement)
+{
+	sqlite3_reset(_wasNotifiedStmt);
+	sqliteThrowExcept(sqlite3_bind_int64(_wasNotifiedStmt, 1, user));
+	sqliteThrowExcept(sqlite3_bind_int64(_wasNotifiedStmt, 2, achievement));
+
+	return sqliteThrowExcept(sqlite3_step(_wasNotifiedStmt)) == SQLITE_ROW;
+}
+
+void ServerDatabase::setNotified(userId user, AchievementId achievement)
+{
+	sqlite3_reset(_setNotifiedStmt);
+	sqliteThrowExcept(sqlite3_bind_int64(_setNotifiedStmt, 1, user));
+	sqliteThrowExcept(sqlite3_bind_int64(_setNotifiedStmt, 2, achievement));
+
+	assert(sqliteThrowExcept(sqlite3_step(_setNotifiedStmt)) == SQLITE_DONE);
+}
+
+int ServerDatabase::getTimeSpent(userId user)
+{
+	return getAchievementProgress(user, _getTimeSpentStmt);
+}
+
+void ServerDatabase::addTimeSpent(userId user, int seconds)
+{
+	addToAchievementProgress(user, seconds, _addTimeSpentStmt);
+}
+
+int ServerDatabase::getVictories(userId user)
+{
+	return getAchievementProgress(user, _getVictoriesStmt);
+}
+
+void ServerDatabase::addVictories(userId user, int victories)
+{
+	addToAchievementProgress(user, victories, _addVictoriesStmt);
+}
+
+int ServerDatabase::getVictoriesInARow(userId user)
+{
+	return getAchievementProgress(user, _getVictoriesInARowStmt);
+}
+
+void ServerDatabase::addVictoriesInARow(userId user, int victories)
+{
+	assert(victories >= 0);
+
+	if(victories > 0)
+		victories += getVictoriesInARow(user);
+
+	sqlite3_reset(_setVictoriesInARowStmt);
+	sqliteThrowExcept(sqlite3_bind_int(_setVictoriesInARowStmt, 1, victories));
+	sqliteThrowExcept(sqlite3_bind_int64(_setVictoriesInARowStmt, 2, user));
+
+	assert(sqliteThrowExcept(sqlite3_step(_setVictoriesInARowStmt)) == SQLITE_DONE);
+}
+
+int ServerDatabase::getWithInDaClub(userId user)
+{
+	return getAchievementProgress(user, _getWithInDaClubStmt);
+}
+
+void ServerDatabase::addWithInDaClub(userId user, int withInDaClub)
+{
+	addToAchievementProgress(user, withInDaClub, _addWithInDaClubStmt);
+}
+
+int ServerDatabase::getRagequits(userId user)
+{
+	return getAchievementProgress(user, _getRagequitsStmt);
+}
+
+void ServerDatabase::addRagequits(userId user, int ragequits)
+{
+	addToAchievementProgress(user, ragequits, _addRagequitsStmt);
+}
+
+int ServerDatabase::ownAllCards(userId user)
+{
+	return getAchievementProgress(user, _ownAllCardsStmt);
+}
+
+
+int ServerDatabase::getAchievementProgress(userId user, sqlite3_stmt* stmt)
+{
+	sqlite3_reset(stmt);
+	sqliteThrowExcept(sqlite3_bind_int64(stmt, 1, user));
+
+	assert(sqliteThrowExcept(sqlite3_step(stmt)) == SQLITE_ROW);
+
+	return sqlite3_column_int(stmt, 0);
+}
+
+void ServerDatabase::addToAchievementProgress(userId user, int value, sqlite3_stmt* stmt)
+{
+	sqlite3_reset(stmt);
+	sqliteThrowExcept(sqlite3_bind_int(stmt, 1, value));
+	sqliteThrowExcept(sqlite3_bind_int64(stmt, 2, user));
+
+	assert(sqliteThrowExcept(sqlite3_step(stmt)) == SQLITE_DONE);
+}
+
 ServerDatabase::~ServerDatabase()
 {
 	// TODO: move it to Database::~Database
@@ -404,4 +532,46 @@ ServerDatabase::~ServerDatabase()
 			          << i + 1 << " of " << _statements.size()
 			          << ": " << sqlite3_errstr(errcode)
 			          << std::endl;
+}
+
+
+
+ServerDatabase::AchievementManager::AchievementManager(ServerDatabase& database) :
+	_database(database)
+{
+
+}
+
+AchievementList ServerDatabase::AchievementManager::newAchievements(const PostGameData& postGame, userId user)
+{
+	AchievementList achievements;
+
+	for(size_t i = 0; i < _achievementsList.size(); ++i)
+	{
+		// update
+		if(_achievementsList[i].addMethod != nullptr)
+			(_database.*(_achievementsList[i].addMethod))(user, postGame.*(_achievementsList[i].toAddValue));
+
+		// get new value
+		int currentProgress = (_database.*(_achievementsList[i].getMethod))(user);
+
+		if(!_database.wasNotified(user, _achievementsList[i].id)
+		        && currentProgress >= _database.getRequired(_achievementsList[i].id))
+		{
+			_database.setNotified(user, _achievementsList[i].id);
+			achievements.emplace_back(Achievement {_achievementsList[i].id, currentProgress});
+		}
+	}
+
+	return achievements;
+}
+
+AchievementList ServerDatabase::AchievementManager::allAchievements(userId user)
+{
+	AchievementList achievements;
+
+	for(size_t i = 0; i < _achievementsList.size(); ++i)
+			achievements.emplace_back(Achievement {_achievementsList[i].id, (_database.*(_achievementsList[i].getMethod))(user)});
+
+	return achievements;
 }

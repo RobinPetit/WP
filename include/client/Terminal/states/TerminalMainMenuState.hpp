@@ -21,6 +21,7 @@ class TerminalMainMenuState : public TerminalAbstractState, public AbstractMainM
 		void manageDecks();
 		void seeCollection();
 		void seeLadder();
+		void seeAchievements();
 		void manageFriends();
 };
 
