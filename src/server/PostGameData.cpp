@@ -6,7 +6,9 @@ PostGameData::PostGameData() :
 	playerTookDamage(false),
 	playerWon(false),
 	playerQuit(false),
-	unlockedCard(0)
+	unlockedCard(0),
+	remainingHealth(0),
+	gameDuration(0)
 {
 	assert((int) false == 0);
 	assert((int) true == 1);
@@ -14,7 +16,7 @@ PostGameData::PostGameData() :
 
 std::string PostGameData::display()
 {
-	return 	std::string("\n-opponentInDaClub : ") + std::to_string(opponentInDaClub) +
+	return 	std::string("-opponentInDaClub : ") + std::to_string(opponentInDaClub) +
 			std::string("\n-playerStarted : ") + std::to_string(playerStarted) +
 			std::string("\n-playerTookDamage : ") + std::to_string(playerTookDamage) +
 			std::string("\n-playerWon : ") + std::to_string(playerWon) +
