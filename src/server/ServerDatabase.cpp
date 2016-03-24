@@ -377,6 +377,36 @@ unsigned ServerDatabase::countAccounts()
 }
 
 // Achievements
+int ServerDatabase::getRequired(AchievementId achievement)
+{
+	sqlite3_reset(_getRequiredStmt);
+	sqliteThrowExcept(sqlite3_bind_int64(_getRequiredStmt, 1, achievement));
+
+	assert(sqliteThrowExcept(sqlite3_step(_getRequiredStmt)) == SQLITE_ROW);
+
+	return sqlite3_column_int(_getRequiredStmt, 0);
+}
+
+bool ServerDatabase::wasNotified(userId user, AchievementId achievement)
+{
+	sqlite3_reset(_wasNotifiedStmt);
+	sqliteThrowExcept(sqlite3_bind_int64(_wasNotifiedStmt, 1, user));
+	sqliteThrowExcept(sqlite3_bind_int64(_wasNotifiedStmt, 2, achievement));
+
+	assert(sqliteThrowExcept(sqlite3_step(_wasNotifiedStmt)) == SQLITE_ROW);
+
+	return sqlite3_column_int(_wasNotifiedStmt, 0);
+}
+
+void ServerDatabase::setNotified(userId user, AchievementId achievement)
+{
+	sqlite3_reset(_setNotifiedStmt);
+	sqliteThrowExcept(sqlite3_bind_int64(_setNotifiedStmt, 1, user));
+	sqliteThrowExcept(sqlite3_bind_int64(_setNotifiedStmt, 2, achievement));
+
+	assert(sqliteThrowExcept(sqlite3_step(_setNotifiedStmt)) == SQLITE_DONE);
+}
+
 Ladder ServerDatabase::getLadder()
 {
 	std::unique_lock<std::mutex> lock {_dbAccess};

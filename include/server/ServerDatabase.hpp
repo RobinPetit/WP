@@ -66,6 +66,10 @@ public:
 	unsigned countAccounts();
 
 	// Achievements
+	int getRequired(AchievementId);
+	bool wasNotified(userId, AchievementId);
+	void setNotified(userId, AchievementId);
+
 	Ladder getLadder();
 
 	virtual ~ServerDatabase();
@@ -107,11 +111,15 @@ private:
 	sqlite3_stmt * _countCardsStmt;
 	sqlite3_stmt * _getRandomCardIdStmt;
 	// achievements
+	sqlite3_stmt * _getRequiredStmt;
+	sqlite3_stmt * _wasNotifiedStmt;
+	sqlite3_stmt * _setNotifiedStmt;
+
 	sqlite3_stmt * _ladderStmt;
 
 	// `constexpr std::array::size_type size() const;`
-	// -> future uses have to be _statements.size() -> 26 is written only one time
-	StatementsList<26> _statements
+	// -> future uses have to be _statements.size() -> 29 is written only one time
+	StatementsList<29> _statements
 	{
 		{
 			Statement {
@@ -248,6 +256,22 @@ private:
 				"SELECT COUNT (*) FROM Account;"
 			},
 			Statement {
+				&_getRequiredStmt,
+				"SELECT progressRequired "
+				"	FROM Achievement "
+				"	WHERE id == ?1;"
+			},
+			Statement {
+				&_wasNotifiedStmt,
+				"SELECT 1 FROM NotifiedAchievement "
+				"	WHERE owner == ?1 and achievement == ?2;"
+			},
+			Statement {
+				&_setNotifiedStmt,
+				"INSERT INTO NotifiedAchievement(owner, achievement) " ///\TODO use INSERT OR IGNORE (I use INSERT for now to detect errors)
+				"	VALUES(?1, ?2);"
+			},
+			Statement { // 28
 				&_ladderStmt,
 				"SELECT login, victories, defeats "
 				"	FROM Account;"
