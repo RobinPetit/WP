@@ -6,6 +6,9 @@
 // External headers
 #include <SFML/Graphics.hpp>
 
+/// TODO: handle line wraps in the description field.
+/// Graphical representation of a card. It behaves like other SFML graphicals
+/// classes, plus some getters/setters for the card interface.
 class CardGui : public sf::Drawable, public sf::Transformable
 {
 public:
