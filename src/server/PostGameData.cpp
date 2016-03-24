@@ -8,5 +8,6 @@ PostGameData::PostGameData() :
 	playerQuit(false),
 	unlockedCard(0)
 {
-
+	assert((int) false == 0);
+	assert((int) true == 1);
 }

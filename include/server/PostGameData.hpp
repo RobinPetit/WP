@@ -7,11 +7,12 @@
 
 struct PostGameData
 {
-	bool opponentInDaClub;
-	bool playerStarted;
-	bool playerTookDamage;
-	bool playerWon;
-	bool playerQuit;
+	///\TODO should be bool but I havent time to handle this for now
+	int opponentInDaClub;
+	int playerStarted;
+	int playerTookDamage;
+	int playerWon;
+	int playerQuit;
 
 	cardId unlockedCard;
 

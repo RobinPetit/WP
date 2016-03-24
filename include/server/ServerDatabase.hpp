@@ -333,7 +333,7 @@ class ServerDatabase::AchievementManager
 		int PostGameData::*toAddValue;
 		int (ServerDatabase::*getMethod)(userId);
 	};
-	std::array<AchievementData, 1> _achievementsData
+	std::array<AchievementData, 2> _achievementsData
 	{
 		{
 			AchievementData {
@@ -341,6 +341,12 @@ class ServerDatabase::AchievementManager
 				&ServerDatabase::addTimeSpent,
 				&PostGameData::gameDuration,
 				&ServerDatabase::getTimeSpent
+			},
+			AchievementData {
+				2,
+				&ServerDatabase::addVictories,
+				&PostGameData::playerWon,
+				&ServerDatabase::getVictories
 			}
 		}
 	};
