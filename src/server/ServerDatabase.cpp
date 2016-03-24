@@ -382,8 +382,9 @@ unsigned ServerDatabase::countAccounts()
 // Achievements
 AchievementList ServerDatabase::newAchievements(const PostGameData& postGame, userId user)
 {
-	if (postGame.playerWon)
-		addCard(user,getRandomCardId());
+	if(postGame.playerWon)
+		addCard(user, getRandomCardId());
+
 	return _achievementManager.newAchievements(postGame, user);
 }
 
@@ -492,6 +493,11 @@ void ServerDatabase::addRagequits(userId user, int ragequits)
 	addToAchievementProgress(user, ragequits, _addRagequitsStmt);
 }
 
+int ServerDatabase::ownAllCards(userId user)
+{
+	return getAchievementProgress(user, _ownAllCardsStmt);
+}
+
 
 int ServerDatabase::getAchievementProgress(userId user, sqlite3_stmt* stmt)
 {
@@ -537,18 +543,20 @@ AchievementList ServerDatabase::AchievementManager::newAchievements(const PostGa
 {
 	AchievementList achievements;
 
-	for(size_t i = 0; i < _achievementsData.size(); ++i)
+	for(size_t i = 0; i < _achievementsList.size(); ++i)
 	{
 		// update
-		(_database.*(_achievementsData[i].addMethod))(user, postGame.*(_achievementsData[i].toAddValue));
-		// get new value
-		int currentProgress = (_database.*(_achievementsData[i].getMethod))(user);
+		if(_achievementsList[i].addMethod != nullptr)
+			(_database.*(_achievementsList[i].addMethod))(user, postGame.*(_achievementsList[i].toAddValue));
 
-		if(!_database.wasNotified(user, _achievementsData[i].id)
-		        && currentProgress >= _database.getRequired(_achievementsData[i].id))
+		// get new value
+		int currentProgress = (_database.*(_achievementsList[i].getMethod))(user);
+
+		if(!_database.wasNotified(user, _achievementsList[i].id)
+		        && currentProgress >= _database.getRequired(_achievementsList[i].id))
 		{
-			_database.setNotified(user, _achievementsData[i].id);
-			achievements.emplace_back(Achievement {_achievementsData[i].id, currentProgress});
+			_database.setNotified(user, _achievementsList[i].id);
+			achievements.emplace_back(Achievement {_achievementsList[i].id, currentProgress});
 		}
 	}
 

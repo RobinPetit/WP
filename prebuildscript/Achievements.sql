@@ -41,7 +41,7 @@ INSERT INTO Achievement(id, name, description, progressRequired) VALUES
 (
 	6,
 	"Legen-wait for it...",
-	"Unlock all day cards",
+	"Unlock all day cards (beginner cards not counted)",
 	1
 ),
 (
