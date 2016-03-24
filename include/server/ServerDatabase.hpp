@@ -133,6 +133,7 @@ private:
 
 		///\TODO use smart pointer as return type value
 		AchievementList newAchievements(const PostGameData&, userId);
+		AchievementList unlockedAchievements(userId);
 	};
 
 	/// Default relative path to sqlite3 file

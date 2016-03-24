@@ -542,3 +542,9 @@ AchievementList ServerDatabase::AchievementManager::newAchievements(const PostGa
 
 	return achievements;
 }
+
+AchievementList ServerDatabase::AchievementManager::unlockedAchievements(userId user)
+{
+	std::cerr << "TODO: ServerDatabase::AchievementManager::unlockedAchievements" << std::endl;
+	return AchievementList();
+}
