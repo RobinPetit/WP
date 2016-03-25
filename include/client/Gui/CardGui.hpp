@@ -6,14 +6,14 @@
 // External headers
 #include <SFML/Graphics.hpp>
 
-/// TODO: handle line wraps in the description field.
 /// Graphical representation of a card. It behaves like other SFML graphicals
 /// classes, plus some getters/setters for the card interface.
 class CardGui : public sf::Drawable, public sf::Transformable
 {
 public:
 	/// Constructor.
-	CardGui(const std::string& name, const std::string& description, int cost);
+	/// \note The description parameter is taken by value on purpose.
+	CardGui(const std::string& name, std::string description, int cost);
 
 	/// Destructor.
 	virtual ~CardGui() = default;
@@ -70,6 +70,9 @@ private:
 	/// Position of the description relatively to the card.
 	static const sf::Vector2f DESCRIPTION_POSITION;
 
+	/// Width of the description frame.
+	static constexpr float DESCRIPTION_WIDTH = 208.f;
+
 	/// Character size.
 	static constexpr std::size_t CHAR_SIZE = 20;
 
@@ -91,6 +94,8 @@ private:
 
 	/// Texture of the back side.
 	sf::Texture _backTexture;
+
+	void addNewlinesInDescription(std::string& description);
 };
 
 
