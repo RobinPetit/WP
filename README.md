@@ -26,6 +26,9 @@ Also, this project requires the following libraries/programs:
 + SQLite 3 (`apt-get install libsqlite3-dev`);
 + (SFML may require an update from OpenGL/GLUT with `apt-get install freeglut3`).
 
+Note: To ensure an optimal compatibility, compile both TGUI **and** SFML from
+the last sources from GitHub.
+
 
 ## Usual workflow
 
