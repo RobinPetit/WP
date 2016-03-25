@@ -3,11 +3,11 @@
 // WizardPoker headers
 #include "client/Gui/AchievementGui.hpp"
 
-const sf::Vector2f AchievementGui::SIZE{350.f, 70.f};
-const sf::Vector2f AchievementGui::IMAGE_SIZE{57.2f, 70.f};
+const sf::Vector2f AchievementGui::SIZE{350.f, 72.f};
+const sf::Vector2f AchievementGui::IMAGE_SIZE{57.2f, 72.f};
 const sf::Vector2f AchievementGui::IMAGE_POSITION{0.f, 0.f};
-const sf::Vector2f AchievementGui::NAME_POSITION{70.f, 0.f};
-const sf::Vector2f AchievementGui::DESCRIPTION_POSITION{70.f, 25.f};
+const sf::Vector2f AchievementGui::NAME_POSITION{60.f, 0.f};
+const sf::Vector2f AchievementGui::DESCRIPTION_POSITION{60.f, 25.f};
 constexpr char AchievementGui::IMAGE_LOCKED_PATH[];
 constexpr char AchievementGui::IMAGE_UNLOCKED_PATH[];
 constexpr char AchievementGui::FONT_PATH[];
@@ -66,8 +66,34 @@ void AchievementGui::draw(sf::RenderTarget &target, sf::RenderStates states) con
 	target.draw(_imageSprite, states);
 }
 
-void AchievementGui::setupText(sf::Text& text, const std::string& string, const sf::Vector2f& position) const
+void AchievementGui::setupText(sf::Text& text, std::string string, const sf::Vector2f& position) const
 {
+	float lineSize{0.f};
+	float spaceSize = _font.getGlyph(static_cast<sf::Uint32>(' '), DESCRIPTION_CHAR_SIZE, false).advance;
+	float maxWidth = SIZE.x - NAME_POSITION.x;
+
+	auto prevIt = string.begin();
+	for(auto it(string.begin()); it != string.end(); it++)
+	{
+		if (*it==' ')
+		{
+			while (*it==' ')
+			{
+				lineSize += spaceSize;
+				it++;
+			}
+			prevIt = it;
+		}
+
+		lineSize += _font.getGlyph(static_cast<sf::Uint32>(*it), DESCRIPTION_CHAR_SIZE, false).advance;
+
+		if(lineSize >= maxWidth)
+		{
+			lineSize = 0.f;
+			it = string.insert(prevIt, '\n');
+		}
+	}
+
 	text.setString(string);
 	text.setColor(sf::Color::Black);
 	text.setFont(_font);

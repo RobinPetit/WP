@@ -31,7 +31,7 @@ GuiAchievementState::GuiAchievementState(Context& context):
 	_context.gui->add(_panel);
 
 	// Make the layout
-	_layout->setPosition(0.f, 0.f);
+	_layout->setPosition((_panel->getSize().x - AchievementGui::getSize().x)/2, 0.f);
 	_layout->setSize(AchievementGui::getSize().x, AchievementGui::getSize().y * gridHeight * 1.1f);
 	_panel->add(_layout);
 

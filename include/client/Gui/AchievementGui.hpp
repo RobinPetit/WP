@@ -78,7 +78,7 @@ private:
 
 	/// Ease of use method. It configures the card with the right font, position
 	/// , text size and color.
-	void setupText(sf::Text& text, const std::string& string, const sf::Vector2f& position) const;
+	void setupText(sf::Text& text, std::string string, const sf::Vector2f& position) const;
 };
 
 
