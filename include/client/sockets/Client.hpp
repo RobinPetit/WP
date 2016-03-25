@@ -189,9 +189,6 @@ private:
 
 	///////// Friend related attributes
 
-	/// \TODO use this!
-	/// A list of the discussion that are currently being hold
-	std::vector<std::string> _currentConversations;
 	/// List containing the names of the friends
 	FriendsList _friends;
 	/// List containing the names of the users that sent a friendship request to the client
@@ -212,12 +209,15 @@ private:
 
 	/////////// private methods
 
-	/// chatListening is the function used by the client to make a new thread listening for entring connections
+	/// inputListening is the function used by the client to make a new thread listening for entring connections
 	/// (players that want to make a discussion)
 	void inputListening();
+
 	/// This function is used to start the chat program with the proper parameters
 	void startChat(sf::Packet& transmission);
+
 	/// This function is used to make the proper exchanges with the srever when a game is started
+	/// \param transmission A packet containing the informations about the port/address of friend
 	void initInGameConnection(sf::Packet& transmission);
 
 	/// Used to know if a particular player is a friend or not
