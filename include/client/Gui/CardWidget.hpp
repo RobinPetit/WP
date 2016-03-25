@@ -23,11 +23,11 @@ class CardWidget : public tgui::ClickableWidget
 
 		//static CardWidget::Ptr copy(CardWidget::ConstPtr other);
 
-		virtual void setPosition(const tgui::Layout2d& position);
-		using tgui::Transformable::setPosition;
+		virtual void setPosition(const tgui::Layout2d& position) override;
+		using tgui::ClickableWidget::setPosition;
 
-		virtual void setSize(const tgui::Layout2d& size);
-		using tgui::Transformable::setSize;
+		virtual void setSize(const tgui::Layout2d& size) override;
+		using tgui::ClickableWidget::setSize;
 
 		//virtual tgui::Widget::Ptr clone() const override;
 

@@ -16,7 +16,7 @@ GuiCardsCollectionState::GuiCardsCollectionState(Context& context):
 	_scrollbar{std::make_shared<tgui::Scrollbar>()},
 	_cards{}
 {
-	const unsigned int gridHeight{static_cast<unsigned int>(_cardsCollection.getSize()) / GRID_WIDTH};
+	const unsigned int gridHeight{(static_cast<unsigned int>(_cardsCollection.getSize()) / GRID_WIDTH) + 1};
 	auto windowWidth(tgui::bindWidth(*_context.gui));
 	auto windowHeight(tgui::bindHeight(*_context.gui));
 
@@ -27,8 +27,8 @@ GuiCardsCollectionState::GuiCardsCollectionState(Context& context):
 	_buttons[0].button->setSize(windowWidth * 3.f/5.f, 20.f);
 
 	// Make the panel in the back of the grid
-	_gridPanel->setPosition(windowWidth/20.f, 70.f);
-	_gridPanel->setSize(windowWidth * 18.f/20.f, windowHeight - 110.f);
+	_gridPanel->setSize(CardGui::getSize().x * GRID_WIDTH, windowHeight - 110.f);
+	_gridPanel->setPosition((windowWidth - tgui::bindWidth(_gridPanel)) / 2.f, 70.f);
 	_gridPanel->setBackgroundColor(sf::Color::Transparent);
 	_context.gui->add(_gridPanel);
 
@@ -43,13 +43,14 @@ GuiCardsCollectionState::GuiCardsCollectionState(Context& context):
 
 	// Make the grid
 	_cardGrid->setPosition(0.f, 0.f);
-	_cardGrid->setSize(CardGui::getSize().x * GRID_WIDTH, CardGui::getSize().y * static_cast<float>(gridHeight));
+	_cardGrid->setSize(tgui::bindWidth(_gridPanel), CardGui::getSize().y * static_cast<float>(gridHeight));
 	_gridPanel->add(_cardGrid);
 
 	unsigned int i{0};
 	for(auto& card : _cardsCollection)
 	{
 		_cards.push_back(std::make_shared<CardWidget>(_context.client->getCardData(card)));
+		_cards.back()->setPosition(0, 0);
 		_cardGrid->addWidget(_cards.back(), i / GRID_WIDTH, i % GRID_WIDTH);
 		++i;
 	}
