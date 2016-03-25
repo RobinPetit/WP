@@ -6,6 +6,10 @@
 #include "client/Gui/states/GuiDecksManagementState.hpp"
 #include "client/sockets/Client.hpp"
 
+constexpr char GuiDecksManagementState::FIRST_HINT[];
+constexpr char GuiDecksManagementState::CHOOSE_CARD_FROM_DECK_HINT[];
+constexpr char GuiDecksManagementState::CHOOSE_CARD_FROM_COLLECTION_HINT[];
+
 GuiDecksManagementState::GuiDecksManagementState(Context& context):
 	AbstractState(context),
 	GuiAbstractState(context),
@@ -30,6 +34,12 @@ GuiDecksManagementState::GuiDecksManagementState(Context& context):
 	auto windowHeight(tgui::bindHeight(*_context.gui));
 
 	makeTitle("Decks management", 30U, 30.f);
+
+	// Make the hint label
+	_hintLabel->setText(FIRST_HINT);
+	_hintLabel->setTextSize(20U);
+	_hintLabel->setPosition((windowWidth - tgui::bindWidth(_hintLabel)) / 2.f, 70);
+	_context.gui->add(_hintLabel);
 
 	// Make the card panel
 	_cardPanel->setSize(GRID_WIDTH * CardGui::getSize().x, windowHeight - 120.f);
@@ -64,6 +74,7 @@ GuiDecksManagementState::GuiDecksManagementState(Context& context):
 	{
 		_cardsCollectionWidgets.push_back(std::make_shared<CardWidget>(_context.client->getCardData(card)));
 		_cardsCollectionIds.push_back(card);
+		_cardsCollectionWidgets.back()->connect("Clicked", &GuiDecksManagementState::onCardClicked, this, card);
 	}
 
 	// Make the buttons layout
@@ -72,10 +83,10 @@ GuiDecksManagementState::GuiDecksManagementState(Context& context):
 	setupButtons(_buttons, std::static_pointer_cast<tgui::Container>(_buttonsLayout));
 	_context.gui->add(_buttonsLayout);
 
-	registerRootWidgets({_cardPanel, _decksListBox, _buttonsLayout, _scrollbar});
+	registerRootWidgets({_cardPanel, _decksListBox, _buttonsLayout, _scrollbar, _hintLabel});
 }
 
-void GuiDecksManagementState::onCardClick(cardId id)
+void GuiDecksManagementState::onCardClicked(cardId id)
 {
 	if(chooseCardFromDeck)
 		onCardChosenFromDeck(id);
@@ -86,6 +97,10 @@ void GuiDecksManagementState::onCardClick(cardId id)
 
 void GuiDecksManagementState::onCardChosenFromDeck(cardId id)
 {
+	// Update the hint
+	_hintLabel->setText(CHOOSE_CARD_FROM_COLLECTION_HINT);
+	_hintLabel->setPosition((tgui::bindWidth(*_context.gui) - tgui::bindWidth(_hintLabel)) / 2.f, 70);
+
 	// The user cannot change the selected deck when it has to choose a card
 	// from the collection
 	_decksListBox->disable();
@@ -151,6 +166,10 @@ void GuiDecksManagementState::fillGrid(const std::vector<CardWidget::Ptr>& widge
 
 void GuiDecksManagementState::selectDeck()
 {
+	// Update the hint
+	_hintLabel->setText(CHOOSE_CARD_FROM_DECK_HINT);
+	_hintLabel->setPosition((tgui::bindWidth(*_context.gui) - tgui::bindWidth(_hintLabel)) / 2.f, 70);
+
 	Deck& selectedDeck(_decks.at(_decksListBox->getSelectedItemIndex()));
 	std::vector<CardWidget::Ptr> widgetsToShow;
 	// Browse all cards of the collection
@@ -160,7 +179,6 @@ void GuiDecksManagementState::selectDeck()
 		if(std::find(selectedDeck.begin(), selectedDeck.end(), _cardsCollectionIds.at(i)) != selectedDeck.end())
 			// Add the corresponding widget to the list of widgets to show
 			widgetsToShow.push_back(_cardsCollectionWidgets.at(i));
-
 	}
 
 	fillGrid(widgetsToShow);

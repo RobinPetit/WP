@@ -44,9 +44,15 @@ class GuiDecksManagementState : public GuiAbstractState, public AbstractDecksMan
 
 		static constexpr float PADDING{30.f};
 
+		static constexpr char FIRST_HINT[] = "First, select a deck in the list";
+
+		static constexpr char CHOOSE_CARD_FROM_DECK_HINT[] = "This is the content of you deck. Click on a card that you want to replace";
+
+		static constexpr char CHOOSE_CARD_FROM_COLLECTION_HINT[] = "This is the content of your collection. Click on a card that you want to put in your deck";
+
 	private:
 		/// Callback called when the user clicks on a card.
-		void onCardClick(cardId id);
+		void onCardClicked(cardId id);
 
 		void onCardChosenFromDeck(cardId id);
 
