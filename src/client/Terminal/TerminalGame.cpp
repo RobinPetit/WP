@@ -54,6 +54,7 @@ void TerminalGame::displayOptions()
 	std::size_t idx{0};
 	for(const auto& action: _actions)
 		std::cout << idx++ << ". " << action.first << std::endl;
+	std::cout << "Please choose an option: \n";
 }
 
 void TerminalGame::startTurn()
@@ -61,7 +62,6 @@ void TerminalGame::startTurn()
 	NonBlockingInput input;
 	AbstractGame::startTurn();
 	displayOptions();
-	std::cout << "It is now your turn, what do you want to do? ";
 	while(true)
 	{
 		if(not input.waitForData(0.1))
@@ -80,7 +80,6 @@ void TerminalGame::startTurn()
 			break;
 		displayGame();
 		displayOptions();
-		std::cout << "What do you want to do next? ";
 	}
 }
 

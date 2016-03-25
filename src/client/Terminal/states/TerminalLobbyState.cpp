@@ -16,7 +16,7 @@ TerminalLobbyState::TerminalLobbyState(Context& context):
 
 void TerminalLobbyState::display()
 {
-	std::cout << "Welcome to the matchmaking lobby!\n";
+	displaySeparator("Matchmaking");
 
 	// Display the actions
 	TerminalAbstractState::display();

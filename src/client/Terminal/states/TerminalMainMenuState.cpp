@@ -26,9 +26,7 @@ TerminalMainMenuState::TerminalMainMenuState(Context& context):
 
 void TerminalMainMenuState::display()
 {
-	// The menu is not that pretty, it can be improved
-	std::cout << std::string(40, '*') << "\n";
-	std::cout << "Main menu:\n";
+	displaySeparator("Main Menu");
 
 	// Display the actions
 	TerminalAbstractState::display();
