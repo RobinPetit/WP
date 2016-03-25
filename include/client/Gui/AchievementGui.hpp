@@ -66,7 +66,7 @@ private:
 	static constexpr std::size_t NAME_CHAR_SIZE = 20;
 
 	/// Description character size.
-	static constexpr std::size_t DESCRIPTION_CHAR_SIZE = 12;
+	static constexpr std::size_t DESCRIPTION_CHAR_SIZE = 14;
 
 	/// Path to the font.
 	static constexpr char FONT_PATH[] = "../resources/client/FreeSans.otf";

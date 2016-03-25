@@ -2,7 +2,11 @@
 #define _GUI_ACHIEVEMENT_STATE_CLIENT_HPP
 
 // External headers
-#include <TGUI/TGUI.hpp>
+#include <TGUI/Animation.hpp>
+#include <TGUI/Widget.hpp>
+#include <TGUI/Widgets/Panel.hpp>
+#include <TGUI/Widgets/Scrollbar.hpp>
+#include <TGUI/VerticalLayout.hpp>
 // WizardPoker headers
 #include "common/Database.hpp"  // Achievements
 #include "client/Gui/GuiAbstractState.hpp"
