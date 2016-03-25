@@ -6,12 +6,15 @@
 const sf::Vector2f CreatureGui::HEALTH_POSITION{56.f, 217.f};
 const sf::Vector2f CreatureGui::ATTACK_POSITION{129.f, 217.f};
 const sf::Vector2f CreatureGui::SHIELD_POSITION{202.f, 217.f};
+const sf::Vector2f CreatureGui::CREATURE_DESCRIPTION_POSITION{26.f, 273.f};
 constexpr char CreatureGui::FRONT_IMAGE_PATH[];
 
 CreatureGui::CreatureGui(const std::string& name, const std::string& description, int cost, int attack, int health, int shield, ShieldType shieldType):
 	CardGui(name, description, cost),
 	_shieldType{shieldType}
 {
+	moveDescription(CREATURE_DESCRIPTION_POSITION);
+
 	if(!_pictureTexture.loadFromFile(FRONT_IMAGE_PATH))
 	{
 		std::cerr << "Unable to load " << FRONT_IMAGE_PATH << "\n";

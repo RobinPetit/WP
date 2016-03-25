@@ -6,7 +6,6 @@
 const sf::Vector2f CardGui::SIZE{260.f, 360.f};
 const sf::Vector2f CardGui::NAME_POSITION{20.f, 17.f};
 const sf::Vector2f CardGui::COST_POSITION{220.f, 17.f};
-const sf::Vector2f CardGui::DESCRIPTION_POSITION{26.f, 273.f};
 constexpr char CardGui::BACK_IMAGE_PATH[];
 constexpr char CardGui::FONT_PATH[];
 
@@ -37,7 +36,7 @@ CardGui::CardGui(const std::string& name, std::string description, int cost):
 	_costText.setColor(sf::Color(0, 0, 100));
 
 	addNewlinesInDescription(description);
-	setupText(_descriptionText, description, DESCRIPTION_POSITION);
+	setupText(_descriptionText, description, {0, 0});
 	_descriptionText.setStyle(sf::Text::Italic);
 	_descriptionText.setCharacterSize(DESCRIPTION_CHAR_SIZE);
 }
@@ -78,6 +77,11 @@ void CardGui::setupText(sf::Text& text, const std::string& string, const sf::Vec
 	text.setFont(_font);
 	text.setCharacterSize(CHAR_SIZE);
 	text.setPosition(position);
+}
+
+void CardGui::moveDescription(const sf::Vector2f& descriptionPosition)
+{
+	_descriptionText.setPosition(descriptionPosition);
 }
 
 void CardGui::addNewlinesInDescription(std::string& description)

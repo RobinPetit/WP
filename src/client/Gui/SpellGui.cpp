@@ -4,10 +4,13 @@
 #include "client/Gui/SpellGui.hpp"
 
 constexpr char SpellGui::FRONT_IMAGE_PATH[];
+const sf::Vector2f SpellGui::SPELL_DESCRIPTION_POSITION{26.f, 243.f};
 
 SpellGui::SpellGui(const std::string& name, const std::string& description, int cost):
 	CardGui(name, description, cost)
 {
+	moveDescription(SPELL_DESCRIPTION_POSITION);
+
 	if(!_pictureTexture.loadFromFile(FRONT_IMAGE_PATH))
 	{
 		std::cerr << "Unable to load " << FRONT_IMAGE_PATH << "\n";
