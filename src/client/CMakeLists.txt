@@ -45,6 +45,8 @@ set(SOURCES
 		"Gui/SpellGui.cpp"
 		"Gui/CreatureGui.cpp"
 		"Gui/CardWidget.cpp"
+		"Gui/AchievementWidget.cpp"
+		"Gui/AchievementGui.cpp"
 		## States
 		"Gui/GuiAbstractState.cpp"
 		"Gui/states/GuiHomeState.cpp"
