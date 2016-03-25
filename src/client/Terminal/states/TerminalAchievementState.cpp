@@ -16,8 +16,8 @@ void TerminalAchievementState::display()
 	displaySeparator("Achievements");
 	for (std::size_t i=0; i<_achievements.size(); i++)
 	{
-		std::cout << " * " << _achievements.at(i).getPrettyName() << std::endl;
-		std::cout << "   " << _achievements.at(i).getDescription() << std::endl;
+		displayEntry(_achievements.at(i).getPrettyName());
+		displayEntry(_achievements.at(i).getDescription(), '-', 1);
 	}
 	TerminalAbstractState::display();
 }
