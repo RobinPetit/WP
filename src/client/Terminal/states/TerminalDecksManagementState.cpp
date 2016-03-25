@@ -38,9 +38,12 @@ void TerminalDecksManagementState::displayDeck()
 		return;
 	}
 	std::cout << "Which deck would you like to display? ";
-	const std::size_t index{askForNumber(1, _decks.size() + 1) - 1};
+	const std::size_t index{askForNumber(0, _decks.size() -1)};
+
+	std::cout << "Displaying content of " << _decks[index].getName() << std::endl;
 	for(const auto& cardId : _decks[index])  // Browse the deck
 		displayCard(cardId);
+
 	waitForEnter();
 }
 
@@ -100,8 +103,12 @@ std::size_t TerminalDecksManagementState::askForReplacedCard(std::size_t deckInd
 {
 	int i{0};
 	std::cout << "Content of the deck " << _decks[deckIndex].getName() << ":\n";
-	for(const auto& cardId : _decks.at(deckIndex))
-		displayCard(cardId);
+
+	// display cards with their index
+	std::size_t index=0;
+	for(const auto& cardId : _cardsCollection)
+		displayCardWithIndex(cardId, index++);
+
 	std::cout << "Which card do you want to replace (0 to quit)? ";
 	return askForNumber(0, Deck::size + 1);
 }
@@ -109,8 +116,12 @@ std::size_t TerminalDecksManagementState::askForReplacedCard(std::size_t deckInd
 cardId TerminalDecksManagementState::askForReplacingCard(std::size_t deckIndex)
 {
 	std::cout << "Content of your card collection:\n";
+
+	// display cards with their index
+	std::size_t index=0;
 	for(const auto& cardId : _cardsCollection)
-		displayCard(cardId);
+		displayCardWithIndex(cardId, index++);
+
 	std::cout << "Which card do you want to put in you deck? ";
 	// TODO: even if *for now* database initialization ensure that card ids are consecutive
 	// we shouldn't take this for granted.
