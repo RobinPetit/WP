@@ -134,3 +134,8 @@ void GuiGame::receiveCard(cardId id)
 	// TODO: show the card
 	displayMessage("You won the card " + getCardName(id) + ".");
 }
+
+void GuiGame::displayAchievements(ClientAchievementList& /* newAchievements */)
+{
+	// TODO
+}

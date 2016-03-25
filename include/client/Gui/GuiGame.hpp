@@ -50,6 +50,8 @@ private:
 
 	void receiveCard(cardId id) override;
 
+	void displayAchievements(ClientAchievementList& newAchievements) override;
+
 	////////// private methods
 
 	void sendDeck(const std::string& deckName);
