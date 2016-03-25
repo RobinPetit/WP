@@ -29,7 +29,8 @@ class GuiDecksManagementState : public GuiAbstractState, public AbstractDecksMan
 		tgui::Grid::Ptr _cardGrid;
 		tgui::Panel::Ptr _cardPanel;
 		tgui::Scrollbar::Ptr _scrollbar;
-		std::vector<std::pair<cardId, CardWidget::Ptr>> _cardsCollection;
+		std::vector<CardWidget::Ptr> _cardsCollectionWidgets;
+		std::vector<cardId> _cardsCollectionIds;
 		tgui::Label::Ptr _hintLabel;
 
 		/// This variable determines the state of the current operation: if
@@ -39,7 +40,7 @@ class GuiDecksManagementState : public GuiAbstractState, public AbstractDecksMan
 		/// clicked when this variable was true.
 		bool chooseCardFromDeck;
 
-		static constexpr std::size_t GRID_WIDTH = 2;
+		static constexpr unsigned int GRID_WIDTH = 2;
 
 		static constexpr float PADDING{30.f};
 
@@ -47,11 +48,19 @@ class GuiDecksManagementState : public GuiAbstractState, public AbstractDecksMan
 		/// Callback called when the user clicks on a card.
 		void onCardClick(cardId id);
 
+		void onCardChosenFromDeck(cardId id);
+
+		void onCardChosenFromCollection(cardId id);
+
+		void fillGrid(const std::vector<CardWidget::Ptr>& widgetsToShow);
+
 		void selectDeck();
 
 		void removeDeck();
 
 		void createDeck();
+
+		void scrollGrid(int newScrollValue);
 };
 
 #endif  // _GUI_DECKS_MANAGEMENT_STATE_CLIENT_HPP

@@ -16,7 +16,11 @@ GuiCardsCollectionState::GuiCardsCollectionState(Context& context):
 	_scrollbar{std::make_shared<tgui::Scrollbar>()},
 	_cards{}
 {
-	const unsigned int gridHeight{(static_cast<unsigned int>(_cardsCollection.getSize()) / GRID_WIDTH) + 1};
+	unsigned int gridHeight;
+	if(_cardsCollection.getSize() == 0)
+		gridHeight = 1;
+	else
+		gridHeight = ((dtatic_cast<unsigned int>(_cardsCollection.getSize()) - 1) / GRID_WIDTH) + 1;
 	auto windowWidth(tgui::bindWidth(*_context.gui));
 	auto windowHeight(tgui::bindHeight(*_context.gui));
 
@@ -50,7 +54,6 @@ GuiCardsCollectionState::GuiCardsCollectionState(Context& context):
 	for(auto& card : _cardsCollection)
 	{
 		_cards.push_back(std::make_shared<CardWidget>(_context.client->getCardData(card)));
-		_cards.back()->setPosition(0, 0);
 		_cardGrid->addWidget(_cards.back(), i / GRID_WIDTH, i % GRID_WIDTH);
 		++i;
 	}
