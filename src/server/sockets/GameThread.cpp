@@ -199,17 +199,16 @@ void GameThread::interruptGame()
 		endGame(0, EndGame::Cause::ENDING_SERVER);
 }
 
-<<<<<<< HEAD
 void GameThread::swapTurns()
 {
 	_turnSwap.store(true);
-=======
+}
+
 void GameThread::swapData()
 {
 	// swap active and inactive
 	std::swap(_activePlayer, _passivePlayer);
 	std::swap(_activeSpecialSocket, _passiveSpecialSocket);
->>>>>>> Gui
 }
 
 void GameThread::endTurn()

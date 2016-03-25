@@ -3,10 +3,10 @@
 // WizardPoker headers
 #include "client/Terminal/states/TerminalAchievementState.hpp"
 
-TerminalAchievementState::TerminalAchievementState(StateStack& stateStack, Client& client):
-	AbstractState(stateStack, client),
-	TerminalAbstractState(stateStack, client),
-	AbstractAchievementState(stateStack, client)
+TerminalAchievementState::TerminalAchievementState(Context& context):
+	AbstractState(context),
+	TerminalAbstractState(context),
+	AbstractAchievementState(context)
 {
 	addAction("Back to main menu", &TerminalAchievementState::backMainMenu);
 }

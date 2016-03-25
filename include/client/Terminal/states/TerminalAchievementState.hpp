@@ -2,7 +2,7 @@
 #define _TERMINAL_ACHIEVEMENT_STATE_CLIENT_HPP
 
 // WizardPoker headers
-#include "common/Database.hpp"  // Ladder
+#include "common/Database.hpp"  // Achievements
 #include "client/Terminal/TerminalAbstractState.hpp"
 #include "client/states/AbstractAchievementState.hpp"
 
@@ -11,7 +11,7 @@ class TerminalAchievementState : public TerminalAbstractState, public AbstractAc
 {
 	public:
 		/// Constructor.
-		TerminalAchievementState(StateStack& stateStack, Client& client);
+		TerminalAchievementState(Context& context);
 
 		/// The display function.
 		/// It must do all things related to drawing or printing stuff on the screen.

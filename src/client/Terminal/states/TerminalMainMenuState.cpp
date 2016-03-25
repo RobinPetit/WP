@@ -56,7 +56,7 @@ void TerminalMainMenuState::seeLadder()
 
 void TerminalMainMenuState::seeAchievements()
 {
-	stackPush<TerminalAchievementState>();
+	_context.stateStack->push<TerminalAchievementState>();
 }
 
 void TerminalMainMenuState::manageFriends()
