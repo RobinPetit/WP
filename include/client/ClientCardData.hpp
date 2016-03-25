@@ -2,7 +2,7 @@
 #define _CLIENT_CARD_DATA_CLIENT_HPP_
 
 // WizardPocker
-#include "common/CardData.hpp"    // CommonCreatureData,... CostValue,...
+#include "common/CardData.hpp"  // CommonCreatureData,... CostValue,...
 // std-C++
 #include <string>
 

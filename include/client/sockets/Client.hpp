@@ -13,6 +13,8 @@
 // WizardPoker headers
 #include "common/Terminal.hpp"
 #include "common/Database.hpp"  // FriendsList typedef
+#include "common/Achievement.hpp"  // AchievementList typedef
+#include "client/ClientAchievement.hpp"
 #include "common/CardsCollection.hpp"
 #include "common/Deck.hpp"
 #include "client/ClientDatabase.hpp"
@@ -118,6 +120,10 @@ public:
 	/// \throw std::runtime_error if the method is called and no game has started
 	sf::TcpSocket& getGameListeningSocket();
 
+	/// Method to call when a game has ended to allow the client to return to a non-game
+	/// internal status
+	void endGame();
+
 	/// The function used to rest assured all conections are stopped and the client is
 	/// not waiting for entering chat connections anymore
 	void quit();
@@ -152,6 +158,10 @@ public:
 
 	/// Used when the user wants the ladder
 	Ladder getLadder();
+
+	/// Used when the user wants to check his achievements
+	ClientAchievementList getAchievements(AchievementList newAchievements);
+	ClientAchievementList getAchievements();
 
 	/// Used to wait sleeping until the atomic boolean readyToPlay is set to true
 	void waitTillReadyToPlay();

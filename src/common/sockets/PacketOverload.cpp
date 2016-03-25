@@ -149,3 +149,17 @@ sf::Packet& operator >>(sf::Packet& packet, EndGame& endGameInfo)
 	endGameInfo.cause = static_cast<EndGame::Cause>(convertedCause);
 	return packet;
 }
+
+//Achievement
+sf::Packet& operator <<(sf::Packet& packet, const Achievement& achievement)
+{
+	return packet << static_cast<sf::Int64>(achievement.id)
+				  << achievement.currentProgress;
+}
+
+sf::Packet& operator >>(sf::Packet& packet, Achievement& achievement)
+{
+	packet >> achievement.id >> achievement.currentProgress;
+	return packet;
+}
+

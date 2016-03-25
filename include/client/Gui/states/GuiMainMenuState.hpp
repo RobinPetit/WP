@@ -28,6 +28,7 @@ class GuiMainMenuState: public GuiAbstractState, public AbstractMainMenuState
 		void seeCards();
 		void manageFriends();
 		void seeLadder();
+		void seeAchievements();
 };
 
 #endif  // _GUI_MAIN_MENU_STATE_CLIENT_HPP

@@ -2,6 +2,7 @@
 #include "client/Gui/states/GuiMainMenuState.hpp"
 #include "client/Gui/states/GuiFriendsManagementState.hpp"
 #include "client/Gui/states/GuiLadderState.hpp"
+#include "client/Gui/states/GuiAchievementState.hpp"
 #include "client/Gui/states/GuiCardsCollectionState.hpp"
 #include "client/Gui/states/GuiDecksManagementState.hpp"
 #include "client/Gui/states/GuiLobbyState.hpp"
@@ -17,6 +18,7 @@ GuiMainMenuState::GuiMainMenuState(Context& context):
 		{&GuiMainMenuState::seeCards, "See your collection of cards"},
 		{&GuiMainMenuState::manageFriends, "Manage your friends"},
 		{&GuiMainMenuState::seeLadder, "See the ladder"},
+		{&GuiMainMenuState::seeAchievements, "See your achievements"},
 		{&GuiMainMenuState::logOut, "Log out"},
 		{&GuiMainMenuState::quit, "Quit"},
 	},
@@ -61,4 +63,9 @@ void GuiMainMenuState::manageFriends()
 void GuiMainMenuState::seeLadder()
 {
 	_context.stateStack->push<GuiLadderState>();
+}
+
+void GuiMainMenuState::seeAchievements()
+{
+	_context.stateStack->push<GuiAchievementState>();
 }

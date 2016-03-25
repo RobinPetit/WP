@@ -1,13 +1,13 @@
 #ifndef _SERVER_HPP_
 #define _SERVER_HPP_
 
-#include "server/ServerDatabase.hpp"
 // SFML headers
 #include <SFML/Network/TcpListener.hpp>
 #include <SFML/Network/TcpSocket.hpp>
 #include <SFML/Network/SocketSelector.hpp>
 #include <SFML/Network/Packet.hpp>
 // WizardPoker headers
+#include "server/ServerDatabase.hpp"
 #include "server/GameThread.hpp"
 #include "server/ClientInformations.hpp"
 // std-C++ headers
@@ -140,6 +140,9 @@ private:
 
 	/// Sent when the user wants the ladder
 	void sendLadder(const _iterator& it);
+
+	/// Sent when the user wants the list of achievements
+	void sendAchievements(const _iterator& it);
 };
 
 #endif // _SERVER_HPP_

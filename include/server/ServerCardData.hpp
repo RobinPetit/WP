@@ -15,7 +15,7 @@ private:
 public:
 	/// Constructor
 	ServerCreatureData(cardId, int cost, const std::vector<EffectParamsCollection>& effects,
-	             int attack, int health, int shield, int shieldType);
+	                   int attack, int health, int shield, int shieldType);
 
 	/// Getters
 	const std::vector<EffectParamsCollection>& getEffects() const;

@@ -4,6 +4,7 @@ set(SOURCES
 		"ClientCreature.cpp"
 		"ClientSpell.cpp"
 		"ClientDatabase.cpp"
+		"ClientAchievement.cpp"
 		"AbstractApplication.cpp"
 		## sockets
 		"sockets/Client.cpp"
@@ -15,6 +16,7 @@ set(SOURCES
 		"states/AbstractDecksManagementState.cpp"
 		"states/AbstractFriendsManagementState.cpp"
 		"states/AbstractLadderState.cpp"
+		"states/AbstractAchievementState.cpp"
 		"states/AbstractLobbyState.cpp"
 		"states/AbstractMainMenuState.cpp"
 		"states/AbstractHomeState.cpp"
@@ -31,6 +33,7 @@ set(SOURCES
 		"Terminal/states/TerminalDecksManagementState.cpp"
 		"Terminal/states/TerminalFriendsManagementState.cpp"
 		"Terminal/states/TerminalLadderState.cpp"
+		"Terminal/states/TerminalAchievementState.cpp"
 		"Terminal/states/TerminalLobbyState.cpp"
 		## Game
 		"Terminal/TerminalGame.cpp"
@@ -51,6 +54,7 @@ set(SOURCES
 		"Gui/states/GuiDecksManagementState.cpp"
 		"Gui/states/GuiFriendsManagementState.cpp"
 		"Gui/states/GuiLadderState.cpp"
+		"Gui/states/GuiAchievementState.cpp"
 		"Gui/states/GuiLobbyState.cpp"
 	)
 
