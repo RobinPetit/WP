@@ -41,10 +41,7 @@ void GameThread::createPlayers()
 	std::random_device device;
 	// probability of 1/2 to swap the active and passive players
 	if(std::bernoulli_distribution(0.5)(device))
-	{
-		std::swap(_activePlayer, _passivePlayer);
-		std::swap(_activeSpecialSocket, _passiveSpecialSocket);
-	}
+		swapData();
 }
 
 RandomInteger& GameThread::getGenerator()
@@ -188,6 +185,13 @@ void GameThread::interruptGame()
 		endGame(0, EndGame::Cause::ENDING_SERVER);
 }
 
+void GameThread::swapData()
+{
+	// swap active and inactive
+	std::swap(_activePlayer, _passivePlayer);
+	std::swap(_activeSpecialSocket, _passiveSpecialSocket);
+}
+
 void GameThread::endTurn()
 {
 	// send to both players their turn swapped
@@ -201,7 +205,7 @@ void GameThread::endTurn()
 
 	_turn++;  // turn counter (for both players)
 	_activePlayer->leaveTurn();
-	std::swap(_activePlayer, _passivePlayer);  // swap active and inactive
+	swapData();
 	_activePlayer->enterTurn(_turn/2 +1);  // ALWAYS call active player
 
 	_startOfTurnTime = std::chrono::high_resolution_clock::now();

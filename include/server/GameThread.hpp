@@ -85,6 +85,7 @@ private:
 
 	void createPlayers();
 	void endTurn();
+	void swapData();
 
 	void useCard(int cardIndex);
 	void attackWithCreature(int attackerIndex, int victimIndex);
