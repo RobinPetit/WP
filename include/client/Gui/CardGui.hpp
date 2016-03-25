@@ -13,7 +13,7 @@ class CardGui : public sf::Drawable, public sf::Transformable
 public:
 	/// Constructor.
 	/// \note The description parameter is taken by value on purpose.
-	CardGui(const std::string& name, std::string description, int cost);
+	CardGui(const std::string& frontTexturePath, const std::string& name, std::string description, int cost);
 
 	/// Destructor.
 	virtual ~CardGui() = default;
@@ -39,7 +39,7 @@ protected:
 	static const sf::Vector2f SIZE;
 
 	/// The main shape that contains the texture.
-	sf::RectangleShape _picture;
+	sf::Sprite _picture;
 
 	/// The texture displayed in front of the card.
 	sf::Texture _pictureTexture;
@@ -48,7 +48,7 @@ protected:
 	/// , text size and color.
 	void setupText(sf::Text& text, const std::string& string, const sf::Vector2f& position) const;
 
-	/// Set the position of the description. This is needed because different
+	/// Sets the position of the description. This is needed because different
 	/// kind of cards may place the description in different places, so child
 	/// classes have to explicitely say where the description has to be.
 	/// \param descriptionPosition The new position of the description text.
@@ -93,7 +93,7 @@ private:
 	bool _showFront;
 
 	/// Shape that will contains the image of the back side.
-	sf::RectangleShape _backView;
+	sf::Sprite _backView;
 
 	/// Texture of the back side.
 	sf::Texture _backTexture;

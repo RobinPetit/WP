@@ -9,25 +9,35 @@ const sf::Vector2f CardGui::COST_POSITION{220.f, 17.f};
 constexpr char CardGui::BACK_IMAGE_PATH[];
 constexpr char CardGui::FONT_PATH[];
 
-CardGui::CardGui(const std::string& name, std::string description, int cost):
+CardGui::CardGui(const std::string& frontTexturePath, const std::string& name, std::string description, int cost):
 	_showFront{true}
 {
+	// Set up the back
 	if(!_backTexture.loadFromFile(BACK_IMAGE_PATH))
 	{
 		std::cerr << "Unable to load " << BACK_IMAGE_PATH << "\n";
 		return;
 	}
+	_backView.setTexture(_backTexture);
 	_backTexture.setSmooth(true); // enable smooth borders
-	_backView.setSize(SIZE);
-	_backView.setTexture(&_backTexture);
 
+	// Set up the front
+	if(!_pictureTexture.loadFromFile(frontTexturePath))
+	{
+		std::cerr << "Unable to load " << frontTexturePath << "\n";
+		return;
+	}
+	_picture.setTexture(_pictureTexture);
+	_pictureTexture.setSmooth(true);
+
+	// Load the font
 	if(!_font.loadFromFile(FONT_PATH))
 	{
 		std::cerr << "Unable to load " << FONT_PATH << "\n";
 		return;
 	}
 
-	// complete cost, name and effects
+	// complete cost, name and description
 	setupText(_nameText, name, NAME_POSITION);
 	_nameText.setStyle(sf::Text::Bold);
 
