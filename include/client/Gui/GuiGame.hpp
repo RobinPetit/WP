@@ -14,12 +14,34 @@
 // std-C++ headers
 #include <vector>
 
+/// Class representing all the interface for the game in graphical mode
+///
+/// \note The game is multithreaded (a thread listening for server data and
+/// another one for the user interactions). Thus, they both could theoretically
+/// access the screen simultaneously by calling displayGame for instance.
+/// This would cause having the first thread to clear all of the widgets
+/// and then having the second one accessing one of the widgets which would
+/// cause a SEGFAULT.
+///
+/// So for a safe behaviours, there is a mutex to lock before to access
+/// the screen (and especially changing the widgets). It is `_accessScreen`
+/// to use this way:
+///
+/// \code
+/// void GuiGame::displayFunction()
+/// {
+///     // unique_lock releases the lock automatically when being destroyed
+///     std::unique_lock<std::mutex> _lock{_accessScreen};
+///     // ...code...
+/// }
+/// \endcode
 class GuiGame : public AbstractGame
 {
 public:
 	/// Constructor
 	GuiGame(Context& context);
 
+	/// Called when your turn starts
 	void startTurn() override;
 
 	~GuiGame();
@@ -46,8 +68,10 @@ private:
 	/// The layout for the player's hand cards
 	tgui::HorizontalLayout::Ptr _selfHandLayout;
 
+	/// The button to voluntarily end your turn
 	tgui::Button::Ptr _endTurnButton;
 
+	/// Length (on X axis) of the hand cards
 	const tgui::Layout _cardsLayoutWidth;
 
 	//////////////////// Methods
@@ -78,16 +102,23 @@ private:
 
 	void displayAchievements(ClientAchievementList& newAchievements) override;
 
+	/// Waits for \a booleanFunction to return true and treats events in
+	/// the mean time
+	/// \param booleanFunction A function returning true when waiting should stop
+	/// and false as long as looping is required
 	void waitUntil(std::function<bool()> booleanFunction) override;
 
 	////////// private methods
 
 	/// Sends the chosen deck to the server
+	/// \param deckName The name of the deck that's been chosen
 	void sendDeck(const std::string& deckName) override;
 
+	/// Loops on events for as long as the turn is yours
 	void handleInputs();
 
-	void clearScreen();
+	/// Reset the screen and then redrax the current interface
+	void refreshScreen();
 };
 
 #endif  // _GUI_GAME_HPP_

@@ -24,8 +24,10 @@ GuiGame::GuiGame(Context& context):
 		endTurn();
 		_endTurnButton->disable();
 	});
+	// place it right to the cards
 	_endTurnButton->setSize((_width - _cardsLayoutWidth) / 2 - 10, 40);
 	_endTurnButton->setPosition((_width + _cardsLayoutWidth) / 2 + 5, _height - 50);
+	// default behaviour of button is to be disabled (re-enabled at the beginning of each turn)
 	_endTurnButton->disable();
 }
 
@@ -39,13 +41,14 @@ void GuiGame::startTurn()
 
 void GuiGame::handleInputs()
 {
+	// waitUntil handles the events itself
 	waitUntil([this]()
 	{
 		return not _myTurn.load();
 	});
 }
 
-void GuiGame::clearScreen()
+void GuiGame::refreshScreen()
 {
 	_context.window->clear(sf::Color::White);
 	_context.gui->draw();
@@ -54,13 +57,13 @@ void GuiGame::clearScreen()
 
 void GuiGame::displayGame()
 {
+	// don't forget to lock the screen!
 	std::lock_guard<std::mutex> _lock{_accessScreen};
 	std::vector<CardWidget::Ptr> selfHand;
 	//std::vector<CardWidget::Ptr> selfBoard;
 	//std::vector<CardWidget::Ptr> opponentBoard;
 
-	clearScreen();
-
+	// start by removing everything from the current window
 	_context.gui->remove(_selfHandLayout);
 	_selfHandLayout->removeAllWidgets();
 
@@ -68,6 +71,7 @@ void GuiGame::displayGame()
 	for(const auto& card : _selfHandCards)
 	{
 		selfHand.push_back(std::make_shared<CardWidget>(_context.client->getCardData(card.id)));
+		// each card is associated to their index in the hand
 		selfHand.back()->connect("MousePressed", [this, i]()
 		{
 			useCard(i);
@@ -82,6 +86,8 @@ void GuiGame::displayGame()
 
 	_context.gui->add(_endTurnButton);
 	_context.gui->add(_selfHandLayout);
+
+	refreshScreen();
 }
 
 // NOTE: this is copy/paste from GuiAbstractState. TODO: factorize by creating an interface
@@ -112,6 +118,7 @@ void GuiGame::displayMessage(const std::string& message)
 	_context.gui->draw();
 }
 
+// <TODO>
 int GuiGame::askSelfHandIndex()
 {
 	return -42;
@@ -141,11 +148,14 @@ bool GuiGame::wantToAttackOpponent()
 {
 	return false;
 }
+// </TODO>
 
 void GuiGame::chooseDeck()
 {
+	// get all of the decks
 	std::vector<Deck> decks{_client.getDecks()};
 
+	// list them all in a listbox
 	for(const auto& deck : decks)
 		_decksListBox->addItem(deck.getName());
 
@@ -160,6 +170,7 @@ void GuiGame::chooseDeck()
 	selectButton->setSize(_width/2.f, _height/5.f);
 	selectButton->connect("pressed", [this]()
 	{
+		// if a deck is selected, then use this one, otherwise keep waiting
 		const std::string& selection{_decksListBox->getSelectedItem()};
 		if(selection == "")
 			displayMessage("You need to choose a deck\n");
@@ -176,6 +187,7 @@ void GuiGame::chooseDeck()
 		_context.gui->draw();
 		_context.window->display();
 
+		// Use waitEvent to block everything
 		_context.window->waitEvent(event);
 		_context.gui->handleEvent(event);
 	}
