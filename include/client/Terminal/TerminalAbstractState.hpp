@@ -5,6 +5,8 @@
 #include <vector>
 #include <utility>  // std::pair
 #include <functional>  // std::function and std::bind
+#include <sys/ioctl.h>
+#include <unistd.h>
 // WizardPoker headers
 #include "client/StateStack.hpp"
 #include "client/AbstractState.hpp"
@@ -49,7 +51,9 @@ class TerminalAbstractState : virtual public AbstractState
 		/// scroll up in order to see what's just displayed.
 		static void waitForEnter();
 
+		/// This allows to display a message or a separator with some text
 		virtual void displayMessage(const std::string& message) override;
+		void displaySeparator(const std::string& separatorText, const char& separator=' ');
 
 	private:
 		/// All actions doable in the state.

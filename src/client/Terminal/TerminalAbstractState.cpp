@@ -13,12 +13,25 @@ TerminalAbstractState::TerminalAbstractState(Context& context):
 
 void TerminalAbstractState::display()
 {
+	displaySeparator("Options", '*'); //separate options
+
 	for(size_t i{1}; i < _actions.size(); ++i)
-		std::cout << i << ". " << _actions[i].first << "\n";
+		std::cout << "  " << i << ". " << _actions[i].first << "\n";
 	assert(_actions.size() > 0);
 	// Display the menu entry 0 (which should be 'quit' or something like this) at last
 	// because this is strange to have 'quit' as first possibility in a menu
-	std::cout << "0. " << _actions[0].first << "\n";
+	std::cout << "  0. " << _actions[0].first << "\n";
+}
+
+void TerminalAbstractState::displaySeparator(const std::string& separatorText, const char& separator)
+{
+    struct winsize ws;
+    ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws); //read size of terminal into ws
+	int charRepeat = (ws.ws_col - separatorText.size() - 2)/2;
+	std::cout 	<< std::string(charRepeat, separator)
+				<< " " << separatorText << " "
+				<< std::string(ws.ws_col - charRepeat - separatorText.size() - 2, separator)
+				<< std::endl;
 }
 
 void TerminalAbstractState::handleInput()
@@ -28,7 +41,7 @@ void TerminalAbstractState::handleInput()
 	{
 		// Get the user input
 		std::string input;
-		std::cout << "What do you want to do? ";
+		std::cout << "Choose an option: ";
 		std::getline(std::cin, input);
 		// Cat to a number
 		const int intInput{std::stoi(input)};

@@ -20,11 +20,11 @@ TerminalDecksManagementState::TerminalDecksManagementState(Context& context):
 
 void TerminalDecksManagementState::display()
 {
-	std::cout << "Here are your decks:\n";
+	displaySeparator("Decks");
+
 	int i{0};
 	for(const auto& deck : _decks)
 		std::cout << ++i << ". " << deck.getName() << "\n";
-	std::cout << std::string(40, '*') << "\n";
 
 	// Display the actions
 	TerminalAbstractState::display();

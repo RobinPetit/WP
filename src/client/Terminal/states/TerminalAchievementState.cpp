@@ -13,7 +13,7 @@ TerminalAchievementState::TerminalAchievementState(Context& context):
 
 void TerminalAchievementState::display()
 {
-	std::cout << "Here are your achievements:\n";
+	displaySeparator("Achievements");
 	for (std::size_t i=0; i<_achievements.size(); i++)
 	{
 		std::cout << " * " << _achievements.at(i).getPrettyName() << std::endl;
