@@ -83,14 +83,14 @@ void CardGui::setupText(sf::Text& text, const std::string& string, const sf::Vec
 void CardGui::addNewlinesInDescription(std::string& description)
 {
 	float lineSize{0.f};
-	float spaceSize = _font.getGlyph(static_cast<sf::Uint32>(' '), DESCRIPTION_CHAR_SIZE, false).advance;
+	const float spaceSize{getCharacterWidth(' ')};
 
 	auto prevIt = description.begin();
 	for(auto it(description.begin()); it != description.end(); ++it)
 	{
-		if (*it==' ')
+		if(*it == ' ')
 		{
-			while (*it==' ')
+			while(*it == ' ')
 			{
 				lineSize += spaceSize;
 				it++;
@@ -98,7 +98,7 @@ void CardGui::addNewlinesInDescription(std::string& description)
 			prevIt = it;
 		}
 
-		lineSize += _font.getGlyph(static_cast<sf::Uint32>(*it), DESCRIPTION_CHAR_SIZE, false).advance;
+		lineSize += getCharacterWidth(*it);
 
 		if(lineSize >= DESCRIPTION_WIDTH)
 		{
@@ -106,4 +106,9 @@ void CardGui::addNewlinesInDescription(std::string& description)
 			it = description.insert(prevIt, '\n');
 		}
 	}
+}
+
+inline float getCharacterWidth(char character) const
+{
+	 _font.getGlyph(static_cast<sf::Uint32>(character), DESCRIPTION_CHAR_SIZE, false).advance;
 }
