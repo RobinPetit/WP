@@ -29,5 +29,7 @@ void AchievementWidget::setSize(const tgui::Layout2d& size)
 void AchievementWidget::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
 	if(_achievement)
+	{
 		target.draw(*_achievement, states);
+	}
 }

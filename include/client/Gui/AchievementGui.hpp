@@ -12,7 +12,7 @@ class AchievementGui : public sf::Drawable, public sf::Transformable
 {
 public:
 	/// Constructor.
-	AchievementGui(const std::string& name, const std::string& description, bool isLocked);
+	AchievementGui(const std::string& name, const std::string& description, bool isUnlocked);
 
 	/// Destructor.
 	virtual ~AchievementGui() = default;
@@ -27,7 +27,10 @@ public:
 
 private:
 	/// True when achievement is unlocked
-	bool _isLocked;
+	bool _isUnlocked;
+
+	/// The background rectangle, with a color
+	sf::RectangleShape _bgRectangle;
 
 	/// The main shape that contains the texture.
 	sf::Sprite _imageSprite;
