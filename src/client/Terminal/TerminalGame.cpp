@@ -33,8 +33,6 @@ void TerminalGame::displayMessage(const std::string& message)
 	std::cout << message << "\n";
 }
 
-// TODO: rename this to be consistent
-
 void TerminalGame::displayOptions()
 {
 	std::cout << "Here are your options:\n";

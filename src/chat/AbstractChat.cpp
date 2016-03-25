@@ -12,8 +12,7 @@ AbstractChat::AbstractChat(const char * const argv[6]):
 	_friendName{argv[5]},
 	_running{false},
 	_address{argv[2]},
-	_role{argv[1]},
-	_listening{false}
+	_role{argv[1]}
 {
 	std::stringstream(argv[3]) >> _remotePort;
 }
@@ -129,12 +128,11 @@ void AbstractChat::endDiscussion()
 
 void AbstractChat::input()
 {
-	_listening.store(true);
 	_in.setBlocking(false);
 	sf::Packet inputPacket;
 	std::wstring message;
 
-	while(_listening.load())
+	while(_friendPresence.load())
 	{
 		sf::Socket::Status status{_in.receive(inputPacket)};
 		// If no packet wassent by friend, wait 1/10 s
@@ -170,7 +168,6 @@ void AbstractChat::input()
 
 void AbstractChat::friendQuit()
 {
-	_listening.store(false);
 	display(_friendName, L"left the discussion");
 	_friendPresence.store(false);
 	_in.disconnect();

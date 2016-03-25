@@ -79,7 +79,6 @@ void Player::setDeck(const Deck& newDeck)
 	for(std::size_t i{0}; i < Deck::size; ++i)
 	{
 		const cardId card{newDeck.getCard(i)};
-		// \TODO: test use of database
 		loadedCards[i].reset(_database.getCard(card, *this));
 	}
 
@@ -519,7 +518,7 @@ sf::TcpSocket& Player::getSocket()
     return _socketToClient;
 }
 
-void Player::printVerbose(std::string message)
+void Player::printVerbose(const std::string& message)
 {
     _gameThread.printVerbose("player " + std::to_string(getId()) + " - "+ message);
 }
