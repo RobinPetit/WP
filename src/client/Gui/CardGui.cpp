@@ -10,6 +10,9 @@ const sf::Vector2f CardGui::DESCRIPTION_POSITION{26.f, 273.f};
 constexpr char CardGui::BACK_IMAGE_PATH[];
 constexpr char CardGui::FONT_PATH[];
 
+constexpr unsigned CardGui::widthCard;
+constexpr unsigned CardGui::heightCard;
+
 CardGui::CardGui(const std::string& name, std::string description, int cost):
 	_showFront{true}
 {

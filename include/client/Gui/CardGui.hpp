@@ -11,6 +11,9 @@
 class CardGui : public sf::Drawable, public sf::Transformable
 {
 public:
+	static constexpr unsigned widthCard{260};
+	static constexpr unsigned heightCard{360};
+
 	/// Constructor.
 	/// \note The description parameter is taken by value on purpose.
 	CardGui(const std::string& name, std::string description, int cost);

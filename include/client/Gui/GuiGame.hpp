@@ -3,14 +3,16 @@
 
 // WizardPoker headers
 #include "client/AbstractGame.hpp"
-#include "common/Deck.hpp"
 #include "client/Context.hpp"
+#include "client/Gui/CardWidget.hpp"
+#include "common/Deck.hpp"
 // External headers
 #include <TGUI/Gui.hpp>
 #include <TGUI/Widgets/Button.hpp>
 #include <TGUI/Widgets/ListBox.hpp>
+#include <TGUI/HorizontalLayout.hpp>
 // std-C++ headers
-#include <utility>
+#include <vector>
 
 class GuiGame : public AbstractGame
 {
@@ -36,6 +38,9 @@ private:
 	tgui::Layout _width;
 	/// Height of the window
 	tgui::Layout _height;
+
+	/// The layout for the player's hand cards
+	tgui::HorizontalLayout::Ptr _selfHandLayout;
 
 	//////////////////// Methods
 

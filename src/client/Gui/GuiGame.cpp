@@ -13,13 +13,45 @@ GuiGame::GuiGame(Context& context):
 	_decksListBox{std::make_shared<tgui::ListBox>()},
 	_decksChosen{false},
 	_width{tgui::bindWidth(*_context.gui)},
-	_height{tgui::bindHeight(*_context.gui)}
+	_height{tgui::bindHeight(*_context.gui)},
+	_selfHandLayout{std::make_shared<tgui::HorizontalLayout>()}
 {
 
 }
 
 void GuiGame::displayGame()
 {
+	std::lock_guard<std::mutex> _lock{_accessScreen};
+	std::vector<CardWidget::Ptr> selfHand;
+	/*std::vector<CardWidget::Ptr> selfBoard;
+	std::vector<CardWidget::Ptr> opponentBoard;*/
+
+	_context.gui->remove(_selfHandLayout);
+	_selfHandLayout->removeAllWidgets();
+
+	for(const auto& card : _selfHandCards)
+	{
+		selfHand.push_back(std::make_shared<CardWidget>(_context.client->getCardData(card.id)));
+		_selfHandLayout->add(selfHand.back());
+	}
+
+	float nbCards{static_cast<float>(selfHand.size())};
+	auto cardWidth{(_width/1.25f)/nbCards};
+	_selfHandLayout->setSize(_width/1.25f, (cardWidth/CardGui::widthCard) * CardGui::heightCard);
+	_selfHandLayout->setPosition(_width/8.f, _height - (_selfHandLayout->getSize().y+10));
+
+	_context.gui->add(_selfHandLayout);
+	sf::Event event;
+	bool loop{true};
+	while(loop)
+	{
+		_context.window->clear(sf::Color::White);
+		_context.gui->draw();
+		_context.window->display();
+		_context.window->waitEvent(event);
+		if(event.type == sf::Event::Closed)
+			loop = false;
+	}
 	// TODO
 }
 
