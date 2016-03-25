@@ -10,7 +10,7 @@ class AbstractAchievementState : virtual public AbstractState
 {
 	public:
 		/// Constructor.
-		AbstractAchievementState(StateStack& stateStack, Client& client);
+		AbstractAchievementState(Context& context);
 
 	protected:
 		void backMainMenu();

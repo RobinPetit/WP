@@ -4,12 +4,12 @@
 // WizardPoker headers
 #include "client/states/AbstractAchievementState.hpp"
 
-AbstractAchievementState::AbstractAchievementState(StateStack& stateStack, Client& client):
-	AbstractState(stateStack, client)
+AbstractAchievementState::AbstractAchievementState(Context& context):
+	AbstractState(context)
 {
 	try
 	{
-		_achievements = _client.getAchievements();
+		_achievements = _context.client->getAchievements();
 	}
 	catch(const std::runtime_error& e)
 	{
@@ -21,5 +21,5 @@ AbstractAchievementState::AbstractAchievementState(StateStack& stateStack, Clien
 
 void AbstractAchievementState::backMainMenu()
 {
-	stackPop();
+	_context.stateStack->pop();
 }
