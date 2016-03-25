@@ -279,6 +279,7 @@ void AbstractGame::quit()
 AbstractGame::~AbstractGame()
 {
 	quit();
+	_client.endGame();
 }
 
 //////////////// special data receival
@@ -354,6 +355,10 @@ void AbstractGame::endGame(sf::Packet& transmission)
 			transmission >> newCard;
 			receiveCard(newCard);
 		}
+		AchievementList newAchievements;
+		transmission >> newAchievements;
+		ClientAchievementList clientAchievements = _client.getAchievements(newAchievements);
+		displayAchievements(clientAchievements);
 	}
 	_playing.store(false);
 	_myTurn.store(!_myTurn.load());

@@ -226,6 +226,9 @@ void Server::receiveData()
 		case TransferType::ASK_LADDER:
 			sendLadder(it);
 			break;
+		case TransferType::ASK_ACHIEVEMENTS:
+			sendAchievements(it);
+			break;
 		default:
 			std::cerr << "Error: unknown code " << static_cast<sf::Uint32>(type) << std::endl;
 			break;
@@ -369,10 +372,12 @@ void Server::startGame(std::size_t idx)
 	std::string player1Name = userToString(player1);
 	std::string player2Name = userToString(player2);
 
+	// start the game
 	std::cout << "Game " << idx << " is starting: " + userToString(player1) + " vs. " + userToString(player2) + "\n";
 	userId winnerId{selfThread->playGame(player1->second, player2->second)};
+	assert(winnerId==player1Id or winnerId==player2Id or winnerId==0);
 
-	// \TODO: change personnal scores
+	// display which players won, if any
 	if (winnerId == player1Id)
 		std::cout << player1Name << " won and " << player2Name << " lost\n";
 	else if (winnerId == player2Id)
@@ -656,6 +661,23 @@ void Server::sendLadder(const _iterator& it)
 	catch(const std::runtime_error& e)
 	{
 		std::cout << "sendLadder error: " << e.what() << "\n";
+		response << TransferType::FAILURE;
+	}
+	it->second.socket->send(response);
+}
+
+void Server::sendAchievements(const _iterator& it)
+{
+	sf::Packet response;
+	try
+	{
+		const userId id{_database.getUserId(it->first)};
+		AchievementList achievements{_database.getAchievements(id)};
+		response << TransferType::ACKNOWLEDGE << achievements;
+	}
+	catch(const std::runtime_error& e)
+	{
+		std::cout << "sendAchievements error: " << e.what() << "\n";
 		response << TransferType::FAILURE;
 	}
 	it->second.socket->send(response);

@@ -6,6 +6,7 @@
 #include <TGUI/VerticalLayout.hpp>
 
 // WizardPoker headers
+#include "common/Database.hpp"  // Achievements
 #include "client/Gui/GuiAbstractState.hpp"
 #include "client/states/AbstractAchievementState.hpp"
 

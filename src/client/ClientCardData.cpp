@@ -2,7 +2,7 @@
 
 // ClientCreatureData
 ClientCreatureData::ClientCreatureData(cardId id, const std::string& name, int cost, const std::string& description,
-                           int attack, int health, int shield, int shieldType) :
+		int attack, int health, int shield, int shieldType) :
 	CommonCreatureData(id, cost, attack, health, shield, shieldType),
 	_name(name), _description(description)
 {
