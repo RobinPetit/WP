@@ -2,13 +2,15 @@
 #include <iostream>
 // WizardPoker headers
 #include "client/states/AbstractCardsCollectionState.hpp"
+#include "client/sockets/Client.hpp"
+#include "client/StateStack.hpp"
 
-AbstractCardsCollectionState::AbstractCardsCollectionState(StateStack& stateStack, Client& client):
-	AbstractState(stateStack, client)
+AbstractCardsCollectionState::AbstractCardsCollectionState(Context& context):
+	AbstractState(context)
 {
 	try
 	{
-		_cardsCollection = _client.getCardsCollection();
+		_cardsCollection = _context.client->getCardsCollection();
 	}
 	catch(const std::runtime_error& e)
 	{
@@ -19,5 +21,5 @@ AbstractCardsCollectionState::AbstractCardsCollectionState(StateStack& stateStac
 
 void AbstractCardsCollectionState::backMainMenu()
 {
-	stackPop();
+	_context.stateStack->pop();
 }

@@ -1,13 +1,14 @@
 // std-C++ headers
 #include <iostream>
 // WizardPoker headers
+#include "client/sockets/Client.hpp"
 #include "client/Terminal/TerminalGame.hpp"
 #include "client/Terminal/states/TerminalLobbyState.hpp"
 
-TerminalLobbyState::TerminalLobbyState(StateStack& stateStack, Client& client):
-	AbstractState(stateStack, client),
-	TerminalAbstractState(stateStack, client),
-	AbstractLobbyState(stateStack, client)
+TerminalLobbyState::TerminalLobbyState(Context& context):
+	AbstractState(context),
+	TerminalAbstractState(context),
+	AbstractLobbyState(context)
 {
 	addAction("Quit", &TerminalLobbyState::quit);
 	addAction("Find a game", &TerminalLobbyState::startGame);
@@ -23,20 +24,32 @@ void TerminalLobbyState::display()
 
 void TerminalLobbyState::startGame()
 {
-	if(not _client.isConnected())
+	if(not _context.client->isConnected())
 	{
 		std::cout << "You can't play: you're not connected!\n";
 		waitForEnter();
 		return;
 	}
-	std::cout << "Let's find you an opponent\n";
-	if(_client.startGame())
+
+	static const std::string cancelWaitingString{"q"};
+	std::cout << "Let's find you an opponent. Type " << cancelWaitingString << " to leave the lobby\n";
+	_context.client->enterLobby();
+	NonBlockingInput input;
+	std::string opponentName;
+	while(true)
 	{
-		TerminalGame game{_client};
-		game.init();
-		game.play();
-		waitForEnter();
+		if(_context.client->isGameStarted(opponentName))
+			break;
+		else if(input.waitForData(0.05) && input.receiveStdinData() == cancelWaitingString)
+		{
+			_context.client->leaveLobby();
+			std::cout << "You decided to leave the waiting lobby" << std::endl;
+			return;
+		}
 	}
-	else
-		std::cout << "You stopped waiting for an opponent.\n";
+        std::cout << "Opponent found: " << opponentName << std::endl;
+	TerminalGame game{*_context.client};
+	game.init();
+	game.play();
+	waitForEnter();
 }

@@ -1,5 +1,7 @@
 // WizardPoker headers
 #include "client/Terminal/TerminalGame.hpp"
+#include "common/Deck.hpp"
+#include "client/sockets/Client.hpp"
 // std-C++ headers
 #include <iostream>
 
@@ -46,7 +48,6 @@ void TerminalGame::displayAchievements(ClientAchievementList& newAchievements)
 }
 
 // TODO: rename this to be consistent
-
 void TerminalGame::displayOptions()
 {
 	std::cout << "Here are your options:\n";

@@ -4,19 +4,15 @@
 // WizardPoker headers
 #include "client/AbstractState.hpp"
 
-AbstractState::AbstractState(StateStack& stateStack, Client& client):
-	_client{client},
-	_stateStack{stateStack}
+AbstractState::AbstractState(Context& context):
+	_context{context}
 {
-
 }
 
-void AbstractState::stackPop()
+void AbstractState::onPush()
 {
-	_stateStack.pop();
 }
 
-void AbstractState::stackClear()
+void AbstractState::onPop()
 {
-	_stateStack.clear();
 }

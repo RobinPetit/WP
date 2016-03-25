@@ -31,15 +31,34 @@ public:
 	explicit GameThread(ServerDatabase& database, userId player1Id, userId player2Id, F&& f, Args&&... args);
 
 	/// Interface for Server
+
+	/// Creates the in-game sockets (normal and special) to the players
+	/// \param player 1 \see playGame for more informations
+	void establishSockets(const ClientInformations& player1, const ClientInformations& player2);
+
+	/// starts and plays a game. Returns only when one of the players lost (or when the
+	/// server is asked to end)
+	/// \param player1 The data (port/address) for the first player
+	/// \param player2 \see player1
+	/// \return The id of the winner
 	userId playGame(const ClientInformations& player1, const ClientInformations& player2);
 	void interruptGame(); ///< Stops the running thread (abort)
 
 	/// Interface for Player
-	void endGame(userId winnerId, EndGame::Cause cause); ///< quit the game
-	void swapTurns(); ///< end his turn
 
+	/// Signals the game is over and register the winner and the reason of the win
+	/// \param winnerId The id of the winner
+	/// \param cause The reason of the end of the game
+	void endGame(userId winnerId, EndGame::Cause cause);
+
+	/// Method to call to force the end of the current turn and the start of the other player's turn
+	void swapTurns();
+
+	/// Gives the random generator
 	RandomInteger& getGenerator();
-	void printVerbose(std::string message);
+
+	/// Debug method printing \a message
+	void printVerbose(const std::string& message);
 
 	/// Destructor
 	~GameThread();
@@ -47,19 +66,23 @@ public:
 private:
 	/*------------------------------ Attributes */
 	std::atomic_bool _running;
-	sf::TcpSocket _specialOutputSocketPlayer1;
-	sf::TcpSocket _specialOutputSocketPlayer2;
+
 	Player _player1;
 	Player _player2;
+	Player* _activePlayer;
+	Player* _passivePlayer;
+
+	sf::TcpSocket _specialOutputSocketPlayer1;
+	sf::TcpSocket _specialOutputSocketPlayer2;
+	sf::TcpSocket* _activeSpecialSocket;
+	sf::TcpSocket* _passiveSpecialSocket;
+
 	PostGameData _postGameDataPlayer1;
 	PostGameData _postGameDataPlayer2;
 	ServerDatabase& _database;
 
 	userId _winnerId;
 	EndGame::Cause _endGameCause;
-
-	Player* _activePlayer;
-	Player* _passivePlayer;
 
 	int _turn;
 	bool _verbose=true;
@@ -72,11 +95,12 @@ private:
 
 	/*------------------------------ Static variables */
 	/// Currently low for tests, arbitrary, need more time now for testing
-	static constexpr std::chrono::seconds _turnTime{120};
+	static constexpr std::chrono::seconds _turnTime{120};  // TODO: change this
 
 	/*------------------------------ Methods */
 	void createPlayers();
 
+	/// Main loop of the game: waits for each side inputs and forces turns swapping
 	void runGame();
 
 	void setSocket(sf::TcpSocket& socket, sf::TcpSocket& specialSocket, const ClientInformations& player);
@@ -84,6 +108,7 @@ private:
 	void makeTimer();
 
 	void endTurn();
+	void swapData();
 
 	void sendFinalMessage(sf::TcpSocket& specialSocket, PostGameData& postGameData, cardId earnedCardId, AchievementList& newAchievements);
 };

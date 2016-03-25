@@ -36,9 +36,12 @@ void GameThread::createPlayers()
 {
 	_activePlayer = &_player1;
 	_passivePlayer = &_player2;
+	_activeSpecialSocket = &_specialOutputSocketPlayer1;
+	_passiveSpecialSocket = &_specialOutputSocketPlayer2;
 	std::random_device device;
-	if(std::bernoulli_distribution(0.5)(device)) //Choose which player starts
-		std::swap(_activePlayer, _passivePlayer);
+	// probability of 1/2 to swap the active and passive players
+	if(std::bernoulli_distribution(0.5)(device))
+		swapData();
 }
 
 RandomInteger& GameThread::getGenerator()
@@ -46,7 +49,7 @@ RandomInteger& GameThread::getGenerator()
 	return _intGenerator;
 }
 
-void GameThread::printVerbose(std::string message)
+void GameThread::printVerbose(const std::string& message)
 {
 	if (not _verbose)
 		return;
@@ -134,7 +137,7 @@ void GameThread::runGame()
 		{
 			auto otherPlayer{ player == _activePlayer ? _passivePlayer : _activePlayer };
 
-			sf::TcpSocket& specialSocket{player == &_player1 ? _specialOutputSocketPlayer1 : _specialOutputSocketPlayer2};
+			sf::TcpSocket& specialSocket{player == _activePlayer ? *_activeSpecialSocket : *_passiveSpecialSocket};
 
 			auto status{player->tryReceiveClientInput()}; // get input
 			// player has disconnected
@@ -196,28 +199,33 @@ void GameThread::interruptGame()
 		endGame(0, EndGame::Cause::ENDING_SERVER);
 }
 
+<<<<<<< HEAD
 void GameThread::swapTurns()
 {
 	_turnSwap.store(true);
+=======
+void GameThread::swapData()
+{
+	// swap active and inactive
+	std::swap(_activePlayer, _passivePlayer);
+	std::swap(_activeSpecialSocket, _passiveSpecialSocket);
+>>>>>>> Gui
 }
 
 void GameThread::endTurn()
 {
 	// send to both players their turn swapped
-	// MAYBE TODO: store and maintain two pointers, _activeSpecialSocket and _passiveSpecialSocket as attributes
-	sf::TcpSocket& activeSpecialSocket{_activePlayer == &_player1 ? _specialOutputSocketPlayer1 : _specialOutputSocketPlayer2};
 	sf::Packet endOfTurn;
 	endOfTurn << TransferType::GAME_PLAYER_LEAVE_TURN;
-	activeSpecialSocket.send(endOfTurn);
+	_activeSpecialSocket->send(endOfTurn);
 
-	sf::TcpSocket& passiveSpecialSocket{_activePlayer == &_player1 ? _specialOutputSocketPlayer2 : _specialOutputSocketPlayer1};
 	sf::Packet startOfTurn;
 	startOfTurn << TransferType::GAME_PLAYER_ENTER_TURN;
-	passiveSpecialSocket.send(startOfTurn);
+	_passiveSpecialSocket->send(startOfTurn);
 
 	_turn++;  // turn counter (for both players)
 	_activePlayer->leaveTurn();
-	std::swap(_activePlayer, _passivePlayer);  // swap active and inactive
+	swapData();
 	_activePlayer->enterTurn(_turn/2 +1);  // ALWAYS call active player
 
 	_startOfTurnTime = std::chrono::high_resolution_clock::now();

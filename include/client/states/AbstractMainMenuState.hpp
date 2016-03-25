@@ -9,7 +9,7 @@ class AbstractMainMenuState : virtual public AbstractState
 {
 	public:
 		/// Constructor.
-		AbstractMainMenuState(StateStack& stateStack, Client& client);
+		AbstractMainMenuState(Context& context);
 
 	protected:
 		void logOut();

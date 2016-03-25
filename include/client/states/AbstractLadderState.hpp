@@ -10,7 +10,7 @@ class AbstractLadderState : virtual public AbstractState
 {
 	public:
 		/// Constructor.
-		AbstractLadderState(StateStack& stateStack, Client& client);
+		AbstractLadderState(Context& context);
 
 	protected:
 		void backMainMenu();

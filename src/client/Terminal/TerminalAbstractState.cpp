@@ -5,8 +5,8 @@
 #include "client/Terminal/TerminalAbstractState.hpp"
 
 
-TerminalAbstractState::TerminalAbstractState(StateStack& stateStack, Client& client):
-	AbstractState{stateStack, client}
+TerminalAbstractState::TerminalAbstractState(Context& context):
+	AbstractState(context)
 {
 
 }
@@ -48,6 +48,11 @@ void TerminalAbstractState::waitForEnter()
 	std::cout << "Press Enter to continue...";
 	std::string tmp;
 	std::getline(std::cin, tmp);
+}
+
+void TerminalAbstractState::displayMessage(const std::string& message)
+{
+	std::cout << message << std::endl;
 }
 
 std::size_t TerminalAbstractState::askForNumber(std::size_t from, std::size_t to)

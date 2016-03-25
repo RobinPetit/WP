@@ -11,7 +11,7 @@ class AbstractLobbyState : virtual public AbstractState
 {
 	public:
 		/// Constructor.
-		AbstractLobbyState(StateStack& stateStack, Client& client);
+		AbstractLobbyState(Context& context);
 
 	protected:
 		void quit();

@@ -3,10 +3,10 @@
 // WizardPoker headers
 #include "client/Terminal/states/TerminalLadderState.hpp"
 
-TerminalLadderState::TerminalLadderState(StateStack& stateStack, Client& client):
-	AbstractState(stateStack, client),
-	TerminalAbstractState(stateStack, client),
-	AbstractLadderState(stateStack, client)
+TerminalLadderState::TerminalLadderState(Context& context):
+	AbstractState(context),
+	TerminalAbstractState(context),
+	AbstractLadderState(context)
 {
 	addAction("Back to main menu", &TerminalLadderState::backMainMenu);
 }

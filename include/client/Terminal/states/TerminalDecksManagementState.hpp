@@ -12,7 +12,7 @@ class TerminalDecksManagementState : public TerminalAbstractState, public Abstra
 {
 	public:
 		/// Constructor.
-		TerminalDecksManagementState(StateStack& stateStack, Client& client);
+		TerminalDecksManagementState(Context& context);
 
 		/// The display function.
 		/// It must do all things related to drawing or printing stuff on the screen.

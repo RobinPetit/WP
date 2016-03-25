@@ -10,7 +10,7 @@ class TerminalFriendsManagementState : public TerminalAbstractState, public Abst
 {
 	public:
 		/// Constructor.
-		TerminalFriendsManagementState(StateStack& stateStack, Client& client);
+		TerminalFriendsManagementState(Context& context);
 
 		/// The display function.
 		/// It must do all things related to drawing or printing stuff on the screen.
@@ -19,8 +19,9 @@ class TerminalFriendsManagementState : public TerminalAbstractState, public Abst
 	private:
 		void addFriend();
 		void removeFriend();
-		void treatRequests();
 		void startChat();
+
+		void treatIndividualRequest(const Friend& friendRequest) override;
 };
 
-#endif// _TERMINAL_FRIENDS_MANAGEMENT_STATE_CLIENT_HPP
+#endif  // _TERMINAL_FRIENDS_MANAGEMENT_STATE_CLIENT_HPP

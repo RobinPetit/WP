@@ -3,12 +3,13 @@
 #include <cassert>
 // WizardPoker headers
 #include "common/CardData.hpp"
+#include "client/sockets/Client.hpp"
 #include "client/Terminal/states/TerminalDecksManagementState.hpp"
 
-TerminalDecksManagementState::TerminalDecksManagementState(StateStack& stateStack, Client& client):
-	AbstractState(stateStack, client),
-	TerminalAbstractState(stateStack, client),
-	AbstractDecksManagementState(stateStack, client)
+TerminalDecksManagementState::TerminalDecksManagementState(Context& context):
+	AbstractState(context),
+	TerminalAbstractState(context),
+	AbstractDecksManagementState(context)
 {
 	addAction("Back to main menu", &TerminalDecksManagementState::backMainMenu);
 	addAction("Display a deck", &TerminalDecksManagementState::displayDeck);
@@ -88,7 +89,7 @@ void TerminalDecksManagementState::editDeck()
 	};
 	try
 	{
-		_client.handleDeckEditing(_decks[deckIndex]);
+		_context.client->handleDeckEditing(_decks[deckIndex]);
 	}
 	catch(const std::runtime_error& e)
 	{
@@ -113,8 +114,8 @@ cardId TerminalDecksManagementState::askForReplacingCard(std::size_t deckIndex)
 	std::cout << "Which card do you want to put in you deck? ";
 	// TODO: even if *for now* database initialization ensure that card ids are consecutive
 	// we shouldn't take this for granted.
-	assert(_client.getMaxCardId() == _client.getNumberOfCards());
-	cardId replacingCard{static_cast<cardId>(askForNumber(0, static_cast<std::size_t>(_client.getNumberOfCards())))};
+	assert(_context.client->getMaxCardId() == _context.client->getNumberOfCards());
+	cardId replacingCard{static_cast<cardId>(askForNumber(0, static_cast<std::size_t>(_context.client->getNumberOfCards())))};
 
 	// Check if the given card is valid
 	if(not _cardsCollection.contains(replacingCard))
@@ -133,7 +134,7 @@ void TerminalDecksManagementState::createDeck()
 	_decks.emplace_back(input);
 	try
 	{
-		_client.handleDeckCreation(_decks.back());
+		_context.client->handleDeckCreation(_decks.back());
 	}
 	catch(const std::runtime_error& e)
 	{
@@ -152,7 +153,7 @@ void TerminalDecksManagementState::deleteDeck()
 	{
 		std::cout << "Which deck would you like to delete? ";
 		const std::size_t input{askForNumber(1, _decks.size() + 1) - 1};
-		_client.handleDeckDeletion(_decks[input].getName());
+		_context.client->handleDeckDeletion(_decks[input].getName());
 		_decks.erase(_decks.begin() + input);
 	}
 	catch(const std::logic_error& e)

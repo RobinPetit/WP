@@ -10,7 +10,7 @@ class AbstractCardsCollectionState : virtual public AbstractState
 {
 	public:
 		/// Constructor.
-		AbstractCardsCollectionState(StateStack& stateStack, Client& client);
+		AbstractCardsCollectionState(Context& context);
 
 	protected:
 		CardsCollection _cardsCollection;

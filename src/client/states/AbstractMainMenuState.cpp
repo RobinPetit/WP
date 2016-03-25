@@ -1,18 +1,20 @@
 // WizardPoker headers
+#include "client/StateStack.hpp"
+#include "client/sockets/Client.hpp"
 #include "client/states/AbstractMainMenuState.hpp"
 
-AbstractMainMenuState::AbstractMainMenuState(StateStack& stateStack, Client& client):
-	AbstractState(stateStack, client)
+AbstractMainMenuState::AbstractMainMenuState(Context& context):
+	AbstractState(context)
 {
 }
 
 void AbstractMainMenuState::logOut()
 {
-	_client.quit();
-	stackPop();
+	_context.client->quit();
+	_context.stateStack->pop();
 }
 
 void AbstractMainMenuState::quit()
 {
-	stackClear();
+	_context.stateStack->clear();
 }

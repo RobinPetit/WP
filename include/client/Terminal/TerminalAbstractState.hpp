@@ -16,9 +16,7 @@ class TerminalAbstractState : virtual public AbstractState
 {
 	public:
 		/// Constructor.
-		/// \param stateStack The stack that manages this state.
-		/// \param client The client connected to the server
-		TerminalAbstractState(StateStack& stateStack, Client& client);
+		TerminalAbstractState(Context& context);
 
 		/// The display function.
 		/// It must do all things related to drawing or printing stuff on the
@@ -50,6 +48,8 @@ class TerminalAbstractState : virtual public AbstractState
 		/// something just before the call to clear, so that the user has not to
 		/// scroll up in order to see what's just displayed.
 		static void waitForEnter();
+
+		virtual void displayMessage(const std::string& message) override;
 
 	private:
 		/// All actions doable in the state.

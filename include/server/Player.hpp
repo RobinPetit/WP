@@ -75,7 +75,7 @@ public:
 	const Card* getLastCaster() const;
 	userId getId() const;
 	sf::TcpSocket& getSocket();
-	void printVerbose(std::string message);
+	void printVerbose(const std::string& message);
 
 private:
 	/*------------------------------ Types */

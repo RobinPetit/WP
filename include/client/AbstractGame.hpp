@@ -6,6 +6,7 @@
 #include <array>
 #include <atomic>
 #include <mutex>
+#include <thread>
 // WizardPoker headers
 #include "client/AbstractState.hpp"
 #include "client/NonBlockingInput.hpp"

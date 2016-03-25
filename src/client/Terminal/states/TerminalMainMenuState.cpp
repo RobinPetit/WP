@@ -9,10 +9,10 @@
 #include "client/Terminal/states/TerminalMainMenuState.hpp"
 #include "client/Terminal/states/TerminalLobbyState.hpp"
 
-TerminalMainMenuState::TerminalMainMenuState(StateStack& stateStack, Client& client):
-	AbstractState(stateStack, client),
-	TerminalAbstractState(stateStack, client),
-	AbstractMainMenuState(stateStack, client)
+TerminalMainMenuState::TerminalMainMenuState(Context& context):
+	AbstractState(context),
+	TerminalAbstractState(context),
+	AbstractMainMenuState(context)
 {
 	addAction("Quit", &TerminalMainMenuState::quit);
 	addAction("Enter in the matchmaking lobby", &TerminalMainMenuState::findGame);
@@ -36,22 +36,22 @@ void TerminalMainMenuState::display()
 
 void TerminalMainMenuState::findGame()
 {
-	stackPush<TerminalLobbyState>();
+	_context.stateStack->push<TerminalLobbyState>();
 }
 
 void TerminalMainMenuState::manageDecks()
 {
-	stackPush<TerminalDecksManagementState>();
+	_context.stateStack->push<TerminalDecksManagementState>();
 }
 
 void TerminalMainMenuState::seeCollection()
 {
-	stackPush<TerminalCardsCollectionState>();
+	_context.stateStack->push<TerminalCardsCollectionState>();
 }
 
 void TerminalMainMenuState::seeLadder()
 {
-	stackPush<TerminalLadderState>();
+	_context.stateStack->push<TerminalLadderState>();
 }
 
 void TerminalMainMenuState::seeAchievements()
@@ -61,5 +61,5 @@ void TerminalMainMenuState::seeAchievements()
 
 void TerminalMainMenuState::manageFriends()
 {
-	stackPush<TerminalFriendsManagementState>();
+	_context.stateStack->push<TerminalFriendsManagementState>();
 }

@@ -1,12 +1,13 @@
 // WizardPoker headers
+#include "client/StateStack.hpp"
 #include "client/states/AbstractLobbyState.hpp"
 
-AbstractLobbyState::AbstractLobbyState(StateStack& stateStack, Client& client):
-	AbstractState(stateStack, client)
+AbstractLobbyState::AbstractLobbyState(Context& context):
+	AbstractState(context)
 {
 }
 
 void AbstractLobbyState::quit()
 {
-	stackPop();
+	_context.stateStack->pop();
 }

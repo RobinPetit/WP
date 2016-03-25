@@ -2,14 +2,16 @@
 #include <iostream>
 #include <algorithm>
 // WizardPoker headers
+#include "client/sockets/Client.hpp"
+#include "client/StateStack.hpp"
 #include "client/states/AbstractLadderState.hpp"
 
-AbstractLadderState::AbstractLadderState(StateStack& stateStack, Client& client):
-	AbstractState(stateStack, client)
+AbstractLadderState::AbstractLadderState(Context& context):
+	AbstractState(context)
 {
 	try
 	{
-		_ladder = _client.getLadder();
+		_ladder = _context.client->getLadder();
 	}
 	catch(const std::runtime_error& e)
 	{
@@ -31,5 +33,5 @@ AbstractLadderState::AbstractLadderState(StateStack& stateStack, Client& client)
 
 void AbstractLadderState::backMainMenu()
 {
-	stackPop();
+	_context.stateStack->pop();
 }

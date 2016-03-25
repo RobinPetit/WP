@@ -1,19 +1,15 @@
 // std-C++ headers
 #include <iostream>
-// SFML headers
-#include <SFML/Network/IpAddress.hpp>
 // WizardPoker headers
-#include "common/constants.hpp"
+#include "client/sockets/Client.hpp"
 #include "common/UnableToConnectException.hpp"
-#include "client/ErrorCode.hpp"
-#include "common/ini/IniFile.hpp"
 #include "client/Terminal/states/TerminalMainMenuState.hpp"
 #include "client/Terminal/states/TerminalHomeState.hpp"
 
-TerminalHomeState::TerminalHomeState(StateStack& stateStack, Client& client):
-	AbstractState(stateStack, client),
-	TerminalAbstractState(stateStack, client),
-	AbstractHomeState(stateStack, client)
+TerminalHomeState::TerminalHomeState(Context& context):
+	AbstractState(context),
+	TerminalAbstractState(context),
+	AbstractHomeState(context)
 {
 	addAction("Quit", &TerminalHomeState::quit);
 	addAction("Connect with your account", &TerminalHomeState::connect);
@@ -28,20 +24,12 @@ void TerminalHomeState::display()
 	TerminalAbstractState::display();
 }
 
-// \TODO: factorize connect and createAccount
-
 void TerminalHomeState::connect()
 {
 	try
 	{
-		IniFile config;
-		int status = config.readFromFile(SERVER_CONFIG_FILE_PATH);
-		if(status != SUCCESS)
-			throw std::runtime_error("No config file");
-		if(config.find("SERVER_PORT") == config.end() || config.find("SERVER_ADDRESS") == config.end())
-			throw std::runtime_error("Missing data in config file");
-		auto identifiers = askIdentifiers();
-		sf::Uint16 serverPort{static_cast<sf::Uint16>(std::stoi(config["SERVER_PORT"], nullptr, AUTO_BASE))};
+		auto connectionConfig(getConnectionConfiguration());
+		const auto identifiers(askIdentifiers());
 		// The following code is created to handle the case of a crash during
 		// server execution and then finding an available port to connect to
 		// (associated code in the server)
@@ -51,20 +39,20 @@ void TerminalHomeState::connect()
 		{
 			try
 			{
-				_client.connectToServer(identifiers.first, identifiers.second,
-						config["SERVER_ADDRESS"], serverPort);
+				_context.client->connectToServer(identifiers.first, identifiers.second,
+						connectionConfig.first, connectionConfig.second);
 				tryToConnect = false;
 			}
 			catch(const UnableToConnectException& e)
 			{
 				tryToConnect = (++counter) <= 10;
-				++serverPort;
+				++connectionConfig.second;
 				// Manually break by rethrowing the exception e
 				if(not tryToConnect)
 					throw;
 			}
 		}
-		stackPush<TerminalMainMenuState>();
+		_context.stateStack->push<TerminalMainMenuState>();
 	}
 	catch(const std::runtime_error& e)
 	{
@@ -72,7 +60,7 @@ void TerminalHomeState::connect()
 		std::cout << "Unable to connect to server\n";
 		// If the error was caused by client::updateFriends, the client is connected
 		// but the user will stay on this state. The client must be deconnected.
-		_client.quit();
+		_context.client->quit();
 		waitForEnter();
 	}
 }
@@ -81,17 +69,10 @@ void TerminalHomeState::createAccount()
 {
 	try
 	{
-		IniFile config;
-		int status = config.readFromFile(SERVER_CONFIG_FILE_PATH);
-		if(status != SUCCESS)
-			throw std::runtime_error("No config file");
-		if(config.find("SERVER_PORT") == config.end() || config.find("SERVER_ADDRESS") == config.end())
-			throw std::runtime_error("Missing data in config file");
-		auto identifiers = askIdentifiers();
-		_client.registerToServer(identifiers.first,
-				identifiers.second,
-				config["SERVER_ADDRESS"],
-				static_cast<sf::Uint16>(std::stoi(config["SERVER_PORT"], nullptr, AUTO_BASE)));
+		const auto connectionConfig(getConnectionConfiguration());
+		const auto identifiers(askIdentifiers());
+		_context.client->registerToServer(identifiers.first, identifiers.second,
+				connectionConfig.first, connectionConfig.second);
 		std::cout << "You have been successfuly registered!\n";
 	}
 	catch(const std::runtime_error& e)

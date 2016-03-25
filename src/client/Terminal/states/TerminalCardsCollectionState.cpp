@@ -3,10 +3,10 @@
 // WizardPoker headers
 #include "client/Terminal/states/TerminalCardsCollectionState.hpp"
 
-TerminalCardsCollectionState::TerminalCardsCollectionState(StateStack& stateStack, Client& client):
-	AbstractState(stateStack, client),
-	TerminalAbstractState(stateStack, client),
-	AbstractCardsCollectionState(stateStack, client)
+TerminalCardsCollectionState::TerminalCardsCollectionState(Context& context):
+	AbstractState(context),
+	TerminalAbstractState(context),
+	AbstractCardsCollectionState(context)
 {
 	addAction("Back to main menu", &TerminalCardsCollectionState::backMainMenu);
 }
