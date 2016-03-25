@@ -1,6 +1,7 @@
 // WizardPoker headers
 #include "client/Gui/states/GuiLobbyState.hpp"
 #include "client/sockets/Client.hpp"
+#include "client/Gui/GuiGame.hpp"
 // std-C++ headers
 #include <chrono>
 
@@ -64,7 +65,10 @@ void GuiLobbyState::findAGame()
 	}
 	resetButtons();
 	if(_play)
-		displayMessage("Let's start a game with " + opponentName);
+	{
+		GuiGame game{*_context.client, _context.gui};
+		startGame(game);
+	}
 }
 
 void GuiLobbyState::resetButtons()

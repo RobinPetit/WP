@@ -21,7 +21,7 @@ class TerminalLobbyState : public TerminalAbstractState, public AbstractLobbySta
 	private:
 		static const std::string _quitString;
 
-		void startGame();
+		void findAGame();
 };
 
 #endif// _TERMINAL_LOBBY_STATE_CLIENT_HPP
