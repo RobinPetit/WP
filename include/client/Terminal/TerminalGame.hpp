@@ -14,6 +14,11 @@ public:
 	~TerminalGame();
 
 private:
+	//////////// static members
+
+	static const std::vector<std::pair<const std::string, void (TerminalGame::*)()>> _actions;
+
+	////////// private methods
 
 	void displayOptions();
 	void displayGame() override;
@@ -37,6 +42,9 @@ private:
 	void chooseDeck() override;
 
 	void receiveCard(cardId id) override;
+
+	// overload
+	void useCard();
 };
 
 #endif  // TERMINAL_GAME_HPP

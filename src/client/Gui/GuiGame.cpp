@@ -44,16 +44,23 @@ void GuiGame::displayGame()
 {
 	std::lock_guard<std::mutex> _lock{_accessScreen};
 	std::vector<CardWidget::Ptr> selfHand;
-	/*std::vector<CardWidget::Ptr> selfBoard;
-	std::vector<CardWidget::Ptr> opponentBoard;*/
+	//std::vector<CardWidget::Ptr> selfBoard;
+	//std::vector<CardWidget::Ptr> opponentBoard;
 
 	_context.gui->remove(_selfHandLayout);
 	_selfHandLayout->removeAllWidgets();
 
+	unsigned i{0U};
 	for(const auto& card : _selfHandCards)
 	{
 		selfHand.push_back(std::make_shared<CardWidget>(_context.client->getCardData(card.id)));
+		selfHand.back()->connect("MousePressed", [this, i]()
+		{
+			std::cout << "using card " << i << '\n';
+			useCard(i);
+		});
 		_selfHandLayout->add(selfHand.back());
+		++i;
 	}
 
 	float nbCards{static_cast<float>(selfHand.size())};

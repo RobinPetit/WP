@@ -5,6 +5,14 @@
 // std-C++ headers
 #include <iostream>
 
+const std::vector<std::pair<const std::string, void (TerminalGame::*)()>> TerminalGame::_actions =
+{
+	{"Quit", &TerminalGame::quit},
+	{"Use a card from hand", &TerminalGame::useCard},
+	{"Attack with a creature", &TerminalGame::attackWithCreature},
+	{"End your turn", &TerminalGame::endTurn},
+};
+
 ///////////////////// init
 
 TerminalGame::TerminalGame(Client& client):
@@ -137,6 +145,12 @@ void TerminalGame::displayBoardCreatureVector(const std::vector<BoardCreatureDat
 		             << (displayDescription ? "\n\t" + getCardDescription(id) : "") << "\n";
 	}
 	std::cout << std::endl;
+}
+
+void TerminalGame::useCard()
+{
+	int cardIndex{askSelfHandIndex()};
+	AbstractGame::useCard(cardIndex);
 }
 
 ////////////// inputs

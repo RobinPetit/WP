@@ -735,7 +735,6 @@ bool Player::exploitCardEffects(Card* usedCard)
 			? static_cast<Spell *>(usedCard)->getEffects()
 			: static_cast<Creature *>(usedCard)->getEffects()
 	);
-
 	sf::Packet nbOfEffectsPacket;
 	nbOfEffectsPacket << TransferType::GAME_SEND_NB_OF_EFFECTS << static_cast<sf::Uint32>(effects.size());
 	_socketToClient.send(nbOfEffectsPacket);

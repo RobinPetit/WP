@@ -15,14 +15,6 @@
 #include "client/NonBlockingInput.hpp"
 #include "client/AbstractGame.hpp"
 
-const std::vector<std::pair<const std::string, void (AbstractGame::*)()>> AbstractGame::_actions =
-{
-	{"Quit", &AbstractGame::quit},
-	{"Use a card from hand", &AbstractGame::useCard},
-	{"Attack with a creature", &AbstractGame::attackWithCreature},
-	{"End your turn", &AbstractGame::endTurn},
-};
-
 AbstractGame::AbstractGame(Client& client):
 	_client{client},
 	_playing(false)
@@ -70,8 +62,6 @@ void AbstractGame::play()
 			while(not _myTurn.load())
 				sf::sleep(sf::milliseconds(100));
 	}
-	if(_listeningThread.joinable())
-		_listeningThread.join();
 }
 
 void AbstractGame::startTurn()
@@ -90,48 +80,46 @@ void AbstractGame::sendDeck(const std::string& deckName)
 //PRIVATE METHODS
 
 //User actions
-void AbstractGame::useCard()
+void AbstractGame::useCard(int cardIndex)
 {
 	if (not _myTurn)
 	{
 		displayMessage("You must wait your turn!");
 		return;
 	}
-	else
+	sf::Packet actionPacket;
+	actionPacket << TransferType::GAME_USE_CARD << static_cast<sf::Int32>(cardIndex);
+	_client.getGameSocket().send(actionPacket);
+	// receive amount of selection to make
+	_client.getGameSocket().receive(actionPacket);
+	TransferType responseHeader;
+	actionPacket >> responseHeader;
+	if(handleHeader(responseHeader))
+		return;
+	assert(responseHeader == TransferType::GAME_SEND_NB_OF_EFFECTS);
+	sf::Uint32 nbOfEffects;
+	actionPacket >> nbOfEffects;
+	for(sf::Uint32 i{0}; i < nbOfEffects; ++i)
 	{
-		int cardIndex = askSelfHandIndex();
-		sf::Packet actionPacket;
-		actionPacket << TransferType::GAME_USE_CARD << static_cast<sf::Int32>(cardIndex);
-		_client.getGameSocket().send(actionPacket);
-		// receive amount of selection to make
 		_client.getGameSocket().receive(actionPacket);
-		TransferType responseHeader;
-		actionPacket >> responseHeader;
-		assert(responseHeader == TransferType::GAME_SEND_NB_OF_EFFECTS);
-		sf::Uint32 nbOfEffects;
-		actionPacket >> nbOfEffects;
-		for(sf::Uint32 i{0}; i < nbOfEffects; ++i)
-		{
-			_client.getGameSocket().receive(actionPacket);
-			// ask and send the additionnal inputs to the server
-			if(not treatAdditionnalInputs(actionPacket))
-				return;
-		}
-		// receive status of operation from server
-		_client.getGameSocket().receive(actionPacket);
-		actionPacket >> responseHeader;
-		switch(responseHeader)
-		{
-		case TransferType::ACKNOWLEDGE:
-			displayMessage("The card has been successfuly used.");
-			break;
+		// ask and send the additionnal inputs to the server
+		if(not treatAdditionnalInputs(actionPacket))
+			return;
+	}
+	// receive status of operation from server
+	_client.getGameSocket().receive(actionPacket);
+	actionPacket >> responseHeader;
+	switch(responseHeader)
+	{
+	case TransferType::ACKNOWLEDGE:
+		displayMessage("The card has been successfuly used.");
+		break;
 
-		// This line is more documentative than really needed
-		case TransferType::FAILURE:
-		default:
-			displayMessage("An error occured when using a card.");
-			break;
-		}
+	// This line is more documentative than really needed
+	case TransferType::FAILURE:
+	default:
+		displayMessage("An error occured when using a card.");
+		break;
 	}
 }
 
@@ -280,6 +268,8 @@ void AbstractGame::quit()
 	// internal ending
 	_playing.store(false);
 	_myTurn.store(false);
+	if(_listeningThread.joinable())
+		_listeningThread.join();
 }
 
 AbstractGame::~AbstractGame()
@@ -477,6 +467,28 @@ const std::string& AbstractGame::getCardDescription(cardId id)
 bool AbstractGame::isSpell(cardId id)
 {
 	return _client.getCardData(id)->isSpell();
+}
+
+bool AbstractGame::handleHeader(TransferType header)
+{
+	switch(header)
+	{
+	case TransferType::GAME_NOT_ENOUGH_ENERGY:
+		displayMessage("You haven't enough energy to play this card.");
+		break;
+
+	case TransferType::FAILURE:
+		displayMessage("Error while playing the card.");
+		break;
+
+	case TransferType::GAME_CARD_LIMIT_TURN_REACHED:
+		displayMessage("You cannot play cards for this turn anymore: you reached your limit.");
+		break;
+
+	default:
+		return false;
+	}
+	return true;
 }
 
 template <typename FixedSizeIntegerType>

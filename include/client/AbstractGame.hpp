@@ -56,10 +56,6 @@ class AbstractGame
 		/// Waits for special server data such as END_OF_TURN, BOARD_UPDATE, etc.
 		std::thread _listeningThread;
 
-		//////////// static members
-
-		static const std::vector<std::pair<const std::string, void (AbstractGame::*)()>> _actions;
-
 		//////////// protected methods
 
 		const std::string& getCardName(cardId id);
@@ -74,7 +70,7 @@ class AbstractGame
 		virtual void sendDeck(const std::string& deckName);
 
 		// User interface ("actions")
-		void useCard();
+		void useCard(int cardIndex);
 		void attackWithCreature();
 		void endTurn();
 		void quit();
@@ -119,6 +115,9 @@ class AbstractGame
 		/// \return True if card is playable (after having sent the
 		/// asked inputs) and false otherwise
 		bool treatAdditionnalInputs(sf::Packet& actionPacket);
+
+		///
+		bool handleHeader(TransferType header);
 
 		//////////// static member
 
