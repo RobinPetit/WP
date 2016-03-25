@@ -36,7 +36,7 @@ const CommonCardData* ClientDatabase::getCardData(cardId id)
 {
 	auto found = _cards.find(id);
 
-	if(found == _cards.end())
+	if(found == _cards.end()) // not found: create and return
 	{
 		sqlite3_reset(_getCardStmt);
 		sqliteThrowExcept(sqlite3_bind_int64(_getCardStmt, 1, id));
@@ -44,28 +44,27 @@ const CommonCardData* ClientDatabase::getCardData(cardId id)
 		assert(sqliteThrowExcept(sqlite3_step(_getCardStmt)) == SQLITE_ROW);
 
 		CommonCardData * cardData;
-		ClientSpellData test(1, "Nom", 2, "Description"); // TODO delete
 
-		if(sqlite3_column_type(_getCardStmt, 4) == SQLITE_NULL) // Spell
+		if(sqlite3_column_type(_getCardStmt, 4) == SQLITE_NULL)  // Spell
 		{
 			cardData = new ClientSpellData(
-			    id,
-			    reinterpret_cast<const char *>(sqlite3_column_text(_getCardStmt, 0)), // name
-			    sqlite3_column_int(_getCardStmt, 1), // cost
-			    reinterpret_cast<const char *>(sqlite3_column_text(_getCardStmt, 2)) // description
+				id,
+				reinterpret_cast<const char *>(sqlite3_column_text(_getCardStmt, 0)),  // name
+				sqlite3_column_int(_getCardStmt, 1),  // cost
+				reinterpret_cast<const char *>(sqlite3_column_text(_getCardStmt, 2))  // description
 			);
 		}
 		else // Creature
 		{
 			cardData = new ClientCreatureData(
-			    id,
-			    reinterpret_cast<const char *>(sqlite3_column_text(_getCardStmt, 0)), // name
-			    sqlite3_column_int(_getCardStmt, 1), // cost
-			    reinterpret_cast<const char *>(sqlite3_column_text(_getCardStmt, 2)), // description
-			    sqlite3_column_int(_getCardStmt, 3), // attack
-			    sqlite3_column_int(_getCardStmt, 4), // health
-			    sqlite3_column_int(_getCardStmt, 5), // shield
-			    sqlite3_column_int(_getCardStmt, 6) // shieldType
+				id,
+				reinterpret_cast<const char *>(sqlite3_column_text(_getCardStmt, 0)),  // name
+				sqlite3_column_int(_getCardStmt, 1),  // cost
+				reinterpret_cast<const char *>(sqlite3_column_text(_getCardStmt, 2)),  // description
+				sqlite3_column_int(_getCardStmt, 3),  // attack
+				sqlite3_column_int(_getCardStmt, 4),  // health
+				sqlite3_column_int(_getCardStmt, 5),  // shield
+				sqlite3_column_int(_getCardStmt, 6)  // shieldType
 			);
 		}
 
@@ -74,7 +73,7 @@ const CommonCardData* ClientDatabase::getCardData(cardId id)
 		                          std::unique_ptr<CommonCardData>(cardData)
 		                      )).first->second.get();
 	}
-	else
+	else // card already created
 	{
 		return found->second.get();
 	}
@@ -103,19 +102,35 @@ cardId ClientDatabase::getGreatestCardId()
 	return sqlite3_column_int(_getGreatestCardIdStmt, 0);
 }
 
-cardId ClientDatabase::countCards()
+cardId ClientDatabase::countCards() const
 {
 	return _cardCount;
 }
 
-cardId ClientDatabase::countCreatures()
+cardId ClientDatabase::countCreatures() const
 {
 	return _creatureCount;
 }
 
-cardId ClientDatabase::countSpells()
+cardId ClientDatabase::countSpells() const
 {
 	return _spellCount;
+}
+
+AchievementData ClientDatabase::getAchievementData(AchievementId id) const
+{
+	sqlite3_reset(_getAchievementDataStmt);
+	sqliteThrowExcept(sqlite3_bind_int64(_getAchievementDataStmt, 1, id));
+
+	assert(sqliteThrowExcept(sqlite3_step(_getAchievementDataStmt)) == SQLITE_ROW);
+
+	return AchievementData
+	{
+		id,
+		reinterpret_cast<const char *>(sqlite3_column_text(_getAchievementDataStmt, 0)), // name
+		reinterpret_cast<const char *>(sqlite3_column_text(_getAchievementDataStmt, 1)), // description
+		sqlite3_column_int(_getAchievementDataStmt, 2) // progressRequired
+	};
 }
 
 

@@ -155,6 +155,9 @@ enum class TransferType : sf::Uint32
 	/// Sent when the user wants the ladder
 	ASK_LADDER,
 
+	/// Sent when the user wants the achievements
+	ASK_ACHIEVEMENTS,
+
 	/////////////// General headers
 
 	/// Used to acknowledge to client something happened correctly

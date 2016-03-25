@@ -5,6 +5,7 @@
 #include "client/Terminal/states/TerminalDecksManagementState.hpp"
 #include "client/Terminal/states/TerminalFriendsManagementState.hpp"
 #include "client/Terminal/states/TerminalLadderState.hpp"
+#include "client/Terminal/states/TerminalAchievementState.hpp"
 #include "client/Terminal/states/TerminalMainMenuState.hpp"
 #include "client/Terminal/states/TerminalLobbyState.hpp"
 
@@ -19,6 +20,7 @@ TerminalMainMenuState::TerminalMainMenuState(Context& context):
 	addAction("See your collection of cards", &TerminalMainMenuState::seeCollection);
 	addAction("Manage your friends", &TerminalMainMenuState::manageFriends);
 	addAction("See the ladder", &TerminalMainMenuState::seeLadder);
+	addAction("See your achievements", &TerminalMainMenuState::seeAchievements);
 	addAction("Log out", &TerminalMainMenuState::logOut);
 }
 
@@ -50,6 +52,11 @@ void TerminalMainMenuState::seeCollection()
 void TerminalMainMenuState::seeLadder()
 {
 	_context.stateStack->push<TerminalLadderState>();
+}
+
+void TerminalMainMenuState::seeAchievements()
+{
+	stackPush<TerminalAchievementState>();
 }
 
 void TerminalMainMenuState::manageFriends()

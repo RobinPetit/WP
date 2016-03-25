@@ -23,6 +23,7 @@ void TerminalAbstractState::display()
 
 void TerminalAbstractState::handleInput()
 {
+	//TODO : change try/catch block for something more precise, this does NOT only catch input errors !
 	try
 	{
 		// Get the user input

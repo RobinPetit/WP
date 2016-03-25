@@ -6,6 +6,7 @@ set(SOURCES
 		"Spell.cpp"
 		"Player.cpp"
 		"Constraints.cpp"
+		"PostGameData.cpp"
 		# sockets
 		"sockets/Server.cpp"
 		"sockets/GameThread.cpp"
