@@ -10,15 +10,16 @@
 class GuiChat : public AbstractChat
 {
 public:
+	/// Constructor
 	GuiChat(const char * const argv[6]);
-
-	void output() override;
-
-	void display(const std::string& name, const std::wstring& message) override;
 
 private:
 	// Methods
 	void handleSendButtonCallback();
+
+	void output() override;
+
+	void display(const std::string& name, const std::wstring& message) override;
 
 	// Attributes
 	sf::VideoMode _videoMode;

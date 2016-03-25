@@ -17,14 +17,6 @@ public:
 	/// Constructor
 	AbstractChat(const char * const argv[6]);
 
-	/// The function used to display a message written by someone
-	/// The method is pure virtual because only child classes can determine how
-	/// display text on screen
-	/// \param name A string containing the name of the author of the message
-	/// (must be _selfName or _friendName)
-	/// \param message A string containing the message to dsplay
-	virtual void display(const std::string& name, const std::wstring& message) = 0;
-
 	/// Virtual method allowing child classes to have a determinate behaviour when
 	/// both players are eventually connected one to another.
 	/// The method is called in start right after getting connected.
@@ -59,9 +51,6 @@ protected:
 
 	/// The function to call to end the discussion (and then the program)
 	void endDiscussion();
-
-	/// The function called by start to get user's input to send to the friend
-	virtual void output() = 0;
 
 private:
 	////////// Attributes
@@ -111,6 +100,17 @@ private:
 
 	/// Method to call when a signal is received telling that the friend leaves
 	void friendQuit();
+
+	/// The function called by start to get user's input to send to the friend
+	virtual void output() = 0;
+
+	/// The function used to display a message written by someone
+	/// The method is pure virtual because only child classes can determine how
+	/// display text on screen
+	/// \param name A string containing the name of the author of the message
+	/// (must be _selfName or _friendName)
+	/// \param message A string containing the message to dsplay
+	virtual void display(const std::string& name, const std::wstring& message) = 0;
 };
 
 #endif  // _ABSTRACT_CHAT_
