@@ -518,7 +518,7 @@ sf::TcpSocket& Player::getSocket()
     return _socketToClient;
 }
 
-void Player::printVerbose(std::string message)
+void Player::printVerbose(const std::string& message)
 {
     _gameThread.printVerbose("player " + std::to_string(getId()) + " - "+ message);
 }

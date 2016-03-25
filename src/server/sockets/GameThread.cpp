@@ -49,7 +49,7 @@ RandomInteger& GameThread::getGenerator()
 	return _intGenerator;
 }
 
-void GameThread::printVerbose(std::string message)
+void GameThread::printVerbose(const std::string& message)
 {
 	if (_verbose)
 		std::cout << "\tgame 0 - " + message << std::endl;

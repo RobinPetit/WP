@@ -55,7 +55,7 @@ public:
 	RandomInteger& getGenerator();
 
 	/// Debug method printing \a message
-	void printVerbose(std::string message);
+	void printVerbose(const std::string& message);
 
 	/// Destructor
 	~GameThread();
