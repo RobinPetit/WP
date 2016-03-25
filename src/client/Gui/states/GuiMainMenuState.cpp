@@ -50,7 +50,7 @@ void GuiMainMenuState::manageDecks()
 
 void GuiMainMenuState::seeCards()
 {
-	_context.stateStack->push<GuiCardsCollectionState>();
+	// _context.stateStack->push<GuiCardsCollectionState>();
 }
 
 void GuiMainMenuState::manageFriends()

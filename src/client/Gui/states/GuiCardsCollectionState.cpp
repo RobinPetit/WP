@@ -3,7 +3,7 @@
 #include "client/Gui/CreatureGui.hpp"
 #include "client/sockets/Client.hpp"
 
-GuiCardsCollectionState::GuiCardsCollectionState(Context& context):
+/*GuiCardsCollectionState::GuiCardsCollectionState(Context& context):
 	AbstractState(context),
 	GuiAbstractState(context),
 	AbstractCardsCollectionState(context),
@@ -55,3 +55,4 @@ GuiCardsCollectionState::GuiCardsCollectionState(Context& context):
 	registerRootWidgets({_buttons[0].button, _gridPanel, _scrollbar});
 
 }
+*/
