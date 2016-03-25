@@ -4,23 +4,18 @@
 // External headers
 #include <TGUI/Widgets/MessageBox.hpp>
 #include <TGUI/Widgets/Button.hpp>
-#include <TGUI/VerticalLayout.hpp>
 
 //////////////////// GuiGame
 
 GuiGame::GuiGame(Context& context):
 	AbstractGame{*context.client},
 	_context{context},
+	_decksListBox{std::make_shared<tgui::ListBox>()},
 	_decksChosen{false},
 	_width{tgui::bindWidth(*_context.gui)},
 	_height{tgui::bindHeight(*_context.gui)}
 {
 
-}
-
-std::pair<tgui::Layout, tgui::Layout> GuiGame::getSize() const
-{
-	return {_width, _height};
 }
 
 void GuiGame::displayGame()
@@ -87,61 +82,55 @@ bool GuiGame::wantToAttackOpponent()
 
 void GuiGame::chooseDeck()
 {
-	tgui::VerticalLayout::Ptr decksLayout{std::make_shared<tgui::VerticalLayout>()};
 	std::vector<Deck> decks{_client.getDecks()};
-	std::vector<DeckWidget> deckWidgets;
-	deckWidgets.reserve(decks.size());
 
-	decksLayout->setSize(_width/2.f, _height/2.f);
-	decksLayout->setPosition(_width/4.f, _height/4.f);
 	for(const auto& deck : decks)
-	{
-		deckWidgets.emplace_back(DeckWidget(deck, *this, &GuiGame::sendDeck));
-		decksLayout->add(deckWidgets.back().getLayout());
-	}
-	_context.gui->add(decksLayout);
-	_context.window->clear(sf::Color::White);
-	_context.gui->draw();
-	_context.window->display();
-	sf::Event event;
-	while(not _decksChosen and _context.window->pollEvent(event))
-		_context.gui->handleEvent(event);
-}
+		_decksListBox->addItem(deck.getName());
 
-#include <iostream>
+	_decksListBox->setPosition(_width/4.f, _height/4.f);
+	_decksListBox->setSize(_width/2.f, _height/4.f);
+	_context.gui->add(_decksListBox);
+
+	tgui::Button::Ptr selectButton{std::make_shared<tgui::Button>()};
+
+	selectButton->setText("Select");
+	selectButton->setPosition(_width/4.f, _height*3.f/4.f);
+	selectButton->setSize(_width/2.f, _height/5.f);
+	selectButton->connect("pressed", [this]()
+	{
+		const std::string& selection{_decksListBox->getSelectedItem()};
+		if(selection == "")
+			displayMessage("You need to choose a deck\n");
+		else
+			sendDeck(_decksListBox->getSelectedItem());
+	});
+	_context.gui->add(selectButton);
+
+	// Have an inner loop event to not leave the function as long as decks have not been selected
+	sf::Event event;
+	while(not _decksChosen)
+	{
+		_context.window->clear(sf::Color::White);
+		_context.gui->draw();
+		_context.window->display();
+
+		_context.window->waitEvent(event);
+		_context.gui->handleEvent(event);
+	}
+	// clean the GUI
+	_context.gui->removeAllWidgets();
+}
 
 void GuiGame::sendDeck(const std::string& deckName)
 {
 	_decksChosen = true;
-	std::cout << "sending " << deckName << std::endl;
+	sf::Packet deckNamePacket;
+	deckNamePacket << TransferType::GAME_PLAYER_GIVE_DECK_NAMES << deckName;
+	_context.client->getGameSocket().send(deckNamePacket);
 }
 
 void GuiGame::receiveCard(cardId id)
 {
 	// TODO: show the card
 	displayMessage("You won the card " + getCardName(id) + ".");
-}
-
-//////////////////// DeckWidget
-
-GuiGame::DeckWidget::DeckWidget(const Deck& deck, GuiGame& game, DeckWidget::Callback callback):
-	_deckName{std::make_shared<tgui::Label>()},
-	_deckButton{std::make_shared<tgui::Button>()},
-	_layout{std::make_shared<tgui::HorizontalLayout>()}
-{
-	auto windowSize{game.getSize()};
-	_deckName->setText(deck.getName());
-	_deckButton->setText("Send");
-	_deckButton->connect("pressed", [this, &game, callback]()
-	{
-		(game.*callback)(_deckName->getText());
-	});
-	_layout->setSize(windowSize.first/2.f, 15.f);
-	_layout->add(_deckName);
-	_layout->add(_deckButton);
-}
-
-tgui::HorizontalLayout::Ptr GuiGame::DeckWidget::getLayout()
-{
-	return _layout;
 }

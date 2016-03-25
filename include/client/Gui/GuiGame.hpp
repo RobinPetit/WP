@@ -8,8 +8,7 @@
 // External headers
 #include <TGUI/Gui.hpp>
 #include <TGUI/Widgets/Button.hpp>
-#include <TGUI/Widgets/Label.hpp>
-#include <TGUI/HorizontalLayout.hpp>
+#include <TGUI/Widgets/ListBox.hpp>
 // std-C++ headers
 #include <utility>
 
@@ -19,29 +18,12 @@ public:
 	/// Constructor
 	GuiGame(Context& context);
 
-	///
-	std::pair<tgui::Layout, tgui::Layout> getSize() const;
-
 private:
 	////////// Attributes
 
 	Context& _context;
 
-	class DeckWidget
-	{
-	public:
-		/// A function to be called when a button is pressed
-		typedef void (GuiGame::*Callback)(const std::string&);
-
-		DeckWidget(const Deck& deck, GuiGame& game, DeckWidget::Callback callback);
-
-		tgui::HorizontalLayout::Ptr getLayout();
-
-	private:
-		tgui::Label::Ptr _deckName;
-		tgui::Button::Ptr _deckButton;
-		tgui::HorizontalLayout::Ptr _layout;
-	};
+	tgui::ListBox::Ptr _decksListBox;
 
 	bool _decksChosen;
 
