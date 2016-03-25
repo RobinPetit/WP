@@ -388,7 +388,9 @@ private:
 			Statement { // 28
 				&_ladderStmt,
 				"SELECT login, victories, defeats "
-				"	FROM Account;"
+				"	FROM Account "
+				"	ORDER BY (victories+1)/(defeats+1) DESC;"
+
 			},
 			Statement {
 				&_getTimeSpentStmt,
