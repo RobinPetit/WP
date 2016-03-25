@@ -6,7 +6,6 @@
 const sf::Vector2f CardGui::SIZE{260.f, 360.f};
 const sf::Vector2f CardGui::NAME_POSITION{20.f, 17.f};
 const sf::Vector2f CardGui::COST_POSITION{220.f, 17.f};
-const sf::Vector2f CardGui::DESCRIPTION_POSITION{26.f, 273.f};
 constexpr char CardGui::BACK_IMAGE_PATH[];
 constexpr char CardGui::FONT_PATH[];
 
@@ -37,7 +36,7 @@ CardGui::CardGui(const std::string& name, std::string description, int cost):
 	_costText.setColor(sf::Color(0, 0, 100));
 
 	addNewlinesInDescription(description);
-	setupText(_descriptionText, description, DESCRIPTION_POSITION);
+	setupText(_descriptionText, description, {0, 0});
 	_descriptionText.setStyle(sf::Text::Italic);
 	_descriptionText.setCharacterSize(DESCRIPTION_CHAR_SIZE);
 }
@@ -80,17 +79,22 @@ void CardGui::setupText(sf::Text& text, const std::string& string, const sf::Vec
 	text.setPosition(position);
 }
 
+void CardGui::moveDescription(const sf::Vector2f& descriptionPosition)
+{
+	_descriptionText.setPosition(descriptionPosition);
+}
+
 void CardGui::addNewlinesInDescription(std::string& description)
 {
 	float lineSize{0.f};
-	float spaceSize = _font.getGlyph(static_cast<sf::Uint32>(' '), DESCRIPTION_CHAR_SIZE, false).advance;
+	const float spaceSize{getDescriptionCharacterWidth(' ')};
 
 	auto prevIt = description.begin();
 	for(auto it(description.begin()); it != description.end(); ++it)
 	{
-		if (*it==' ')
+		if(*it == ' ')
 		{
-			while (*it==' ')
+			while(*it == ' ')
 			{
 				lineSize += spaceSize;
 				it++;
@@ -98,7 +102,7 @@ void CardGui::addNewlinesInDescription(std::string& description)
 			prevIt = it;
 		}
 
-		lineSize += _font.getGlyph(static_cast<sf::Uint32>(*it), DESCRIPTION_CHAR_SIZE, false).advance;
+		lineSize += getDescriptionCharacterWidth(*it);
 
 		if(lineSize >= DESCRIPTION_WIDTH)
 		{
@@ -106,4 +110,9 @@ void CardGui::addNewlinesInDescription(std::string& description)
 			it = description.insert(prevIt, '\n');
 		}
 	}
+}
+
+inline float CardGui::getDescriptionCharacterWidth(char character) const
+{
+	 return _font.getGlyph(static_cast<sf::Uint32>(character), DESCRIPTION_CHAR_SIZE, false).advance;
 }
