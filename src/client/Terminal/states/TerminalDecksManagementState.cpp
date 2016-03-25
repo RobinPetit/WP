@@ -24,7 +24,7 @@ void TerminalDecksManagementState::display()
 
 	int i{0};
 	for(const auto& deck : _decks)
-		displayEntry(std::to_string(i) + ". " + deck.getName());
+		displayEntry(std::to_string(i++) + ". " + deck.getName());
 
 	// Display the actions
 	TerminalAbstractState::display();
@@ -40,8 +40,8 @@ void TerminalDecksManagementState::displayDeck()
 	std::cout << "Which deck would you like to display? ";
 	const std::size_t index{askForNumber(0, _decks.size() -1)};
 
-	std::cout << "Displaying content of " << _decks[index].getName() << std::endl;
-	for(const auto& cardId : _decks[index])  // Browse the deck
+	displaySeparator(_decks[index].getName(), '~'); // display the deck's name
+	for(const auto& cardId : _decks[index])  // display the deck's content
 		displayCard(cardId);
 
 	waitForEnter();
@@ -51,14 +51,14 @@ void TerminalDecksManagementState::editDeck()
 {
 	if(_decks.empty())
 	{
-		std::cout << "There are no deck to edit!\n";
+		std::cout << "There is no deck to edit!\n";
 		return;
 	}
 	std::cout << "Which deck would you like to edit ? ";
 	std::size_t deckIndex;
 	try
 	{
-		deckIndex = askForNumber(1, _decks.size() + 1) - 1;
+		deckIndex = askForNumber(0, _decks.size() - 1);
 	}
 	catch(const std::logic_error& e)
 	{
