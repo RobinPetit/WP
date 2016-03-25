@@ -61,8 +61,6 @@ private:
 	/// A string containing "caller" or "callee" depending on the parameters
 	std::string _role;
 
-	std::atomic_bool _listening;
-
 	/// The port to connect to
 	sf::Uint16 _remotePort;
 
@@ -76,6 +74,7 @@ private:
 	/// The listener socket used to connect to the friend
 	sf::TcpListener _listener;
 
+	/// The string to enter in chat to leave
 	const static std::wstring _quitString;
 
 	////////// Methods
