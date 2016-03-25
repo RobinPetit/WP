@@ -20,6 +20,10 @@ public:
 	/// Constructor
 	GuiGame(Context& context);
 
+	void startTurn() override;
+
+	~GuiGame();
+
 private:
 	////////// Attributes
 

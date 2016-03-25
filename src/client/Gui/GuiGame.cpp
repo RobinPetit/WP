@@ -19,6 +19,27 @@ GuiGame::GuiGame(Context& context):
 
 }
 
+void GuiGame::startTurn()
+{
+	AbstractGame::startTurn();
+
+	sf::Event event;
+	while(_myTurn.load())
+	{
+		_context.window->clear(sf::Color::White);
+		_context.gui->draw();
+		_context.window->display();
+
+		while(_context.window->pollEvent(event))
+		{
+			if(event.type == sf::Event::Closed)
+				quit();
+			else
+				_context.gui->handleEvent(event);
+		}
+	}
+}
+
 void GuiGame::displayGame()
 {
 	std::lock_guard<std::mutex> _lock{_accessScreen};
@@ -36,23 +57,22 @@ void GuiGame::displayGame()
 	}
 
 	float nbCards{static_cast<float>(selfHand.size())};
-	auto cardWidth{(_width/1.25f)/nbCards};
-	_selfHandLayout->setSize(_width/1.25f, (cardWidth/CardGui::widthCard) * CardGui::heightCard);
-	_selfHandLayout->setPosition(_width/8.f, _height - (_selfHandLayout->getSize().y+10));
+	const static auto cardsLayoutWidth{_width/1.4f};
+	auto cardWidth{cardsLayoutWidth/nbCards};
+	_selfHandLayout->setSize(cardsLayoutWidth, (cardWidth/CardGui::widthCard) * CardGui::heightCard);
+	_selfHandLayout->setPosition((_width - cardsLayoutWidth) / 2.f, _height - (_selfHandLayout->getSize().y+10));
 
-	_context.gui->add(_selfHandLayout);
-	sf::Event event;
-	bool loop{true};
-	while(loop)
+	tgui::Button::Ptr endTurnButton{std::make_shared<tgui::Button>()};
+	endTurnButton->setText("End turn");
+	endTurnButton->connect("pressed", [this]()
 	{
-		_context.window->clear(sf::Color::White);
-		_context.gui->draw();
-		_context.window->display();
-		_context.window->waitEvent(event);
-		if(event.type == sf::Event::Closed)
-			loop = false;
-	}
-	// TODO
+		endTurn();
+	});
+	endTurnButton->setSize((_width - cardsLayoutWidth) / 2 - 10, 40);
+	endTurnButton->setPosition((_width + cardsLayoutWidth) / 2 + 5, _height - 50);
+
+	_context.gui->add(endTurnButton);
+	_context.gui->add(_selfHandLayout);
 }
 
 // NOTE: this is copy/paste from GuiAbstractState. TODO: factorize by creating an interface
@@ -168,4 +188,10 @@ void GuiGame::receiveCard(cardId id)
 void GuiGame::displayAchievements(ClientAchievementList& /* newAchievements */)
 {
 	// TODO
+}
+
+
+GuiGame::~GuiGame()
+{
+	_context.gui->removeAllWidgets();
 }

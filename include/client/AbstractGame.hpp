@@ -73,17 +73,18 @@ class AbstractGame
 		/// Sends the chosen deck to the server
 		virtual void sendDeck(const std::string& deckName);
 
+		// User interface ("actions")
+		void useCard();
+		void attackWithCreature();
+		void endTurn();
+		void quit();
+
 	private:
 		//////////////// private methods
 
 		// called by the constructor to init the object
 		virtual void chooseDeck() = 0;
 
-		// User interface ("actions")
-		void useCard();
-		void attackWithCreature();
-		void endTurn();
-		void quit();
 		void endGame(sf::Packet& transmission);  // only used to lighten handlePacket
 
 		// Game display
