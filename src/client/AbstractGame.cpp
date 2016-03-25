@@ -80,6 +80,12 @@ void AbstractGame::startTurn()
 	displayGame();
 }
 
+void AbstractGame::sendDeck(const std::string& deckName)
+{
+	sf::Packet deckNamePacket;
+	deckNamePacket << TransferType::GAME_PLAYER_GIVE_DECK_NAMES << deckName;
+	_client.getGameSocket().send(deckNamePacket);
+}
 
 //PRIVATE METHODS
 

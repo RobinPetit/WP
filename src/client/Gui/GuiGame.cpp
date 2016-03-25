@@ -106,7 +106,7 @@ void GuiGame::chooseDeck()
 	});
 	_context.gui->add(selectButton);
 
-	// Have an inner loop event to not leave the function as long as decks have not been selected
+	// Have an inner event loop to not leave the function as long as deck has not been selected
 	sf::Event event;
 	while(not _decksChosen)
 	{
@@ -124,9 +124,7 @@ void GuiGame::chooseDeck()
 void GuiGame::sendDeck(const std::string& deckName)
 {
 	_decksChosen = true;
-	sf::Packet deckNamePacket;
-	deckNamePacket << TransferType::GAME_PLAYER_GIVE_DECK_NAMES << deckName;
-	_context.client->getGameSocket().send(deckNamePacket);
+	AbstractGame::sendDeck(deckName);
 }
 
 void GuiGame::receiveCard(cardId id)

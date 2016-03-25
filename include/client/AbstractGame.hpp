@@ -70,6 +70,9 @@ class AbstractGame
 		/// \return True if the card is a spell, false if it is a creature.
 		bool isSpell(cardId id);
 
+		/// Sends the chosen deck to the server
+		virtual void sendDeck(const std::string& deckName);
+
 	private:
 		//////////////// private methods
 

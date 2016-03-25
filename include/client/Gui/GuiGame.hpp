@@ -21,21 +21,31 @@ public:
 private:
 	////////// Attributes
 
+	/// The context to access the client, the gui, the window, etc.
 	Context& _context;
 
+	/// The listbox used to display all of the decks when need to choose one
 	tgui::ListBox::Ptr _decksListBox;
 
+	/// boolean telling whether or not the deck has already been chosen
 	bool _decksChosen;
 
+	// Dimensions of the window
+
+	/// Width of the window
 	tgui::Layout _width;
+	/// Height of the window
 	tgui::Layout _height;
 
 	//////////////////// Methods
 
 	////////// overriden methods
 
+	/// Displays the whole board: cards, graveyard, health points, etc.
 	void displayGame() override;
 
+	/// Display a verbose \a message to the user
+	/// \param message The message to show to user
 	void displayMessage(const std::string& message) override;
 
 	int askSelfHandIndex() override;
@@ -46,15 +56,19 @@ private:
 
 	bool wantToAttackOpponent() override;
 
+	/// Displays the decks and ask to user to select the one to play with
 	void chooseDeck() override;
 
+	/// Signal the user he received a card
+	/// \param id The Id of the card the user received
 	void receiveCard(cardId id) override;
 
 	void displayAchievements(ClientAchievementList& newAchievements) override;
 
 	////////// private methods
 
-	void sendDeck(const std::string& deckName);
+	/// Sends the chosen deck to the server
+	void sendDeck(const std::string& deckName) override;
 };
 
 #endif  // _GUI_GAME_HPP_
