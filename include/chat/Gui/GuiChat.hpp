@@ -14,7 +14,7 @@ public:
 
 	void output() override;
 
-	void display(const std::string& name, const std::string& message) override;
+	void display(const std::string& name, const std::wstring& message) override;
 
 private:
 	// Methods

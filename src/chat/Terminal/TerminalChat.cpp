@@ -14,16 +14,20 @@ TerminalChat::TerminalChat(const char * const argv[6]):
 
 void TerminalChat::output()
 {
-	std::string message;
+	std::string input;
+	std::wstring message;
 	while(_running)
 	{
-		std::getline(std::cin, message);
+		std::getline(std::cin, input);
+		message = std::wstring(input.begin(), input.end());
 		treatMessage(message);
 	}
 }
 
-void TerminalChat::display(const std::string& name, const std::string& message)
+void TerminalChat::display(const std::string& name, const std::wstring& message)
 {
-	std::string toDisplay{(not _friendPresence.load() ? "// " : "") + _terminal.setBold(name) + ": " + message};
+	std::string boldName{_terminal.setBold(name)};
+	std::wstring tmpWide{(not _friendPresence.load() ? L"// " : L"") + std::wstring(boldName.begin(), boldName.end()) + L": " + message};
+	std::string toDisplay(tmpWide.begin(), tmpWide.end());
 	std::cout << toDisplay << std::endl;
 }

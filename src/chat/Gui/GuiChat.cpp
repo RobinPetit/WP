@@ -48,13 +48,14 @@ void GuiChat::handleSendButtonCallback()
 	_messageEditBox->setText("");
 }
 
-void GuiChat::display(const std::string& name, const std::string& message)
+void GuiChat::display(const std::string& name, const std::wstring& message)
 {
+	std::wstring line{std::wstring(name.begin(), name.end()) + L": " + message};
 	if(_friendPresence.load())
-		_chatBox->addLine(name + ": " + message);
+		_chatBox->addLine(line);
 	else
 		// Display the line in grey
-		_chatBox->addLine(name + ": " + message, sf::Color(127, 127, 127));
+		_chatBox->addLine(line, sf::Color(127, 127, 127));
 }
 
 void GuiChat::output()

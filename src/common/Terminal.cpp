@@ -77,6 +77,10 @@ std::string Terminal::startProgram(const std::string& name, const std::initializ
 #endif
 	for(auto& arg: args)
 		command += " \"" + arg + "\"";
+#ifdef __linux__
+	command += " &";
+#else
+#endif
 	return command;
 }
 

@@ -23,7 +23,7 @@ public:
 	/// \param name A string containing the name of the author of the message
 	/// (must be _selfName or _friendName)
 	/// \param message A string containing the message to dsplay
-	virtual void display(const std::string& name, const std::string& message) = 0;
+	virtual void display(const std::string& name, const std::wstring& message) = 0;
 
 	/// Virtual method allowing child classes to have a determinate behaviour when
 	/// both players are eventually connected one to another.
@@ -55,7 +55,7 @@ protected:
 	/// The function to call after having an input from the user to send to its friend.
 	/// Treats special possible inputs (starting by ':')
 	/// \param message The text the user entered to send to its friend
-	void treatMessage(const std::string& message);
+	void treatMessage(const std::wstring& message);
 
 	/// The function to call to end the discussion (and then the program)
 	void endDiscussion();
@@ -86,6 +86,8 @@ private:
 	sf::TcpSocket _out;
 	/// The listener socket used to connect to the friend
 	sf::TcpListener _listener;
+
+	const static std::wstring _quitString;
 
 	////////// Methods
 
