@@ -53,6 +53,7 @@ set(SOURCES
 		"Gui/states/GuiDecksManagementState.cpp"
 		"Gui/states/GuiFriendsManagementState.cpp"
 		"Gui/states/GuiLadderState.cpp"
+		"Gui/states/GuiAchievementState.cpp"
 		"Gui/states/GuiLobbyState.cpp"
 	)
 
