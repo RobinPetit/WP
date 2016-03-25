@@ -32,15 +32,29 @@ public:
 	/// Functions which stops the running thread (abortion)
 	void interruptGame();
 
+	/// Creates the in-game sockets (normal and special) to the players
+	/// \param player 1 \see playGame for more informations
 	void establishSockets(const ClientInformations& player1, const ClientInformations& player2);
 
+	/// starts and plays a game. Returns only when one of the players lost (or when the
+	/// server is asked to end)
+	/// \param player1 The data (port/address) for the first player
+	/// \param player2 \see player1
+	/// \return The id of the winner
 	userId playGame(const ClientInformations& player1, const ClientInformations& player2);
 
+	/// Signals the game is over and register the winner and the reason of the win
+	/// \param winnerId The id of the winner
+	/// \param cause The reason of the end of the game
 	void endGame(userId winnerId, EndGame::Cause cause);
 
+	/// Method to call to force the end of the current turn and the start of the other player's turn
 	void swapTurns();
 
+	/// Gives the random generator
 	RandomInteger& getGenerator();
+
+	/// Debug method printing \a message
 	void printVerbose(std::string message);
 
 	/// Destructor
@@ -74,9 +88,11 @@ private:
 
 	/*------------------------------ Static variables */
 	/// Currently low for tests, arbitrary, need more time now for testing
-	static constexpr std::chrono::seconds _turnTime{120};
+	static constexpr std::chrono::seconds _turnTime{120};  // TODO: change this
 
 	/*------------------------------ Methods */
+	/// Main loop of the game: waits for each side inputs and forces turns swapping
+	/// \return The id of the winner
 	userId runGame();
 
 	void setSocket(sf::TcpSocket& socket, sf::TcpSocket& specialSocket, const ClientInformations& player);
