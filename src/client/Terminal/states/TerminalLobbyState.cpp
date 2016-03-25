@@ -50,7 +50,5 @@ void TerminalLobbyState::findAGame()
         std::cout << "Opponent found: " << opponentName << std::endl;
 	TerminalGame game{*_context.client};
 	startGame(game);
-	/*game.init();
-	game.play();*/
 	waitForEnter();
 }

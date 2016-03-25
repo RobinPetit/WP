@@ -228,9 +228,14 @@ void Client::waitTillReadyToPlay()
 		sf::sleep(awaitingDelay);
 }
 
-const Terminal& Client::getTerminal()
+const Terminal& Client::getTerminal() const
 {
 	return _userTerminal;
+}
+
+const std::string& Client::getName() const
+{
+	return _name;
 }
 
 /////////////////// Friends management

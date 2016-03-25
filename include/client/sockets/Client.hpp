@@ -156,7 +156,11 @@ public:
 	/// Used to wait sleeping until the atomic boolean readyToPlay is set to true
 	void waitTillReadyToPlay();
 
-	const Terminal& getTerminal();
+	const Terminal& getTerminal() const;
+
+	/// Gives the name of the user
+	/// \return A string containing the name (as known by the server)
+	const std::string& getName() const;
 
 private:
 	///////// Client/Server related attributes

@@ -66,8 +66,12 @@ void GuiLobbyState::findAGame()
 	resetButtons();
 	if(_play)
 	{
-		GuiGame game{*_context.client, _context.gui};
+		_context.gui->removeAllWidgets();
+		_context.window->setTitle("WizardPoker (" + _context.client->getName() + ") in game versus " + opponentName);
+		GuiGame game{_context};
 		startGame(game);
+		_context.window->setTitle("WizardPoker (" + _context.client->getName() + ")");
+		std::cout << "Need to set back widgets\n";
 	}
 }
 
