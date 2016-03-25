@@ -19,7 +19,6 @@ public:
 	                   int health, int attack, int shield, int shieldType);
 
 	/// Getters
-	// I don't know why I get 'W used but never defined' and 'undefined reference to' when I inline?
 	const std::string& getName() const;
 	const std::string& getDescription() const;
 
