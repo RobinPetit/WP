@@ -24,8 +24,6 @@ void TerminalHomeState::display()
 	TerminalAbstractState::display();
 }
 
-// \TODO: factorize connect and createAccount
-
 void TerminalHomeState::connect()
 {
 	try

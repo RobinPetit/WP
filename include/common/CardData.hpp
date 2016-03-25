@@ -65,13 +65,13 @@ class CommonCardData
 {
 protected:
 	cardId _id;
-  // use int instead of enum because
-  // int is used in code
-  // and static_cast from int to enum do not ensure that the value is valid
-  // enum E{E0,E1}; E e(static_cast<E>(42)); //Code compiled without warning by gcc
-  // so use ...Value enums add need of static_cast everywhere without any advantage.
-  // The purpose of the enums in CardData.inc is (only) to have Cards.sql readable.
-  // TODO? overload operator for enums to be able to use enums everywhere
+	// use int instead of enum because
+	// int is used in code
+	// and static_cast from int to enum do not ensure that the value is valid
+	// enum E{E0,E1}; E e(static_cast<E>(42)); //Code compiled without warning by gcc
+	// so use ...Value enums add need of static_cast everywhere without any advantage.
+	// The purpose of the enums in CardData.inc is (only) to have Cards.sql readable.
+	// TODO? overload operator for enums to be able to use enums everywhere
 	int _cost;
 
 public:

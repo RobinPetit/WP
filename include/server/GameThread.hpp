@@ -60,6 +60,8 @@ private:
 
 	Player *_activePlayer;
 	Player *_passivePlayer;
+	sf::TcpSocket *_activeSpecialSocket;
+	sf::TcpSocket *_passiveSpecialSocket;
 	int _turn;
 	bool _turnCanEnd;
 	bool _verbose=true;
