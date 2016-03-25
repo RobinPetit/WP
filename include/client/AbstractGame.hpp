@@ -7,6 +7,7 @@
 #include <atomic>
 #include <mutex>
 #include <thread>
+#include <functional>
 // WizardPoker headers
 #include "client/AbstractState.hpp"
 #include "client/NonBlockingInput.hpp"
@@ -74,6 +75,8 @@ class AbstractGame
 		void attackWithCreature();
 		void endTurn();
 		void quit();
+
+		virtual void waitUntil(std::function<bool()> booleanFucntion);
 
 	private:
 		//////////////// private methods

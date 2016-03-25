@@ -59,9 +59,17 @@ void AbstractGame::play()
 		if(_myTurn.load())
 			startTurn();
 		else
-			while(not _myTurn.load())
-				sf::sleep(sf::milliseconds(100));
+			waitUntil([this]()
+			{
+				return _myTurn.load();
+			});
 	}
+}
+
+void AbstractGame::waitUntil(std::function<bool()> booleanFunction)
+{
+	while(not booleanFunction())
+		sf::sleep(sf::milliseconds(100));
 }
 
 void AbstractGame::startTurn()

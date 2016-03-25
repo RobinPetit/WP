@@ -14,30 +14,42 @@ GuiGame::GuiGame(Context& context):
 	_decksChosen{false},
 	_width{tgui::bindWidth(*_context.gui)},
 	_height{tgui::bindHeight(*_context.gui)},
-	_selfHandLayout{std::make_shared<tgui::HorizontalLayout>()}
+	_selfHandLayout{std::make_shared<tgui::HorizontalLayout>()},
+	_endTurnButton{std::make_shared<tgui::Button>()},
+	_cardsLayoutWidth{_width/1.4f}
 {
-
+	_endTurnButton->setText("End turn");
+	_endTurnButton->connect("Pressed", [this]()
+	{
+		endTurn();
+		_endTurnButton->disable();
+	});
+	_endTurnButton->setSize((_width - _cardsLayoutWidth) / 2 - 10, 40);
+	_endTurnButton->setPosition((_width + _cardsLayoutWidth) / 2 + 5, _height - 50);
+	_endTurnButton->disable();
 }
 
 void GuiGame::startTurn()
 {
 	AbstractGame::startTurn();
+	_endTurnButton->enable();
 
-	sf::Event event;
-	while(_myTurn.load())
+	handleInputs();
+}
+
+void GuiGame::handleInputs()
+{
+	waitUntil([this]()
 	{
-		_context.window->clear(sf::Color::White);
-		_context.gui->draw();
-		_context.window->display();
+		return not _myTurn.load();
+	});
+}
 
-		while(_context.window->pollEvent(event))
-		{
-			if(event.type == sf::Event::Closed)
-				quit();
-			else
-				_context.gui->handleEvent(event);
-		}
-	}
+void GuiGame::clearScreen()
+{
+	_context.window->clear(sf::Color::White);
+	_context.gui->draw();
+	_context.window->display();
 }
 
 void GuiGame::displayGame()
@@ -46,6 +58,8 @@ void GuiGame::displayGame()
 	std::vector<CardWidget::Ptr> selfHand;
 	//std::vector<CardWidget::Ptr> selfBoard;
 	//std::vector<CardWidget::Ptr> opponentBoard;
+
+	clearScreen();
 
 	_context.gui->remove(_selfHandLayout);
 	_selfHandLayout->removeAllWidgets();
@@ -56,29 +70,17 @@ void GuiGame::displayGame()
 		selfHand.push_back(std::make_shared<CardWidget>(_context.client->getCardData(card.id)));
 		selfHand.back()->connect("MousePressed", [this, i]()
 		{
-			std::cout << "using card " << i << '\n';
 			useCard(i);
 		});
 		_selfHandLayout->add(selfHand.back());
 		++i;
 	}
 
-	float nbCards{static_cast<float>(selfHand.size())};
-	const static auto cardsLayoutWidth{_width/1.4f};
-	auto cardWidth{cardsLayoutWidth/nbCards};
-	_selfHandLayout->setSize(cardsLayoutWidth, (cardWidth/CardGui::widthCard) * CardGui::heightCard);
-	_selfHandLayout->setPosition((_width - cardsLayoutWidth) / 2.f, _height - (_selfHandLayout->getSize().y+10));
+	auto cardWidth{_cardsLayoutWidth/static_cast<float>(selfHand.size())};
+	_selfHandLayout->setSize(_cardsLayoutWidth, (cardWidth/CardGui::widthCard) * CardGui::heightCard);
+	_selfHandLayout->setPosition((_width - _cardsLayoutWidth) / 2.f, _height - (_selfHandLayout->getSize().y+10));
 
-	tgui::Button::Ptr endTurnButton{std::make_shared<tgui::Button>()};
-	endTurnButton->setText("End turn");
-	endTurnButton->connect("pressed", [this]()
-	{
-		endTurn();
-	});
-	endTurnButton->setSize((_width - cardsLayoutWidth) / 2 - 10, 40);
-	endTurnButton->setPosition((_width + cardsLayoutWidth) / 2 + 5, _height - 50);
-
-	_context.gui->add(endTurnButton);
+	_context.gui->add(_endTurnButton);
 	_context.gui->add(_selfHandLayout);
 }
 
@@ -86,6 +88,7 @@ void GuiGame::displayGame()
 // Messageable, GuiMessageable, TerminalMessageable to factorize this code.
 void GuiGame::displayMessage(const std::string& message)
 {
+	std::lock_guard<std::mutex> _lock{_accessScreen};
 	static const std::string okButtonText{"Ok"};
 	tgui::MessageBox::Ptr messageBox{std::make_shared<tgui::MessageBox>()};
 
@@ -197,6 +200,22 @@ void GuiGame::displayAchievements(ClientAchievementList& /* newAchievements */)
 	// TODO
 }
 
+void GuiGame::waitUntil(std::function<bool()> booleanFunction)
+{
+	sf::Event event;
+	while(not booleanFunction())
+	{
+		displayGame();
+
+		while(_context.window->pollEvent(event))
+		{
+			if(event.type == sf::Event::Closed)
+				quit();
+			else
+				_context.gui->handleEvent(event);
+		}
+	}
+}
 
 GuiGame::~GuiGame()
 {

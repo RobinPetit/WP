@@ -46,6 +46,10 @@ private:
 	/// The layout for the player's hand cards
 	tgui::HorizontalLayout::Ptr _selfHandLayout;
 
+	tgui::Button::Ptr _endTurnButton;
+
+	const tgui::Layout _cardsLayoutWidth;
+
 	//////////////////// Methods
 
 	////////// overriden methods
@@ -74,10 +78,16 @@ private:
 
 	void displayAchievements(ClientAchievementList& newAchievements) override;
 
+	void waitUntil(std::function<bool()> booleanFunction) override;
+
 	////////// private methods
 
 	/// Sends the chosen deck to the server
 	void sendDeck(const std::string& deckName) override;
+
+	void handleInputs();
+
+	void clearScreen();
 };
 
 #endif  // _GUI_GAME_HPP_
