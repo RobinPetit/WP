@@ -519,6 +519,11 @@ int ServerDatabase::getLadderPositionPercent(userId user)
 	return static_cast<int>((countAccounts() - position) * 100 / countAccounts());
 }
 
+int ServerDatabase::getSameCardCounter(userId user)
+{
+	return getAchievementProgress(user, _getSameCardCounterStmt);
+}
+
 
 int ServerDatabase::getAchievementProgress(userId user, sqlite3_stmt* stmt)
 {

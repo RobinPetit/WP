@@ -101,7 +101,7 @@ private:
 			int PostGameData::*toAddValue;
 			int (ServerDatabase::*getMethod)(userId);
 		};
-		std::array<AchievementsListItem, 7> _achievementsList
+		std::array<AchievementsListItem, 8> _achievementsList
 		{
 			{
 				AchievementsListItem {
@@ -144,6 +144,11 @@ private:
 					7,
 					nullptr, nullptr,
 					&ServerDatabase::getLadderPositionPercent
+				},
+				AchievementsListItem {
+					8,
+					nullptr, nullptr,
+					&ServerDatabase::getSameCardCounter
 				}
 			}
 		};
@@ -187,6 +192,7 @@ private:
 	int ownAllCards(userId);
 	///\except std::out_of_range if userId doesnt exists
 	int getLadderPositionPercent(userId);
+	int getSameCardCounter(userId);
 
 	void addToAchievementProgress(userId id, int value, sqlite3_stmt * stmt);
 	void addTimeSpent(userId, int seconds);
@@ -232,6 +238,7 @@ private:
 	sqlite3_stmt * _getWithInDaClubStmt;
 	sqlite3_stmt * _getRagequitsStmt;
 	sqlite3_stmt * _ownAllCardsStmt;
+	sqlite3_stmt * _getSameCardCounterStmt;
 
 	sqlite3_stmt * _addTimeSpentStmt;
 	sqlite3_stmt * _addVictoriesStmt;
@@ -241,7 +248,7 @@ private:
 
 	// `constexpr std::array::size_type size() const;`
 	// -> future uses have to be _statements.size() -> 33 is written only one time
-	StatementsList<40> _statements
+	StatementsList<41> _statements
 	{
 		{
 			Statement {
@@ -442,7 +449,7 @@ private:
 				"	FROM Account "
 				"	WHERE id == ?1;"
 			},
-			Statement {
+			Statement { // 36
 				&_addWithInDaClubStmt,
 				"UPDATE Account "
 				"	SET gameWithInDaClub = gameWithInDaClub + ?1 "
@@ -465,6 +472,15 @@ private:
 				&_ownAllCardsStmt,
 				"SELECT min(Card.id IN (SELECT GivenCard.card FROM GivenCard WHERE owner == ?1)) "
 				"	FROM Card;"
+			},
+			Statement { // 40
+				&_getSameCardCounterStmt,
+				"SELECT COUNT(*) AS counter "
+				"	FROM GivenCard "
+				"	WHERE owner == ?1 "
+				"	GROUP BY card "
+				"	ORDER BY counter DESC "
+				"	LIMIT 1;"
 			}
 		}
 	};
