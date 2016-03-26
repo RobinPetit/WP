@@ -20,7 +20,7 @@ GuiCardsCollectionState::GuiCardsCollectionState(Context& context):
 	if(_cardsCollection.getSize() == 0)
 		gridHeight = 1;
 	else
-		gridHeight = ((dtatic_cast<unsigned int>(_cardsCollection.getSize()) - 1) / GRID_WIDTH) + 1;
+		gridHeight = ((static_cast<unsigned int>(_cardsCollection.getSize()) - 1) / GRID_WIDTH) + 1;
 	auto windowWidth(tgui::bindWidth(*_context.gui));
 	auto windowHeight(tgui::bindHeight(*_context.gui));
 

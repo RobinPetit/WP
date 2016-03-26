@@ -20,6 +20,14 @@ cardId Deck::getCard(std::size_t index) const
 	return _cards[index];
 }
 
+std::size_t Deck::getIndex(cardId card) const
+{
+	auto it(std::find(_cards.begin(), _cards.end(), card));
+	if(it == _cards.end())
+		throw std::out_of_range("The card " + std::to_string(card) + " does not exist in this deck instance.");
+	return static_cast<std::size_t>(std::distance(_cards.begin(), it));
+}
+
 void Deck::changeCard(std::size_t index, cardId card)
 {
 	assert(std::count(_cards.begin(), _cards.end(), card) < 2);

@@ -38,7 +38,9 @@ class GuiDecksManagementState : public GuiAbstractState, public AbstractDecksMan
 		/// user to click on a card, and if false, the card collection is
 		/// displayed and the clicked card will replace the one previously
 		/// clicked when this variable was true.
-		bool chooseCardFromDeck;
+		bool _chooseCardFromDeck;
+
+		cardId _selectedCardFromDeck;
 
 		static constexpr unsigned int GRID_WIDTH = 2;
 
@@ -50,7 +52,6 @@ class GuiDecksManagementState : public GuiAbstractState, public AbstractDecksMan
 
 		static constexpr char CHOOSE_CARD_FROM_COLLECTION_HINT[] = "This is the content of your collection. Click on a card that you want to put in your deck";
 
-	private:
 		/// Callback called when the user clicks on a card.
 		void onCardClicked(cardId id);
 
@@ -65,6 +66,8 @@ class GuiDecksManagementState : public GuiAbstractState, public AbstractDecksMan
 		void removeDeck();
 
 		void createDeck();
+
+		Deck& getSelectedDeck();
 
 		void scrollGrid(int newScrollValue);
 };

@@ -37,6 +37,8 @@ class Deck
 
 		cardId getCard(std::size_t index) const;
 
+		std::size_t getIndex(cardId card) const;
+
 		/// Replaces the card at \a index in the deck by \a card.
 		void changeCard(std::size_t index, cardId card);
 

@@ -1,10 +1,9 @@
 // std-C++ headers
 #include <algorithm>
-
-#include <iostream>
 // WizardPoker headers
 #include "client/Gui/states/GuiDecksManagementState.hpp"
 #include "client/sockets/Client.hpp"
+#include "client/Gui/InputBox.hpp"
 
 constexpr char GuiDecksManagementState::FIRST_HINT[];
 constexpr char GuiDecksManagementState::CHOOSE_CARD_FROM_DECK_HINT[];
@@ -28,7 +27,8 @@ GuiDecksManagementState::GuiDecksManagementState(Context& context):
 	_cardsCollectionWidgets{},
 	_cardsCollectionIds{},
 	_hintLabel{std::make_shared<tgui::Label>()},
-	chooseCardFromDeck{true}
+	_chooseCardFromDeck{true},
+	_selectedCardFromDeck{}
 {
 	auto windowWidth(tgui::bindWidth(*_context.gui));
 	auto windowHeight(tgui::bindHeight(*_context.gui));
@@ -88,11 +88,18 @@ GuiDecksManagementState::GuiDecksManagementState(Context& context):
 
 void GuiDecksManagementState::onCardClicked(cardId id)
 {
-	if(chooseCardFromDeck)
-		onCardChosenFromDeck(id);
-	else
-		onCardChosenFromCollection(id);
-	chooseCardFromDeck = not chooseCardFromDeck;
+	try
+	{
+		if(_chooseCardFromDeck)
+			onCardChosenFromDeck(id);
+		else
+			onCardChosenFromCollection(id);
+		_chooseCardFromDeck = not _chooseCardFromDeck;
+	}
+	catch(const std::runtime_error& e)
+	{
+		displayMessage(std::string("Error: ") + e.what());
+	}
 }
 
 void GuiDecksManagementState::onCardChosenFromDeck(cardId id)
@@ -105,7 +112,7 @@ void GuiDecksManagementState::onCardChosenFromDeck(cardId id)
 	// from the collection
 	_decksListBox->disable();
 
-	Deck& selectedDeck(_decks.at(_decksListBox->getSelectedItemIndex()));
+	Deck& selectedDeck(getSelectedDeck());
 
 	// Compute the card collection without the cards of the selected deck
 	// For these lines, we just care about IDs
@@ -129,7 +136,7 @@ void GuiDecksManagementState::onCardChosenFromDeck(cardId id)
 	// Eventually, fill the grid with the computed card collection
 	fillGrid(widgetsToShow);
 
-	// TODO: remember which card was selected
+	_selectedCardFromDeck = id;
 }
 
 void GuiDecksManagementState::onCardChosenFromCollection(cardId id)
@@ -139,7 +146,25 @@ void GuiDecksManagementState::onCardChosenFromCollection(cardId id)
 	// Show the current deck, this is the same as when we select another deck
 	selectDeck();
 
-	// TODO: effectively swap cards in the selected deck
+	// Swap the cards and send the result to the server (through the client)
+	Deck& selectedDeck(getSelectedDeck());
+	try
+	{
+		if(std::count(selectedDeck.begin(), selectedDeck.end(), id) >= 2)
+			throw std::logic_error(std::to_string(id) + " is already two times in your deck, this is the maximum allowed.");
+
+		const std::size_t replacedIndex{selectedDeck.getIndex(_selectedCardFromDeck)};
+		selectedDeck.changeCard(replacedIndex, id);
+		_context.client->handleDeckEditing(selectedDeck);
+	}
+	catch(const std::out_of_range& e)
+	{
+		displayMessage(std::string("Invalid selected card: ") + e.what());
+	}
+	catch(const std::runtime_error& e)
+	{
+		displayMessage(std::string("Error: ") + e.what());
+	}
 }
 
 void GuiDecksManagementState::fillGrid(const std::vector<CardWidget::Ptr>& widgetsToShow)
@@ -166,30 +191,87 @@ void GuiDecksManagementState::fillGrid(const std::vector<CardWidget::Ptr>& widge
 
 void GuiDecksManagementState::selectDeck()
 {
-	// Update the hint
-	_hintLabel->setText(CHOOSE_CARD_FROM_DECK_HINT);
-	_hintLabel->setPosition((tgui::bindWidth(*_context.gui) - tgui::bindWidth(_hintLabel)) / 2.f, 70);
-
-	Deck& selectedDeck(_decks.at(_decksListBox->getSelectedItemIndex()));
-	std::vector<CardWidget::Ptr> widgetsToShow;
-	// Browse all cards of the collection
-	for(std::size_t i{0}; i < _cardsCollectionWidgets.size(); ++i)
+	try
 	{
-		// If the card is also in the deck to show
-		if(std::find(selectedDeck.begin(), selectedDeck.end(), _cardsCollectionIds.at(i)) != selectedDeck.end())
-			// Add the corresponding widget to the list of widgets to show
-			widgetsToShow.push_back(_cardsCollectionWidgets.at(i));
-	}
+		// Update the hint
+		_hintLabel->setText(CHOOSE_CARD_FROM_DECK_HINT);
+		_hintLabel->setPosition((tgui::bindWidth(*_context.gui) - tgui::bindWidth(_hintLabel)) / 2.f, 70);
 
-	fillGrid(widgetsToShow);
+		Deck& selectedDeck(getSelectedDeck());
+		std::vector<CardWidget::Ptr> widgetsToShow;
+		// Browse all cards of the collection
+		for(std::size_t i{0}; i < _cardsCollectionWidgets.size(); ++i)
+		{
+			// If the card is also in the deck to show
+			if(std::find(selectedDeck.begin(), selectedDeck.end(), _cardsCollectionIds.at(i)) != selectedDeck.end())
+				// Add the corresponding widget to the list of widgets to show
+				widgetsToShow.push_back(_cardsCollectionWidgets.at(i));
+		}
+
+		fillGrid(widgetsToShow);
+	}
+	catch(const std::runtime_error& e)
+	{
+		displayMessage(std::string("Error: ") + e.what());
+	}
 }
 
 void GuiDecksManagementState::removeDeck()
 {
+	try
+	{
+		Deck& selectedDeck(getSelectedDeck());
+		_context.client->handleDeckDeletion(selectedDeck.getName());
+		_decks.erase(std::find_if(_decks.begin(), _decks.end(), [&selectedDeck](const Deck& deck)
+		{
+			return selectedDeck.getName() == deck.getName();
+		}));
+	}
+	catch(const std::runtime_error& e)
+	{
+		displayMessage(std::string("Error: ") + e.what());
+	}
 }
 
 void GuiDecksManagementState::createDeck()
 {
+	static const std::string messageBoxText{"Enter the name of your\nnew deck:"};
+	InputBox::Ptr window{std::make_shared<InputBox>()};
+
+	window->setTitle("Creating a deck");
+	window->setLabelText(messageBoxText);
+	window->getRenderer()->setTitleBarColor({127, 127, 127});
+
+	auto childWidth{tgui::bindWidth(*_context.gui) * 0.8f};
+	auto childHeight{tgui::bindHeight(*_context.gui) * 0.8f};
+
+	window->setSize(childWidth, childHeight);
+	window->setGridPosition(childWidth*0.3f, childHeight*0.25f);
+	window->setGridSize(childWidth*0.4f, childHeight*0.5f);
+	window->setCallback([this](const std::string& deckName)
+	{
+		try
+		{
+			_decks.emplace_back(deckName);
+			_context.client->handleDeckCreation(_decks.back());
+		}
+		catch(std::runtime_error& e)
+		{
+			displayMessage(e.what());
+		}
+	});
+	_context.gui->add(window);
+}
+
+Deck& GuiDecksManagementState::getSelectedDeck()
+{
+	auto it(std::find_if(_decks.begin(), _decks.end(), [this](const Deck& deck)
+	{
+		return deck.getName() == _decksListBox->getSelectedItem();
+	}));
+	if(it == _decks.end())
+		throw std::out_of_range("invalid selected deck.");
+	return *it;
 }
 
 void GuiDecksManagementState::scrollGrid(int newScrollValue)
