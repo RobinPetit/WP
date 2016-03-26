@@ -6,21 +6,21 @@ Deck::Deck(const std::string& name):
 	_name{name}
 {
 	for(std::size_t i{0}; i < size; ++i)
-		_cards[i] = static_cast<cardId>(i);
+		_cards[i] = static_cast<CardId>(i);
 }
 
-Deck::Deck(const std::string& name, const std::array<cardId, size>& cards):
+Deck::Deck(const std::string& name, const std::array<CardId, size>& cards):
 	_name{name},
 	_cards{cards}
 {
 }
 
-cardId Deck::getCard(std::size_t index) const
+CardId Deck::getCard(std::size_t index) const
 {
 	return _cards[index];
 }
 
-std::size_t Deck::getIndex(cardId card) const
+std::size_t Deck::getIndex(CardId card) const
 {
 	auto it(std::find(_cards.begin(), _cards.end(), card));
 	if(it == _cards.end())
@@ -28,7 +28,7 @@ std::size_t Deck::getIndex(cardId card) const
 	return static_cast<std::size_t>(std::distance(_cards.begin(), it));
 }
 
-void Deck::changeCard(std::size_t index, cardId card)
+void Deck::changeCard(std::size_t index, CardId card)
 {
 	assert(std::count(_cards.begin(), _cards.end(), card) < 2);
 	_cards[index] = card;

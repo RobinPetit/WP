@@ -4,7 +4,7 @@
 #include <vector>
 #include <sstream>
 #include <memory>
-#include "common/Identifiers.hpp" // cardId, deckId...
+#include "common/Identifiers.hpp" // CardId, deckId...
 #include "common/CardData.inc"
 
 constexpr int UNLIMITED_TURNS = 100;
@@ -64,7 +64,7 @@ public:
 class CommonCardData
 {
 protected:
-	cardId _id;
+	CardId _id;
 	// use int instead of enum because
 	// int is used in code
 	// and static_cast from int to enum do not ensure that the value is valid
@@ -76,11 +76,11 @@ protected:
 
 public:
 	/// Constructor
-	CommonCardData(cardId, int cost);
+	CommonCardData(CardId, int cost);
 
 	/// Getters
 	// I don't know why I get 'W used but never defined' and 'undefined reference to' when I inline?
-	cardId getId() const;
+	CardId getId() const;
 	int getCost() const;
 
 	/// Methods
@@ -101,7 +101,7 @@ protected:
 
 public:
 	/// Constructor
-	CommonCreatureData(cardId, int cost,
+	CommonCreatureData(CardId, int cost,
 	                   int attack, int health, int shield, int shieldType);
 
 	/// Getters
@@ -123,7 +123,7 @@ class CommonSpellData : public CommonCardData
 {
 public:
 	/// Constructor
-	CommonSpellData(cardId, int cost);
+	CommonSpellData(CardId, int cost);
 
 	/// Methods
 	virtual bool isCreature() const override;

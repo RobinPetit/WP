@@ -112,7 +112,7 @@ std::size_t TerminalDecksManagementState::askForReplacedCard(std::size_t deckInd
 	return askForNumber(0, Deck::size + 1);
 }
 
-cardId TerminalDecksManagementState::askForReplacingCard(std::size_t deckIndex)
+CardId TerminalDecksManagementState::askForReplacingCard(std::size_t deckIndex)
 {
 	std::cout << "Content of your card collection:\n";
 
@@ -125,7 +125,7 @@ cardId TerminalDecksManagementState::askForReplacingCard(std::size_t deckIndex)
 	// TODO: even if *for now* database initialization ensure that card ids are consecutive
 	// we shouldn't take this for granted.
 	assert(_context.client->getMaxCardId() == _context.client->getNumberOfCards());
-	cardId replacingCard{static_cast<cardId>(askForNumber(0, static_cast<std::size_t>(_context.client->getNumberOfCards())))};
+	CardId replacingCard{static_cast<CardId>(askForNumber(0, static_cast<std::size_t>(_context.client->getNumberOfCards())))};
 
 	// Check if the given card is valid
 	if(not _cardsCollection.contains(replacingCard))

@@ -5,7 +5,7 @@
 
 /// The identifier of a card, this is the identifier that is encoded in the
 /// database, and the only information used to transmit a card on the network.
-typedef sf::Int64 cardId;
+typedef sf::Int64 CardId;
 
 /// The identifier of a deck, this is the identifier that is encoded in the
 /// database, and the only information used to transmit a deck on the network.

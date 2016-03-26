@@ -27,7 +27,7 @@ ServerDatabase::ServerDatabase(const std::string& filename) :
 	createCreatureData();
 }
 
-Card* ServerDatabase::getCard(cardId card, Player& owner)
+Card* ServerDatabase::getCard(CardId card, Player& owner)
 {
 	if(_cardData.count(card) == 0)
 		throw std::runtime_error("The requested card (" + std::to_string(card) + ") does not exist.");
@@ -39,14 +39,14 @@ Card* ServerDatabase::getCard(cardId card, Player& owner)
 		return new Spell(*static_cast<const ServerSpellData *>(_cardData.at(card).get()));
 }
 
-cardId ServerDatabase::countCards()
+CardId ServerDatabase::countCards()
 {
 	sqlite3_reset(_countCardsStmt);
 	assert(sqliteThrowExcept(sqlite3_step(_countCardsStmt)) == SQLITE_ROW);
 	return sqlite3_column_int(_countCardsStmt, 0);
 }
 
-cardId ServerDatabase::getRandomCardId()
+CardId ServerDatabase::getRandomCardId()
 {
 	sqlite3_reset(_getRandomCardIdStmt);
 	assert(sqliteThrowExcept(sqlite3_step(_getRandomCardIdStmt)) == SQLITE_ROW);
@@ -112,7 +112,7 @@ CardsCollection ServerDatabase::getCardsCollection(userId id)
 	return cards;
 }
 
-void ServerDatabase::addCard(userId id, cardId card)
+void ServerDatabase::addCard(userId id, CardId card)
 {
 	std::unique_lock<std::mutex> lock {_dbAccess};
 	sqlite3_reset(_newCardStmt);
@@ -212,19 +212,19 @@ void ServerDatabase::createDeck(userId id, const Deck& deck)
 	assert(sqliteThrowExcept(sqlite3_step(_createDeckStmt)) == SQLITE_DONE);
 }
 
-std::vector<cardId> ServerDatabase::getFirstCardIds(unsigned count)
+std::vector<CardId> ServerDatabase::getFirstCardIds(unsigned count)
 {
 	sqlite3_reset(_getFirstCardIdsStmt);
 	sqliteThrowExcept(sqlite3_bind_int(_getFirstCardIdsStmt, 1, static_cast<int>(count)));
 
-	std::vector<cardId> cardIds;
+	std::vector<CardId> CardIds;
 
 	while(sqliteThrowExcept(sqlite3_step(_getFirstCardIdsStmt)) == SQLITE_ROW)
 	{
-		cardIds.emplace_back(sqlite3_column_int64(_getFirstCardIdsStmt, 0));
+		CardIds.emplace_back(sqlite3_column_int64(_getFirstCardIdsStmt, 0));
 	}
 
-	return cardIds;
+	return CardIds;
 }
 
 void ServerDatabase::deleteDeckByName(userId id, const std::string& deckName)
@@ -308,7 +308,7 @@ void ServerDatabase::createSpellData()
 
 	while(sqliteThrowExcept(sqlite3_step(_getSpellCardsStmt)) == SQLITE_ROW)
 	{
-		cardId id(sqlite3_column_int64(_getSpellCardsStmt, 0));
+		CardId id(sqlite3_column_int64(_getSpellCardsStmt, 0));
 
 		_cardData.emplace(
 			std::make_pair<>(
@@ -332,7 +332,7 @@ void ServerDatabase::createCreatureData()
 
 	while(sqliteThrowExcept(sqlite3_step(_getCreatureCardsStmt)) == SQLITE_ROW)
 	{
-		cardId id(sqlite3_column_int64(_getCreatureCardsStmt, 0));
+		CardId id(sqlite3_column_int64(_getCreatureCardsStmt, 0));
 
 		_cardData.emplace(
 			std::make_pair<>(
@@ -353,7 +353,7 @@ void ServerDatabase::createCreatureData()
 	}
 }
 
-std::vector<EffectParamsCollection> ServerDatabase::createCardEffects(cardId id)
+std::vector<EffectParamsCollection> ServerDatabase::createCardEffects(CardId id)
 {
 	sqlite3_reset(_getCardEffectsStmt);
 	sqliteThrowExcept(sqlite3_bind_int64(_getCardEffectsStmt, 1, id));

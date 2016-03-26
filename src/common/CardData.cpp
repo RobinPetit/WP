@@ -3,13 +3,13 @@
 #include "common/CardData.hpp"
 
 // CommonCardData base class
-CommonCardData::CommonCardData(cardId id, int cost) :
+CommonCardData::CommonCardData(CardId id, int cost) :
 	_id(id),
 	_cost(cost)
 {
 }
 
-cardId CommonCardData::getId() const
+CardId CommonCardData::getId() const
 {
 	return _id;
 }
@@ -21,7 +21,7 @@ int CommonCardData::getCost() const
 
 
 // CommonCreatureData
-CommonCreatureData::CommonCreatureData(cardId id, int cost,
+CommonCreatureData::CommonCreatureData(CardId id, int cost,
                            int attack, int health, int shield, int shieldType) :
 	CommonCardData(id, cost),
 	_attack(attack),
@@ -63,7 +63,7 @@ bool CommonCreatureData::isSpell() const
 
 
 // CommonSpellData
-CommonSpellData::CommonSpellData(cardId id, int cost) :
+CommonSpellData::CommonSpellData(CardId id, int cost) :
 	CommonCardData(id,cost)
 {
 }

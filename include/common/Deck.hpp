@@ -14,7 +14,7 @@ class Deck
 {
 	public:
 		static constexpr std::size_t size{20};
-		typedef std::array<cardId, size>::iterator Iterator;
+		typedef std::array<CardId, size>::iterator Iterator;
 
 		/// Copy constructor.
 		Deck(const Deck& other) = default;
@@ -33,14 +33,14 @@ class Deck
 
 		/// Constructor.
 		/// Creates a deck from an array of cards.
-		Deck(const std::string& name, const std::array<cardId, size>& cards);
+		Deck(const std::string& name, const std::array<CardId, size>& cards);
 
-		cardId getCard(std::size_t index) const;
+		CardId getCard(std::size_t index) const;
 
-		std::size_t getIndex(cardId card) const;
+		std::size_t getIndex(CardId card) const;
 
 		/// Replaces the card at \a index in the deck by \a card.
-		void changeCard(std::size_t index, cardId card);
+		void changeCard(std::size_t index, CardId card);
 
 		const std::string& getName() const;
 
@@ -52,7 +52,7 @@ class Deck
 
 	private:
 		std::string _name;
-		std::array<cardId, size> _cards;  ///< All the cards of the deck.
+		std::array<CardId, size> _cards;  ///< All the cards of the deck.
 };
 
 #endif  // _DECK_COMMON_HPP

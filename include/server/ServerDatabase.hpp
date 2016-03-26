@@ -32,12 +32,12 @@ public:
 
 	//////////////// Cards
 	/// Card* to be deallocated by the caller
-	Card* getCard(cardId card, Player& player);
-	const CommonCardData* getCardData(cardId card);
+	Card* getCard(CardId card, Player& player);
+	const CommonCardData* getCardData(CardId card);
 	/// Number of card templates in database
-	cardId countCards();
+	CardId countCards();
 	/// Get a valid id of a card template
-	cardId getRandomCardId();
+	CardId getRandomCardId();
 
 	//////////////// Users
 	userId getUserId(const std::string& login);
@@ -68,13 +68,13 @@ public:
 
 	//////////////// CardCollections
 	CardsCollection getCardsCollection(userId id);
-	void addCard(userId id, cardId card);
+	void addCard(userId id, CardId card);
 
 	//////////////// Decks
 	std::vector<Deck> getDecks(userId id);
 	Deck getDeckByName(userId id, const std::string& deckName);
 	void createDeck(userId id, const Deck& deck);
-	std::vector<cardId> getFirstCardIds(unsigned count); // TODO use it in Deck constructor
+	std::vector<CardId> getFirstCardIds(unsigned count); // TODO use it in Deck constructor
 	void deleteDeckByName(userId id, const std::string& deckName);
 	void editDeck(userId id, const Deck& deck); // Deck should contains the deckId
 
@@ -152,7 +152,7 @@ private:
 
 	/// Default relative path to sqlite3 file
 	static const char FILENAME[];
-	std::map<const cardId, const std::unique_ptr<const CommonCardData> > _cardData;
+	std::map<const CardId, const std::unique_ptr<const CommonCardData> > _cardData;
 	AchievementManager _achievementManager;
 
 	/// Used by getFriendsList and getAnyFriendsList
@@ -163,7 +163,7 @@ private:
 	/// Add a card to _cards (used by contructor)
 	void createCreatureData();
 	/// Used by createSpellData() and createCreatureData()
-	std::vector<EffectParamsCollection> createCardEffects(cardId id);
+	std::vector<EffectParamsCollection> createCardEffects(CardId id);
 
 	//////////////// Achievements
 	// this methods should be used only by the nested class AchievementManager

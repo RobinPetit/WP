@@ -79,7 +79,7 @@ void Player::setDeck(const Deck& newDeck)
 	std::vector<std::unique_ptr<Card>> loadedCards{Deck::size};
 	for(std::size_t i{0}; i < Deck::size; ++i)
 	{
-		const cardId card{newDeck.getCard(i)};
+		const CardId card{newDeck.getCard(i)};
 		loadedCards[i].reset(_database.getCard(card, *this));
 	}
 
@@ -963,11 +963,11 @@ void Player::logGraveyardState()
 template <typename CardType>
 void Player::logIdsFromVector(TransferType type, const std::vector<std::unique_ptr<CardType>>& vect)
 {
-	std::vector<sf::Uint32> cardIds(vect.size());
+	std::vector<sf::Uint32> CardIds(vect.size());
 	for(std::size_t i{0}; i < vect.size(); ++i)
-		cardIds[i] = vect[i]->getId();
+		CardIds[i] = vect[i]->getId();
 
-	_pendingBoardChanges << type << cardIds;
+	_pendingBoardChanges << type << CardIds;
 }
 
 void Player::logCardDataFromVector(TransferType type, const std::vector<std::unique_ptr<Card>>& vect)

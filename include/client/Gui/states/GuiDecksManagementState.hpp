@@ -53,7 +53,7 @@ class GuiDecksManagementState : public GuiAbstractState, public AbstractDecksMan
 		/// And the IDs associated with the widgets. We need this vector rather
 		/// than just using AbstractCardsCollectionState::_cardsCollection
 		/// because the latter is not ordered.
-		std::vector<cardId> _cardsCollectionIds;
+		std::vector<CardId> _cardsCollectionIds;
 
 		/// A label that display an hint to the user to help him in the deck
 		/// management process.
@@ -68,7 +68,7 @@ class GuiDecksManagementState : public GuiAbstractState, public AbstractDecksMan
 
 		/// If _chooseCardFromDeck is false, this is the card selected in the
 		/// deck previously.
-		cardId _selectedCardFromDeck;
+		CardId _selectedCardFromDeck;
 
 		static constexpr unsigned int GRID_WIDTH = 2;
 
@@ -87,13 +87,13 @@ class GuiDecksManagementState : public GuiAbstractState, public AbstractDecksMan
 		static constexpr char CHOOSE_CARD_FROM_COLLECTION_HINT[] = "This is the content of your collection. Click on a card that you want to put in your deck";
 
 		/// Callback called when the user clicks on a card.
-		void onCardClicked(cardId id);
+		void onCardClicked(CardId id);
 
 		/// Called by onCardClicked if we clicked on a card in the selected deck.
-		void onCardChosenFromDeck(cardId id);
+		void onCardChosenFromDeck(CardId id);
 
 		/// Called by onCardClicked if we clicked on a card in the collection.
-		void onCardChosenFromCollection(cardId id);
+		void onCardChosenFromCollection(CardId id);
 
 		/// Populates _cardGrid with the given widgets.
 		void fillGrid(const std::vector<CardWidget::Ptr>& widgetsToShow);

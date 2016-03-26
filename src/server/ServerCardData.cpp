@@ -1,7 +1,7 @@
 #include "server/ServerCardData.hpp"
 
 // ServerCreatureData
-ServerCreatureData::ServerCreatureData(cardId id, int cost, const std::vector<EffectParamsCollection>& effects,
+ServerCreatureData::ServerCreatureData(CardId id, int cost, const std::vector<EffectParamsCollection>& effects,
                            int attack, int health, int shield, int shieldType) :
 	CommonCreatureData(id, cost, attack, health, shield, shieldType),
 	_effects(effects)
@@ -14,7 +14,7 @@ const std::vector<EffectParamsCollection>& ServerCreatureData::getEffects() cons
 }
 
 // SpellCard
-ServerSpellData::ServerSpellData(cardId id, int cost, const std::vector<EffectParamsCollection>& effects) :
+ServerSpellData::ServerSpellData(CardId id, int cost, const std::vector<EffectParamsCollection>& effects) :
 	CommonSpellData(id, cost),
 	_effects(effects)
 {

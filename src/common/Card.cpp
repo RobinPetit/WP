@@ -10,7 +10,7 @@ int Card::getEnergyCost() const
 	return _cost;
 }
 
-cardId Card::getId() const
+CardId Card::getId() const
 {
 	return _prototype.getId();
 }

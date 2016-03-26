@@ -110,7 +110,7 @@ private:
 	void endTurn();
 	void swapData();
 
-	void sendFinalMessage(sf::TcpSocket& specialSocket, PostGameData& postGameData, cardId earnedCardId, AchievementList& newAchievements);
+	void sendFinalMessage(sf::TcpSocket& specialSocket, PostGameData& postGameData, CardId earnedCardId, AchievementList& newAchievements);
 };
 
 /*------------------------------ Template code */

@@ -86,7 +86,7 @@ GuiDecksManagementState::GuiDecksManagementState(Context& context):
 	registerRootWidgets({_cardPanel, _decksListBox, _buttonsLayout, _scrollbar, _hintLabel});
 }
 
-void GuiDecksManagementState::onCardClicked(cardId id)
+void GuiDecksManagementState::onCardClicked(CardId id)
 {
 	try
 	{
@@ -102,7 +102,7 @@ void GuiDecksManagementState::onCardClicked(cardId id)
 	}
 }
 
-void GuiDecksManagementState::onCardChosenFromDeck(cardId id)
+void GuiDecksManagementState::onCardChosenFromDeck(CardId id)
 {
 	// Update the hint
 	_hintLabel->setText(CHOOSE_CARD_FROM_COLLECTION_HINT);
@@ -116,10 +116,10 @@ void GuiDecksManagementState::onCardChosenFromDeck(cardId id)
 
 	// Compute the card collection without the cards of the selected deck
 	// For these lines, we just care about IDs
-	std::vector<cardId> cardIdsToShow;
+	std::vector<CardId> CardIdsToShow;
 	std::set_difference(_cardsCollectionIds.begin(), _cardsCollectionIds.end(),
 	                    selectedDeck.begin(), selectedDeck.end(),
-	                    std::back_inserter(cardIdsToShow));
+	                    std::back_inserter(CardIdsToShow));
 
 	// Create the corresponding vector of widgets
 	std::vector<CardWidget::Ptr> widgetsToShow;
@@ -127,13 +127,13 @@ void GuiDecksManagementState::onCardChosenFromDeck(cardId id)
 	// Browse all cards of the collection
 	for(std::size_t i{0}; i < _cardsCollectionWidgets.size(); ++i)
 	{
-		auto it(std::find(cardIdsToShow.begin(), cardIdsToShow.end(), _cardsCollectionIds.at(i)));
+		auto it(std::find(CardIdsToShow.begin(), CardIdsToShow.end(), _cardsCollectionIds.at(i)));
 		// If the card is also in the collection to show
-		if(it != cardIdsToShow.end())
+		if(it != CardIdsToShow.end())
 		{
 			// Add the corresponding widget to the list of widgets to show
 			widgetsToShow.push_back(_cardsCollectionWidgets.at(i));
-			cardIdsToShow.erase(it);
+			CardIdsToShow.erase(it);
 		}
 	}
 
@@ -143,7 +143,7 @@ void GuiDecksManagementState::onCardChosenFromDeck(cardId id)
 	_selectedCardFromDeck = id;
 }
 
-void GuiDecksManagementState::onCardChosenFromCollection(cardId id)
+void GuiDecksManagementState::onCardChosenFromCollection(CardId id)
 {
 	_decksListBox->enable();
 
@@ -203,19 +203,19 @@ void GuiDecksManagementState::selectDeck()
 
 		Deck& selectedDeck(getSelectedDeck());
 		// We have to use a std::vector because we need to erase elements in the loop below
-		std::vector<cardId> cardIdsToShow;
-		std::copy(selectedDeck.begin(), selectedDeck.end(), std::back_inserter(cardIdsToShow));
+		std::vector<CardId> CardIdsToShow;
+		std::copy(selectedDeck.begin(), selectedDeck.end(), std::back_inserter(CardIdsToShow));
 		std::vector<CardWidget::Ptr> widgetsToShow;
 		// Browse all cards of the collection
 		for(std::size_t i{0}; i < _cardsCollectionWidgets.size(); ++i)
 		{
-			auto it(std::find(cardIdsToShow.begin(), cardIdsToShow.end(), _cardsCollectionIds.at(i)));
+			auto it(std::find(CardIdsToShow.begin(), CardIdsToShow.end(), _cardsCollectionIds.at(i)));
 			// If the card is also in the deck to show
-			if(it != cardIdsToShow.end())
+			if(it != CardIdsToShow.end())
 			{
 				// Add the corresponding widget to the list of widgets to show
 				widgetsToShow.push_back(_cardsCollectionWidgets.at(i));
-				cardIdsToShow.erase(it);
+				CardIdsToShow.erase(it);
 			}
 
 		}

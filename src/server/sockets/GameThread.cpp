@@ -80,7 +80,7 @@ userId GameThread::playGame(const ClientInformations& player1, const ClientInfor
 	runGame();
 
 	// unlock a random new card
-	cardId earnedCardId{_database.getRandomCardId()};
+	CardId earnedCardId{_database.getRandomCardId()};
 	if (_postGameDataPlayer1.playerWon) _postGameDataPlayer1.unlockedCard = earnedCardId;
 	if (_postGameDataPlayer2.playerWon) _postGameDataPlayer2.unlockedCard = earnedCardId;
 
@@ -249,7 +249,7 @@ void GameThread::makeTimer()
 	}
 }
 
-void GameThread::sendFinalMessage(sf::TcpSocket& specialSocket, PostGameData& postGameData, cardId earnedCardId, AchievementList& newAchievements)
+void GameThread::sendFinalMessage(sf::TcpSocket& specialSocket, PostGameData& postGameData, CardId earnedCardId, AchievementList& newAchievements)
 {
 	sf::Packet packet;
 

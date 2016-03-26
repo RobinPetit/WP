@@ -39,7 +39,7 @@ void TerminalAbstractState::displayEntry(const std::string& entryText, char sep,
 	std::cout << std::string(entryLevel*4, ' ') << "  " << sep << " " << entryText << std::endl;
 }
 
-void TerminalAbstractState::displayCard(cardId id, bool displayIndex, std::size_t index)
+void TerminalAbstractState::displayCard(CardId id, bool displayIndex, std::size_t index)
 {
 	auto cardData = _context.client->getCardData(id);
 	assert(cardData->isCreature() or cardData->isSpell());
@@ -73,7 +73,7 @@ void TerminalAbstractState::displayCard(cardId id, bool displayIndex, std::size_
 	}
 }
 
-void TerminalAbstractState::displayCardWithIndex(cardId id, std::size_t index)
+void TerminalAbstractState::displayCardWithIndex(CardId id, std::size_t index)
 {
 	displayCard(id, true, index);
 }

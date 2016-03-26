@@ -114,7 +114,7 @@ void TerminalGame::displayCardVector(const std::vector<CardData>& cardVector, bo
 	// Displays simple informations about a card vector
 	for (auto i=0U; i<cardVector.size(); i++)
 	{
-		cardId id = cardVector.at(i).id;
+		CardId id = cardVector.at(i).id;
 		std::cout << "  * " << i << " : " << getCardName(id)
 		          << " (cost: " << getCardCost(id) << ", "
 		          << (isSpell(id) ? "spell" : "creature") << ")"
@@ -130,7 +130,7 @@ void TerminalGame::displayBoardCreatureVector(const std::vector<BoardCreatureDat
 	for (auto i=0U; i<cardVector.size(); i++)
 	{
 		const BoardCreatureData& thisCreature = cardVector.at(i);
-		const cardId id = thisCreature.id;
+		const CardId id = thisCreature.id;
 		std::cout << "  * " << i << " : " << getCardName(id) << " (cost: " << getCardCost(id) <<
 		             ", attack: " << thisCreature.attack <<
 		             ", health: " << thisCreature.health <<
@@ -205,7 +205,7 @@ bool TerminalGame::wantToAttackOpponent()
 	return buffer == "y";
 }
 
-void TerminalGame::receiveCard(cardId id)
+void TerminalGame::receiveCard(CardId id)
 {
 	displayMessage("You won the card '" + getCardName(id) + "'");
 }

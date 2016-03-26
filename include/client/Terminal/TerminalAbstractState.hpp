@@ -59,8 +59,8 @@ class TerminalAbstractState : virtual public AbstractState
 		void displaySeparator(const std::string& separatorText, const char& separator=' ');
 		void displayEntry(const std::string& entryText, char sep='*', std::size_t entryLevel=0);
 
-		void displayCard(cardId id, bool displayIndex=false, std::size_t index=0);
-		void displayCardWithIndex(cardId id, std::size_t index);
+		void displayCard(CardId id, bool displayIndex=false, std::size_t index=0);
+		void displayCardWithIndex(CardId id, std::size_t index);
 
 	private:
 		/// All actions doable in the state.
