@@ -118,7 +118,7 @@ private:
 				},
 				AchievementsListItem {
 					3,
-					&ServerDatabase::addVictoriesInARow,
+					&ServerDatabase::addVictoriesInTheCurrentRow,
 					&PostGameData::playerWon,
 					&ServerDatabase::getVictoriesInARow
 				},
@@ -152,7 +152,7 @@ private:
 				},
 				AchievementsListItem {
 					9,
-					&ServerDatabase::addStartsInARow,
+					&ServerDatabase::addStartsInTheCurrentRow,
 					&PostGameData::playerStarted,
 					&ServerDatabase::getStartsInARow
 				}
@@ -204,10 +204,10 @@ private:
 	void addToAchievementProgress(userId id, int value, sqlite3_stmt * stmt);
 	void addTimeSpent(userId, int seconds);
 	void addVictories(userId, int victories);
-	void addVictoriesInARow(userId, int victories);
+	void addVictoriesInTheCurrentRow(userId, int victories);
 	void addWithInDaClub(userId, int withInDaClub);
 	void addRagequits(userId, int ragequits);
-	void addStartsInARow(userId, int starts);
+	void addStartsInTheCurrentRow(userId, int starts);
 
 	sqlite3_stmt * _friendListStmt;
 	sqlite3_stmt * _userIdStmt;
@@ -251,10 +251,10 @@ private:
 
 	sqlite3_stmt * _addTimeSpentStmt;
 	sqlite3_stmt * _addVictoriesStmt;
-	sqlite3_stmt * _setVictoriesInARowStmt;
+	sqlite3_stmt * _addVictoriesInTheCurrentRowStmt;
 	sqlite3_stmt * _addWithInDaClubStmt;
 	sqlite3_stmt * _addRagequitsStmt;
-	sqlite3_stmt * _setStartsInARowStmt;
+	sqlite3_stmt * _addStartsInTheCurrentRowStmt;
 
 	// `constexpr std::array::size_type size() const;`
 	// -> future uses have to be _statements.size() -> 33 is written only one time
@@ -448,9 +448,9 @@ private:
 				"	WHERE id == ?1;"
 			},
 			Statement {
-				&_setVictoriesInARowStmt,
+				&_addVictoriesInTheCurrentRowStmt,
 				"UPDATE Account "
-				"	SET maxVictoriesInARow = ?1 "
+				"	SET currentVictoriesInARow = currentVictoriesInARow + ?1 "
 				"	WHERE id == ?2;"
 			},
 			Statement {
@@ -499,9 +499,9 @@ private:
 				"	WHERE id == ?1;"
 			},
 			Statement {
-				&_setStartsInARowStmt,
+				&_addStartsInTheCurrentRowStmt,
 				"UPDATE Account "
-				"	SET maxStartsInARow = ?1 "
+				"	SET currentStartsInARow = currentStartsInARow + ?1 "
 				"	WHERE id == ?2;"
 			}
 		}

@@ -134,9 +134,11 @@ CREATE TABLE Account (
 	givingup                    INTEGER NOT NULL DEFAULT 0,
 	-- ##achievements
 	secondsSpentPlaying         INTEGER DEFAULT 0,
+	currentVictoriesInARow      INTEGER DEFAULT 0,
 	maxVictoriesInARow          INTEGER DEFAULT 0,
 	gameWithInDaClub            INTEGER DEFAULT 0,
 	ragequits                   INTEGER DEFAULT 0,
+	currentStartsInARow         INTEGER DEFAULT 0,
 	maxStartsInARow             INTEGER DEFAULT 0,
 	maxDaysPlayedInARow         INTEGER DEFAULT 0,
 	lastGameDateTime            INTEGER DEFAULT 0,
@@ -145,6 +147,26 @@ CREATE TABLE Account (
 	maxSameCardCounter          INTEGER DEFAULT 0,
 	bestLadderPosition          INTEGER DEFAULT 0
 );
+
+CREATE TRIGGER updateMaxVictoriesOnAccount
+	AFTER UPDATE OF currentVictoriesInARow
+	ON Account
+	WHEN NEW.currentVictoriesInARow > OLD.maxVictoriesInARow
+	BEGIN
+		UPDATE Account
+			SET maxVictoriesInARow = currentVictoriesInARow
+			WHERE id == NEW.id;
+	END;
+
+CREATE TRIGGER updateMaxStartsOnAccount
+	AFTER UPDATE OF currentStartsInARow
+	ON Account
+	WHEN NEW.currentStartsInARow > OLD.maxStartsInARow
+	BEGIN
+		UPDATE Account
+			SET maxStartsInARow = currentStartsInARow
+			WHERE id == NEW.id;
+	END;
 
 CREATE TABLE GivenCard ( -- 20 first cards are not stored (everyone own its)
 	id INTEGER PRIMARY KEY AUTOINCREMENT,

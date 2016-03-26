@@ -467,18 +467,13 @@ int ServerDatabase::getVictoriesInARow(userId user)
 	return getAchievementProgress(user, _getVictoriesInARowStmt);
 }
 
-void ServerDatabase::addVictoriesInARow(userId user, int victories)
+void ServerDatabase::addVictoriesInTheCurrentRow(userId user, int victories)
 {
-	assert(victories >= 0);
+	sqlite3_reset(_addVictoriesInTheCurrentRowStmt);
+	sqliteThrowExcept(sqlite3_bind_int(_addVictoriesInTheCurrentRowStmt, 1, victories));
+	sqliteThrowExcept(sqlite3_bind_int64(_addVictoriesInTheCurrentRowStmt, 2, user));
 
-	if(victories > 0)
-		victories += getVictoriesInARow(user);
-
-	sqlite3_reset(_setVictoriesInARowStmt);
-	sqliteThrowExcept(sqlite3_bind_int(_setVictoriesInARowStmt, 1, victories));
-	sqliteThrowExcept(sqlite3_bind_int64(_setVictoriesInARowStmt, 2, user));
-
-	assert(sqliteThrowExcept(sqlite3_step(_setVictoriesInARowStmt)) == SQLITE_DONE);
+	assert(sqliteThrowExcept(sqlite3_step(_addVictoriesInTheCurrentRowStmt)) == SQLITE_DONE);
 }
 
 int ServerDatabase::getWithInDaClub(userId user)
@@ -529,19 +524,14 @@ int ServerDatabase::getStartsInARow(userId user)
 	return getAchievementProgress(user, _getStartsInARowStmt);
 }
 
-void ServerDatabase::addStartsInARow(userId user, int starts)
+void ServerDatabase::addStartsInTheCurrentRow(userId user, int starts)
 {
 	///\TODO remove code duplications (...InARow achievements)
-	assert(starts >= 0);
+	sqlite3_reset(_addStartsInTheCurrentRowStmt);
+	sqliteThrowExcept(sqlite3_bind_int(_addStartsInTheCurrentRowStmt, 1, starts));
+	sqliteThrowExcept(sqlite3_bind_int64(_addStartsInTheCurrentRowStmt, 2, user));
 
-	if(starts > 0)
-		starts += getStartsInARow(user);
-
-	sqlite3_reset(_setStartsInARowStmt);
-	sqliteThrowExcept(sqlite3_bind_int(_setStartsInARowStmt, 1, starts));
-	sqliteThrowExcept(sqlite3_bind_int64(_setStartsInARowStmt, 2, user));
-
-	assert(sqliteThrowExcept(sqlite3_step(_setStartsInARowStmt)) == SQLITE_DONE);
+	assert(sqliteThrowExcept(sqlite3_step(_addStartsInTheCurrentRowStmt)) == SQLITE_DONE);
 }
 
 
@@ -611,8 +601,6 @@ AchievementList ServerDatabase::AchievementManager::newAchievements(const PostGa
 
 AchievementList ServerDatabase::AchievementManager::allAchievements(userId user)
 {
-	///\FIXME: The ...InARow Achievements are lost when you are no more 'in the row'
-	///        Fix it by using currentRow/greatestRow
 	AchievementList achievements;
 
 	for(size_t i = 0; i < _achievementsList.size(); ++i)
