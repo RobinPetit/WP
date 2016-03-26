@@ -92,6 +92,8 @@ private:
 
 	std::vector<CardWidget::Ptr> _selfBoard;
 
+	std::vector<CardWidget::Ptr> _opponentBoard;
+
 	//////////////////// Methods
 
 	////////// overriden methods
@@ -143,6 +145,8 @@ private:
 	void displayHandCards();
 
 	void displaySelfBoard();
+
+	void displayOpponentBoard();
 
 	void displayPlayerBoard(tgui::Panel::Ptr& panel, std::vector<CardWidget::Ptr>& graphicalCards,
 		std::vector<BoardCreatureData>& creatureDatas, bool reversed=false);

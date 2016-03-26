@@ -98,6 +98,7 @@ void GuiGame::displayGame()
 
 	displayHandCards();
 	displaySelfBoard();
+	displayOpponentBoard();
 
 	_context.gui->add(_selfBoardPanel);
 	_context.gui->add(_opponentBoardPanel);
@@ -172,6 +173,11 @@ void GuiGame::displaySelfBoard()
 	displayPlayerBoard(_selfBoardPanel, _selfBoard, _selfBoardCreatures);
 }
 
+void GuiGame::displayOpponentBoard()
+{
+	displayPlayerBoard(_opponentBoardPanel, _opponentBoard,  _oppoBoardCreatures, true);
+}
+
 void GuiGame::displayPlayerBoard(tgui::Panel::Ptr& panel, std::vector<CardWidget::Ptr>& graphicalCards,
 		std::vector<BoardCreatureData>& creatureDatas, bool reversed)
 {
@@ -191,7 +197,13 @@ void GuiGame::displayPlayerBoard(tgui::Panel::Ptr& panel, std::vector<CardWidget
 		cardId monsterId{creatureDatas.at(i).id};
 		graphicalCards.push_back(std::make_shared<CardWidget>(_context.client->getCardData(monsterId)));
 		graphicalCards.back()->setSize(cardWidth, cardHeight);
-		graphicalCards.back()->setPosition(currentWidth, 0);
+		if(reversed)
+		{
+			graphicalCards.back()->rotate(180.f);
+			graphicalCards.back()->setPosition(currentWidth+cardWidth, cardHeight);
+		}
+		else
+			graphicalCards.back()->setPosition(currentWidth, 0);
 		currentWidth += cardWidth;
 
 		panel->add(graphicalCards.back());
