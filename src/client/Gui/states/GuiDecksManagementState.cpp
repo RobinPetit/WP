@@ -127,10 +127,14 @@ void GuiDecksManagementState::onCardChosenFromDeck(cardId id)
 	// Browse all cards of the collection
 	for(std::size_t i{0}; i < _cardsCollectionWidgets.size(); ++i)
 	{
+		auto it(std::find(cardIdsToShow.begin(), cardIdsToShow.end(), _cardsCollectionIds.at(i)));
 		// If the card is also in the collection to show
-		if(std::find(cardIdsToShow.begin(), cardIdsToShow.end(), _cardsCollectionIds.at(i)) != cardIdsToShow.end())
+		if(it != cardIdsToShow.end())
+		{
 			// Add the corresponding widget to the list of widgets to show
 			widgetsToShow.push_back(_cardsCollectionWidgets.at(i));
+			cardIdsToShow.erase(it);
+		}
 	}
 
 	// Eventually, fill the grid with the computed card collection
@@ -198,14 +202,22 @@ void GuiDecksManagementState::selectDeck()
 		_hintLabel->setPosition((tgui::bindWidth(*_context.gui) - tgui::bindWidth(_hintLabel)) / 2.f, 70);
 
 		Deck& selectedDeck(getSelectedDeck());
+		// We have to use a std::vector because we need to erase elements in the loop below
+		std::vector<cardId> cardIdsToShow;
+		std::copy(selectedDeck.begin(), selectedDeck.end(), std::back_inserter(cardIdsToShow));
 		std::vector<CardWidget::Ptr> widgetsToShow;
 		// Browse all cards of the collection
 		for(std::size_t i{0}; i < _cardsCollectionWidgets.size(); ++i)
 		{
+			auto it(std::find(cardIdsToShow.begin(), cardIdsToShow.end(), _cardsCollectionIds.at(i)));
 			// If the card is also in the deck to show
-			if(std::find(selectedDeck.begin(), selectedDeck.end(), _cardsCollectionIds.at(i)) != selectedDeck.end())
+			if(it != cardIdsToShow.end())
+			{
 				// Add the corresponding widget to the list of widgets to show
 				widgetsToShow.push_back(_cardsCollectionWidgets.at(i));
+				cardIdsToShow.erase(it);
+			}
+
 		}
 
 		fillGrid(widgetsToShow);
