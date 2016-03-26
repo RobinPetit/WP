@@ -251,10 +251,9 @@ void GuiGame::waitUntil(std::function<bool()> booleanFunction)
 	sf::Event event;
 	while(not booleanFunction())
 	{
-		displayGame();
-
 		while(_context.window->pollEvent(event))
 		{
+			displayGame();
 			if(event.type == sf::Event::Closed)
 				quit();
 			else
