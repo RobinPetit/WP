@@ -12,16 +12,19 @@
 #include <atomic>
 // WizardPoker headers
 #include "common/Terminal.hpp"
-#include "common/Database.hpp"// FriendsList typedef
+#include "common/Database.hpp"  // FriendsList typedef
+#include "common/Achievement.hpp"  // AchievementList typedef
+#include "client/ClientAchievement.hpp"
 #include "common/CardsCollection.hpp"
 #include "common/Deck.hpp"
+#include "client/ClientDatabase.hpp"
 
 /// Client is a class representing the state of the client program (not the user!)
 class Client final
 {
 public:
 	/// Constructor
-	Client();
+	Client(bool Gui);
 
 	/// Destructor
 	~Client();
@@ -45,6 +48,15 @@ public:
 	/// \param address The address where the server stands
 	/// \param port The port the server occupies
 	static void registerToServer(const std::string& name, const std::string& password, const sf::IpAddress& address, sf::Uint16 port);
+
+	/// The function called at the end of the game if the connection to
+	/// the server has been lost.
+	void connectionLost();
+
+	/// The function used to know if the client is still connected to
+	/// the server of if the connection has been lost/not established yet
+	/// \return True if the socket is connected to the server and false otherwise
+	bool isConnected();
 
 	/////////// Friends management
 
@@ -78,7 +90,7 @@ public:
 	/// \param name The name of the player who sent the request
 	/// \param accept True to accept the request, false to refuse it
 	/// \return True if the player was successfully accepted or refused, and false otherwise
-	void acceptFriendshipRequest(const std::string& name, bool accept=true);
+	void acceptFriendshipRequest(const std::string& name, bool accept = true);
 
 	/// Used to remove a friend from the friends list
 	/// \param name The name of the player to remove from the friends list
@@ -87,8 +99,18 @@ public:
 
 	////////// Game management
 
-	/// \TODO Complete this method (and its signature)
-	bool startGame();
+	/// Function to call to enter the waiting lobby
+	void enterLobby();
+
+	/// Tells whether or not an answer has been received from the server about
+	/// a found opponent to start a game
+	/// \param opponentName A string where the name of the found opponent is set
+	/// \return True if an opponent has been found (the opponent's name is then
+	/// stored in \a opponentName)
+	bool isGameStarted(std::string& opponentName);
+
+	/// Function to call to leave the waiting lobby
+	void leaveLobby();
 
 	/// Used to ask (from the menus for instance) the socket used in game
 	/// \throw std::runtime_error if the method is called and no game has started
@@ -97,6 +119,10 @@ public:
 	/// Used to ask the socked used to listen to server special data
 	/// \throw std::runtime_error if the method is called and no game has started
 	sf::TcpSocket& getGameListeningSocket();
+
+	/// Method to call when a game has ended to allow the client to return to a non-game
+	/// internal status
+	void endGame();
 
 	/// The function used to rest assured all conections are stopped and the client is
 	/// not waiting for entering chat connections anymore
@@ -119,10 +145,23 @@ public:
 	/// Used when the user wants its cards collection
 	CardsCollection getCardsCollection();
 
+	/// Count number of card templates in database
+	cardId getNumberOfCards();
+
+	/// Give greatest card id in database
+	cardId getMaxCardId();
+
+	/// Used by AbstractGame
+	const CommonCardData* getCardData(cardId id);
+
 	// Others
 
 	/// Used when the user wants the ladder
 	Ladder getLadder();
+
+	/// Used when the user wants to check his achievements
+	ClientAchievementList getAchievements(AchievementList newAchievements);
+	ClientAchievementList getAchievements();
 
 	/// Used to wait sleeping until the atomic boolean readyToPlay is set to true
 	void waitTillReadyToPlay();
@@ -135,7 +174,8 @@ private:
 	sf::TcpSocket _socket;
 	/// The port the client is waiting for chat connections on
 	sf::Uint16 _chatListenerPort;
-	/// Stores whether the client is already connected to the server or not
+	/// Stores whether the client is already connected to the server or not.
+	/// We talk here about a socket connexion, not the authentication.
 	bool _isConnected;
 	/// The client's name
 	std::string _name;
@@ -152,12 +192,13 @@ private:
 
 	/// Gives informations about the terminal installed on the computer
 	Terminal _userTerminal;
+	/// Hold informations about the cards
+	ClientDatabase _database;
+	/// Tells whether the program is running as GUI of Terminal
+	bool _isGui;
 
 	///////// Friend related attributes
 
-	/// \TODO use this!
-	/// A list of the discussion that are currently being hold
-	std::vector<std::string> _currentConversations;
 	/// List containing the names of the friends
 	FriendsList _friends;
 	/// List containing the names of the users that sent a friendship request to the client
@@ -178,15 +219,17 @@ private:
 
 	/////////// private methods
 
-	/// chatListening is the function used by the client to make a new thread listening for entring connections
+	/// inputListening is the function used by the client to make a new thread listening for entring connections
 	/// (players that want to make a discussion)
 	void inputListening();
+
 	/// This function is used to start the chat program with the proper parameters
 	void startChat(sf::Packet& transmission);
+
 	/// This function is used to make the proper exchanges with the srever when a game is started
+	/// \param transmission A packet containing the informations about the port/address of friend
 	void initInGameConnection(sf::Packet& transmission);
 
-	// private methods
 	/// Used to know if a particular player is a friend or not
 	/// \return True if the player is a friend of the client and false otherwise
 	/// \param name The name of the player whose friendship is tested

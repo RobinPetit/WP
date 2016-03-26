@@ -10,8 +10,6 @@
 /// There is a special deck, the default deck
 /// The default deck contains exactly Deck::size unique cards that match
 /// the Deck::size cards all players start with.
-// \TODO Card.hpp should implements a type cardId
-// (maybe such as `typedef std::size_t cardId`)
 class Deck
 {
 	public:
@@ -28,9 +26,9 @@ class Deck
 		/// Creates a default deck. The default deck is the set of the \a size
 		/// first cards (with the cards ordered by their ID).
 		/// Without the default value for name, this would impossible to
-        /// construct a `std::vector<Deck>` because std::vector requires that its
-        /// elements are default-constructible. This is not the case if name
-        /// has no default value.
+		/// construct a `std::vector<Deck>` because std::vector requires that its
+		/// elements are default-constructible. This is not the case if name
+		/// has no default value.
 		explicit Deck(const std::string& name = ""); // should take Deck id
 
 		/// Constructor.
@@ -44,7 +42,7 @@ class Deck
 
 		const std::string& getName() const;
 
-		void setName(const std::string newName);
+		void setName(const std::string& newName);
 
 		Iterator begin();
 

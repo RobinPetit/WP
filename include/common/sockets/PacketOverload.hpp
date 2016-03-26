@@ -11,48 +11,52 @@
 #include "common/CardsCollection.hpp"
 #include "common/GameData.hpp"
 #include "common/sockets/TransferType.hpp"
+#include "common/sockets/EndGame.hpp"
+#include "common/Ladder.hpp"
+#include "common/Achievement.hpp"
 
 template <typename T>
 sf::Packet& operator <<(sf::Packet& packet, const std::vector<T>& vec);
-
 template <typename T>
 sf::Packet& operator >>(sf::Packet& packet, std::vector<T>& vec);
 
 template <typename T, std::size_t N>
 sf::Packet& operator <<(sf::Packet& packet, const std::array<T, N>& array);
-
 template <typename T, std::size_t N>
 sf::Packet& operator >>(sf::Packet& packet, std::array<T, N>& array);
 
 sf::Packet& operator <<(sf::Packet& packet, const Friend& userFriend);
-
 sf::Packet& operator >>(sf::Packet& packet, Friend& userFriend);
 
 sf::Packet& operator <<(sf::Packet& packet, const LadderEntry& ladderEntry);
-
 sf::Packet& operator >>(sf::Packet& packet, LadderEntry& ladderEntry);
 
 sf::Packet& operator <<(sf::Packet& packet, const Deck& deck);
-
 sf::Packet& operator >>(sf::Packet& packet, Deck& deck);
 
 sf::Packet& operator <<(sf::Packet& packet, const CardsCollection& deck);
-
 sf::Packet& operator >>(sf::Packet& packet, CardsCollection& deck);
 
-/// Allow a packet to transmit a BoardCreatureData instance.
+/// Allow a packet to transmit a BoardCreatureData instance
 sf::Packet& operator <<(sf::Packet& packet, const BoardCreatureData& data);
-
 sf::Packet& operator >>(sf::Packet& packet, BoardCreatureData& data);
 
+/// Allow a packet to transmit a CardToSelect instance
 sf::Packet& operator <<(sf::Packet& packet, const CardToSelect& card);
-
 sf::Packet& operator >>(sf::Packet& packet, CardToSelect& card);
 
 /// Allow a packet to transmit a CardData instance
 sf::Packet& operator <<(sf::Packet& packet, const CardData& data);
-
 sf::Packet& operator >>(sf::Packet& packet, CardData& data);
+
+/// Allow a packet to transmit an EndGame instance
+sf::Packet& operator <<(sf::Packet& packet, const EndGame& endGameInfo);
+sf::Packet& operator >>(sf::Packet& packet, EndGame& endGameInfo);
+
+/// Allow a packet to transmit an Achievement instance
+sf::Packet& operator <<(sf::Packet& packet, const Achievement& achievement);
+sf::Packet& operator >>(sf::Packet& packet, Achievement& achievement);
+
 
 // implementation
 

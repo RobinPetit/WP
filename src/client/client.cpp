@@ -1,36 +1,20 @@
-/**
-	client main file (entry point)
-**/
+/// Client main file (entry point).
 
 // std-C++ headers
-#include <iostream>
-// WizardPoker heaaders
-#include "client/StateStack.hpp"
-#include "client/states/HomeState.hpp"
-#include "client/sockets/Client.hpp"
+#include <memory>
+// WizardPoker headers
+#include "client/Terminal/TerminalApplication.hpp"
+#include "client/Gui/GuiApplication.hpp"
 
-int main()
+int main(int argc, char* argv[])
 {
-	Client client;
-	StateStack stack(client);
-	stack.push<HomeState>();
-	while(not stack.isEmpty())
-	{
-		system("clear");
-		stack.display();
-		std::cout << "What do you want to do? ";
-		std::string input;
-		std::getline(std::cin, input);
-		try
-		{
-			stack.handleInput(input);
-		}
-		catch(std::runtime_error& error)
-		{
-			std::cerr << "Exception caught: " << error.what();
-			stack.clear();
-			return -1;
-		}
-	}
-	return 0;
+	std::unique_ptr<AbstractApplication> application;
+	// TODO for now we must give --gui, but eventually this will be inverted,
+	// and we'll have to give --no-gui.
+	if(argc > 1 and std::string(argv[1]) == "--gui")
+		application.reset(new GuiApplication());
+	else
+		application.reset(new TerminalApplication());
+
+	return application->play();
 }

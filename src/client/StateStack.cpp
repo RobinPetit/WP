@@ -1,34 +1,53 @@
 #include "client/AbstractState.hpp"
 #include "client/StateStack.hpp"
 
-StateStack::StateStack(Client& client):
-	_stack(),
-	_client{client}
+StateStack::StateStack(Context& context):
+	_stack{},
+	_pendingChanges{},
+	_context{context}
 {
 
 }
 
 void StateStack::display()
 {
-	(*_stackIterator)->display();
+	_stack.top()->display();
 }
 
-void StateStack::handleInput(const std::string& input)
+void StateStack::handleInput()
 {
-	(*_stackIterator)->handleInput(input);
+	_stack.top()->handleInput();
+	doPendingChanges();
 }
 
 void StateStack::pop()
 {
-	_stackIterator--;
+	_pendingChanges.emplace([this]()
+	{
+		_stack.pop();
+		if(not _stack.empty())
+			_stack.top()->onPop();
+	});
 }
 
 void StateStack::clear()
 {
-	_empty = true;
+	_pendingChanges.emplace([this]()
+	{
+		decltype(_stack)().swap(_stack);
+	});
 }
 
 bool StateStack::isEmpty() const
 {
-	return _stack.empty() or _empty;
+	return _stack.empty();
+}
+
+void StateStack::doPendingChanges()
+{
+	while(not _pendingChanges.empty())
+	{
+		_pendingChanges.front()();
+		_pendingChanges.pop();
+	}
 }

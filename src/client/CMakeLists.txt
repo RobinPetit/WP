@@ -1,19 +1,59 @@
-set(SOURCES	"client.cpp"
+set(SOURCES
+		"client.cpp"
+		"ClientCardData.cpp"
+		"ClientCreature.cpp"
+		"ClientSpell.cpp"
 		"ClientDatabase.cpp"
-		# sockets
+		"ClientAchievement.cpp"
+		"AbstractApplication.cpp"
+		## sockets
 		"sockets/Client.cpp"
 		"NonBlockingInput.cpp"
-		# states
+		## states
 		"AbstractState.cpp"
 		"StateStack.cpp"
-		"states/CardsCollectionState.cpp"
-		"states/DecksManagementState.cpp"
-		"states/FriendsManagementState.cpp"
-		"states/LadderState.cpp"
-		"states/LobbyState.cpp"
-		"states/MainMenuState.cpp"
-		"states/HomeState.cpp"
-		"states/GameState.cpp"
+		"states/AbstractCardsCollectionState.cpp"
+		"states/AbstractDecksManagementState.cpp"
+		"states/AbstractFriendsManagementState.cpp"
+		"states/AbstractLadderState.cpp"
+		"states/AbstractAchievementState.cpp"
+		"states/AbstractLobbyState.cpp"
+		"states/AbstractMainMenuState.cpp"
+		"states/AbstractHomeState.cpp"
+		## Game
+		"AbstractGame.cpp"
+
+		# Terminal files
+		"Terminal/TerminalApplication.cpp"
+		## States
+		"Terminal/TerminalAbstractState.cpp"
+		"Terminal/states/TerminalHomeState.cpp"
+		"Terminal/states/TerminalMainMenuState.cpp"
+		"Terminal/states/TerminalCardsCollectionState.cpp"
+		"Terminal/states/TerminalDecksManagementState.cpp"
+		"Terminal/states/TerminalFriendsManagementState.cpp"
+		"Terminal/states/TerminalLadderState.cpp"
+		"Terminal/states/TerminalAchievementState.cpp"
+		"Terminal/states/TerminalLobbyState.cpp"
+		## Game
+		"Terminal/TerminalGame.cpp"
+
+		# GUI files
+		"Gui/GuiApplication.cpp"
+		"Gui/InputBox.cpp"
+		"Gui/CardGui.cpp"
+		"Gui/SpellGui.cpp"
+		"Gui/CreatureGui.cpp"
+		"Gui/CardWidget.cpp"
+		## States
+		"Gui/GuiAbstractState.cpp"
+		"Gui/states/GuiHomeState.cpp"
+		"Gui/states/GuiMainMenuState.cpp"
+		"Gui/states/GuiCardsCollectionState.cpp"
+		"Gui/states/GuiDecksManagementState.cpp"
+		"Gui/states/GuiFriendsManagementState.cpp"
+		"Gui/states/GuiLadderState.cpp"
+		"Gui/states/GuiLobbyState.cpp"
 	)
 
 set(CLIENT_NAME "${PROJECT_NAME}_client")

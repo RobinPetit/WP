@@ -6,7 +6,8 @@
 *.pdf
 
 # Build
-build/
+build/*
+build/*/
 # Compiled Static libraries
 *.lai
 *.la
@@ -50,6 +51,10 @@ bin/
 *.out
 *.app
 
+# Do not track database files
+*.db
+**/*.db
+
 # Add your IDE's temporary files extension here
 	# code::blocks
 *.cbp
@@ -59,9 +64,17 @@ bin/
 	# CodeLite
 *.workspace
 *.project
+.codelite
 	# vim
 *.swp
 
 # Do not commit the resources changes
 resources/
 !resources/common/initdatabase.sql
+!resources/client/*.png
+!resources/client/*.otf
+
+# Do not track the documentation
+doxygen.cfg
+doc/
+

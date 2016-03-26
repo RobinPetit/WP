@@ -3,15 +3,12 @@
 
 sf::Packet& operator <<(sf::Packet& packet, const Friend& userFriend)
 {
-	return packet << static_cast<sf::Int64>(userFriend.id) << userFriend.name;
+	return packet << userFriend.id << userFriend.name;
 }
 
 sf::Packet& operator >>(sf::Packet& packet, Friend& userFriend)
 {
-	sf::Int64 tmp;
-	packet >> tmp >> userFriend.name;
-	userFriend.id = static_cast<int64_t>(tmp);
-	return packet;
+	return packet >> userFriend.id >> userFriend.name;
 }
 
 sf::Packet& operator <<(sf::Packet& packet, const LadderEntry& ladderEntry)
@@ -34,7 +31,7 @@ sf::Packet& operator <<(sf::Packet& packet, const Deck& deck)
 {
 	packet << deck.getName();
 	for(std::size_t i{0}; i < Deck::size; ++i)
-		packet << static_cast<sf::Int64>(deck.getCard(i));
+		packet << deck.getCard(i);
 	return packet;
 }
 
@@ -45,9 +42,9 @@ sf::Packet& operator >>(sf::Packet& packet, Deck& deck)
 	deck.setName(name);
 	for(std::size_t i{0}; i < Deck::size; ++i)
 	{
-		sf::Int64 card;
+		cardId card;
 		packet >> card;
-		deck.changeCard(i, static_cast<cardId>(card));
+		deck.changeCard(i, card);
 	}
 	return packet;
 }
@@ -78,7 +75,7 @@ sf::Packet& operator <<(sf::Packet& packet, const CardsCollection& cardCollectio
 			baseCardsAlreadyProcessed[static_cast<std::array<bool, Deck::size+1>::size_type>(card)] = true;
 		// else we can safely add it to the packet;
 		else
-			packet << static_cast<sf::Int64>(card);
+			packet << card;
 	}
 	return packet;
 }
@@ -89,16 +86,16 @@ sf::Packet& operator >>(sf::Packet& packet, CardsCollection& cardCollection)
 	packet >> size;
 	for(sf::Uint32 i{0}; i < size; ++i)
 	{
-		sf::Int64 card;
+		cardId card;
 		packet >> card;
-		cardCollection.addCard(static_cast<cardId>(card));
+		cardCollection.addCard(card);
 	}
 	return packet;
 }
 
 sf::Packet& operator <<(sf::Packet& packet, const BoardCreatureData& data)
 {
-	return packet << static_cast<sf::Int64>(data.id)
+	return packet << data.id
 	              << static_cast<sf::Int64>(data.health)
 	              << static_cast<sf::Int64>(data.attack)
 	              << static_cast<sf::Int64>(data.shield)
@@ -107,9 +104,8 @@ sf::Packet& operator <<(sf::Packet& packet, const BoardCreatureData& data)
 
 sf::Packet& operator >>(sf::Packet& packet, BoardCreatureData& data)
 {
-	sf::Int64 id, health, attack, shield;
-	packet >> id >> health >> attack >> shield >> data.shieldType;
-	data.id = static_cast<cardId>(id);
+	sf::Int64 health, attack, shield;
+	packet >> data.id >> health >> attack >> shield >> data.shieldType;
 	data.health = static_cast<int>(health);
 	data.attack = static_cast<int>(attack);
 	data.shield = static_cast<int>(shield);
@@ -118,13 +114,13 @@ sf::Packet& operator >>(sf::Packet& packet, BoardCreatureData& data)
 
 sf::Packet& operator <<(sf::Packet& packet, const CardToSelect& card)
 {
-	packet << static_cast<sf::Uint32>(card);
+	packet << static_cast<sf::Int32>(card);
 	return packet;
 }
 
 sf::Packet& operator >>(sf::Packet& packet, CardToSelect& card)
 {
-	sf::Uint32 card32;
+	sf::Int32 card32;
 	packet >> card32;
 	card = static_cast<CardToSelect>(card32);
 	return packet;
@@ -132,13 +128,38 @@ sf::Packet& operator >>(sf::Packet& packet, CardToSelect& card)
 
 sf::Packet& operator <<(sf::Packet& packet, const CardData& data)
 {
-	return packet << static_cast<sf::Int64>(data.id);
+	return packet << data.id;
 }
 
 sf::Packet& operator >>(sf::Packet& packet, CardData& data)
 {
-	sf::Int64 id;
-	packet >> id;
-	data.id = static_cast<cardId>(id);
+	return packet >> data.id;
+}
+
+sf::Packet& operator <<(sf::Packet& packet, const EndGame& endGameInfo)
+{
+	return packet << static_cast<std::underlying_type<EndGame::Cause>::type>(endGameInfo.cause)
+	              << endGameInfo.applyToSelf;
+}
+
+sf::Packet& operator >>(sf::Packet& packet, EndGame& endGameInfo)
+{
+	std::underlying_type<EndGame::Cause>::type convertedCause;
+	packet >> convertedCause >> endGameInfo.applyToSelf;
+	endGameInfo.cause = static_cast<EndGame::Cause>(convertedCause);
 	return packet;
 }
+
+//Achievement
+sf::Packet& operator <<(sf::Packet& packet, const Achievement& achievement)
+{
+	return packet << static_cast<sf::Int64>(achievement.id)
+				  << achievement.currentProgress;
+}
+
+sf::Packet& operator >>(sf::Packet& packet, Achievement& achievement)
+{
+	packet >> achievement.id >> achievement.currentProgress;
+	return packet;
+}
+

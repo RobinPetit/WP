@@ -1,17 +1,17 @@
 #include "server/Spell.hpp"
 
-Spell::Spell(cardId cardIdentifier, int cost, std::vector<EffectParamsCollection> effects):
-	Card(cardIdentifier, cost, effects)
+Spell::Spell(const ServerSpellData& cardData):
+	Card(cardData)
 {
-
 }
 
-bool Spell::isCreature()
+std::vector<EffectParamsCollection> Spell::getEffects()
 {
-	return false;
+	return prototype().getEffects();
 }
 
-bool Spell::isSpell()
+/*--------------------------- PRIVATE METHOD */
+inline const ServerSpellData& Spell::prototype() const
 {
-	return true;
+	return static_cast<const ServerSpellData&>(_prototype);
 }

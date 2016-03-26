@@ -1,0 +1,40 @@
+#ifndef _CARD_WIDGET_CLIENT_HPP
+#define _CARD_WIDGET_CLIENT_HPP
+
+// External headers
+#include <TGUI/Widgets/ClickableWidget.hpp>
+// WizardPoker header
+#include "client/Gui/CardGui.hpp"
+#include "common/CardData.hpp"
+
+/// Wrapper around a CardGui to be able to add them easily in TGUI containers.
+/// The implementation is inspired from the one of tgui::Canvas.
+class CardWidget : public tgui::ClickableWidget
+{
+	public:
+		typedef std::shared_ptr<CardWidget> Ptr;
+		typedef std::shared_ptr<const CardWidget> ConstPtr;
+
+		CardWidget();
+
+		CardWidget(const CommonCardData* cardData);
+
+		void setCardData(const CommonCardData* cardData);
+
+		//static CardWidget::Ptr copy(CardWidget::ConstPtr other);
+
+		virtual void setPosition(const tgui::Layout2d& position);
+		using tgui::Transformable::setPosition;
+
+		virtual void setSize(const tgui::Layout2d& size);
+		using tgui::Transformable::setSize;
+
+		//virtual tgui::Widget::Ptr clone() const override;
+
+		virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
+
+	private:
+		std::unique_ptr<CardGui> _card;
+};
+
+#endif  // _CARD_WIDGET_CLIENT_HPP

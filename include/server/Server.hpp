@@ -1,13 +1,13 @@
 #ifndef _SERVER_HPP_
 #define _SERVER_HPP_
 
-#include "server/ServerDatabase.hpp"
 // SFML headers
 #include <SFML/Network/TcpListener.hpp>
 #include <SFML/Network/TcpSocket.hpp>
 #include <SFML/Network/SocketSelector.hpp>
 #include <SFML/Network/Packet.hpp>
 // WizardPoker headers
+#include "server/ServerDatabase.hpp"
 #include "server/GameThread.hpp"
 #include "server/ClientInformations.hpp"
 // std-C++ headers
@@ -39,7 +39,6 @@ private:
 
 	// attributes
 	std::unordered_map<std::string, ClientInformations> _clients;
-	sf::TcpListener _listener;
 	sf::SocketSelector _socketSelector;
 	std::atomic_bool _done;
 	std::atomic_bool _threadRunning;
@@ -49,16 +48,16 @@ private:
 	std::mutex _lobbyMutex;
 	const std::string _quitPrompt;
 	ServerDatabase _database;
-	std::vector<GameThread *> _runningGames;
+	std::vector<std::unique_ptr<GameThread>> _runningGames;
 	std::mutex _accessRunningGames;
 
 	// private methods
-	/// Used to handle a newconnection request (when the listener gets a packet)
-	void takeConnection();
+	/// Used to handle a new connection request (when the listener gets a packet)
+	void takeConnection(sf::TcpListener& listener);
 
 	/// Used to handle data sent by a logged user
-
 	void receiveData();
+
 	/// Used to receive packet when the user want to connect.
 	/// This functions takes the ownership of the socket, so that the responsability
 	/// of deleting the object is transferred. For example, if the connection
@@ -118,7 +117,7 @@ private:
 	void startGame(std::size_t idx);
 
 	/// Starts the new thread for the new game
-	void createGame(userId ID1, userId ID2);
+	void createGame(userId Id1, userId Id2);
 
 	//////////// Cards management
 
@@ -141,6 +140,9 @@ private:
 
 	/// Sent when the user wants the ladder
 	void sendLadder(const _iterator& it);
+
+	/// Sent when the user wants the list of achievements
+	void sendAchievements(const _iterator& it);
 };
 
 #endif // _SERVER_HPP_

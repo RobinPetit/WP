@@ -8,7 +8,7 @@
 enum
 {
 	/// return code in case of unability to reach the server
-	UNABLE_TO_CONNECT,
+	UNABLE_TO_CONNECT=1,
 	///
 	UNABLE_TO_LISTEN
 };
