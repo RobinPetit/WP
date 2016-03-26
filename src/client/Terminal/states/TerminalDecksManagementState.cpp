@@ -101,12 +101,11 @@ void TerminalDecksManagementState::editDeck()
 }
 std::size_t TerminalDecksManagementState::askForReplacedCard(std::size_t deckIndex)
 {
-	int i{0};
 	std::cout << "Content of the deck " << _decks[deckIndex].getName() << ":\n";
 
 	// display cards with their index
-	std::size_t index=0;
-	for(const auto& cardId : _cardsCollection)
+	std::size_t index = 1;
+	for(const auto& cardId : _decks[deckIndex])
 		displayCardWithIndex(cardId, index++);
 
 	std::cout << "Which card do you want to replace (0 to quit)? ";
