@@ -134,17 +134,60 @@ CREATE TABLE Account (
 	givingup                    INTEGER NOT NULL DEFAULT 0,
 	-- ##achievements
 	secondsSpentPlaying         INTEGER DEFAULT 0,
+	currentVictoriesInARow      INTEGER DEFAULT 0,
 	maxVictoriesInARow          INTEGER DEFAULT 0,
 	gameWithInDaClub            INTEGER DEFAULT 0,
 	ragequits                   INTEGER DEFAULT 0,
+	currentStartsInARow         INTEGER DEFAULT 0,
 	maxStartsInARow             INTEGER DEFAULT 0,
-	maxDaysPlayedInARow         INTEGER DEFAULT 0,
-	lastGameDateTime            INTEGER DEFAULT 0,
+	currentDaysPlayedInARow     INTEGER DEFAULT 0,
+	maxDaysPlayedInARow         INTEGER DEFAULT 0, -- value not up to date when should be 0 (as it is updated after a game, i.e. when is 1 or more)
+	lastDayPlayed               INTEGER DEFAULT 0, -- julian day rounded
 	perfectWins                 INTEGER DEFAULT 0,
 	closeWins                   INTEGER DEFAULT 0,
-	maxSameCardCounter          INTEGER DEFAULT 0,
-	bestLadderPosition          INTEGER DEFAULT 0
+	maxSameCardCounter          INTEGER DEFAULT 0, -- TODO: I think it is unused and uneeded
+	bestLadderPositionPercent   INTEGER DEFAULT 0
 );
+
+CREATE TRIGGER updateMaxVictoriesOnAccount
+	AFTER UPDATE OF currentVictoriesInARow
+	ON Account
+	WHEN NEW.currentVictoriesInARow > OLD.maxVictoriesInARow
+	BEGIN
+		UPDATE Account
+			SET maxVictoriesInARow = currentVictoriesInARow
+			WHERE id == NEW.id;
+	END;
+
+CREATE TRIGGER updateMaxStartsOnAccount
+	AFTER UPDATE OF currentStartsInARow
+	ON Account
+	WHEN NEW.currentStartsInARow > OLD.maxStartsInARow
+	BEGIN
+		UPDATE Account
+			SET maxStartsInARow = currentStartsInARow
+			WHERE id == NEW.id;
+	END;
+
+CREATE TRIGGER updateCurrentDaysPlayedOnAccount
+	AFTER UPDATE OF lastDayPlayed
+	ON Account
+	WHEN NEW.lastDayPlayed - OLD.lastDayPlayed > 0
+	BEGIN
+		UPDATE Account
+			SET currentDaysPlayedInARow = currentDaysPlayedInARow * (NEW.lastDayPlayed - OLD.lastDayPlayed == 1) + 1
+			WHERE id == NEW.id;
+	END;
+
+CREATE TRIGGER updateMaxDaysPlayedOnAccount
+	AFTER UPDATE OF currentDaysPlayedInARow
+	ON Account
+	WHEN NEW.currentDaysPlayedInARow > OLD.maxDaysPlayedInARow
+	BEGIN
+		UPDATE Account
+			SET maxDaysPlayedInARow = currentDaysPlayedInARow
+			WHERE id == NEW.id;
+	END;
 
 CREATE TABLE GivenCard ( -- 20 first cards are not stored (everyone own its)
 	id INTEGER PRIMARY KEY AUTOINCREMENT,

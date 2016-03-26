@@ -311,16 +311,16 @@ void ServerDatabase::createSpellData()
 		cardId id(sqlite3_column_int64(_getSpellCardsStmt, 0));
 
 		_cardData.emplace(
-			std::make_pair<>(
-				id,
-				std::unique_ptr<CommonCardData>(
-					new ServerSpellData(
-						id,
-						sqlite3_column_int(_getSpellCardsStmt, 1), // cost
-						std::vector<EffectParamsCollection>(createCardEffects(id)) // effects
-					)
-				)
-			)
+		    std::make_pair<>(
+		        id,
+		        std::unique_ptr<CommonCardData>(
+		            new ServerSpellData(
+		                id,
+		                sqlite3_column_int(_getSpellCardsStmt, 1), // cost
+		                std::vector<EffectParamsCollection>(createCardEffects(id)) // effects
+		            )
+		        )
+		    )
 		);
 	}
 }
@@ -335,20 +335,20 @@ void ServerDatabase::createCreatureData()
 		cardId id(sqlite3_column_int64(_getCreatureCardsStmt, 0));
 
 		_cardData.emplace(
-			std::make_pair<>(
-				id,
-				std::unique_ptr<CommonCardData>(
-					new ServerCreatureData(
-						id,
-						sqlite3_column_int(_getCreatureCardsStmt, 1),  // cost
-						std::vector<EffectParamsCollection>(createCardEffects(id)),  // effects
-						sqlite3_column_int(_getCreatureCardsStmt, 2),  // attack
-						sqlite3_column_int(_getCreatureCardsStmt, 3),  // health
-						sqlite3_column_int(_getCreatureCardsStmt, 4),  // shield
-						sqlite3_column_int(_getCreatureCardsStmt, 5)  // shieldType
-					)
-				)
-			)
+		    std::make_pair<>(
+		        id,
+		        std::unique_ptr<CommonCardData>(
+		            new ServerCreatureData(
+		                id,
+		                sqlite3_column_int(_getCreatureCardsStmt, 1),  // cost
+		                std::vector<EffectParamsCollection>(createCardEffects(id)),  // effects
+		                sqlite3_column_int(_getCreatureCardsStmt, 2),  // attack
+		                sqlite3_column_int(_getCreatureCardsStmt, 3),  // health
+		                sqlite3_column_int(_getCreatureCardsStmt, 4),  // shield
+		                sqlite3_column_int(_getCreatureCardsStmt, 5)  // shieldType
+		            )
+		        )
+		    )
 		);
 	}
 }
@@ -387,9 +387,17 @@ unsigned ServerDatabase::countAccounts()
 // Achievements
 AchievementList ServerDatabase::newAchievements(const PostGameData& postGame, userId user)
 {
+	// (re-)unlock a card (it is a special achievement)
 	if(postGame.playerWon)
 		addCard(user, getRandomCardId());
 
+	// update LastDayPlayed information (this should be done elsewhere)
+	sqlite3_reset(_updateLastDayPlayedStmt);
+	sqliteThrowExcept(sqlite3_bind_int64(_updateLastDayPlayedStmt, 1, user));
+
+	assert(sqliteThrowExcept(sqlite3_step(_updateLastDayPlayedStmt)) == SQLITE_DONE);
+
+	// unlock other achievements (unlock a card is a special achievement)
 	return _achievementManager.newAchievements(postGame, user);
 }
 
@@ -467,18 +475,13 @@ int ServerDatabase::getVictoriesInARow(userId user)
 	return getAchievementProgress(user, _getVictoriesInARowStmt);
 }
 
-void ServerDatabase::addVictoriesInARow(userId user, int victories)
+void ServerDatabase::addVictoriesInTheCurrentRow(userId user, int victories)
 {
-	assert(victories >= 0);
+	sqlite3_reset(_addVictoriesInTheCurrentRowStmt);
+	sqliteThrowExcept(sqlite3_bind_int(_addVictoriesInTheCurrentRowStmt, 1, victories));
+	sqliteThrowExcept(sqlite3_bind_int64(_addVictoriesInTheCurrentRowStmt, 2, user));
 
-	if(victories > 0)
-		victories += getVictoriesInARow(user);
-
-	sqlite3_reset(_setVictoriesInARowStmt);
-	sqliteThrowExcept(sqlite3_bind_int(_setVictoriesInARowStmt, 1, victories));
-	sqliteThrowExcept(sqlite3_bind_int64(_setVictoriesInARowStmt, 2, user));
-
-	assert(sqliteThrowExcept(sqlite3_step(_setVictoriesInARowStmt)) == SQLITE_DONE);
+	assert(sqliteThrowExcept(sqlite3_step(_addVictoriesInTheCurrentRowStmt)) == SQLITE_DONE);
 }
 
 int ServerDatabase::getWithInDaClub(userId user)
@@ -506,13 +509,84 @@ int ServerDatabase::ownAllCards(userId user)
 	return getAchievementProgress(user, _ownAllCardsStmt);
 }
 
+int ServerDatabase::getLadderPositionPercent(userId user)
+{
+	///\TODO: Can we add userId to LadderEntry ?
+	Ladder ladder(getLadder());
+	std::string name(getLogin(user));
+	userId position;
+
+	for(position = 0; ladder.at(position).name != name; ++position)
+	{}
+
+	return static_cast<int>((countAccounts() - position) * 100 / countAccounts());
+}
+
+int ServerDatabase::getBestLadderPositionPercent(userId user)
+{
+	return getAchievementProgress(user, _getBestLadderPositionPercentStmt);
+}
+
+void ServerDatabase::updateBestLadderPositionPercent(userId user, int playerWon)
+{
+	if(playerWon)
+	{
+		int current(getLadderPositionPercent(user));
+
+		if(current > getBestLadderPositionPercent(user))
+		{
+			addToAchievementProgress(user, current, _setBestLadderPositionPercent);
+		}
+	}
+}
+
+int ServerDatabase::getSameCardCounter(userId user)
+{
+	int counter(0);
+
+	try
+	{
+		counter = getAchievementProgress(user, _getSameCardCounterStmt);
+	}
+	catch(const std::runtime_error& e)
+	{
+		// The user does not earn any card
+		// so the progress is 0
+	}
+
+	return counter;
+}
+
+int ServerDatabase::getStartsInARow(userId user)
+{
+	return getAchievementProgress(user, _getStartsInARowStmt);
+}
+
+void ServerDatabase::addStartsInTheCurrentRow(userId user, int starts)
+{
+	///\TODO remove code duplications (...InARow achievements)
+	sqlite3_reset(_addStartsInTheCurrentRowStmt);
+	sqliteThrowExcept(sqlite3_bind_int(_addStartsInTheCurrentRowStmt, 1, starts));
+	sqliteThrowExcept(sqlite3_bind_int64(_addStartsInTheCurrentRowStmt, 2, user));
+
+	assert(sqliteThrowExcept(sqlite3_step(_addStartsInTheCurrentRowStmt)) == SQLITE_DONE);
+}
+
+int ServerDatabase::getDaysInARow(userId user)
+{
+	return getAchievementProgress(user, _getDaysInARowStmt);
+}
+
 
 int ServerDatabase::getAchievementProgress(userId user, sqlite3_stmt* stmt)
 {
 	sqlite3_reset(stmt);
 	sqliteThrowExcept(sqlite3_bind_int64(stmt, 1, user));
 
-	assert(sqliteThrowExcept(sqlite3_step(stmt)) == SQLITE_ROW);
+	if(sqliteThrowExcept(sqlite3_step(stmt)) != SQLITE_ROW)
+		// Should use dedicated error class
+		throw std::runtime_error(std::string("getAchievementProgress: no data retreived - user: ")
+		                         + std::to_string(user));
 
 	return sqlite3_column_int(stmt, 0);
 }
@@ -576,7 +650,7 @@ AchievementList ServerDatabase::AchievementManager::allAchievements(userId user)
 	AchievementList achievements;
 
 	for(size_t i = 0; i < _achievementsList.size(); ++i)
-			achievements.emplace_back(Achievement {_achievementsList[i].id, (_database.*(_achievementsList[i].getMethod))(user)});
+		achievements.emplace_back(Achievement {_achievementsList[i].id, (_database.*(_achievementsList[i].getMethod))(user)});
 
 	return achievements;
 }

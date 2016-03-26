@@ -41,7 +41,7 @@ void TerminalGame::displayAchievements(ClientAchievementList& newAchievements)
 	{
 		for (std::size_t i=0; i<newAchievements.size(); i++)
 		{
-			std::cout << " * " << newAchievements.at(i).getPrettyName() << std::endl;
+			std::cout << " " << newAchievements.at(i).getPrettyName() << std::endl;
 			std::cout << "   " << newAchievements.at(i).getDescription() << std::endl;
 		}
 	}

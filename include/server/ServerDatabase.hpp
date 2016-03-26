@@ -98,10 +98,10 @@ private:
 		{
 			AchievementId id;
 			void (ServerDatabase::*addMethod)(userId, int);
-			int PostGameData::*toAddValue;
+			const int PostGameData::*toAddValue;
 			int (ServerDatabase::*getMethod)(userId);
 		};
-		std::array<AchievementsListItem, 6> _achievementsList
+		std::array<AchievementsListItem, 10> _achievementsList
 		{
 			{
 				AchievementsListItem {
@@ -118,7 +118,7 @@ private:
 				},
 				AchievementsListItem {
 					3,
-					&ServerDatabase::addVictoriesInARow,
+					&ServerDatabase::addVictoriesInTheCurrentRow,
 					&PostGameData::playerWon,
 					&ServerDatabase::getVictoriesInARow
 				},
@@ -138,6 +138,29 @@ private:
 					6,
 					nullptr, nullptr,
 					&ServerDatabase::ownAllCards
+				},
+				AchievementsListItem {
+					///\TODO: the current implementation of this achievement is HEAVY
+					7,
+					&ServerDatabase::updateBestLadderPositionPercent,
+					&PostGameData::playerWon,
+					&ServerDatabase::getBestLadderPositionPercent
+				},
+				AchievementsListItem {
+					8,
+					nullptr, nullptr,
+					&ServerDatabase::getSameCardCounter
+				},
+				AchievementsListItem {
+					9,
+					&ServerDatabase::addStartsInTheCurrentRow,
+					&PostGameData::playerStarted,
+					&ServerDatabase::getStartsInARow
+				},
+				AchievementsListItem {
+					10,
+					nullptr, nullptr,
+					&ServerDatabase::getDaysInARow
 				}
 			}
 		};
@@ -146,6 +169,8 @@ private:
 		AchievementManager(ServerDatabase&);
 
 		///\TODO use smart pointer as return type value
+		///\TODO For now newAchievements update lastDayPlayed information but I think it is not his purpose
+		/// Give a new card if game won and unlock others achievements (and update lastDayPlayed information)
 		AchievementList newAchievements(const PostGameData&, userId);
 		AchievementList allAchievements(userId);
 	};
@@ -179,13 +204,21 @@ private:
 	int getVictoriesInARow(userId);
 	int getRagequits(userId);
 	int ownAllCards(userId);
+	///\except std::out_of_range if userId doesnt exists
+	int getLadderPositionPercent(userId);
+	int getBestLadderPositionPercent(userId);
+	int getSameCardCounter(userId);
+	int getStartsInARow(userId);
+	int getDaysInARow(userId);
 
 	void addToAchievementProgress(userId id, int value, sqlite3_stmt * stmt);
 	void addTimeSpent(userId, int seconds);
 	void addVictories(userId, int victories);
-	void addVictoriesInARow(userId, int victories);
+	void addVictoriesInTheCurrentRow(userId, int victories);
 	void addWithInDaClub(userId, int withInDaClub);
 	void addRagequits(userId, int ragequits);
+	void addStartsInTheCurrentRow(userId, int starts);
+	void updateBestLadderPositionPercent(userId, int playerWon); ///\TODO playerWon should be bool
 
 	sqlite3_stmt * _friendListStmt;
 	sqlite3_stmt * _userIdStmt;
@@ -224,16 +257,23 @@ private:
 	sqlite3_stmt * _getWithInDaClubStmt;
 	sqlite3_stmt * _getRagequitsStmt;
 	sqlite3_stmt * _ownAllCardsStmt;
+	sqlite3_stmt * _getBestLadderPositionPercentStmt;
+	sqlite3_stmt * _getSameCardCounterStmt;
+	sqlite3_stmt * _getStartsInARowStmt;
+	sqlite3_stmt * _getDaysInARowStmt;
 
 	sqlite3_stmt * _addTimeSpentStmt;
 	sqlite3_stmt * _addVictoriesStmt;
-	sqlite3_stmt * _setVictoriesInARowStmt;
+	sqlite3_stmt * _addVictoriesInTheCurrentRowStmt;
 	sqlite3_stmt * _addWithInDaClubStmt;
 	sqlite3_stmt * _addRagequitsStmt;
+	sqlite3_stmt * _addStartsInTheCurrentRowStmt;
+	sqlite3_stmt * _updateLastDayPlayedStmt;
+	sqlite3_stmt * _setBestLadderPositionPercent;
 
 	// `constexpr std::array::size_type size() const;`
-	// -> future uses have to be _statements.size() -> 33 is written only one time
-	StatementsList<40> _statements
+	// -> future uses have to be _statements.size() -> 47 is written only one time
+	StatementsList<47> _statements
 	{
 		{
 			Statement {
@@ -423,9 +463,9 @@ private:
 				"	WHERE id == ?1;"
 			},
 			Statement {
-				&_setVictoriesInARowStmt,
+				&_addVictoriesInTheCurrentRowStmt,
 				"UPDATE Account "
-				"	SET maxVictoriesInARow = ?1 "
+				"	SET currentVictoriesInARow = currentVictoriesInARow + ?1 "
 				"	WHERE id == ?2;"
 			},
 			Statement {
@@ -434,7 +474,7 @@ private:
 				"	FROM Account "
 				"	WHERE id == ?1;"
 			},
-			Statement {
+			Statement { // 36
 				&_addWithInDaClubStmt,
 				"UPDATE Account "
 				"	SET gameWithInDaClub = gameWithInDaClub + ?1 "
@@ -457,6 +497,51 @@ private:
 				&_ownAllCardsStmt,
 				"SELECT min(Card.id IN (SELECT GivenCard.card FROM GivenCard WHERE owner == ?1)) "
 				"	FROM Card;"
+			},
+			Statement { // 40
+				&_getBestLadderPositionPercentStmt,
+				"SELECT bestLadderPositionPercent "
+				"	FROM Account "
+				"	WHERE id == ?1;"
+			},
+			Statement {
+				&_getSameCardCounterStmt,
+				"SELECT COUNT(*) AS counter "
+				"	FROM GivenCard "
+				"	WHERE owner == ?1 "
+				"	GROUP BY card "
+				"	ORDER BY counter DESC "
+				"	LIMIT 1;"
+			},
+			Statement {
+				&_getStartsInARowStmt,
+				"SELECT maxStartsInARow "
+				"	FROM Account "
+				"	WHERE id == ?1;"
+			},
+			Statement {
+				&_addStartsInTheCurrentRowStmt,
+				"UPDATE Account "
+				"	SET currentStartsInARow = currentStartsInARow + ?1 "
+				"	WHERE id == ?2;"
+			},
+			Statement { // 44
+				&_getDaysInARowStmt,
+				"SELECT maxDaysPlayedInARow "
+				"	FROM Account "
+				"	WHERE id == ?1;"
+			},
+			Statement {
+				&_updateLastDayPlayedStmt,
+				"UPDATE Account "
+				"	SET lastDayPlayed = round(julianday('now')) "
+				"	WHERE id == ?1;"
+			},
+			Statement {
+				&_setBestLadderPositionPercent,
+				"UPDATE Account "
+				"	SET bestLadderPositionPercent = ?1 "
+				"	WHERE id == ?2;"
 			}
 		}
 	};
