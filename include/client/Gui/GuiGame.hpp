@@ -117,7 +117,7 @@ private:
 
 	/// Signal the user he received a card
 	/// \param id The Id of the card the user received
-	void receiveCard(cardId id) override;
+	void receiveCard(CardId id) override;
 
 	void displayAchievements(ClientAchievementList& newAchievements) override;
 

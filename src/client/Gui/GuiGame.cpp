@@ -34,7 +34,7 @@ GuiGame::GuiGame(Context& context):
 
 	// have the grid sized so that we can align perfectly 4 cards in it
 	auto cardWidth{_cardsLayoutWidth / 4.f};
-	auto cardHeight{cardWidth * (CardGui::heightCard / static_cast<float>(CardGui::widthCard))};
+	auto cardHeight{cardWidth * (CardGui::getSize().y / static_cast<float>(CardGui::getSize().x))};
 	_selfHandPanel->setSize(_cardsLayoutWidth, cardHeight);
 	// remove the self hand panel
 	heightWidget -= _selfHandPanel->getSize().y + 10;
@@ -179,7 +179,7 @@ void GuiGame::displayPlayerBoard(tgui::Panel::Ptr& panel, std::vector<CardWidget
 		std::vector<BoardCreatureData>& creatureDatas, bool reversed, bool displayableWhenMouseOver)
 {
 	const auto cardHeight{panel->getSize().y};
-	const auto cardWidth{cardHeight * (CardGui::widthCard / static_cast<float>(CardGui::heightCard))};
+	const auto cardWidth{cardHeight * (CardGui::getSize().x / static_cast<float>(CardGui::getSize().y))};
 	const unsigned int nbOfPossibleCards{static_cast<unsigned int>(panel->getSize().x / cardWidth)};
 	const float widthBetweenCards{(panel->getSize().x / static_cast<float>(nbOfPossibleCards)) - cardWidth};
 
@@ -196,7 +196,7 @@ void GuiGame::displayPlayerBoard(tgui::Panel::Ptr& panel, std::vector<CardWidget
 
 	for(auto i{0U}; i < nbOfCards; ++i)
 	{
-		cardId monsterId{creatureDatas.at(i).id};
+		CardId monsterId{creatureDatas.at(i).id};
 		const auto cardData{_context.client->getCardData(monsterId)};
 		// create the new card to display
 		graphicalCards.push_back(std::make_shared<CardWidget>(cardData));
@@ -206,10 +206,10 @@ void GuiGame::displayPlayerBoard(tgui::Panel::Ptr& panel, std::vector<CardWidget
 		if(reversed)
 		{
 			// set the origin on the lower right corner
-			graphicalCards.back()->setOrigin(CardGui::widthCard, CardGui::heightCard);
+			graphicalCards.back()->setOrigin(CardGui::getSize().y, CardGui::getSize().x);
 			graphicalCards.back()->rotate(180.f);
-			graphicalCards.back()->setPosition(currentWidth + CardGui::widthCard/2.f - cardWidth,
-					(CardGui::heightCard/2.f - cardHeight));
+			graphicalCards.back()->setPosition(currentWidth + CardGui::getSize().y/2.f - cardWidth,
+					(CardGui::getSize().x/2.f - cardHeight));
 		}
 		else
 			graphicalCards.back()->setPosition(currentWidth, 0.f);
@@ -352,7 +352,7 @@ void GuiGame::sendDeck(const std::string& deckName)
 	AbstractGame::sendDeck(deckName);
 }
 
-void GuiGame::receiveCard(cardId id)
+void GuiGame::receiveCard(CardId id)
 {
 	// TODO: show the card
 	displayMessage("You won the card " + getCardName(id) + ".");
@@ -387,4 +387,3 @@ GuiGame::~GuiGame()
 {
 	_context.gui->removeAllWidgets();
 }
-
