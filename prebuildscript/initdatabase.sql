@@ -146,7 +146,7 @@ CREATE TABLE Account (
 	perfectWins                 INTEGER DEFAULT 0,
 	closeWins                   INTEGER DEFAULT 0,
 	maxSameCardCounter          INTEGER DEFAULT 0, -- TODO: I think it is unused and uneeded
-	bestLadderPosition          INTEGER DEFAULT 0
+	bestLadderPositionPercent   INTEGER DEFAULT 0
 );
 
 CREATE TRIGGER updateMaxVictoriesOnAccount

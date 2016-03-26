@@ -141,10 +141,10 @@ private:
 				},
 				AchievementsListItem {
 					///\TODO: the current implementation of this achievement is HEAVY
-					///\FIXME: achievement lost when position decrease
 					7,
-					nullptr, nullptr,
-					&ServerDatabase::getLadderPositionPercent
+					&ServerDatabase::updateBestLadderPositionPercent,
+					&PostGameData::playerWon,
+					&ServerDatabase::getBestLadderPositionPercent
 				},
 				AchievementsListItem {
 					8,
@@ -206,6 +206,7 @@ private:
 	int ownAllCards(userId);
 	///\except std::out_of_range if userId doesnt exists
 	int getLadderPositionPercent(userId);
+	int getBestLadderPositionPercent(userId);
 	int getSameCardCounter(userId);
 	int getStartsInARow(userId);
 	int getDaysInARow(userId);
@@ -217,6 +218,7 @@ private:
 	void addWithInDaClub(userId, int withInDaClub);
 	void addRagequits(userId, int ragequits);
 	void addStartsInTheCurrentRow(userId, int starts);
+	void updateBestLadderPositionPercent(userId, int playerWon); ///\TODO playerWon should be bool
 
 	sqlite3_stmt * _friendListStmt;
 	sqlite3_stmt * _userIdStmt;
@@ -255,6 +257,7 @@ private:
 	sqlite3_stmt * _getWithInDaClubStmt;
 	sqlite3_stmt * _getRagequitsStmt;
 	sqlite3_stmt * _ownAllCardsStmt;
+	sqlite3_stmt * _getBestLadderPositionPercentStmt;
 	sqlite3_stmt * _getSameCardCounterStmt;
 	sqlite3_stmt * _getStartsInARowStmt;
 	sqlite3_stmt * _getDaysInARowStmt;
@@ -266,10 +269,11 @@ private:
 	sqlite3_stmt * _addRagequitsStmt;
 	sqlite3_stmt * _addStartsInTheCurrentRowStmt;
 	sqlite3_stmt * _updateLastDayPlayedStmt;
+	sqlite3_stmt * _setBestLadderPositionPercent;
 
 	// `constexpr std::array::size_type size() const;`
-	// -> future uses have to be _statements.size() -> 33 is written only one time
-	StatementsList<45> _statements
+	// -> future uses have to be _statements.size() -> 47 is written only one time
+	StatementsList<47> _statements
 	{
 		{
 			Statement {
@@ -495,6 +499,12 @@ private:
 				"	FROM Card;"
 			},
 			Statement { // 40
+				&_getBestLadderPositionPercentStmt,
+				"SELECT bestLadderPositionPercent "
+				"	FROM Account "
+				"	WHERE id == ?1;"
+			},
+			Statement {
 				&_getSameCardCounterStmt,
 				"SELECT COUNT(*) AS counter "
 				"	FROM GivenCard "
@@ -515,17 +525,23 @@ private:
 				"	SET currentStartsInARow = currentStartsInARow + ?1 "
 				"	WHERE id == ?2;"
 			},
-			Statement {
+			Statement { // 44
 				&_getDaysInARowStmt,
 				"SELECT maxDaysPlayedInARow "
 				"	FROM Account "
 				"	WHERE id == ?1;"
 			},
-			Statement { // 44
+			Statement {
 				&_updateLastDayPlayedStmt,
 				"UPDATE Account "
 				"	SET lastDayPlayed = round(julianday('now')) "
 				"	WHERE id == ?1;"
+			},
+			Statement {
+				&_setBestLadderPositionPercent,
+				"UPDATE Account "
+				"	SET bestLadderPositionPercent = ?1 "
+				"	WHERE id == ?2;"
 			}
 		}
 	};
