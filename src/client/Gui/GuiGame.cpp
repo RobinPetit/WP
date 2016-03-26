@@ -28,6 +28,7 @@ GuiGame::GuiGame(Context& context):
 	{
 		endTurn();
 		_endTurnButton->disable();
+		displayGame();
 	});
 
 	float heightWidget{_height.getValue()};
@@ -264,7 +265,10 @@ void GuiGame::displayMessage(const std::string& message)
 	messageBox->connect("buttonPressed", [messageBox](const sf::String& buttonName)
 	{
 		if(buttonName == okButtonText)
+		{
 			messageBox->destroy();
+			refreshScreen();
+		}
 	});
 	_context.gui->draw();
 }
@@ -334,9 +338,7 @@ void GuiGame::chooseDeck()
 	sf::Event event;
 	while(not _decksChosen)
 	{
-		_context.window->clear(sf::Color::White);
-		_context.gui->draw();
-		_context.window->display();
+		refreshScreen();
 
 		// Use waitEvent to block everything
 		_context.window->waitEvent(event);
