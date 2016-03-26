@@ -98,7 +98,7 @@ private:
 		{
 			AchievementId id;
 			void (ServerDatabase::*addMethod)(userId, int);
-			int PostGameData::*toAddValue;
+			const int PostGameData::*toAddValue;
 			int (ServerDatabase::*getMethod)(userId);
 		};
 		std::array<AchievementsListItem, 10> _achievementsList

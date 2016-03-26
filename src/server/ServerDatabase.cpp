@@ -522,9 +522,39 @@ int ServerDatabase::getLadderPositionPercent(userId user)
 	return static_cast<int>((countAccounts() - position) * 100 / countAccounts());
 }
 
+int ServerDatabase::getBestLadderPositionPercent(userId user)
+{
+	return getAchievementProgress(user, _getBestLadderPositionPercentStmt);
+}
+
+void ServerDatabase::updateBestLadderPositionPercent(userId user, int playerWon)
+{
+	if(playerWon)
+	{
+		int current(getLadderPositionPercent(user));
+
+		if(current > getBestLadderPositionPercent(user))
+		{
+			addToAchievementProgress(user, current, _setBestLadderPositionPercent);
+		}
+	}
+}
+
 int ServerDatabase::getSameCardCounter(userId user)
 {
-	return getAchievementProgress(user, _getSameCardCounterStmt);
+	int counter(0);
+
+	try
+	{
+		counter = getAchievementProgress(user, _getSameCardCounterStmt);
+	}
+	catch(const std::runtime_error& e)
+	{
+		// The user does not earn any card
+		// so the progress is 0
+	}
+
+	return counter;
 }
 
 int ServerDatabase::getStartsInARow(userId user)
@@ -553,7 +583,10 @@ int ServerDatabase::getAchievementProgress(userId user, sqlite3_stmt* stmt)
 	sqlite3_reset(stmt);
 	sqliteThrowExcept(sqlite3_bind_int64(stmt, 1, user));
 
-	assert(sqliteThrowExcept(sqlite3_step(stmt)) == SQLITE_ROW);
+	if(sqliteThrowExcept(sqlite3_step(stmt)) != SQLITE_ROW)
+		// Should use dedicated error class
+		throw std::runtime_error(std::string("getAchievementProgress: no data retreived - user: ")
+		                         + std::to_string(user));
 
 	return sqlite3_column_int(stmt, 0);
 }
