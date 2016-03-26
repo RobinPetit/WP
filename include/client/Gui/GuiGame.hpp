@@ -82,6 +82,10 @@ private:
 	/// A boolean telling whether or not the big card is displayed at a very moment
 	bool _isBigCardOnBoard;
 
+	tgui::Panel::Ptr _opponentBoardPanel;
+
+	tgui::Panel::Ptr _selfBoardPanel;
+
 	//////////////////// Methods
 
 	////////// overriden methods

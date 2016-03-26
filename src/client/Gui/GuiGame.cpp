@@ -17,12 +17,10 @@ GuiGame::GuiGame(Context& context):
 	_selfHandPanel{std::make_shared<tgui::Panel>()},
 	_endTurnButton{std::make_shared<tgui::Button>()},
 	_cardsLayoutWidth{_width/1.4f},
-	_isBigCardOnBoard{false}
+	_isBigCardOnBoard{false},
+	_opponentBoardPanel{std::make_shared<tgui::Panel>()},
+	_selfBoardPanel{std::make_shared<tgui::Panel>()}
 {
-	// have the grid sized so that we can align perfectly 4 cards in it
-	_selfHandPanel->setSize(_cardsLayoutWidth, (_cardsLayoutWidth/4.f * (CardGui::heightCard / static_cast<float>(CardGui::widthCard))));
-	_selfHandPanel->setPosition((_width - _cardsLayoutWidth) / 2.f, _height - (_selfHandPanel->getSize().y+10));
-
 	// end turn button
 	_endTurnButton->setText("End turn");
 	_endTurnButton->connect("Pressed", [this]()
@@ -30,6 +28,17 @@ GuiGame::GuiGame(Context& context):
 		endTurn();
 		_endTurnButton->disable();
 	});
+
+	float heightWidget{_height.getValue()};
+
+	// have the grid sized so that we can align perfectly 4 cards in it
+	auto cardWidth{_cardsLayoutWidth / 4.f};
+	auto cardHeight{cardWidth * (CardGui::heightCard / static_cast<float>(CardGui::widthCard))};
+	_selfHandPanel->setSize(_cardsLayoutWidth, cardHeight);
+	// remove the self hand panel
+	heightWidget -= _selfHandPanel->getSize().y + 10;
+	_selfHandPanel->setPosition({(_width - _cardsLayoutWidth) / 2.f, heightWidget});
+
 	// place it right to the cards
 	_endTurnButton->setSize((_width - _cardsLayoutWidth) / 2 - 10, 40);
 	_endTurnButton->setPosition((_width + _cardsLayoutWidth) / 2 + 5, _height - 50);
@@ -37,18 +46,18 @@ GuiGame::GuiGame(Context& context):
 	_endTurnButton->disable();
 
 	// self board
-	tgui::Panel::Ptr selfBoard{std::make_shared<tgui::Panel>()};
-	selfBoard->setBackgroundColor(sf::Color(50, 50, 50));
-	selfBoard->setSize(_width, 180);
-	selfBoard->setPosition({0.f, _height - (_selfHandPanel->getSize().y + 10 + selfBoard->getSize().y + 20)});
-	_context.gui->add(selfBoard);
+	_selfBoardPanel->setBackgroundColor(sf::Color(50, 50, 50));
+	_selfBoardPanel->setSize(_width, 180);
+	// remove the self board panel
+	heightWidget -= _selfBoardPanel->getSize().y + 20;
+	_selfBoardPanel->setPosition({0.f, heightWidget});
 
 	// opponent board
-	tgui::Panel::Ptr opponentBoard{std::make_shared<tgui::Panel>()};
-	opponentBoard->setBackgroundColor(sf::Color(100, 100, 100));
-	opponentBoard->setSize(_width, 180);
-	opponentBoard->setPosition({0.f, _height - (_selfHandPanel->getSize().y + 10 + selfBoard->getSize().y + 20  + opponentBoard->getSize().y + 10)});
-	_context.gui->add(opponentBoard);
+	_opponentBoardPanel->setBackgroundColor(sf::Color(100, 100, 100));
+	_opponentBoardPanel->setSize(_width, 180);
+	// remove the opponent board panel
+	heightWidget -= _opponentBoardPanel->getSize().y + 20;
+	_opponentBoardPanel->setPosition({0.f, heightWidget});
 }
 
 void GuiGame::startTurn()
@@ -86,6 +95,9 @@ void GuiGame::displayGame()
 	_context.gui->remove(_endTurnButton);
 
 	displayHandCards();
+
+	_context.gui->add(_selfBoardPanel);
+	_context.gui->add(_opponentBoardPanel);
 
 	_endTurnButton->setSize((_width - _cardsLayoutWidth) / 2 - 10, 40);
 	_context.gui->add(_endTurnButton);
