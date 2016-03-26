@@ -101,7 +101,7 @@ private:
 			int PostGameData::*toAddValue;
 			int (ServerDatabase::*getMethod)(userId);
 		};
-		std::array<AchievementsListItem, 6> _achievementsList
+		std::array<AchievementsListItem, 7> _achievementsList
 		{
 			{
 				AchievementsListItem {
@@ -138,6 +138,12 @@ private:
 					6,
 					nullptr, nullptr,
 					&ServerDatabase::ownAllCards
+				},
+				AchievementsListItem {
+					///\TODO: the current implementation of this achievement is HEAVY
+					7,
+					nullptr, nullptr,
+					&ServerDatabase::getLadderPositionPercent
 				}
 			}
 		};
@@ -179,6 +185,8 @@ private:
 	int getVictoriesInARow(userId);
 	int getRagequits(userId);
 	int ownAllCards(userId);
+	///\except std::out_of_range if userId doesnt exists
+	int getLadderPositionPercent(userId);
 
 	void addToAchievementProgress(userId id, int value, sqlite3_stmt * stmt);
 	void addTimeSpent(userId, int seconds);

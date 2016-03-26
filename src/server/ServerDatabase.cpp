@@ -311,16 +311,16 @@ void ServerDatabase::createSpellData()
 		cardId id(sqlite3_column_int64(_getSpellCardsStmt, 0));
 
 		_cardData.emplace(
-			std::make_pair<>(
-				id,
-				std::unique_ptr<CommonCardData>(
-					new ServerSpellData(
-						id,
-						sqlite3_column_int(_getSpellCardsStmt, 1), // cost
-						std::vector<EffectParamsCollection>(createCardEffects(id)) // effects
-					)
-				)
-			)
+		    std::make_pair<>(
+		        id,
+		        std::unique_ptr<CommonCardData>(
+		            new ServerSpellData(
+		                id,
+		                sqlite3_column_int(_getSpellCardsStmt, 1), // cost
+		                std::vector<EffectParamsCollection>(createCardEffects(id)) // effects
+		            )
+		        )
+		    )
 		);
 	}
 }
@@ -335,20 +335,20 @@ void ServerDatabase::createCreatureData()
 		cardId id(sqlite3_column_int64(_getCreatureCardsStmt, 0));
 
 		_cardData.emplace(
-			std::make_pair<>(
-				id,
-				std::unique_ptr<CommonCardData>(
-					new ServerCreatureData(
-						id,
-						sqlite3_column_int(_getCreatureCardsStmt, 1),  // cost
-						std::vector<EffectParamsCollection>(createCardEffects(id)),  // effects
-						sqlite3_column_int(_getCreatureCardsStmt, 2),  // attack
-						sqlite3_column_int(_getCreatureCardsStmt, 3),  // health
-						sqlite3_column_int(_getCreatureCardsStmt, 4),  // shield
-						sqlite3_column_int(_getCreatureCardsStmt, 5)  // shieldType
-					)
-				)
-			)
+		    std::make_pair<>(
+		        id,
+		        std::unique_ptr<CommonCardData>(
+		            new ServerCreatureData(
+		                id,
+		                sqlite3_column_int(_getCreatureCardsStmt, 1),  // cost
+		                std::vector<EffectParamsCollection>(createCardEffects(id)),  // effects
+		                sqlite3_column_int(_getCreatureCardsStmt, 2),  // attack
+		                sqlite3_column_int(_getCreatureCardsStmt, 3),  // health
+		                sqlite3_column_int(_getCreatureCardsStmt, 4),  // shield
+		                sqlite3_column_int(_getCreatureCardsStmt, 5)  // shieldType
+		            )
+		        )
+		    )
 		);
 	}
 }
@@ -506,6 +506,19 @@ int ServerDatabase::ownAllCards(userId user)
 	return getAchievementProgress(user, _ownAllCardsStmt);
 }
 
+int ServerDatabase::getLadderPositionPercent(userId user)
+{
+	///\TODO: Can we add userId to LadderEntry ?
+	Ladder ladder(getLadder());
+	std::string name(getLogin(user));
+	userId position;
+
+	for(position = 0; ladder.at(position).name != name; ++position)
+	{}
+
+	return static_cast<int>((countAccounts() - position) * 100 / countAccounts());
+}
+
 
 int ServerDatabase::getAchievementProgress(userId user, sqlite3_stmt* stmt)
 {
@@ -576,7 +589,7 @@ AchievementList ServerDatabase::AchievementManager::allAchievements(userId user)
 	AchievementList achievements;
 
 	for(size_t i = 0; i < _achievementsList.size(); ++i)
-			achievements.emplace_back(Achievement {_achievementsList[i].id, (_database.*(_achievementsList[i].getMethod))(user)});
+		achievements.emplace_back(Achievement {_achievementsList[i].id, (_database.*(_achievementsList[i].getMethod))(user)});
 
 	return achievements;
 }
