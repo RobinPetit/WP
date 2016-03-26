@@ -12,6 +12,7 @@ GuiGame::GuiGame(Context& context):
 	_context{context},
 	_decksListBox{std::make_shared<tgui::ListBox>()},
 	_decksChosen{false},
+	_display{false},
 	_width{tgui::bindWidth(*_context.gui)},
 	_height{tgui::bindHeight(*_context.gui)},
 	_selfHandPanel{std::make_shared<tgui::Panel>()},
@@ -65,6 +66,7 @@ void GuiGame::startTurn()
 	AbstractGame::startTurn();
 	_endTurnButton->enable();
 
+	_display = false;
 	handleInputs();
 }
 
@@ -113,7 +115,6 @@ void GuiGame::displayHandCards()
 {
 	static auto availableWidth{_cardsLayoutWidth * 3.f / 4.f};
 	auto cardHeight{_selfHandPanel->getSize().y};
-	std::vector<CardWidget::Ptr> selfHand;
 
 	// Clear the panel
 	_selfHandPanel->removeAllWidgets();
@@ -125,22 +126,22 @@ void GuiGame::displayHandCards()
 		const auto cardData{_context.client->getCardData(_selfHandCards.at(i).id)};
 		const auto widthPosition{static_cast<float>(i) * distanceBetweenCards};
 		// create a new card
-		selfHand.push_back(std::make_shared<CardWidget>(cardData));
+		_selfHand.push_back(std::make_shared<CardWidget>(cardData));
 		// Have it sized according to the panel
-		selfHand.back()->setSize(_cardsLayoutWidth / 4.f, cardHeight);
+		_selfHand.back()->setSize(_cardsLayoutWidth / 4.f, cardHeight);
 		// Place it one the panel
-		selfHand.back()->setPosition({widthPosition, 0.f});
+		_selfHand.back()->setPosition({widthPosition, 0.f});
 
 		////////// Set up callbacks
 
 		// If card is pressed, use the card
-		selfHand.back()->connect("MousePressed", [this, i]()
+		_selfHand.back()->connect("MousePressed", [this, i]()
 		{
 			useCard(i);
 		});
 		// When the mouse enters on the card area
 		// cardData can be captured by value since it isa pointer
-		selfHand.back()->connect("MouseEntered", [this, cardData]()
+		_selfHand.back()->connect("MouseEntered", [this, cardData]()
 		{
 			if(_isBigCardOnBoard)
 				return;
@@ -149,15 +150,18 @@ void GuiGame::displayHandCards()
 			_readableCard->setPosition((tgui::bindWidth (*_context.gui) - tgui::bindWidth (_readableCard)) / 2,
 			                           (tgui::bindHeight(*_context.gui) - tgui::bindHeight(_readableCard)) / 2);
 			_isBigCardOnBoard = true;
+			displayGame();
 		});
 		// When the mouse leaves the card area
-		selfHand.back()->connect("MouseLeft", [this]()
+		_selfHand.back()->connect("MouseLeft", [this]()
 		{
-			_readableCard->hide();
+			if(_readableCard)
+				_readableCard->hide();
 			_isBigCardOnBoard = false;
+			displayGame();
 		});
 		// Add the card to the panel
-		_selfHandPanel->add(selfHand.back());
+		_selfHandPanel->add(_selfHand.back());
 	}
 	// add the panel on the Gui to be displayed
 	_context.gui->add(_selfHandPanel);
@@ -165,33 +169,35 @@ void GuiGame::displayHandCards()
 
 void GuiGame::displaySelfBoard()
 {
-	// static variables
-	static auto cardHeight{_selfBoardPanel->getSize().y};
-	static auto cardWidth{cardHeight * (CardGui::widthCard / static_cast<float>(CardGui::heightCard))};
-	static unsigned int nbOfPossibleCards{static_cast<unsigned int>(_selfBoardPanel->getSize().x / cardWidth)};
-	static float widthBetweenCards{(_selfBoardPanel->getSize().x / static_cast<float>(nbOfPossibleCards)) - cardWidth};
+	displayPlayerBoard(_selfBoardPanel, _selfBoard, _selfBoardCreatures);
+}
 
-	_selfBoardPanel->removeAllWidgets();
+void GuiGame::displayPlayerBoard(tgui::Panel::Ptr& panel, std::vector<CardWidget::Ptr>& graphicalCards,
+		std::vector<BoardCreatureData>& creatureDatas, bool reversed)
+{
+	const auto cardHeight{panel->getSize().y};
+	const auto cardWidth{cardHeight * (CardGui::widthCard / static_cast<float>(CardGui::heightCard))};
+	const unsigned int nbOfPossibleCards{static_cast<unsigned int>(panel->getSize().x / cardWidth)};
+	const float widthBetweenCards{(panel->getSize().x / static_cast<float>(nbOfPossibleCards)) - cardWidth};
 
-	std::vector<CardWidget::Ptr> selfBoard;
-	auto nbOfCards{_selfBoardCreatures.size()};
+	panel->removeAllWidgets();
+
+	const auto nbOfCards{creatureDatas.size()};
 	const float usedWidth{static_cast<float>(nbOfCards) * (cardWidth + widthBetweenCards) - widthBetweenCards};
-	float currentWidth{(_selfBoardPanel->getSize().x - usedWidth) / 2.f};
+	float currentWidth{(panel->getSize().x - usedWidth) / 2.f};
 
 	for(auto i{0U}; i < nbOfCards; ++i)
 	{
-		cardId monsterId{_selfBoardCreatures.at(i).id};
-		selfBoard.push_back(std::make_shared<CardWidget>(_context.client->getCardData(monsterId)));
-		selfBoard.back()->setSize(cardWidth, cardHeight);
-		selfBoard.back()->setPosition(currentWidth, 0);
+		cardId monsterId{creatureDatas.at(i).id};
+		graphicalCards.push_back(std::make_shared<CardWidget>(_context.client->getCardData(monsterId)));
+		graphicalCards.back()->setSize(cardWidth, cardHeight);
+		graphicalCards.back()->setPosition(currentWidth, 0);
 		currentWidth += cardWidth;
 
-		// TODO: add possibility to click to attack with monster
-
-		_selfBoardPanel->add(selfBoard.back());
+		panel->add(graphicalCards.back());
 		currentWidth += widthBetweenCards;
 	}
-	_context.gui->add(_selfBoardPanel);
+	_context.gui->add(panel);
 }
 
 // NOTE: this is copy/paste from GuiAbstractState. TODO: factorize by creating an interface
@@ -321,7 +327,8 @@ void GuiGame::waitUntil(std::function<bool()> booleanFunction)
 	sf::Event event;
 	while(not booleanFunction())
 	{
-		displayGame();
+		if(_display)
+			displayGame();
 		while(not _context.window->pollEvent(event))
 			sf::sleep(sf::milliseconds(10));
 		do

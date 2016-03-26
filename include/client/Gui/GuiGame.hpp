@@ -60,6 +60,8 @@ private:
 	/// boolean telling whether or not the deck has already been chosen
 	bool _decksChosen;
 
+	bool _display;
+
 	// Dimensions of the window
 
 	/// Width of the window
@@ -85,6 +87,10 @@ private:
 	tgui::Panel::Ptr _opponentBoardPanel;
 
 	tgui::Panel::Ptr _selfBoardPanel;
+
+	std::vector<CardWidget::Ptr> _selfHand;
+
+	std::vector<CardWidget::Ptr> _selfBoard;
 
 	//////////////////// Methods
 
@@ -137,6 +143,9 @@ private:
 	void displayHandCards();
 
 	void displaySelfBoard();
+
+	void displayPlayerBoard(tgui::Panel::Ptr& panel, std::vector<CardWidget::Ptr>& graphicalCards,
+		std::vector<BoardCreatureData>& creatureDatas, bool reversed=false);
 };
 
 #endif  // _GUI_GAME_HPP_
