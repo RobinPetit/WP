@@ -161,7 +161,7 @@ void GuiGame::connectBigCardDisplay(CardWidget::Ptr& card, const CommonCardData 
 			return;
 		_context.gui->remove(_readableCard);
 		_isBigCardOnBoard = false;
-		displayGame();
+		refreshScreen();
 	});
 }
 

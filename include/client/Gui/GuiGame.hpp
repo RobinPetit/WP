@@ -10,8 +10,6 @@
 #include <TGUI/Gui.hpp>
 #include <TGUI/Widgets/Button.hpp>
 #include <TGUI/Widgets/ListBox.hpp>
-#include <TGUI/HorizontalLayout.hpp>
-#include <TGUI/Widgets/Grid.hpp>
 #include <TGUI/Widgets/Panel.hpp>
 // std-C++ headers
 #include <vector>
