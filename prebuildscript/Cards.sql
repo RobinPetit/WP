@@ -9,7 +9,7 @@
 
 INSERT INTO CreatureCard(name, cost, description,attack,health,shield,shieldType)
 VALUES(
-	'Tower guard',
+	'Young yeti',
 	(SELECT id FROM ENUM_VALUES WHERE name == 'COST_1')-1,
 	'This creature gains 1 HEALTH each turn',
 	(SELECT id FROM ENUM_VALUES WHERE name == 'ATTACK_1')-1,
@@ -20,7 +20,7 @@ VALUES(
 
 INSERT INTO Effect(owner, parameter0, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6)
 VALUES(
-	(SELECT id FROM Card WHERE name == 'Tower guard'),
+	(SELECT id FROM Card WHERE name == 'Young yeti'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CREATURE_SELF_THIS')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CE_SET_CONSTRAINT')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CC_TURN_HEALTH_CHANGE')-1,
@@ -32,7 +32,7 @@ VALUES(
 
 INSERT INTO CreatureCard(name, cost, description,attack,health,shield,shieldType)
 VALUES(
-	'Diabolic imp',
+	'Great griffin',
 	(SELECT id FROM ENUM_VALUES WHERE name == 'COST_2')-1,
 	'This creature gains 1 ATTACK each turn',
 	(SELECT id FROM ENUM_VALUES WHERE name == 'ATTACK_3')-1,
@@ -43,7 +43,7 @@ VALUES(
 
 INSERT INTO Effect(owner, parameter0, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6)
 VALUES(
-	(SELECT id FROM Card WHERE name == 'Diabolic imp'),
+	(SELECT id FROM Card WHERE name == 'Great griffin'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CREATURE_SELF_THIS')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CE_SET_CONSTRAINT')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CC_TURN_ATTACK_CHANGE')-1,
@@ -78,7 +78,7 @@ VALUES(
 
 INSERT INTO CreatureCard(name, cost, description,attack,health,shield,shieldType)
 VALUES(
-	'White wizard',
+	'Black thief',
 	(SELECT id FROM ENUM_VALUES WHERE name == 'COST_2')-1,
 	'Blocks the next 2 attacks on your team',
 	(SELECT id FROM ENUM_VALUES WHERE name == 'ATTACK_2')-1,
@@ -89,7 +89,7 @@ VALUES(
 
 INSERT INTO Effect(owner, parameter0, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6)
 VALUES(
-	(SELECT id FROM Card WHERE name == 'White wizard'),
+	(SELECT id FROM Card WHERE name == 'Black thief'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CREATURE_SELF_TEAM')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CE_SET_CONSTRAINT')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CC_TEMP_BLOCK_ATTACKS')-1,
@@ -101,7 +101,7 @@ VALUES(
 
 INSERT INTO CreatureCard(name, cost, description,attack,health,shield,shieldType)
 VALUES(
-	'Greedy imp',
+	'Flying eye',
 	(SELECT id FROM ENUM_VALUES WHERE name == 'COST_2')-1,
 	'Allows you to draw one more card at the beginning of your next turn',
 	(SELECT id FROM ENUM_VALUES WHERE name == 'ATTACK_2')-1,
@@ -112,7 +112,7 @@ VALUES(
 
 INSERT INTO Effect(owner, parameter0, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6)
 VALUES(
-	(SELECT id FROM Card WHERE name == 'Greedy imp'),
+	(SELECT id FROM Card WHERE name == 'Flying eye'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'PLAYER_SELF')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'PE_SET_CONSTRAINT')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'PC_TURN_CARDS_PICKED')-1,
@@ -124,7 +124,7 @@ VALUES(
 
 INSERT INTO CreatureCard(name, cost, description,attack,health,shield,shieldType)
 VALUES(
-	'Unbridled bear',
+	'Silver wolf',
 	(SELECT id FROM ENUM_VALUES WHERE name == 'COST_3')-1,
 	'Takes away 1 shield of each opposite creatures when placed',
 	(SELECT id FROM ENUM_VALUES WHERE name == 'ATTACK_2')-1,
@@ -135,7 +135,7 @@ VALUES(
 
 INSERT INTO Effect(owner, parameter0, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6)
 VALUES(
-	(SELECT id FROM Card WHERE name == 'Unbridled bear'),
+	(SELECT id FROM Card WHERE name == 'Silver wolf'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CREATURE_OPPO_TEAM')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CE_CHANGE_SHIELD')-1,
 	(-1),
@@ -147,7 +147,7 @@ VALUES(
 
 INSERT INTO CreatureCard(name, cost, description,attack,health,shield,shieldType)
 VALUES(
-	'Giant soldier',
+	'Undead archer',
 	(SELECT id FROM ENUM_VALUES WHERE name == 'COST_1')-1,
 	'No effect',
 	(SELECT id FROM ENUM_VALUES WHERE name == 'ATTACK_1')-1,
@@ -158,7 +158,7 @@ VALUES(
 
 INSERT INTO CreatureCard(name, cost, description,attack,health,shield,shieldType)
 VALUES(
-	'White dragon',
+	'Master micer',
 	(SELECT id FROM ENUM_VALUES WHERE name == 'COST_4')-1,
 	'All your friendly creatures gain 1 ATTACK each turn',
 	(SELECT id FROM ENUM_VALUES WHERE name == 'ATTACK_4')-1,
@@ -169,7 +169,7 @@ VALUES(
 
 INSERT INTO Effect(owner, parameter0, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6)
 VALUES(
-	(SELECT id FROM Card WHERE name == 'White dragon'),
+	(SELECT id FROM Card WHERE name == 'Master mice'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CREATURE_SELF_TEAM')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CE_SET_CONSTRAINT')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CC_TURN_ATTACK_CHANGE')-1,
@@ -181,7 +181,7 @@ VALUES(
 
 INSERT INTO CreatureCard(name, cost, description,attack,health,shield,shieldType)
 VALUES(
-	'Mecha spider',
+	'Red beard dwarf',
 	(SELECT id FROM ENUM_VALUES WHERE name == 'COST_3')-1,
 	'Reset the attack for a random opponent''s creature',
 	(SELECT id FROM ENUM_VALUES WHERE name == 'ATTACK_4')-1,
@@ -192,7 +192,7 @@ VALUES(
 
 INSERT INTO Effect(owner, parameter0, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6)
 VALUES(
-	(SELECT id FROM Card WHERE name == 'Mecha spider'),
+	(SELECT id FROM Card WHERE name == 'Red beard dwarf'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CREATURE_OPPO_RAND')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'CE_RESET_ATTACK')-1,
 	(1),
@@ -204,7 +204,7 @@ VALUES(
 
 INSERT INTO CreatureCard(name, cost, description,attack,health,shield,shieldType)
 VALUES(
-	'Mirage of hapiness',
+	'Elf princess',
 	(SELECT id FROM ENUM_VALUES WHERE name == 'COST_3')-1,
 	'Your opponent can''t play more than 2 spells per turn',
 	(SELECT id FROM ENUM_VALUES WHERE name == 'ATTACK_1')-1,
@@ -215,7 +215,7 @@ VALUES(
 
 INSERT INTO Effect(owner, parameter0, parameter1, parameter2, parameter3, parameter4, parameter5, parameter6)
 VALUES(
-	(SELECT id FROM Card WHERE name == 'Mirage of hapiness'),
+	(SELECT id FROM Card WHERE name == 'Elf princess'),
 	(SELECT id FROM ENUM_VALUES WHERE name == 'PLAYER_OPPO')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'PE_SET_CONSTRAINT')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'PC_TEMP_SPELL_CALL_LIMIT')-1,
