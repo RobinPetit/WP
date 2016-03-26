@@ -59,31 +59,9 @@ void GuiHomeState::connect()
 {
 	try
 	{
-		auto connectionConfig(getConnectionConfiguration());
 		const std::string userName{_userNameEditBox->getText()};
 		const std::string password{_passwordEditBox->getText()};
-		// The following code is created to handle the case of a crash during
-		// server execution and then finding an available port to connect to
-		// (associated code in the server)
-		bool tryToConnect{true};
-		int counter{0};
-		while(tryToConnect)
-		{
-			try
-			{
-				_context.client->connectToServer(userName, password,
-				                        connectionConfig.first, connectionConfig.second);
-				tryToConnect = false;
-			}
-			catch(const UnableToConnectException& e)
-			{
-				tryToConnect = (++counter) <= 10;
-				++connectionConfig.second;
-				// Manually break by rethrowing the exception e
-				if(not tryToConnect)
-					throw;
-			}
-		}
+		tryToConnect(userName, password);
 		_context.window->setTitle("WizardPoker (" + userName + ")");
 		_context.stateStack->push<GuiMainMenuState>();
 	}
@@ -100,11 +78,9 @@ void GuiHomeState::createAccount()
 {
 	try
 	{
-		const auto connectionConfig(getConnectionConfiguration());
 		const std::string userName{_userNameEditBox->getText()};
 		const std::string password{_passwordEditBox->getText()};
-		_context.client->registerToServer(userName, password,
-		                         connectionConfig.first, connectionConfig.second);
+		tryToRegister(userName, password);
 	}
 	catch(const std::runtime_error& e)
 	{

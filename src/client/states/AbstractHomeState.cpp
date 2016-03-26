@@ -1,5 +1,7 @@
 // WizardPoker headers
 #include "common/constants.hpp"
+#include "client/sockets/Client.hpp"
+#include "common/UnableToConnectException.hpp"
 #include "client/ErrorCode.hpp"
 #include "common/ini/IniFile.hpp"
 #include "client/StateStack.hpp"
@@ -13,6 +15,44 @@ AbstractHomeState::AbstractHomeState(Context& context):
 void AbstractHomeState::quit()
 {
 	_context.stateStack->clear();
+}
+
+void AbstractHomeState::tryToConnect(const std::string& userName, const std::string& password)
+{
+	auto connectionConfig(getConnectionConfiguration());
+
+#ifdef NDEBUG  // If we aren't in debug
+	_context.client->connectToServer(userName, password, connectionConfig.first, connectionConfig.second);
+#else  // If we are in debug
+	// The following code is created to handle the case of a crash during
+	// server execution and then finding an available port to connect to
+	// (associated code in the server)
+	bool tryToConnect{true};
+	int counter{0};
+	while(tryToConnect)
+	{
+		try
+		{
+			_context.client->connectToServer(userName, password,
+									connectionConfig.first, connectionConfig.second);
+			tryToConnect = false;
+		}
+		catch(const UnableToConnectException& e)
+		{
+			tryToConnect = (++counter) <= 10;
+			++connectionConfig.second;
+			// Manually break by rethrowing the exception e
+			if(not tryToConnect)
+				throw;
+		}
+	}
+#endif
+}
+
+void AbstractHomeState::tryToRegister(const std::string& userName, const std::string& password)
+{
+	const auto connectionConfig(getConnectionConfiguration());
+	_context.client->registerToServer(userName, password, connectionConfig.first, connectionConfig.second);
 }
 
 std::pair<std::string, sf::Uint16> AbstractHomeState::getConnectionConfiguration()
