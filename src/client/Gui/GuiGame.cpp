@@ -205,11 +205,13 @@ void GuiGame::displayPlayerBoard(tgui::Panel::Ptr& panel, std::vector<CardWidget
 		// place it correctly (and rotate if needed)
 		if(reversed)
 		{
+			graphicalCards.back()->setOrigin(CardGui::widthCard / 2.f, CardGui::heightCard / 2.f);
 			graphicalCards.back()->rotate(180.f);
-			graphicalCards.back()->setPosition(currentWidth+cardWidth, cardHeight);
+			graphicalCards.back()->setPosition(currentWidth + (CardGui::widthCard - cardWidth) / 2.f,
+					(CardGui::heightCard - cardHeight) / 2.f);
 		}
 		else
-			graphicalCards.back()->setPosition(currentWidth, 0);
+			graphicalCards.back()->setPosition(currentWidth, 0.f);
 
 		if(displayableWhenMouseOver)
 			connectBigCardDisplay(graphicalCards.back(), cardData);

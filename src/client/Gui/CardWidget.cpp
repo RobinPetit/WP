@@ -52,6 +52,11 @@ void CardWidget::setSize(const tgui::Layout2d& size)
 		_card->setScale(size.x.getValue()/_card->getSize().x, size.y.getValue()/_card->getSize().y);
 }
 
+void CardWidget::setOrigin(float x, float y)
+{
+	_card->setOrigin(x, y);
+}
+
 void CardWidget::rotate(float angle)
 {
 	_card->rotate(angle);

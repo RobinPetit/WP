@@ -29,6 +29,8 @@ class CardWidget : public tgui::ClickableWidget
 		virtual void setSize(const tgui::Layout2d& size);
 		using tgui::Transformable::setSize;
 
+		void setOrigin(float x, float y);
+
 		void rotate(float angle);
 
 		//virtual tgui::Widget::Ptr clone() const override;
