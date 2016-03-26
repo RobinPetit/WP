@@ -87,6 +87,7 @@ private:
 	////////// overriden methods
 
 	/// Displays the whole board: cards, graveyard, health points, etc.
+	/// Locks the screen.
 	void displayGame() override;
 
 	/// Display a verbose \a message to the user
@@ -127,6 +128,9 @@ private:
 
 	/// Reset the screen and then redrax the current interface
 	void refreshScreen();
+
+	/// Does not lock the screen.
+	void displayHandCards();
 };
 
 #endif  // _GUI_GAME_HPP_

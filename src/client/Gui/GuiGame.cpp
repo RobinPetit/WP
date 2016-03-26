@@ -65,27 +65,49 @@ void GuiGame::displayGame()
 {
 	// don't forget to lock the screen!
 	std::lock_guard<std::mutex> _lock{_accessScreen};
-	std::vector<CardWidget::Ptr> selfHand;
 	//std::vector<CardWidget::Ptr> selfBoard;
 	//std::vector<CardWidget::Ptr> opponentBoard;
 
 	// start by removing everything from the current window
 	_context.gui->remove(_endTurnButton);
+
+	displayHandCards();
+
+	_endTurnButton->setSize((_width - _cardsLayoutWidth) / 2 - 10, 40);
+	_context.gui->add(_endTurnButton);
+
+	if(_isBigCardOnBoard)
+		_context.gui->add(_readableCard);
+
+	refreshScreen();
+}
+
+void GuiGame::displayHandCards()
+{
+	static auto availableWidth{_cardsLayoutWidth * 3.f / 4.f};
+	auto cardHeight{_selfHandPanel->getSize().y};
+	std::vector<CardWidget::Ptr> selfHand;
+
+	// Clear the panel
 	_selfHandPanel->removeAllWidgets();
 
-	auto availableWidth{_cardsLayoutWidth * 3.f / 4.f};
-
-	auto gridHeight{_selfHandPanel->getSize().y};
-	unsigned i{0U};
-	for(const auto& card : _selfHandCards)
+	// do not use an iterator-for loop since i is a used counter variable
+	const float distanceBetweenCards{(availableWidth/(static_cast<float>(_selfHandCards.size()) - 1.f)).getValue()};
+	std::cout << "Distance beteen cards: " << distanceBetweenCards << std::endl;
+	for(unsigned i{0U}; i < _selfHandCards.size(); ++i)
 	{
-		auto cardData{_context.client->getCardData(card.id)};
-		auto xPos{(static_cast<float>(i)/(static_cast<float>(_selfHandCards.size()) - 1.f)) * availableWidth};
+		const auto cardData{_context.client->getCardData(_selfHandCards.at(i).id)};
+		const auto widthPosition{static_cast<float>(i) * distanceBetweenCards};
+		// create a new card
 		selfHand.push_back(std::make_shared<CardWidget>(cardData));
-		selfHand.back()->setSize(_cardsLayoutWidth / 4.f, gridHeight);
-		selfHand.back()->setPosition({xPos.getValue(), 0.f});
+		// Have it sized according to the panel
+		selfHand.back()->setSize(_cardsLayoutWidth / 4.f, cardHeight);
+		// Place it one the panel
+		selfHand.back()->setPosition({widthPosition, 0.f});
 
-		// each card is associated to their index in the hand (to send when clicked)
+		////////// Set up callbacks
+
+		// If card is pressed, use the card
 		selfHand.back()->connect("MousePressed", [this, i]()
 		{
 			useCard(i);
@@ -100,28 +122,19 @@ void GuiGame::displayGame()
 			_readableCard.reset(new CardWidget(cardData));
 			_readableCard->setPosition((tgui::bindWidth (*_context.gui) - tgui::bindWidth (_readableCard)) / 2,
 			                           (tgui::bindHeight(*_context.gui) - tgui::bindHeight(_readableCard)) / 2);
-			_readableCard->show();
 			_isBigCardOnBoard = true;
 		});
 		// When the mouse leaves the card area
 		selfHand.back()->connect("MouseLeft", [this]()
 		{
-			//_context.gui->remove(_readableCard);
 			_readableCard->hide();
 			_isBigCardOnBoard = false;
 		});
+		// Add the card to the panel
 		_selfHandPanel->add(selfHand.back());
-		++i;
 	}
-
-	_endTurnButton->setSize((_width - _cardsLayoutWidth) / 2 - 10, 40);
-
-	_context.gui->add(_endTurnButton);
+	// add the panel on the Gui to be displayed
 	_context.gui->add(_selfHandPanel);
-	if(_isBigCardOnBoard)
-		_context.gui->add(_readableCard);
-
-	refreshScreen();
 }
 
 // NOTE: this is copy/paste from GuiAbstractState. TODO: factorize by creating an interface
