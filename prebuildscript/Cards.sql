@@ -258,6 +258,39 @@ VALUES(
 	(NULL)
 );
 
+INSERT INTO CreatureCard(name, cost, description,attack,health,shield,shieldType)
+VALUES(
+	'Old orc',
+	(SELECT id FROM ENUM_VALUES WHERE name == 'COST_5')-1,
+	'No effect',
+	(SELECT id FROM ENUM_VALUES WHERE name == 'ATTACK_7')-1,
+	(SELECT id FROM ENUM_VALUES WHERE name == 'HEALTH_7')-1,
+	(SELECT id FROM ENUM_VALUES WHERE name == 'SHIELD_3')-1,
+	(SELECT id FROM ENUM_VALUES WHERE name == 'SHIELD_BLUE')-1
+);
+
+INSERT INTO CreatureCard(name, cost, description,attack,health,shield,shieldType)
+VALUES(
+	'Wind lizard',
+	(SELECT id FROM ENUM_VALUES WHERE name == 'COST_1')-1,
+	'No effect',
+	(SELECT id FROM ENUM_VALUES WHERE name == 'ATTACK_1')-1,
+	(SELECT id FROM ENUM_VALUES WHERE name == 'HEALTH_1')-1,
+	(SELECT id FROM ENUM_VALUES WHERE name == 'SHIELD_1')-1,
+	(SELECT id FROM ENUM_VALUES WHERE name == 'SHIELD_ORANGE')-1
+);
+
+INSERT INTO CreatureCard(name, cost, description,attack,health,shield,shieldType)
+VALUES(
+	'Big cat',
+	(SELECT id FROM ENUM_VALUES WHERE name == 'COST_3')-1,
+	'No effect',
+	(SELECT id FROM ENUM_VALUES WHERE name == 'ATTACK_3')-1,
+	(SELECT id FROM ENUM_VALUES WHERE name == 'HEALTH_4')-1,
+	(SELECT id FROM ENUM_VALUES WHERE name == 'SHIELD_1')-1,
+	(SELECT id FROM ENUM_VALUES WHERE name == 'SHIELD_NONE')-1
+);
+
 INSERT INTO SpellCard(name, cost, description)
 VALUES(
 	'Abracadabra',
