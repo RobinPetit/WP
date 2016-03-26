@@ -34,6 +34,50 @@ void TerminalAbstractState::displaySeparator(const std::string& separatorText, c
 				<< std::endl;
 }
 
+void TerminalAbstractState::displayEntry(const std::string& entryText, char sep, std::size_t entryLevel)
+{
+	std::cout << std::string(entryLevel*4, ' ') << "  " << sep << " " << entryText << std::endl;
+}
+
+void TerminalAbstractState::displayCard(cardId id, bool displayIndex, std::size_t index)
+{
+	auto cardData = _context.client->getCardData(id);
+	assert(cardData->isCreature() or cardData->isSpell());
+
+	if(cardData->isCreature())
+	{
+		const ClientCreatureData* castedCardData{dynamic_cast<const ClientCreatureData*>(cardData)};
+		assert(castedCardData != nullptr);
+		if (displayIndex)
+			displayEntry(std::to_string(index) + ". " + std::string(castedCardData->getName()) + " (creature)");
+		else
+			displayEntry(std::string(castedCardData->getName()) + " (creature)");
+		displayEntry(std::string("cost: ") + std::to_string(castedCardData->getCost())
+					+ ", attack: " + std::to_string(castedCardData->getAttack())
+					+ ", health: " + std::to_string(castedCardData->getHealth())
+					+ ", shield: " + std::to_string(castedCardData->getShield())
+					+ "-" + std::to_string(castedCardData->getShieldType()), '-', 1);
+		displayEntry(castedCardData->getDescription(), '-', 1);
+	}
+	else
+	{
+		const ClientSpellData* castedCardData{dynamic_cast<const ClientSpellData*>(cardData)};
+		assert(castedCardData != nullptr);
+
+		if (displayIndex)
+			displayEntry(std::to_string(index) + ". " + std::string(castedCardData->getName()) + " (spell)");
+		else
+			displayEntry(std::string(castedCardData->getName()) + " (spell)");
+		displayEntry(std::string("cost: ") + std::to_string(castedCardData->getCost()), '-', 1);
+		displayEntry(castedCardData->getDescription(), '-', 1);
+	}
+}
+
+void TerminalAbstractState::displayCardWithIndex(cardId id, std::size_t index)
+{
+	displayCard(id, true, index);
+}
+
 void TerminalAbstractState::handleInput()
 {
 	//TODO : change try/catch block for something more precise, this does NOT only catch input errors !

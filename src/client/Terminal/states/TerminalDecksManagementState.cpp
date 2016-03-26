@@ -24,7 +24,7 @@ void TerminalDecksManagementState::display()
 
 	int i{0};
 	for(const auto& deck : _decks)
-		std::cout << ++i << ". " << deck.getName() << "\n";
+		displayEntry(std::to_string(i++) + ". " + deck.getName());
 
 	// Display the actions
 	TerminalAbstractState::display();
@@ -38,9 +38,12 @@ void TerminalDecksManagementState::displayDeck()
 		return;
 	}
 	std::cout << "Which deck would you like to display? ";
-	const std::size_t index{askForNumber(1, _decks.size() + 1) - 1};
-	for(const auto& card : _decks[index])  // Browse the deck
-		std::cout << "* " << card << "\n";
+	const std::size_t index{askForNumber(0, _decks.size() -1)};
+
+	displaySeparator(_decks[index].getName(), '~'); // display the deck's name
+	for(const auto& cardId : _decks[index])  // display the deck's content
+		displayCard(cardId);
+
 	waitForEnter();
 }
 
@@ -48,14 +51,14 @@ void TerminalDecksManagementState::editDeck()
 {
 	if(_decks.empty())
 	{
-		std::cout << "There are no deck to edit!\n";
+		std::cout << "There is no deck to edit!\n";
 		return;
 	}
 	std::cout << "Which deck would you like to edit ? ";
 	std::size_t deckIndex;
 	try
 	{
-		deckIndex = askForNumber(1, _decks.size() + 1) - 1;
+		deckIndex = askForNumber(0, _decks.size() - 1);
 	}
 	catch(const std::logic_error& e)
 	{
@@ -100,8 +103,12 @@ std::size_t TerminalDecksManagementState::askForReplacedCard(std::size_t deckInd
 {
 	int i{0};
 	std::cout << "Content of the deck " << _decks[deckIndex].getName() << ":\n";
-	for(const auto& card : _decks.at(deckIndex))
-		std::cout << ++i << ". " << card << "\n";
+
+	// display cards with their index
+	std::size_t index=0;
+	for(const auto& cardId : _cardsCollection)
+		displayCardWithIndex(cardId, index++);
+
 	std::cout << "Which card do you want to replace (0 to quit)? ";
 	return askForNumber(0, Deck::size + 1);
 }
@@ -109,8 +116,12 @@ std::size_t TerminalDecksManagementState::askForReplacedCard(std::size_t deckInd
 cardId TerminalDecksManagementState::askForReplacingCard(std::size_t deckIndex)
 {
 	std::cout << "Content of your card collection:\n";
-	for(const auto& card : _cardsCollection)
-		std::cout << static_cast<std::size_t>(card) << ". " << card << "\n";
+
+	// display cards with their index
+	std::size_t index=0;
+	for(const auto& cardId : _cardsCollection)
+		displayCardWithIndex(cardId, index++);
+
 	std::cout << "Which card do you want to put in you deck? ";
 	// TODO: even if *for now* database initialization ensure that card ids are consecutive
 	// we shouldn't take this for granted.
