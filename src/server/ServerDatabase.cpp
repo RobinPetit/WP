@@ -524,6 +524,26 @@ int ServerDatabase::getSameCardCounter(userId user)
 	return getAchievementProgress(user, _getSameCardCounterStmt);
 }
 
+int ServerDatabase::getStartsInARow(userId user)
+{
+	return getAchievementProgress(user, _getStartsInARowStmt);
+}
+
+void ServerDatabase::addStartsInARow(userId user, int starts)
+{
+	///\TODO remove code duplications (...InARow achievements)
+	assert(starts >= 0);
+
+	if(starts > 0)
+		starts += getStartsInARow(user);
+
+	sqlite3_reset(_setStartsInARowStmt);
+	sqliteThrowExcept(sqlite3_bind_int(_setStartsInARowStmt, 1, starts));
+	sqliteThrowExcept(sqlite3_bind_int64(_setStartsInARowStmt, 2, user));
+
+	assert(sqliteThrowExcept(sqlite3_step(_setStartsInARowStmt)) == SQLITE_DONE);
+}
+
 
 int ServerDatabase::getAchievementProgress(userId user, sqlite3_stmt* stmt)
 {
@@ -591,6 +611,8 @@ AchievementList ServerDatabase::AchievementManager::newAchievements(const PostGa
 
 AchievementList ServerDatabase::AchievementManager::allAchievements(userId user)
 {
+	///\FIXME: The ...InARow Achievements are lost when you are no more 'in the row'
+	///        Fix it by using currentRow/greatestRow
 	AchievementList achievements;
 
 	for(size_t i = 0; i < _achievementsList.size(); ++i)

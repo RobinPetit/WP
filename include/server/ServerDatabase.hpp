@@ -101,7 +101,7 @@ private:
 			int PostGameData::*toAddValue;
 			int (ServerDatabase::*getMethod)(userId);
 		};
-		std::array<AchievementsListItem, 8> _achievementsList
+		std::array<AchievementsListItem, 9> _achievementsList
 		{
 			{
 				AchievementsListItem {
@@ -149,6 +149,12 @@ private:
 					8,
 					nullptr, nullptr,
 					&ServerDatabase::getSameCardCounter
+				},
+				AchievementsListItem {
+					9,
+					&ServerDatabase::addStartsInARow,
+					&PostGameData::playerStarted,
+					&ServerDatabase::getStartsInARow
 				}
 			}
 		};
@@ -193,6 +199,7 @@ private:
 	///\except std::out_of_range if userId doesnt exists
 	int getLadderPositionPercent(userId);
 	int getSameCardCounter(userId);
+	int getStartsInARow(userId);
 
 	void addToAchievementProgress(userId id, int value, sqlite3_stmt * stmt);
 	void addTimeSpent(userId, int seconds);
@@ -200,6 +207,7 @@ private:
 	void addVictoriesInARow(userId, int victories);
 	void addWithInDaClub(userId, int withInDaClub);
 	void addRagequits(userId, int ragequits);
+	void addStartsInARow(userId, int starts);
 
 	sqlite3_stmt * _friendListStmt;
 	sqlite3_stmt * _userIdStmt;
@@ -239,16 +247,18 @@ private:
 	sqlite3_stmt * _getRagequitsStmt;
 	sqlite3_stmt * _ownAllCardsStmt;
 	sqlite3_stmt * _getSameCardCounterStmt;
+	sqlite3_stmt * _getStartsInARowStmt;
 
 	sqlite3_stmt * _addTimeSpentStmt;
 	sqlite3_stmt * _addVictoriesStmt;
 	sqlite3_stmt * _setVictoriesInARowStmt;
 	sqlite3_stmt * _addWithInDaClubStmt;
 	sqlite3_stmt * _addRagequitsStmt;
+	sqlite3_stmt * _setStartsInARowStmt;
 
 	// `constexpr std::array::size_type size() const;`
 	// -> future uses have to be _statements.size() -> 33 is written only one time
-	StatementsList<41> _statements
+	StatementsList<43> _statements
 	{
 		{
 			Statement {
@@ -481,6 +491,18 @@ private:
 				"	GROUP BY card "
 				"	ORDER BY counter DESC "
 				"	LIMIT 1;"
+			},
+			Statement {
+				&_getStartsInARowStmt,
+				"SELECT maxStartsInARow "
+				"	FROM Account "
+				"	WHERE id == ?1;"
+			},
+			Statement {
+				&_setStartsInARowStmt,
+				"UPDATE Account "
+				"	SET maxStartsInARow = ?1 "
+				"	WHERE id == ?2;"
 			}
 		}
 	};
