@@ -190,14 +190,20 @@ void GuiGame::displayPlayerBoard(tgui::Panel::Ptr& panel, std::vector<CardWidget
 	graphicalCards.clear();
 
 	const auto nbOfCards{creatureDatas.size()};
+	// the width that's needed to display the cards is n * cardWidth + (n-1) * space between cards
+	// where n is the number of cards that are displayed
 	const float usedWidth{static_cast<float>(nbOfCards) * (cardWidth + widthBetweenCards) - widthBetweenCards};
+	// start at the first place to put a card
 	float currentWidth{(panel->getSize().x - usedWidth) / 2.f};
 
 	for(auto i{0U}; i < nbOfCards; ++i)
 	{
 		cardId monsterId{creatureDatas.at(i).id};
+		// create the new card to display
 		graphicalCards.push_back(std::make_shared<CardWidget>(_context.client->getCardData(monsterId)));
+		// have it resized to fit in the panel
 		graphicalCards.back()->setSize(cardWidth, cardHeight);
+		// place it correctly (and rotate if needed)
 		if(reversed)
 		{
 			graphicalCards.back()->rotate(180.f);
@@ -205,11 +211,14 @@ void GuiGame::displayPlayerBoard(tgui::Panel::Ptr& panel, std::vector<CardWidget
 		}
 		else
 			graphicalCards.back()->setPosition(currentWidth, 0);
+		// update the current position on the panel
 		currentWidth += cardWidth;
 
 		panel->add(graphicalCards.back());
+		// move a bit away to separate cards
 		currentWidth += widthBetweenCards;
 	}
+	// add the panel to the gui so that it is displayed
 	_context.gui->add(panel);
 }
 

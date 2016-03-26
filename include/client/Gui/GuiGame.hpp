@@ -138,16 +138,24 @@ private:
 	/// Loops on events for as long as the turn is yours
 	void handleInputs();
 
-	/// Reset the screen and then redrax the current interface
+	/// Resets the screen and then redraws the current interface
 	void refreshScreen();
 
+	/// Function to display the cards the user has in his hands
 	/// Does not lock the screen.
 	void displayHandCards();
 
+	/// Function to display the user board
 	void displaySelfBoard();
 
+	/// Function to draw the opponent board
 	void displayOpponentBoard();
 
+	/// Function to display a board on a panel
+	/// \param panel The panel to display the cars on
+	/// \param graphicalCards The cards that will be created and displayed
+	/// \param creatureDatas The cards used to create the Gui cards
+	/// \param reversed A boolean telling if card must be displayed upside down
 	void displayPlayerBoard(tgui::Panel::Ptr& panel, std::vector<CardWidget::Ptr>& graphicalCards,
 		std::vector<BoardCreatureData>& creatureDatas, bool reversed=false);
 };
