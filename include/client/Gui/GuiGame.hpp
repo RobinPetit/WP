@@ -11,6 +11,8 @@
 #include <TGUI/Widgets/Button.hpp>
 #include <TGUI/Widgets/ListBox.hpp>
 #include <TGUI/HorizontalLayout.hpp>
+#include <TGUI/Widgets/Grid.hpp>
+#include <TGUI/Widgets/Panel.hpp>
 // std-C++ headers
 #include <vector>
 
@@ -66,7 +68,7 @@ private:
 	tgui::Layout _height;
 
 	/// The layout for the player's hand cards
-	tgui::HorizontalLayout::Ptr _selfHandLayout;
+	tgui::Panel::Ptr _selfHandPanel;
 
 	/// The button to voluntarily end your turn
 	tgui::Button::Ptr _endTurnButton;

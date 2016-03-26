@@ -14,10 +14,15 @@ GuiGame::GuiGame(Context& context):
 	_decksChosen{false},
 	_width{tgui::bindWidth(*_context.gui)},
 	_height{tgui::bindHeight(*_context.gui)},
-	_selfHandLayout{std::make_shared<tgui::HorizontalLayout>()},
+	_selfHandPanel{std::make_shared<tgui::Panel>()},
 	_endTurnButton{std::make_shared<tgui::Button>()},
 	_cardsLayoutWidth{_width/1.4f}
 {
+	// have the grid sized so that we can align perfectly 4 cards in it
+	_selfHandPanel->setSize(_cardsLayoutWidth, (_cardsLayoutWidth/4.f * (CardGui::heightCard / static_cast<float>(CardGui::widthCard))));
+	_selfHandPanel->setPosition((_width - _cardsLayoutWidth) / 2.f, _height - (_selfHandPanel->getSize().y+10));
+
+	// end turn button
 	_endTurnButton->setText("End turn");
 	_endTurnButton->connect("Pressed", [this]()
 	{
@@ -64,28 +69,33 @@ void GuiGame::displayGame()
 	//std::vector<CardWidget::Ptr> opponentBoard;
 
 	// start by removing everything from the current window
-	_context.gui->remove(_selfHandLayout);
-	_selfHandLayout->removeAllWidgets();
+	_context.gui->remove(_endTurnButton);
+	_selfHandPanel->removeAllWidgets();
 
+	auto availableWidth{_cardsLayoutWidth * 3.f / 4.f};
+
+	auto gridHeight{_selfHandPanel->getSize().y};
 	unsigned i{0U};
 	for(const auto& card : _selfHandCards)
 	{
+		auto xPos{(static_cast<float>(i)/(static_cast<float>(_selfHandCards.size()) - 1.f)) * availableWidth};
 		selfHand.push_back(std::make_shared<CardWidget>(_context.client->getCardData(card.id)));
+		selfHand.back()->setSize(_cardsLayoutWidth / 4.f, gridHeight);
+		selfHand.back()->setPosition({xPos.getValue(), 0.f});
+
 		// each card is associated to their index in the hand
 		selfHand.back()->connect("MousePressed", [this, i]()
 		{
 			useCard(i);
 		});
-		_selfHandLayout->add(selfHand.back());
+		_selfHandPanel->add(selfHand.back());
 		++i;
 	}
 
-	auto cardWidth{_cardsLayoutWidth/static_cast<float>(selfHand.size())};
-	_selfHandLayout->setSize(_cardsLayoutWidth, (cardWidth/CardGui::widthCard) * CardGui::heightCard);
-	_selfHandLayout->setPosition((_width - _cardsLayoutWidth) / 2.f, _height - (_selfHandLayout->getSize().y+10));
+	_endTurnButton->setSize((_width - _cardsLayoutWidth) / 2 - 10, 40);
 
 	_context.gui->add(_endTurnButton);
-	_context.gui->add(_selfHandLayout);
+	_context.gui->add(_selfHandPanel);
 
 	refreshScreen();
 }
