@@ -13,12 +13,69 @@ TerminalAbstractState::TerminalAbstractState(Context& context):
 
 void TerminalAbstractState::display()
 {
+	displaySeparator("Options", '*'); //separate options
+
 	for(size_t i{1}; i < _actions.size(); ++i)
-		std::cout << i << ". " << _actions[i].first << "\n";
+		std::cout << "  " << i << ". " << _actions[i].first << "\n";
 	assert(_actions.size() > 0);
 	// Display the menu entry 0 (which should be 'quit' or something like this) at last
 	// because this is strange to have 'quit' as first possibility in a menu
-	std::cout << "0. " << _actions[0].first << "\n";
+	std::cout << "  0. " << _actions[0].first << "\n";
+}
+
+void TerminalAbstractState::displaySeparator(const std::string& separatorText, const char& separator)
+{
+    struct winsize ws;
+    ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws); //read size of terminal into ws
+	int charRepeat = (ws.ws_col - separatorText.size() - 2)/2;
+	std::cout 	<< std::string(charRepeat, separator)
+				<< " " << separatorText << " "
+				<< std::string(ws.ws_col - charRepeat - separatorText.size() - 2, separator)
+				<< std::endl;
+}
+
+void TerminalAbstractState::displayEntry(const std::string& entryText, char sep, std::size_t entryLevel)
+{
+	std::cout << std::string(entryLevel*4, ' ') << "  " << sep << " " << entryText << std::endl;
+}
+
+void TerminalAbstractState::displayCard(CardId id, bool displayIndex, std::size_t index)
+{
+	auto cardData = _context.client->getCardData(id);
+	assert(cardData->isCreature() or cardData->isSpell());
+
+	if(cardData->isCreature())
+	{
+		const ClientCreatureData* castedCardData{dynamic_cast<const ClientCreatureData*>(cardData)};
+		assert(castedCardData != nullptr);
+		if (displayIndex)
+			displayEntry(std::to_string(index) + ". " + std::string(castedCardData->getName()) + " (creature)");
+		else
+			displayEntry(std::string(castedCardData->getName()) + " (creature)");
+		displayEntry(std::string("cost: ") + std::to_string(castedCardData->getCost())
+					+ ", attack: " + std::to_string(castedCardData->getAttack())
+					+ ", health: " + std::to_string(castedCardData->getHealth())
+					+ ", shield: " + std::to_string(castedCardData->getShield())
+					+ "-" + std::to_string(castedCardData->getShieldType()), '-', 1);
+		displayEntry(castedCardData->getDescription(), '-', 1);
+	}
+	else
+	{
+		const ClientSpellData* castedCardData{dynamic_cast<const ClientSpellData*>(cardData)};
+		assert(castedCardData != nullptr);
+
+		if (displayIndex)
+			displayEntry(std::to_string(index) + ". " + std::string(castedCardData->getName()) + " (spell)");
+		else
+			displayEntry(std::string(castedCardData->getName()) + " (spell)");
+		displayEntry(std::string("cost: ") + std::to_string(castedCardData->getCost()), '-', 1);
+		displayEntry(castedCardData->getDescription(), '-', 1);
+	}
+}
+
+void TerminalAbstractState::displayCardWithIndex(CardId id, std::size_t index)
+{
+	displayCard(id, true, index);
 }
 
 void TerminalAbstractState::handleInput()
@@ -28,7 +85,7 @@ void TerminalAbstractState::handleInput()
 	{
 		// Get the user input
 		std::string input;
-		std::cout << "What do you want to do? ";
+		std::cout << "Choose an option: ";
 		std::getline(std::cin, input);
 		// Cat to a number
 		const int intInput{std::stoi(input)};

@@ -7,7 +7,7 @@
 #include <vector>
 #include <string>
 // WP headers
-#include "common/Identifiers.hpp"  // userId
+#include "common/Identifiers.hpp"  // UserId
 
 /// structure used inside of the server program to keep informations
 /// on a single client
@@ -19,7 +19,7 @@ struct ClientInformations
 	/// is not sufficient, because we need a dynamic allocation).
 	std::unique_ptr<sf::TcpSocket> socket;
 	sf::Uint16 listeningPort;  ///< used to send connection for the chat
-	userId id;
+	UserId id;
 };
 
 #endif  // _CLIENT_INFORMATIONS_HPP_

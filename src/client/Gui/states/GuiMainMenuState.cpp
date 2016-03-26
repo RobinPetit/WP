@@ -47,7 +47,7 @@ void GuiMainMenuState::findGame()
 
 void GuiMainMenuState::manageDecks()
 {
-	// _context.stateStack->push<GuiDecksManagementState>();
+	_context.stateStack->push<GuiDecksManagementState>();
 }
 
 void GuiMainMenuState::seeCards()

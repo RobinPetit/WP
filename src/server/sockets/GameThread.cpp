@@ -17,7 +17,7 @@
 
 constexpr std::chrono::seconds GameThread::_turnTime;
 
-GameThread::GameThread(ServerDatabase& database, userId player1Id, userId player2Id):
+GameThread::GameThread(ServerDatabase& database, UserId player1Id, UserId player2Id):
 	std::thread(),
 	_player1Id(player1Id),
 	_player2Id(player2Id),
@@ -60,7 +60,7 @@ void GameThread::printVerbose(const std::string& message)
 		std::cout << "\t" << line << std::endl;  //print each line with indentation
 }
 
-userId GameThread::playGame(const ClientInformations& player1, const ClientInformations& player2)
+UserId GameThread::playGame(const ClientInformations& player1, const ClientInformations& player2)
 {
 	setSocket(_player1.getSocket(), _specialOutputSocketPlayer1, player1);
 	setSocket(_player2.getSocket(), _specialOutputSocketPlayer2, player2);
@@ -80,7 +80,7 @@ userId GameThread::playGame(const ClientInformations& player1, const ClientInfor
 	runGame();
 
 	// unlock a random new card
-	cardId earnedCardId{_database.getRandomCardId()};
+	CardId earnedCardId{_database.getRandomCardId()};
 	if (_postGameDataPlayer1.playerWon) _postGameDataPlayer1.unlockedCard = earnedCardId;
 	if (_postGameDataPlayer2.playerWon) _postGameDataPlayer2.unlockedCard = earnedCardId;
 
@@ -148,7 +148,7 @@ void GameThread::runGame()
 				otherPlayer->_postGameData.playerWon = true;
 				player->_postGameData.playerRageQuit = true;
 
-				userId winnerId = player == _activePlayer ? _passivePlayer->getId() : _activePlayer->getId();
+				UserId winnerId = player == _activePlayer ? _passivePlayer->getId() : _activePlayer->getId();
 				endGame(winnerId, EndGame::Cause::LOST_CONNECTION);
 				break;
 			}
@@ -183,7 +183,7 @@ void GameThread::runGame()
 	assert((_winnerId != 0) xor (_endGameCause == EndGame::Cause::ENDING_SERVER));
 }
 
-void GameThread::endGame(userId winnerId, EndGame::Cause cause)
+void GameThread::endGame(UserId winnerId, EndGame::Cause cause)
 {
 	std::cout << "Game is asked to end\n";
 	_winnerId = winnerId;
@@ -249,7 +249,7 @@ void GameThread::makeTimer()
 	}
 }
 
-void GameThread::sendFinalMessage(sf::TcpSocket& specialSocket, PostGameData& postGameData, cardId earnedCardId, AchievementList& newAchievements)
+void GameThread::sendFinalMessage(sf::TcpSocket& specialSocket, PostGameData& postGameData, CardId earnedCardId, AchievementList& newAchievements)
 {
 	sf::Packet packet;
 

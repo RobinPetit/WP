@@ -9,40 +9,54 @@ GuiAchievementState::GuiAchievementState(Context& context):
 	{
 		{&GuiAchievementState::backMainMenu, "Back to main menu"}
 	},
-	_achievementsLayout{std::make_shared<tgui::VerticalLayout>()}
+	_panel{std::make_shared<tgui::Panel>()},
+	_layout{std::make_shared<tgui::VerticalLayout>()},
+	_scrollbar{std::make_shared<tgui::Scrollbar>()},
+	_achievementWidgets{}
 {
+	const unsigned int gridHeight{static_cast<unsigned int>(_achievements.size())};
 	auto windowWidth(tgui::bindWidth(*_context.gui));
 	auto windowHeight(tgui::bindHeight(*_context.gui));
 
-	// Make the title
-	makeTitle("Achievements", 30U, 30.f);
+	makeTitle("Achievements", 30U, 20.f);
 
-	// Make the button(s)
 	setupButtons(_buttons, std::static_pointer_cast<tgui::Container>(_context.gui->getContainer()));
-	_buttons[0].button->setPosition(windowWidth/5.f, windowHeight * 8.f/10.f);
-	_buttons[0].button->setSize(windowWidth * 3.f/5.f, windowHeight * 1/10.f);
+	_buttons[0].button->setPosition(windowWidth/5.f, windowHeight - 30.f);
+	_buttons[0].button->setSize(windowWidth * 3.f/5.f, 20.f);
 
-	for(std::size_t i{0}; i < _achievements.size(); ++i)
+	// Make the panel
+	_panel->setPosition(windowWidth/20.f, 70.f);
+	_panel->setSize(windowWidth * 18.f/20.f, windowHeight - 110.f);
+	_panel->setBackgroundColor(sf::Color::Transparent);
+	_context.gui->add(_panel);
+
+	// Make the layout
+	_layout->setPosition((_panel->getSize().x - AchievementGui::getSize().x)/2, 0.f);
+	_layout->setSize(AchievementGui::getSize().x, AchievementGui::getSize().y * gridHeight * 1.1f);
+	_panel->add(_layout);
+
+	// Make the scrollbar
+	_scrollbar->setPosition(tgui::bindRight(_panel), tgui::bindTop(_panel));
+	_scrollbar->setSize((windowWidth - tgui::bindRight(_panel)) / 2.f, tgui::bindHeight(_panel));
+	_scrollbar->setLowValue(static_cast<unsigned int>(_panel->getSize().y));
+	_scrollbar->setMaximum(gridHeight * static_cast<unsigned int>(AchievementGui::getSize().y));
+	_scrollbar->setArrowScrollAmount(30);
+	_scrollbar->connect("ValueChanged", &GuiAchievementState::scrollGrid, this);
+	_context.gui->add(_scrollbar);
+
+	unsigned int i{0};
+	for(auto& achievement : _achievements)
 	{
-		GuiAchievementEntry guiAchievementEntry;
-		guiAchievementEntry.achievementNameLabel->setText(_achievements.at(i).getPrettyName());
-		guiAchievementEntry.achievementDescriptionLabel->setText(_achievements.at(i).getDescription());
-
-		_achievementsLayout->add(guiAchievementEntry.layout);
+		_achievementWidgets.push_back(std::make_shared<AchievementWidget>(achievement));
+		_layout->add(_achievementWidgets.back());
+		_layout->addSpace(0.1f);
+		++i;
 	}
-
-	_achievementsLayout->setPosition(windowWidth/5.f, windowHeight * 1.2f/10.f);
-	_achievementsLayout->setSize(windowWidth * 3.5f/5.f, windowHeight * 6.5f/10.f);
-	_context.gui->add(_achievementsLayout);
-
-	registerRootWidgets({_achievementsLayout, _buttons[0].button});
+	_layout->showWithEffect(tgui::ShowAnimationType::SlideFromBottom, sf::milliseconds(500));
+	registerRootWidgets({_buttons[0].button, _panel, _scrollbar});
 }
 
-GuiAchievementState::GuiAchievementEntry::GuiAchievementEntry():
-	achievementNameLabel{std::make_shared<tgui::Label>()},
-	achievementDescriptionLabel{std::make_shared<tgui::Label>()},
-	layout{std::make_shared<tgui::VerticalLayout>()}
+void GuiAchievementState::scrollGrid(int newScrollValue)
 {
-	layout->add(achievementNameLabel);
-	layout->add(achievementDescriptionLabel);
+	_layout->setPosition(_layout->getPosition().x, -static_cast<float>(newScrollValue));
 }

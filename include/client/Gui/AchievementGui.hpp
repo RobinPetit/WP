@@ -12,7 +12,7 @@ class AchievementGui : public sf::Drawable, public sf::Transformable
 {
 public:
 	/// Constructor.
-	AchievementGui(const std::string& name, const std::string& description, bool isLocked);
+	AchievementGui(const std::string& name, const std::string& description, bool isUnlocked);
 
 	/// Destructor.
 	virtual ~AchievementGui() = default;
@@ -27,7 +27,10 @@ public:
 
 private:
 	/// True when achievement is unlocked
-	bool _isLocked;
+	bool _isUnlocked;
+
+	/// The background rectangle, with a color
+	sf::RectangleShape _bgRectangle;
 
 	/// The main shape that contains the texture.
 	sf::Sprite _imageSprite;
@@ -63,7 +66,7 @@ private:
 	static constexpr std::size_t NAME_CHAR_SIZE = 20;
 
 	/// Description character size.
-	static constexpr std::size_t DESCRIPTION_CHAR_SIZE = 12;
+	static constexpr std::size_t DESCRIPTION_CHAR_SIZE = 14;
 
 	/// Path to the font.
 	static constexpr char FONT_PATH[] = "../resources/client/FreeSans.otf";
@@ -75,7 +78,7 @@ private:
 
 	/// Ease of use method. It configures the card with the right font, position
 	/// , text size and color.
-	void setupText(sf::Text& text, const std::string& string, const sf::Vector2f& position) const;
+	void setupText(sf::Text& text, std::string string, const sf::Vector2f& position) const;
 };
 
 

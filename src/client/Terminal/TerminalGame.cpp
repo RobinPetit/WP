@@ -60,6 +60,7 @@ void TerminalGame::displayOptions()
 	std::size_t idx{0};
 	for(const auto& action: _actions)
 		std::cout << idx++ << ". " << action.first << std::endl;
+	std::cout << "Please choose an option: \n";
 }
 
 void TerminalGame::startTurn()
@@ -67,7 +68,6 @@ void TerminalGame::startTurn()
 	NonBlockingInput input;
 	AbstractGame::startTurn();
 	displayOptions();
-	std::cout << "It is now your turn, what do you want to do? ";
 	while(true)
 	{
 		if(not input.waitForData(0.1))
@@ -86,7 +86,6 @@ void TerminalGame::startTurn()
 			break;
 		displayGame();
 		displayOptions();
-		std::cout << "What do you want to do next? ";
 	}
 }
 
@@ -121,7 +120,7 @@ void TerminalGame::displayCardVector(const std::vector<CardData>& cardVector, bo
 	// Displays simple informations about a card vector
 	for (auto i=0U; i<cardVector.size(); i++)
 	{
-		cardId id = cardVector.at(i).id;
+		CardId id = cardVector.at(i).id;
 		std::cout << "  * " << i << " : " << getCardName(id)
 		          << " (cost: " << getCardCost(id) << ", "
 		          << (isSpell(id) ? "spell" : "creature") << ")"
@@ -137,7 +136,7 @@ void TerminalGame::displayBoardCreatureVector(const std::vector<BoardCreatureDat
 	for (auto i=0U; i<cardVector.size(); i++)
 	{
 		const BoardCreatureData& thisCreature = cardVector.at(i);
-		const cardId id = thisCreature.id;
+		const CardId id = thisCreature.id;
 		std::cout << "  * " << i << " : " << getCardName(id) << " (cost: " << getCardCost(id) <<
 		             ", attack: " << thisCreature.attack <<
 		             ", health: " << thisCreature.health <<
@@ -218,7 +217,7 @@ bool TerminalGame::wantToAttackOpponent()
 	return buffer == "y";
 }
 
-void TerminalGame::receiveCard(cardId id)
+void TerminalGame::receiveCard(CardId id)
 {
 	displayMessage("You won the card '" + getCardName(id) + "'");
 }

@@ -355,7 +355,7 @@ void AbstractGame::endGame(sf::Packet& transmission)
 		if(not endGameInfo.applyToSelf)
 		{
 			// Get the won card
-			cardId newCard;
+			CardId newCard;
 			transmission >> newCard;
 			receiveCard(newCard);
 		}
@@ -445,7 +445,7 @@ void AbstractGame::handlePacket(sf::Packet& transmission)
 	}
 }
 
-const std::string& AbstractGame::getCardName(cardId id)
+const std::string& AbstractGame::getCardName(CardId id)
 {
 	const CommonCardData* card = _client.getCardData(id);
 	// Maybe I should have use multiple inheritance to avoid this
@@ -454,7 +454,7 @@ const std::string& AbstractGame::getCardName(cardId id)
 		: static_cast<const ClientCreatureData*>(card)->getName();
 }
 
-CostValue AbstractGame::getCardCost(cardId id)
+CostValue AbstractGame::getCardCost(CardId id)
 {
 	const CommonCardData* card = _client.getCardData(id);
 	// Maybe I should have use multiple inheritance to avoid this
@@ -463,7 +463,7 @@ CostValue AbstractGame::getCardCost(cardId id)
 		: static_cast<CostValue>(static_cast<const ClientCreatureData*>(card)->getCost());
 }
 
-const std::string& AbstractGame::getCardDescription(cardId id)
+const std::string& AbstractGame::getCardDescription(CardId id)
 {
 	const CommonCardData* card = _client.getCardData(id);
 	// Maybe I should have use multiple inheritance to avoid this
@@ -472,7 +472,7 @@ const std::string& AbstractGame::getCardDescription(cardId id)
 		: static_cast<const ClientCreatureData*>(card)->getDescription();
 }
 
-bool AbstractGame::isSpell(cardId id)
+bool AbstractGame::isSpell(CardId id)
 {
 	return _client.getCardData(id)->isSpell();
 }

@@ -42,7 +42,7 @@ sf::Packet& operator >>(sf::Packet& packet, Deck& deck)
 	deck.setName(name);
 	for(std::size_t i{0}; i < Deck::size; ++i)
 	{
-		cardId card;
+		CardId card;
 		packet >> card;
 		deck.changeCard(i, card);
 	}
@@ -68,7 +68,7 @@ sf::Packet& operator <<(sf::Packet& packet, const CardsCollection& cardCollectio
 
 	for(auto it = cardCollection.cbegin(); it != cardCollection.cend(); ++it)
 	{
-		const cardId card{*it};
+		const CardId card{*it};
 		// If this is a base card not already processed
 		if(card > 0 and static_cast<std::size_t>(card) < baseCardsAlreadyProcessed.size()
 		   and not baseCardsAlreadyProcessed[static_cast<std::array<bool, Deck::size+1>::size_type>(card)])
@@ -86,7 +86,7 @@ sf::Packet& operator >>(sf::Packet& packet, CardsCollection& cardCollection)
 	packet >> size;
 	for(sf::Uint32 i{0}; i < size; ++i)
 	{
-		cardId card;
+		CardId card;
 		packet >> card;
 		cardCollection.addCard(card);
 	}
@@ -162,4 +162,3 @@ sf::Packet& operator >>(sf::Packet& packet, Achievement& achievement)
 	packet >> achievement.id >> achievement.currentProgress;
 	return packet;
 }
-

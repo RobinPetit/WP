@@ -6,11 +6,13 @@
 
 CardWidget::CardWidget()
 {
+	setSize(CardGui::getSize());
 }
 
 CardWidget::CardWidget(const CommonCardData* cardData)
 {
 	setCardData(cardData);
+	setSize(CardGui::getSize());
 }
 
 void CardWidget::setCardData(const CommonCardData* cardData)
@@ -40,14 +42,14 @@ void CardWidget::setCardData(const CommonCardData* cardData)
 
 void CardWidget::setPosition(const tgui::Layout2d& position)
 {
-	Widget::setPosition(position);
+	ClickableWidget::setPosition(position);
 	if(_card)
 		_card->setPosition(position.x.getValue(), position.y.getValue());
 }
 
 void CardWidget::setSize(const tgui::Layout2d& size)
 {
-	Widget::setSize(size);
+	ClickableWidget::setSize(size);
 	if(_card)
 		_card->setScale(size.x.getValue()/_card->getSize().x, size.y.getValue()/_card->getSize().y);
 }

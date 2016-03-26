@@ -5,9 +5,14 @@
 #include <vector>
 #include <utility>  // std::pair
 #include <functional>  // std::function and std::bind
+#include <sys/ioctl.h>
+#include <unistd.h>
 // WizardPoker headers
 #include "client/StateStack.hpp"
 #include "client/AbstractState.hpp"
+#include "client/ClientCardData.hpp"
+#include "common/CardData.hpp"
+#include "client/sockets/Client.hpp"
 
 /// Terminal specialisation of AbstractState.
 /// Does all the work that is not specific to a state, but that is common to all
@@ -49,7 +54,13 @@ class TerminalAbstractState : virtual public AbstractState
 		/// scroll up in order to see what's just displayed.
 		static void waitForEnter();
 
+		/// This allows to display a message or a separator with some text
 		virtual void displayMessage(const std::string& message) override;
+		void displaySeparator(const std::string& separatorText, const char& separator=' ');
+		void displayEntry(const std::string& entryText, char sep='*', std::size_t entryLevel=0);
+
+		void displayCard(CardId id, bool displayIndex=false, std::size_t index=0);
+		void displayCardWithIndex(CardId id, std::size_t index);
 
 	private:
 		/// All actions doable in the state.

@@ -13,11 +13,11 @@ TerminalCardsCollectionState::TerminalCardsCollectionState(Context& context):
 
 void TerminalCardsCollectionState::display()
 {
-	std::cout << "Here are your cards:\n";
-	for(const auto& card : _cardsCollection)
-		// The title of the card should be displayed rather than its ID
-		std::cout << "* " << card << "\n";
-	std::cout << std::string(40, '*') << "\n";
+	displaySeparator(std::string("Unlocked Cards (") + std::to_string(_cardsCollection.getSize()) + ")");
+
+	// Displays simple informations about a card vector
+	for (auto& cardId : _cardsCollection)
+		displayCard(cardId);
 
 	// Display the actions
 	TerminalAbstractState::display();

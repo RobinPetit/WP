@@ -41,10 +41,9 @@ private:
 
 	void chooseDeck() override;
 
-	void receiveCard(cardId id) override;
-
 	// overload
 	void useCard();
+	void receiveCard(CardId id) override;
 };
 
 #endif  // TERMINAL_GAME_HPP

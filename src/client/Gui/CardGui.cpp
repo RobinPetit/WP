@@ -6,32 +6,38 @@
 const sf::Vector2f CardGui::SIZE{260.f, 360.f};
 const sf::Vector2f CardGui::NAME_POSITION{20.f, 17.f};
 const sf::Vector2f CardGui::COST_POSITION{220.f, 17.f};
-const sf::Vector2f CardGui::DESCRIPTION_POSITION{26.f, 273.f};
 constexpr char CardGui::BACK_IMAGE_PATH[];
 constexpr char CardGui::FONT_PATH[];
 
-constexpr unsigned CardGui::widthCard;
-constexpr unsigned CardGui::heightCard;
-
-CardGui::CardGui(const std::string& name, std::string description, int cost):
+CardGui::CardGui(const std::string& frontTexturePath, const std::string& name, std::string description, int cost):
 	_showFront{true}
 {
+	// Set up the back
 	if(!_backTexture.loadFromFile(BACK_IMAGE_PATH))
 	{
 		std::cerr << "Unable to load " << BACK_IMAGE_PATH << "\n";
 		return;
 	}
+	_backView.setTexture(_backTexture);
 	_backTexture.setSmooth(true); // enable smooth borders
-	_backView.setSize(SIZE);
-	_backView.setTexture(&_backTexture);
 
+	// Set up the front
+	if(!_pictureTexture.loadFromFile(frontTexturePath))
+	{
+		std::cerr << "Unable to load " << frontTexturePath << "\n";
+		return;
+	}
+	_picture.setTexture(_pictureTexture);
+	_pictureTexture.setSmooth(true);
+
+	// Load the font
 	if(!_font.loadFromFile(FONT_PATH))
 	{
 		std::cerr << "Unable to load " << FONT_PATH << "\n";
 		return;
 	}
 
-	// complete cost, name and effects
+	// complete cost, name and description
 	setupText(_nameText, name, NAME_POSITION);
 	_nameText.setStyle(sf::Text::Bold);
 
@@ -40,7 +46,7 @@ CardGui::CardGui(const std::string& name, std::string description, int cost):
 	_costText.setColor(sf::Color(0, 0, 100));
 
 	addNewlinesInDescription(description);
-	setupText(_descriptionText, description, DESCRIPTION_POSITION);
+	setupText(_descriptionText, description, {0, 0});
 	_descriptionText.setStyle(sf::Text::Italic);
 	_descriptionText.setCharacterSize(DESCRIPTION_CHAR_SIZE);
 }
@@ -83,16 +89,40 @@ void CardGui::setupText(sf::Text& text, const std::string& string, const sf::Vec
 	text.setPosition(position);
 }
 
+void CardGui::moveDescription(const sf::Vector2f& descriptionPosition)
+{
+	_descriptionText.setPosition(descriptionPosition);
+}
+
 void CardGui::addNewlinesInDescription(std::string& description)
 {
-	float x{0.f};
+	float lineSize{0.f};
+	const float spaceSize{getDescriptionCharacterWidth(' ')};
+
+	auto prevIt = description.begin();
 	for(auto it(description.begin()); it != description.end(); ++it)
 	{
-		if(x >= DESCRIPTION_WIDTH)
+		if(*it == ' ')
 		{
-			it = description.insert(it, '\n');
-			x = 0.f;
+			while(*it == ' ')
+			{
+				lineSize += spaceSize;
+				it++;
+			}
+			prevIt = it;
 		}
-		x += _font.getGlyph(static_cast<sf::Uint32>(*it), DESCRIPTION_CHAR_SIZE, false).advance;
+
+		lineSize += getDescriptionCharacterWidth(*it);
+
+		if(lineSize >= DESCRIPTION_WIDTH)
+		{
+			lineSize = 0.f;
+			it = description.insert(prevIt, '\n');
+		}
 	}
+}
+
+inline float CardGui::getDescriptionCharacterWidth(char character) const
+{
+	 return _font.getGlyph(static_cast<sf::Uint32>(character), DESCRIPTION_CHAR_SIZE, false).advance;
 }

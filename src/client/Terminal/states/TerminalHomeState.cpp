@@ -18,7 +18,7 @@ TerminalHomeState::TerminalHomeState(Context& context):
 
 void TerminalHomeState::display()
 {
-	std::cout << "Welcome to Wizard Poker!\n";
+	displaySeparator("Welcome to Wizard Poker");
 
 	// Display the actions
 	TerminalAbstractState::display();

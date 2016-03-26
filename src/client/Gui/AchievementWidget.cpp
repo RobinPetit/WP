@@ -5,11 +5,13 @@
 
 AchievementWidget::AchievementWidget()
 {
+	setSize(AchievementGui::getSize());
 }
 
 AchievementWidget::AchievementWidget(const ClientAchievement& achievement):
 	_achievement(new AchievementGui(achievement.getPrettyName(), achievement.getDescription(), achievement.isUnlocked()))
 {
+	setSize(AchievementGui::getSize());
 }
 
 void AchievementWidget::setPosition(const tgui::Layout2d& position)
