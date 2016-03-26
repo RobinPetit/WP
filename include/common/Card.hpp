@@ -21,7 +21,7 @@ public:
 
 	/// Getters
 	int getEnergyCost() const;
-	cardId getId() const;
+	CardId getId() const;
 
 	/// Methods
 	bool isCreature() const;

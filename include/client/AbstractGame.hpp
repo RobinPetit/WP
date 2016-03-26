@@ -62,13 +62,13 @@ class AbstractGame
 
 		//////////// protected methods
 
-		const std::string& getCardName(cardId id);
-		CostValue getCardCost(cardId id);
-		const std::string& getCardDescription(cardId id);
+		const std::string& getCardName(CardId id);
+		CostValue getCardCost(CardId id);
+		const std::string& getCardDescription(CardId id);
 
 		/// Check wheter the card is a spell or a creature.
 		/// \return True if the card is a spell, false if it is a creature.
-		bool isSpell(cardId id);
+		bool isSpell(CardId id);
 
 	private:
 		//////////////// private methods
@@ -107,7 +107,7 @@ class AbstractGame
 		/// Handles the whole transmission until transmission.endOfPacket()
 		void handlePacket(sf::Packet& transmission);
 
-		virtual void receiveCard(cardId id) = 0;
+		virtual void receiveCard(CardId id) = 0;
 
 		/// The function used to receive from the server the informations
 		/// about the required additional inputs

@@ -16,7 +16,7 @@ struct PostGameData
 	int playerWon;
 	int playerRageQuit; //meant for 'player broke computer instead'
 
-	cardId unlockedCard;
+	CardId unlockedCard;
 
 	int remainingHealth;
 	int gameDuration;

@@ -146,13 +146,13 @@ public:
 	CardsCollection getCardsCollection();
 
 	/// Count number of card templates in database
-	cardId getNumberOfCards();
+	CardId getNumberOfCards();
 
 	/// Give greatest card id in database
-	cardId getMaxCardId();
+	CardId getMaxCardId();
 
 	/// Used by AbstractGame
-	const CommonCardData* getCardData(cardId id);
+	const CommonCardData* getCardData(CardId id);
 
 	// Others
 

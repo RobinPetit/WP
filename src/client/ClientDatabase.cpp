@@ -22,7 +22,7 @@ ClientDatabase::ClientDatabase(const std::string& filename) : Database(filename)
 	_spellCount = sqlite3_column_int(_countSpellsStmt, 0);
 }
 
-Card ClientDatabase::getCard(cardId id)
+Card ClientDatabase::getCard(CardId id)
 {
 	const CommonCardData* data(getCardData(id));
 
@@ -32,7 +32,7 @@ Card ClientDatabase::getCard(cardId id)
 		return ClientCreature(*static_cast<const ClientCreatureData*>(data));
 }
 
-const CommonCardData* ClientDatabase::getCardData(cardId id)
+const CommonCardData* ClientDatabase::getCardData(CardId id)
 {
 	auto found = _cards.find(id);
 
@@ -79,22 +79,22 @@ const CommonCardData* ClientDatabase::getCardData(cardId id)
 	}
 }
 
-std::vector<cardId> ClientDatabase::getFirstCardIds(unsigned count)
+std::vector<CardId> ClientDatabase::getFirstCardIds(unsigned count)
 {
 	sqlite3_reset(_getFirstCardIdsStmt);
 	sqliteThrowExcept(sqlite3_bind_int(_getFirstCardIdsStmt, 1, static_cast<int>(count)));
 
-	std::vector<cardId> cardIds;
+	std::vector<CardId> CardIds;
 
 	while(sqliteThrowExcept(sqlite3_step(_getFirstCardIdsStmt)) == SQLITE_ROW)
 	{
-		cardIds.emplace_back(sqlite3_column_int64(_getFirstCardIdsStmt, 0));
+		CardIds.emplace_back(sqlite3_column_int64(_getFirstCardIdsStmt, 0));
 	}
 
-	return cardIds;
+	return CardIds;
 }
 
-cardId ClientDatabase::getGreatestCardId()
+CardId ClientDatabase::getGreatestCardId()
 {
 	sqlite3_reset(_getGreatestCardIdStmt);
 
@@ -102,17 +102,17 @@ cardId ClientDatabase::getGreatestCardId()
 	return sqlite3_column_int(_getGreatestCardIdStmt, 0);
 }
 
-cardId ClientDatabase::countCards() const
+CardId ClientDatabase::countCards() const
 {
 	return _cardCount;
 }
 
-cardId ClientDatabase::countCreatures() const
+CardId ClientDatabase::countCreatures() const
 {
 	return _creatureCount;
 }
 
-cardId ClientDatabase::countSpells() const
+CardId ClientDatabase::countSpells() const
 {
 	return _spellCount;
 }

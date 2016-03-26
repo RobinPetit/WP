@@ -45,6 +45,8 @@ set(SOURCES
 		"Gui/SpellGui.cpp"
 		"Gui/CreatureGui.cpp"
 		"Gui/CardWidget.cpp"
+		"Gui/AchievementWidget.cpp"
+		"Gui/AchievementGui.cpp"
 		## States
 		"Gui/GuiAbstractState.cpp"
 		"Gui/states/GuiHomeState.cpp"
@@ -53,6 +55,7 @@ set(SOURCES
 		"Gui/states/GuiDecksManagementState.cpp"
 		"Gui/states/GuiFriendsManagementState.cpp"
 		"Gui/states/GuiLadderState.cpp"
+		"Gui/states/GuiAchievementState.cpp"
 		"Gui/states/GuiLobbyState.cpp"
 	)
 
