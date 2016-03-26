@@ -158,7 +158,7 @@ VALUES(
 
 INSERT INTO CreatureCard(name, cost, description,attack,health,shield,shieldType)
 VALUES(
-	'Master micer',
+	'Master mice',
 	(SELECT id FROM ENUM_VALUES WHERE name == 'COST_4')-1,
 	'All your friendly creatures gain 1 ATTACK each turn',
 	(SELECT id FROM ENUM_VALUES WHERE name == 'ATTACK_4')-1,
