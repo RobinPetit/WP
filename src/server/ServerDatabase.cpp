@@ -387,9 +387,17 @@ unsigned ServerDatabase::countAccounts()
 // Achievements
 AchievementList ServerDatabase::newAchievements(const PostGameData& postGame, userId user)
 {
+	// (re-)unlock a card (it is a special achievement)
 	if(postGame.playerWon)
 		addCard(user, getRandomCardId());
 
+	// update LastDayPlayed information (this should be done elsewhere)
+	sqlite3_reset(_updateLastDayPlayedStmt);
+	sqliteThrowExcept(sqlite3_bind_int64(_updateLastDayPlayedStmt, 1, user));
+
+	assert(sqliteThrowExcept(sqlite3_step(_updateLastDayPlayedStmt)) == SQLITE_DONE);
+
+	// unlock other achievements (unlock a card is a special achievement)
 	return _achievementManager.newAchievements(postGame, user);
 }
 
@@ -532,6 +540,11 @@ void ServerDatabase::addStartsInTheCurrentRow(userId user, int starts)
 	sqliteThrowExcept(sqlite3_bind_int64(_addStartsInTheCurrentRowStmt, 2, user));
 
 	assert(sqliteThrowExcept(sqlite3_step(_addStartsInTheCurrentRowStmt)) == SQLITE_DONE);
+}
+
+int ServerDatabase::getDaysInARow(userId user)
+{
+	return getAchievementProgress(user, _getDaysInARowStmt);
 }
 
 

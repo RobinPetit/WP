@@ -101,7 +101,7 @@ private:
 			int PostGameData::*toAddValue;
 			int (ServerDatabase::*getMethod)(userId);
 		};
-		std::array<AchievementsListItem, 9> _achievementsList
+		std::array<AchievementsListItem, 10> _achievementsList
 		{
 			{
 				AchievementsListItem {
@@ -155,6 +155,11 @@ private:
 					&ServerDatabase::addStartsInTheCurrentRow,
 					&PostGameData::playerStarted,
 					&ServerDatabase::getStartsInARow
+				},
+				AchievementsListItem {
+					10,
+					nullptr, nullptr,
+					&ServerDatabase::getDaysInARow
 				}
 			}
 		};
@@ -163,6 +168,8 @@ private:
 		AchievementManager(ServerDatabase&);
 
 		///\TODO use smart pointer as return type value
+		///\TODO For now newAchievements update lastDayPlayed information but I think it is not his purpose
+		/// Give a new card if game won and unlock others achievements (and update lastDayPlayed information)
 		AchievementList newAchievements(const PostGameData&, userId);
 		AchievementList allAchievements(userId);
 	};
@@ -200,6 +207,7 @@ private:
 	int getLadderPositionPercent(userId);
 	int getSameCardCounter(userId);
 	int getStartsInARow(userId);
+	int getDaysInARow(userId);
 
 	void addToAchievementProgress(userId id, int value, sqlite3_stmt * stmt);
 	void addTimeSpent(userId, int seconds);
@@ -248,6 +256,7 @@ private:
 	sqlite3_stmt * _ownAllCardsStmt;
 	sqlite3_stmt * _getSameCardCounterStmt;
 	sqlite3_stmt * _getStartsInARowStmt;
+	sqlite3_stmt * _getDaysInARowStmt;
 
 	sqlite3_stmt * _addTimeSpentStmt;
 	sqlite3_stmt * _addVictoriesStmt;
@@ -255,10 +264,11 @@ private:
 	sqlite3_stmt * _addWithInDaClubStmt;
 	sqlite3_stmt * _addRagequitsStmt;
 	sqlite3_stmt * _addStartsInTheCurrentRowStmt;
+	sqlite3_stmt * _updateLastDayPlayedStmt;
 
 	// `constexpr std::array::size_type size() const;`
 	// -> future uses have to be _statements.size() -> 33 is written only one time
-	StatementsList<43> _statements
+	StatementsList<45> _statements
 	{
 		{
 			Statement {
@@ -503,6 +513,18 @@ private:
 				"UPDATE Account "
 				"	SET currentStartsInARow = currentStartsInARow + ?1 "
 				"	WHERE id == ?2;"
+			},
+			Statement {
+				&_getDaysInARowStmt,
+				"SELECT maxDaysPlayedInARow "
+				"	FROM Account "
+				"	WHERE id == ?1;"
+			},
+			Statement { // 44
+				&_updateLastDayPlayedStmt,
+				"UPDATE Account "
+				"	SET lastDayPlayed = round(julianday('now')) "
+				"	WHERE id == ?1;"
 			}
 		}
 	};

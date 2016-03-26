@@ -140,8 +140,9 @@ CREATE TABLE Account (
 	ragequits                   INTEGER DEFAULT 0,
 	currentStartsInARow         INTEGER DEFAULT 0,
 	maxStartsInARow             INTEGER DEFAULT 0,
-	maxDaysPlayedInARow         INTEGER DEFAULT 0,
-	lastGameDateTime            INTEGER DEFAULT 0,
+	currentDaysPlayedInARow     INTEGER DEFAULT 0,
+	maxDaysPlayedInARow         INTEGER DEFAULT 0, -- value not up to date when should be 0 (as it is updated after a game, i.e. when is 1 or more)
+	lastDayPlayed               INTEGER DEFAULT 0, -- julian day rounded
 	perfectWins                 INTEGER DEFAULT 0,
 	closeWins                   INTEGER DEFAULT 0,
 	maxSameCardCounter          INTEGER DEFAULT 0,
@@ -165,6 +166,26 @@ CREATE TRIGGER updateMaxStartsOnAccount
 	BEGIN
 		UPDATE Account
 			SET maxStartsInARow = currentStartsInARow
+			WHERE id == NEW.id;
+	END;
+
+CREATE TRIGGER updateCurrentDaysPlayedOnAccount
+	AFTER UPDATE OF lastDayPlayed
+	ON Account
+	WHEN NEW.lastDayPlayed - OLD.lastDayPlayed > 0
+	BEGIN
+		UPDATE Account
+			SET currentDaysPlayedInARow = currentDaysPlayedInARow * (NEW.lastDayPlayed - OLD.lastDayPlayed == 1) + 1
+			WHERE id == NEW.id;
+	END;
+
+CREATE TRIGGER updateMaxDaysPlayedOnAccount
+	AFTER UPDATE OF currentDaysPlayedInARow
+	ON Account
+	WHEN NEW.currentDaysPlayedInARow > OLD.maxDaysPlayedInARow
+	BEGIN
+		UPDATE Account
+			SET maxDaysPlayedInARow = currentDaysPlayedInARow
 			WHERE id == NEW.id;
 	END;
 

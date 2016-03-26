@@ -68,6 +68,7 @@ INSERT INTO Achievement(id, name, description, progressRequired) VALUES
 	5
 ),
 (
+	-- TODO: use client local time instead of UTC
 	10,
 	"Half-No-Life",
 	"Play every day for 42 days",
