@@ -187,6 +187,7 @@ void GuiGame::displayPlayerBoard(tgui::Panel::Ptr& panel, std::vector<CardWidget
 	const float widthBetweenCards{(panel->getSize().x / static_cast<float>(nbOfPossibleCards)) - cardWidth};
 
 	panel->removeAllWidgets();
+	graphicalCards.clear();
 
 	const auto nbOfCards{creatureDatas.size()};
 	const float usedWidth{static_cast<float>(nbOfCards) * (cardWidth + widthBetweenCards) - widthBetweenCards};
