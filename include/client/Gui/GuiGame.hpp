@@ -138,6 +138,8 @@ private:
 	/// Loops on events for as long as the turn is yours
 	void handleInputs();
 
+	void clearScreen();
+
 	/// Resets the screen and then redraws the current interface
 	void refreshScreen();
 
@@ -145,6 +147,8 @@ private:
 	/// \param card The card to pass on to draw the big card
 	/// \param cardData The data to create the big card
 	void connectBigCardDisplay(CardWidget::Ptr& card, const CommonCardData *cardData);
+
+	void displayBigCard(const CommonCardData *cardData);
 
 	/// Function to display the cards the user has in his hands
 	/// Does not lock the screen.

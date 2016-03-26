@@ -79,9 +79,14 @@ void GuiGame::handleInputs()
 	});
 }
 
-void GuiGame::refreshScreen()
+void GuiGame::clearScreen()
 {
 	_context.window->clear(sf::Color::White);
+}
+
+void GuiGame::refreshScreen()
+{
+	clearScreen();
 	_context.gui->draw();
 	_context.window->display();
 }
@@ -94,14 +99,11 @@ void GuiGame::displayGame()
 	//std::vector<CardWidget::Ptr> opponentBoard;
 
 	// start by removing everything from the current window
-	_context.gui->remove(_endTurnButton);
+	_context.gui->removeAllWidgets();
 
 	displayHandCards();
 	displaySelfBoard();
 	displayOpponentBoard();
-
-	_context.gui->add(_selfBoardPanel);
-	_context.gui->add(_opponentBoardPanel);
 
 	_endTurnButton->setSize((_width - _cardsLayoutWidth) / 2 - 10, 40);
 	_context.gui->add(_endTurnButton);
@@ -151,22 +153,13 @@ void GuiGame::displayHandCards()
 
 void GuiGame::connectBigCardDisplay(CardWidget::Ptr& card, const CommonCardData *cardData)
 {
-	card->connect("MouseEntered", [this, cardData]()
-	{
-		if(_isBigCardOnBoard)
-			return;
-		// make a new card, center it and then display it
-		_readableCard.reset(new CardWidget(cardData));
-		_readableCard->setPosition((tgui::bindWidth (*_context.gui) - tgui::bindWidth (_readableCard)) / 2,
-					   (tgui::bindHeight(*_context.gui) - tgui::bindHeight(_readableCard)) / 2);
-		_isBigCardOnBoard = true;
-		displayGame();
-	});
+	card->connect("MouseEntered", &GuiGame::displayBigCard, this, cardData);
 	// When the mouse leaves the card area
 	card->connect("MouseLeft", [this]()
 	{
-		if(_readableCard)
-			_readableCard->hide();
+		if(not _readableCard)
+			return;
+		_context.gui->remove(_readableCard);
 		_isBigCardOnBoard = false;
 		displayGame();
 	});
@@ -191,6 +184,7 @@ void GuiGame::displayPlayerBoard(tgui::Panel::Ptr& panel, std::vector<CardWidget
 	const float widthBetweenCards{(panel->getSize().x / static_cast<float>(nbOfPossibleCards)) - cardWidth};
 
 	panel->removeAllWidgets();
+	_context.gui->remove(panel);
 	graphicalCards.clear();
 
 	const auto nbOfCards{creatureDatas.size()};
@@ -228,6 +222,20 @@ void GuiGame::displayPlayerBoard(tgui::Panel::Ptr& panel, std::vector<CardWidget
 	}
 	// add the panel to the gui so that it is displayed
 	_context.gui->add(panel);
+}
+
+void GuiGame::displayBigCard(const CommonCardData *cardData)
+{
+	if(_isBigCardOnBoard)
+		return;
+	_context.gui->remove(_readableCard);
+	// make a new card, center it and then display it
+	_readableCard.reset(new CardWidget(cardData));
+	_readableCard->setPosition((tgui::bindWidth (*_context.gui) - tgui::bindWidth (_readableCard)) / 2,
+				   (tgui::bindHeight(*_context.gui) - tgui::bindHeight(_readableCard)) / 2);
+	_isBigCardOnBoard = true;
+	_context.gui->add(_readableCard);
+	refreshScreen();
 }
 
 // NOTE: this is copy/paste from GuiAbstractState. TODO: factorize by creating an interface
