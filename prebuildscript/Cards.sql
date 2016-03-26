@@ -158,6 +158,39 @@ VALUES(
 
 INSERT INTO CreatureCard(name, cost, description,attack,health,shield,shieldType)
 VALUES(
+	'Armored Dragon',
+	(SELECT id FROM ENUM_VALUES WHERE name == 'COST_1')-1,
+	'No effect',
+	(SELECT id FROM ENUM_VALUES WHERE name == 'ATTACK_2')-1,
+	(SELECT id FROM ENUM_VALUES WHERE name == 'HEALTH_2')-1,
+	(SELECT id FROM ENUM_VALUES WHERE name == 'SHIELD_1')-1,
+	(SELECT id FROM ENUM_VALUES WHERE name == 'SHIELD_NONE')-1
+);
+
+INSERT INTO CreatureCard(name, cost, description,attack,health,shield,shieldType)
+VALUES(
+	'Giant spider',
+	(SELECT id FROM ENUM_VALUES WHERE name == 'COST_2')-1,
+	'No effect',
+	(SELECT id FROM ENUM_VALUES WHERE name == 'ATTACK_3')-1,
+	(SELECT id FROM ENUM_VALUES WHERE name == 'HEALTH_2')-1,
+	(SELECT id FROM ENUM_VALUES WHERE name == 'SHIELD_1')-1,
+	(SELECT id FROM ENUM_VALUES WHERE name == 'SHIELD_NONE')-1
+);
+
+INSERT INTO CreatureCard(name, cost, description,attack,health,shield,shieldType)
+VALUES(
+	'Ugly creature',
+	(SELECT id FROM ENUM_VALUES WHERE name == 'COST_1')-1,
+	'No effect',
+	(SELECT id FROM ENUM_VALUES WHERE name == 'ATTACK_1')-1,
+	(SELECT id FROM ENUM_VALUES WHERE name == 'HEALTH_1')-1,
+	(SELECT id FROM ENUM_VALUES WHERE name == 'SHIELD_1')-1,
+	(SELECT id FROM ENUM_VALUES WHERE name == 'SHIELD_BLUE')-1
+);
+
+INSERT INTO CreatureCard(name, cost, description,attack,health,shield,shieldType)
+VALUES(
 	'Master mice',
 	(SELECT id FROM ENUM_VALUES WHERE name == 'COST_4')-1,
 	'All your friendly creatures gain 1 ATTACK each turn',
