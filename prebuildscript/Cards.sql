@@ -10,10 +10,10 @@
 INSERT INTO CreatureCard(name, cost, description,attack,health,shield,shieldType)
 VALUES(
 	'Tower guard',
-	(SELECT id FROM ENUM_VALUES WHERE name == 'COST_3')-1,
+	(SELECT id FROM ENUM_VALUES WHERE name == 'COST_1')-1,
 	'This creature gains 1 HEALTH each turn',
-	(SELECT id FROM ENUM_VALUES WHERE name == 'ATTACK_2')-1,
-	(SELECT id FROM ENUM_VALUES WHERE name == 'HEALTH_8')-1,
+	(SELECT id FROM ENUM_VALUES WHERE name == 'ATTACK_1')-1,
+	(SELECT id FROM ENUM_VALUES WHERE name == 'HEALTH_4')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'SHIELD_1')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'SHIELD_BLUE')-1
 );
@@ -79,10 +79,10 @@ VALUES(
 INSERT INTO CreatureCard(name, cost, description,attack,health,shield,shieldType)
 VALUES(
 	'White wizard',
-	(SELECT id FROM ENUM_VALUES WHERE name == 'COST_7')-1,
+	(SELECT id FROM ENUM_VALUES WHERE name == 'COST_2')-1,
 	'Blocks the next 2 attacks on your team',
-	(SELECT id FROM ENUM_VALUES WHERE name == 'ATTACK_7')-1,
-	(SELECT id FROM ENUM_VALUES WHERE name == 'HEALTH_7')-1,
+	(SELECT id FROM ENUM_VALUES WHERE name == 'ATTACK_2')-1,
+	(SELECT id FROM ENUM_VALUES WHERE name == 'HEALTH_2')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'SHIELD_1')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'SHIELD_NONE')-1
 );
@@ -148,21 +148,21 @@ VALUES(
 INSERT INTO CreatureCard(name, cost, description,attack,health,shield,shieldType)
 VALUES(
 	'Giant soldier',
-	(SELECT id FROM ENUM_VALUES WHERE name == 'COST_9')-1,
+	(SELECT id FROM ENUM_VALUES WHERE name == 'COST_1')-1,
 	'No effect',
-	(SELECT id FROM ENUM_VALUES WHERE name == 'ATTACK_8')-1,
-	(SELECT id FROM ENUM_VALUES WHERE name == 'HEALTH_8')-1,
-	(SELECT id FROM ENUM_VALUES WHERE name == 'SHIELD_3')-1,
+	(SELECT id FROM ENUM_VALUES WHERE name == 'ATTACK_1')-1,
+	(SELECT id FROM ENUM_VALUES WHERE name == 'HEALTH_2')-1,
+	(SELECT id FROM ENUM_VALUES WHERE name == 'SHIELD_2')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'SHIELD_BLUE')-1
 );
 
 INSERT INTO CreatureCard(name, cost, description,attack,health,shield,shieldType)
 VALUES(
 	'White dragon',
-	(SELECT id FROM ENUM_VALUES WHERE name == 'COST_10')-1,
+	(SELECT id FROM ENUM_VALUES WHERE name == 'COST_4')-1,
 	'All your friendly creatures gain 1 ATTACK each turn',
-	(SELECT id FROM ENUM_VALUES WHERE name == 'ATTACK_9')-1,
-	(SELECT id FROM ENUM_VALUES WHERE name == 'HEALTH_10')-1,
+	(SELECT id FROM ENUM_VALUES WHERE name == 'ATTACK_4')-1,
+	(SELECT id FROM ENUM_VALUES WHERE name == 'HEALTH_5')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'SHIELD_1')-1,
 	(SELECT id FROM ENUM_VALUES WHERE name == 'SHIELD_NONE')-1
 );
@@ -228,7 +228,7 @@ VALUES(
 INSERT INTO SpellCard(name, cost, description)
 VALUES(
 	'Abracadabra',
-	(SELECT id FROM ENUM_VALUES WHERE name == 'COST_10')-1,
+	(SELECT id FROM ENUM_VALUES WHERE name == 'COST_5')-1,
 	'Your opponent loses 2 random cards from his hand'
 );
 
@@ -247,7 +247,7 @@ VALUES(
 INSERT INTO SpellCard(name, cost, description)
 VALUES(
 	'Block',
-	(SELECT id FROM ENUM_VALUES WHERE name == 'COST_9')-1,
+	(SELECT id FROM ENUM_VALUES WHERE name == 'COST_5')-1,
 	'Block the next 3 attacks for the whole team'
 );
 
@@ -266,7 +266,7 @@ VALUES(
 INSERT INTO SpellCard(name, cost, description)
 VALUES(
 	'Care',
-	(SELECT id FROM ENUM_VALUES WHERE name == 'COST_5')-1,
+	(SELECT id FROM ENUM_VALUES WHERE name == 'COST_3')-1,
 	'Increase a creature''s health of 2 points'
 );
 
@@ -285,7 +285,7 @@ VALUES(
 INSERT INTO SpellCard(name, cost, description)
 VALUES(
 	'Complete Care',
-	(SELECT id FROM ENUM_VALUES WHERE name == 'COST_7')-1,
+	(SELECT id FROM ENUM_VALUES WHERE name == 'COST_5')-1,
 	'Restore the health point of a creature of your choice'
 );
 
