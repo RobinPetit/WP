@@ -1,18 +1,22 @@
 /// Client main file (entry point).
 
+// std-C++ headers
+#include <iostream>
 // WizardPoker headers
 #include "client/Terminal/TerminalApplication.hpp"
 #include "client/Gui/GuiApplication.hpp"
 
-static void printUsage(const std::string& programName)
+/// Print the usage of this program in the standard format.
+static void printUsage(const std::string& programName, std::ostream& os = std::cout)
 {
-	std::cerr << "Usage: " << programName << " [-h] [--no-gui]" << std::endl;
+	os << "Usage: " << programName << " [-h] [--no-gui]" << std::endl;
 }
 
+/// Print the help when --help or -h is given as command line option.
 static void printHelp(const std::string& programName)
 {
 	printUsage(programName);
-	std::cerr << "\n\
+	std::cout << "\n\
 Fantasy multiplayer cards game\n\
 \n\
 Optional arguments:\n\
@@ -24,7 +28,7 @@ Optional arguments:\n\
 static int error(const std::string& programName, const std::string& message)
 {
 	std::cerr << programName << ": error: " << message << std::endl;
-	printUsage(programName);
+	printUsage(programName, std::cerr);
 	return 1;
 }
 
