@@ -141,31 +141,35 @@ void GuiGame::displayHandCards()
 			useCard(i);
 		});
 		// When the mouse enters on the card area
-		// cardData can be captured by value since it isa pointer
-		_selfHand.back()->connect("MouseEntered", [this, cardData]()
-		{
-			if(_isBigCardOnBoard)
-				return;
-			// make a new card, center it and then display it
-			_readableCard.reset(new CardWidget(cardData));
-			_readableCard->setPosition((tgui::bindWidth (*_context.gui) - tgui::bindWidth (_readableCard)) / 2,
-			                           (tgui::bindHeight(*_context.gui) - tgui::bindHeight(_readableCard)) / 2);
-			_isBigCardOnBoard = true;
-			displayGame();
-		});
-		// When the mouse leaves the card area
-		_selfHand.back()->connect("MouseLeft", [this]()
-		{
-			if(_readableCard)
-				_readableCard->hide();
-			_isBigCardOnBoard = false;
-			displayGame();
-		});
+		connectBigCardDisplay(_selfHand.back(), cardData);
 		// Add the card to the panel
 		_selfHandPanel->add(_selfHand.back());
 	}
 	// add the panel on the Gui to be displayed
 	_context.gui->add(_selfHandPanel);
+}
+
+void GuiGame::connectBigCardDisplay(CardWidget::Ptr& card, const CommonCardData *cardData)
+{
+	card->connect("MouseEntered", [this, cardData]()
+	{
+		if(_isBigCardOnBoard)
+			return;
+		// make a new card, center it and then display it
+		_readableCard.reset(new CardWidget(cardData));
+		_readableCard->setPosition((tgui::bindWidth (*_context.gui) - tgui::bindWidth (_readableCard)) / 2,
+					   (tgui::bindHeight(*_context.gui) - tgui::bindHeight(_readableCard)) / 2);
+		_isBigCardOnBoard = true;
+		displayGame();
+	});
+	// When the mouse leaves the card area
+	card->connect("MouseLeft", [this]()
+	{
+		if(_readableCard)
+			_readableCard->hide();
+		_isBigCardOnBoard = false;
+		displayGame();
+	});
 }
 
 void GuiGame::displaySelfBoard()
@@ -179,7 +183,7 @@ void GuiGame::displayOpponentBoard()
 }
 
 void GuiGame::displayPlayerBoard(tgui::Panel::Ptr& panel, std::vector<CardWidget::Ptr>& graphicalCards,
-		std::vector<BoardCreatureData>& creatureDatas, bool reversed)
+		std::vector<BoardCreatureData>& creatureDatas, bool reversed, bool displayableWhenMouseOver)
 {
 	const auto cardHeight{panel->getSize().y};
 	const auto cardWidth{cardHeight * (CardGui::widthCard / static_cast<float>(CardGui::heightCard))};
@@ -199,8 +203,9 @@ void GuiGame::displayPlayerBoard(tgui::Panel::Ptr& panel, std::vector<CardWidget
 	for(auto i{0U}; i < nbOfCards; ++i)
 	{
 		cardId monsterId{creatureDatas.at(i).id};
+		const auto cardData{_context.client->getCardData(monsterId)};
 		// create the new card to display
-		graphicalCards.push_back(std::make_shared<CardWidget>(_context.client->getCardData(monsterId)));
+		graphicalCards.push_back(std::make_shared<CardWidget>(cardData));
 		// have it resized to fit in the panel
 		graphicalCards.back()->setSize(cardWidth, cardHeight);
 		// place it correctly (and rotate if needed)
@@ -211,6 +216,9 @@ void GuiGame::displayPlayerBoard(tgui::Panel::Ptr& panel, std::vector<CardWidget
 		}
 		else
 			graphicalCards.back()->setPosition(currentWidth, 0);
+
+		if(displayableWhenMouseOver)
+			connectBigCardDisplay(graphicalCards.back(), cardData);
 		// update the current position on the panel
 		currentWidth += cardWidth;
 
