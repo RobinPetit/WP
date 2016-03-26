@@ -35,6 +35,20 @@ GuiGame::GuiGame(Context& context):
 	_endTurnButton->setPosition((_width + _cardsLayoutWidth) / 2 + 5, _height - 50);
 	// default behaviour of button is to be disabled (re-enabled at the beginning of each turn)
 	_endTurnButton->disable();
+
+	// self board
+	tgui::Panel::Ptr selfBoard{std::make_shared<tgui::Panel>()};
+	selfBoard->setBackgroundColor(sf::Color(50, 50, 50));
+	selfBoard->setSize(_width, 180);
+	selfBoard->setPosition({0.f, _height - (_selfHandPanel->getSize().y + 10 + selfBoard->getSize().y + 20)});
+	_context.gui->add(selfBoard);
+
+	// opponent board
+	tgui::Panel::Ptr opponentBoard{std::make_shared<tgui::Panel>()};
+	opponentBoard->setBackgroundColor(sf::Color(100, 100, 100));
+	opponentBoard->setSize(_width, 180);
+	opponentBoard->setPosition({0.f, _height - (_selfHandPanel->getSize().y + 10 + selfBoard->getSize().y + 20  + opponentBoard->getSize().y + 10)});
+	_context.gui->add(opponentBoard);
 }
 
 void GuiGame::startTurn()
@@ -93,7 +107,6 @@ void GuiGame::displayHandCards()
 
 	// do not use an iterator-for loop since i is a used counter variable
 	const float distanceBetweenCards{(availableWidth/(static_cast<float>(_selfHandCards.size()) - 1.f)).getValue()};
-	std::cout << "Distance beteen cards: " << distanceBetweenCards << std::endl;
 	for(unsigned i{0U}; i < _selfHandCards.size(); ++i)
 	{
 		const auto cardData{_context.client->getCardData(_selfHandCards.at(i).id)};
