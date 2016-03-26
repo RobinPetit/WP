@@ -141,6 +141,7 @@ private:
 				},
 				AchievementsListItem {
 					///\TODO: the current implementation of this achievement is HEAVY
+					///\FIXME: achievement lost when position decrease
 					7,
 					nullptr, nullptr,
 					&ServerDatabase::getLadderPositionPercent
