@@ -16,7 +16,8 @@ GuiGame::GuiGame(Context& context):
 	_height{tgui::bindHeight(*_context.gui)},
 	_selfHandPanel{std::make_shared<tgui::Panel>()},
 	_endTurnButton{std::make_shared<tgui::Button>()},
-	_cardsLayoutWidth{_width/1.4f}
+	_cardsLayoutWidth{_width/1.4f},
+	_isBigCardOnBoard{false}
 {
 	// have the grid sized so that we can align perfectly 4 cards in it
 	_selfHandPanel->setSize(_cardsLayoutWidth, (_cardsLayoutWidth/4.f * (CardGui::heightCard / static_cast<float>(CardGui::widthCard))));
@@ -78,15 +79,36 @@ void GuiGame::displayGame()
 	unsigned i{0U};
 	for(const auto& card : _selfHandCards)
 	{
+		auto cardData{_context.client->getCardData(card.id)};
 		auto xPos{(static_cast<float>(i)/(static_cast<float>(_selfHandCards.size()) - 1.f)) * availableWidth};
-		selfHand.push_back(std::make_shared<CardWidget>(_context.client->getCardData(card.id)));
+		selfHand.push_back(std::make_shared<CardWidget>(cardData));
 		selfHand.back()->setSize(_cardsLayoutWidth / 4.f, gridHeight);
 		selfHand.back()->setPosition({xPos.getValue(), 0.f});
 
-		// each card is associated to their index in the hand
+		// each card is associated to their index in the hand (to send when clicked)
 		selfHand.back()->connect("MousePressed", [this, i]()
 		{
 			useCard(i);
+		});
+		// When the mouse enters on the card area
+		// cardData can be captured by value since it isa pointer
+		selfHand.back()->connect("MouseEntered", [this, cardData]()
+		{
+			if(_isBigCardOnBoard)
+				return;
+			// make a new card, center it and then display it
+			_readableCard.reset(new CardWidget(cardData));
+			_readableCard->setPosition((tgui::bindWidth (*_context.gui) - tgui::bindWidth (_readableCard)) / 2,
+			                           (tgui::bindHeight(*_context.gui) - tgui::bindHeight(_readableCard)) / 2);
+			_readableCard->show();
+			_isBigCardOnBoard = true;
+		});
+		// When the mouse leaves the card area
+		selfHand.back()->connect("MouseLeft", [this]()
+		{
+			//_context.gui->remove(_readableCard);
+			_readableCard->hide();
+			_isBigCardOnBoard = false;
 		});
 		_selfHandPanel->add(selfHand.back());
 		++i;
@@ -96,6 +118,8 @@ void GuiGame::displayGame()
 
 	_context.gui->add(_endTurnButton);
 	_context.gui->add(_selfHandPanel);
+	if(_isBigCardOnBoard)
+		_context.gui->add(_readableCard);
 
 	refreshScreen();
 }

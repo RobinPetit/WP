@@ -76,6 +76,12 @@ private:
 	/// Length (on X axis) of the hand cards
 	const tgui::Layout _cardsLayoutWidth;
 
+	/// A card to display (in big) when passing the mouse over a hand card
+	CardWidget::Ptr _readableCard;
+
+	/// A boolean telling whether or not the big card is displayed at a very moment
+	bool _isBigCardOnBoard;
+
 	//////////////////// Methods
 
 	////////// overriden methods
