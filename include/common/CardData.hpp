@@ -4,7 +4,7 @@
 #include <vector>
 #include <sstream>
 #include <memory>
-#include "common/Identifiers.hpp" // CardId, deckId...
+#include "common/Identifiers.hpp" // CardId, DeckId...
 #include "common/CardData.inc"
 
 constexpr int UNLIMITED_TURNS = 100;

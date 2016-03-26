@@ -7,7 +7,7 @@
 // WizardPoker headers
 #include "server/Player.hpp"
 #include "server/ClientInformations.hpp"
-#include "common/Identifiers.hpp"  // userId
+#include "common/Identifiers.hpp"  // UserId
 #include "server/ServerDatabase.hpp"
 #include "common/sockets/EndGame.hpp"
 #include "common/random/RandomInteger.hpp"
@@ -19,16 +19,16 @@ class GameThread final : public std::thread
 {
 public:
 	/*------------------------------ Attributes */
-	const userId _player1Id;
-	const userId _player2Id;
+	const UserId _player1Id;
+	const UserId _player2Id;
 
 	/*------------------------------ Methods */
 	/// Constructor
-	GameThread(ServerDatabase& database, userId player1Id, userId player2Id);
+	GameThread(ServerDatabase& database, UserId player1Id, UserId player2Id);
 
 	/// Constructor starting a thread
 	template <class F, class ...Args>
-	explicit GameThread(ServerDatabase& database, userId player1Id, userId player2Id, F&& f, Args&&... args);
+	explicit GameThread(ServerDatabase& database, UserId player1Id, UserId player2Id, F&& f, Args&&... args);
 
 	/// Interface for Server
 
@@ -41,7 +41,7 @@ public:
 	/// \param player1 The data (port/address) for the first player
 	/// \param player2 \see player1
 	/// \return The id of the winner
-	userId playGame(const ClientInformations& player1, const ClientInformations& player2);
+	UserId playGame(const ClientInformations& player1, const ClientInformations& player2);
 	void interruptGame(); ///< Stops the running thread (abort)
 
 	/// Interface for Player
@@ -49,7 +49,7 @@ public:
 	/// Signals the game is over and register the winner and the reason of the win
 	/// \param winnerId The id of the winner
 	/// \param cause The reason of the end of the game
-	void endGame(userId winnerId, EndGame::Cause cause);
+	void endGame(UserId winnerId, EndGame::Cause cause);
 
 	/// Method to call to force the end of the current turn and the start of the other player's turn
 	void swapTurns();
@@ -81,7 +81,7 @@ private:
 	PostGameData _postGameDataPlayer2;
 	ServerDatabase& _database;
 
-	userId _winnerId;
+	UserId _winnerId;
 	EndGame::Cause _endGameCause;
 
 	int _turn;
@@ -116,7 +116,7 @@ private:
 /*------------------------------ Template code */
 
 template <typename Function, class... Args>
-GameThread::GameThread(ServerDatabase& database, userId player1Id, userId player2Id, Function&& function, Args&&... args):
+GameThread::GameThread(ServerDatabase& database, UserId player1Id, UserId player2Id, Function&& function, Args&&... args):
 	std::thread(function, args...),
 	_player1Id(player1Id),
 	_player2Id(player2Id),

@@ -27,7 +27,7 @@ std::array<std::function<void(Player&, EffectArgs)>, P_EFFECTS_COUNT> Player::_e
 	&Player::changeHealth,
 };
 
-Player::Player(GameThread& gameThread, ServerDatabase& database, userId id, Player& opponent, PostGameData& postGameData):
+Player::Player(GameThread& gameThread, ServerDatabase& database, UserId id, Player& opponent, PostGameData& postGameData):
 	_postGameData(postGameData),
 	_gameThread(gameThread),
 	_database(database),
@@ -52,7 +52,7 @@ std::vector<std::unique_ptr<Card>>::size_type Player::getHandSize() const
 	return _cardHand.size();
 }
 
-userId Player::getId() const
+UserId Player::getId() const
 {
 	return _id;
 }
