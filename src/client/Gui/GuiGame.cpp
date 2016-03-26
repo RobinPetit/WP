@@ -95,6 +95,7 @@ void GuiGame::displayGame()
 	_context.gui->remove(_endTurnButton);
 
 	displayHandCards();
+	displaySelfBoard();
 
 	_context.gui->add(_selfBoardPanel);
 	_context.gui->add(_opponentBoardPanel);
@@ -160,6 +161,37 @@ void GuiGame::displayHandCards()
 	}
 	// add the panel on the Gui to be displayed
 	_context.gui->add(_selfHandPanel);
+}
+
+void GuiGame::displaySelfBoard()
+{
+	// static variables
+	static auto cardHeight{_selfBoardPanel->getSize().y};
+	static auto cardWidth{cardHeight * (CardGui::widthCard / static_cast<float>(CardGui::heightCard))};
+	static unsigned int nbOfPossibleCards{static_cast<unsigned int>(_selfBoardPanel->getSize().x / cardWidth)};
+	static float widthBetweenCards{(_selfBoardPanel->getSize().x / static_cast<float>(nbOfPossibleCards)) - cardWidth};
+
+	_selfBoardPanel->removeAllWidgets();
+
+	std::vector<CardWidget::Ptr> selfBoard;
+	auto nbOfCards{_selfBoardCreatures.size()};
+	const float usedWidth{static_cast<float>(nbOfCards) * (cardWidth + widthBetweenCards) - widthBetweenCards};
+	float currentWidth{(_selfBoardPanel->getSize().x - usedWidth) / 2.f};
+
+	for(auto i{0U}; i < nbOfCards; ++i)
+	{
+		cardId monsterId{_selfBoardCreatures.at(i).id};
+		selfBoard.push_back(std::make_shared<CardWidget>(_context.client->getCardData(monsterId)));
+		selfBoard.back()->setSize(cardWidth, cardHeight);
+		selfBoard.back()->setPosition(currentWidth, 0);
+		currentWidth += cardWidth;
+
+		// TODO: add possibility to click to attack with monster
+
+		_selfBoardPanel->add(selfBoard.back());
+		currentWidth += widthBetweenCards;
+	}
+	_context.gui->add(_selfBoardPanel);
 }
 
 // NOTE: this is copy/paste from GuiAbstractState. TODO: factorize by creating an interface
@@ -307,3 +339,4 @@ GuiGame::~GuiGame()
 {
 	_context.gui->removeAllWidgets();
 }
+

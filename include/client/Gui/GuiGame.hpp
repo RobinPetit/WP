@@ -135,6 +135,8 @@ private:
 
 	/// Does not lock the screen.
 	void displayHandCards();
+
+	void displaySelfBoard();
 };
 
 #endif  // _GUI_GAME_HPP_
