@@ -89,6 +89,8 @@ class AbstractGame
 		// Game display
 		virtual void displayGame() = 0;
 
+		virtual void updateDisplay() = 0;
+
 		virtual void displayMessage(const std::string& message) = 0;
 
 		virtual void displayAchievements(ClientAchievementList& newAchievements) = 0;

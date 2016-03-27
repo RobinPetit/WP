@@ -135,6 +135,8 @@ private:
 	/// \param message The message to show to user
 	void displayMessage(const std::string& message) override;
 
+	void updateDisplay() override;
+
 	int askSelfHandIndex() override;
 	int askSelfBoardIndex() override;
 	int askSelfGraveyardIndex() override;

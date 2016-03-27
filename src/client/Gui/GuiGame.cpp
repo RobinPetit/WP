@@ -167,6 +167,12 @@ void GuiGame::displayGame()
 	refreshScreen();
 }
 
+void GuiGame::updateDisplay()
+{
+	if(_playing.load())
+		displayGame();
+}
+
 void GuiGame::displayHandCards()
 {
 	static auto availableWidth{_cardsLayoutWidth * 3.f / 4.f};

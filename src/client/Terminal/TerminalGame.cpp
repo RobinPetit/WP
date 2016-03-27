@@ -115,6 +115,12 @@ void TerminalGame::displayGame()
 	std::cout << "***************" << std::endl;
 }
 
+void TerminalGame::updateDisplay()
+{
+	if(_playing.load() and not _myTurn.load())
+		displayGame();
+}
+
 void TerminalGame::displayCardVector(const std::vector<CardData>& cardVector, bool displayDescription)
 {
 	// Displays simple informations about a card vector

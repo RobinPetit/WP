@@ -22,6 +22,7 @@ private:
 
 	void displayOptions();
 	void displayGame() override;
+	void updateDisplay() override;
 	void displayCardVector(const std::vector<CardData>& cardVector, bool displayDescription=false);
 	void displayBoardCreatureVector(const std::vector<BoardCreatureData>& cardVector, bool displayDescription=false);
 
