@@ -2,7 +2,9 @@
 #define _GUI_CARDS_COLLECTION_STATE_CLIENT_HPP
 
 // External headers
-#include <TGUI/TGUI.hpp>
+#include <TGUI/Widgets/Grid.hpp>
+#include <TGUI/Widgets/Panel.hpp>
+#include <TGUI/Widgets/Scrollbar.hpp>
 // WizardPoker headers
 #include "client/Gui/GuiAbstractState.hpp"
 #include "client/states/AbstractCardsCollectionState.hpp"

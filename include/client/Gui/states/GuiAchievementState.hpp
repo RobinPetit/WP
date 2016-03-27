@@ -2,8 +2,6 @@
 #define _GUI_ACHIEVEMENT_STATE_CLIENT_HPP
 
 // External headers
-#include <TGUI/Animation.hpp>
-#include <TGUI/Widget.hpp>
 #include <TGUI/Widgets/Panel.hpp>
 #include <TGUI/Widgets/Scrollbar.hpp>
 #include <TGUI/VerticalLayout.hpp>

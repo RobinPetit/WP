@@ -1,3 +1,5 @@
+// External headers
+#include <TGUI/Animation.hpp>
 // WizardPoker headers
 #include "client/Gui/states/GuiAchievementState.hpp"
 

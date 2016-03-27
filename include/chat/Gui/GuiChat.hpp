@@ -2,7 +2,12 @@
 #define _GUI_CHAT_CHAT_HPP
 
 // External headers
-#include <TGUI/TGUI.hpp>
+#include <TGUI/Gui.hpp>
+#include <TGUI/VerticalLayout.hpp>
+#include <TGUI/HorizontalLayout.hpp>
+#include <TGUI/Widgets/ChatBox.hpp>
+#include <TGUI/Widgets/EditBox.hpp>
+#include <TGUI/Widgets/Button.hpp>
 // WizardPoer headers
 #include "chat/AbstractChat.hpp"
 #include "common/Terminal.hpp"
