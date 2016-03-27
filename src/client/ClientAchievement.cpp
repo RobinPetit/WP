@@ -11,19 +11,23 @@ ClientAchievement::ClientAchievement(const Achievement achievement, const Achiev
 	assert(_achievementData.id == _achievement.id);
 }
 
-std::string ClientAchievement::getName() const
+const std::string& ClientAchievement::getName() const
 {
 	return _achievementData.name;
 }
 
 std::string ClientAchievement::getPrettyName() const
 {
-	return (isUnlocked() ? std::string("✔ ") : std::string("✘ "))
-	       + getName()
-	       + (isUnlocked() ? "" : std::string(" (") + std::to_string(getCurrentProgress()) + "/" + std::to_string(getRequiredProgress()) + ")");
+	return (isUnlocked() ? std::string("✔ ") : std::string("✘ ")) + getDecentName();
 }
 
-std::string ClientAchievement::getDescription() const
+std::string ClientAchievement::getDecentName() const
+{
+	return getName() +
+		(isUnlocked() ? "" : std::string(" (") + std::to_string(getCurrentProgress()) + "/" + std::to_string(getRequiredProgress()) + ")");
+}
+
+const std::string& ClientAchievement::getDescription() const
 {
 	return _achievementData.description;
 }
