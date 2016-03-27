@@ -14,7 +14,8 @@ GuiHomeState::GuiHomeState(Context& context):
 	_passwordEditBox{std::make_shared<tgui::EditBox>()},
 	_connectButton{std::make_shared<tgui::Button>()},
 	_createAccountButton{std::make_shared<tgui::Button>()},
-	_grid{std::make_shared<tgui::Grid>()}
+	_grid{std::make_shared<tgui::Grid>()},
+	_gridBottom{std::make_shared<tgui::Grid>()}
 {
 	// Get a bound version of the window size
 	// Passing this to setPosition or setSize will make the widget automatically
@@ -25,13 +26,13 @@ GuiHomeState::GuiHomeState(Context& context):
 	makeTitle("WizardPoker", 40U);
 
 	// Configure the widgets
-	_userNameLabel->setText("User name:");
+	_userNameLabel->setText("Username");
 	// Focus the password edit box when pressing enter in user name edit box
 	_userNameEditBox->connect("ReturnKeyPressed", [this]()
 	{
 		_passwordEditBox->focus();
 	});
-	_passwordLabel->setText("Password:");
+	_passwordLabel->setText("Password");
 	// Connect when pressing enter in the password edit box
 	_passwordEditBox->connect("ReturnKeyPressed", &GuiHomeState::connect, this);
 	_passwordEditBox->setPasswordCharacter('*');  // Display only stars in the edit box
@@ -42,16 +43,20 @@ GuiHomeState::GuiHomeState(Context& context):
 
 	// Add the widgets to the grid
 	_grid->setPosition(windowWidth/4.f, windowHeight/4.f);
-	_grid->setSize(windowWidth/2.f, windowHeight/2.f);
+	_grid->setSize(windowWidth/2.f, windowHeight/4.f);
 	_grid->addWidget(_userNameLabel, 0, 0, {0, 0, 0, 0}, tgui::Grid::Alignment::Up);
-	_grid->addWidget(_userNameEditBox, 0, 1, {0, 0, 0, 0}, tgui::Grid::Alignment::Up);
+	_grid->addWidget(_userNameEditBox, 0, 1, {2, 0, 0, 0}, tgui::Grid::Alignment::Up);
 	_grid->addWidget(_passwordLabel, 1, 0, {0, 0, 0, 0}, tgui::Grid::Alignment::Up);
-	_grid->addWidget(_passwordEditBox, 1, 1, {0, 0, 0, 0}, tgui::Grid::Alignment::Up);
-	_grid->addWidget(_connectButton, 2, 0);
-	_grid->addWidget(_createAccountButton, 2, 1);
+	_grid->addWidget(_passwordEditBox, 1, 1, {2, 0, 0, 0}, tgui::Grid::Alignment::Up);
 	_context.gui->add(_grid);
 
-	registerRootWidgets({_grid});
+	_gridBottom->setPosition(tgui::bindLeft(_grid), tgui::bindBottom(_grid));
+	_gridBottom->setSize(windowWidth/2.f, windowHeight/4.f);
+	_gridBottom->addWidget(_connectButton, 0, 0);
+	_gridBottom->addWidget(_createAccountButton, 1, 0);
+	_context.gui->add(_gridBottom);
+
+	registerRootWidgets({_grid, _gridBottom});
 	_userNameEditBox->focus();  // Focus the user name edit box by default
 }
 
