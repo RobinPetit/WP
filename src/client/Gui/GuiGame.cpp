@@ -134,6 +134,25 @@ void GuiGame::refreshScreen()
 	_context.window->display();
 }
 
+void GuiGame::processWindowEvents()
+{
+	sf::Event event;
+	while(not _context.window->pollEvent(event))
+		sf::sleep(sf::milliseconds(10));
+	do
+	{
+		if(event.type == sf::Event::Closed)
+		{
+			quit();
+			_context.window->close();
+			// maybe exit(0); ?
+			return;
+		}
+		_context.gui->handleEvent(event);
+	}
+	while(_context.window->pollEvent(event));
+}
+
 void GuiGame::displayGame()
 {
 	// don't forget to lock the screen!
@@ -187,7 +206,7 @@ void GuiGame::displayHandCards()
 void GuiGame::displayInfo()
 {
 	_selfHealthLabel->setText("Health: " + std::to_string(_selfHealth));
-	_selfEnergyLabel->setText("Energy: " + std::to_string(_selfHealth));
+	_selfEnergyLabel->setText("Energy: " + std::to_string(_selfEnergy));
 	_selfDeckSizeLabel->setText("Deck size: " + std::to_string(_selfDeckSize));
 	_selfGraveyardSizeLabel->setText("Grave size: " + std::to_string(_selfGraveCards.size()));
 
@@ -417,14 +436,10 @@ void GuiGame::chooseDeck()
 	_context.gui->add(selectButton);
 
 	// Have an inner event loop to not leave the function as long as deck has not been selected
-	sf::Event event;
 	while(not _decksChosen)
 	{
 		refreshScreen();
-
-		// Use waitEvent to block everything
-		_context.window->waitEvent(event);
-		_context.gui->handleEvent(event);
+		processWindowEvents();
 	}
 	// clean the GUI
 	_context.gui->remove(selectButton);
@@ -450,21 +465,11 @@ void GuiGame::displayAchievements(ClientAchievementList& /* newAchievements */)
 
 void GuiGame::waitUntil(std::function<bool()> booleanFunction)
 {
-	sf::Event event;
 	while(not booleanFunction())
 	{
 		if(_display)
 			displayGame();
-		while(not _context.window->pollEvent(event))
-			sf::sleep(sf::milliseconds(10));
-		do
-		{
-			if(event.type == sf::Event::Closed)
-				quit();
-			else
-				_context.gui->handleEvent(event);
-		}
-		while(_context.window->pollEvent(event));
+		processWindowEvents();
 	}
 }
 

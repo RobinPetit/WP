@@ -188,6 +188,9 @@ private:
 	/// Resets the screen and then redraws the current interface
 	void refreshScreen();
 
+	/// Waits until event are available, and process them.
+	void processWindowEvents();
+
 	/// Callback called when a card on the user's board is clicked
 	/// \param index The index of the card that's been clicked
 	void handleSelfBoardClick(int index);
