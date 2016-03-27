@@ -171,9 +171,9 @@ private:
 
 	int askSelfHandIndex() override;
 	int askSelfBoardIndex() override;
-	int askSelfGraveyardIndex() override;
+	//int askSelfGraveyardIndex() override;
 	int askOppoBoardIndex() override;
-	int askOppoHandIndex() override;
+	//int askOppoHandIndex() override;
 
 	/// Displays the decks and ask to user to select the one to play with
 	void chooseDeck() override;

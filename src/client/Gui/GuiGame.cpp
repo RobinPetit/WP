@@ -477,17 +477,18 @@ int GuiGame::askOppoBoardIndex()
 	return askIndexFromVector(_opponentBoard);
 }
 
-// <TODO>
-int GuiGame::askSelfGraveyardIndex()
+// may be used someday
+/*int GuiGame::askSelfGraveyardIndex()
 {
+	// todo
 	return -42;
 }
 
 int GuiGame::askOppoHandIndex()
 {
+	// todo
 	return -42;
-}
-// </TODO>
+}*/
 
 void GuiGame::chooseDeck()
 {

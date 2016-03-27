@@ -34,9 +34,9 @@ private:
 
 	int askSelfHandIndex() override;
 	int askSelfBoardIndex() override;
-	int askSelfGraveyardIndex() override;
 	int askOppoBoardIndex() override;
-	int askOppoHandIndex() override;
+	//int askSelfGraveyardIndex() override;
+	//int askOppoHandIndex() override;
 
 	bool wantToAttackOpponent();
 
