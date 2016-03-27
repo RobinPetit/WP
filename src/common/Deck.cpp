@@ -53,3 +53,23 @@ Deck::Iterator Deck::end()
 {
 	return _cards.end();
 }
+
+Deck::ConstIterator Deck::begin() const
+{
+	return _cards.cbegin();
+}
+
+Deck::ConstIterator Deck::end() const
+{
+	return _cards.cend();
+}
+
+Deck::ConstIterator Deck::cbegin() const
+{
+	return _cards.cbegin();
+}
+
+Deck::ConstIterator Deck::cend() const
+{
+	return _cards.cend();
+}
