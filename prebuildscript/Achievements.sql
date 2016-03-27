@@ -49,6 +49,7 @@ INSERT INTO Achievement(id, name, description, progressRequired) VALUES
 	1
 ),
 (
+	-- Maybe should add a number of game to have played
 	7,
 	"...dary!",
 	"Make it to the top 1% of the ladder (be better than 99%)",
@@ -67,6 +68,7 @@ INSERT INTO Achievement(id, name, description, progressRequired) VALUES
 	5
 ),
 (
+	-- TODO: use client local time instead of UTC
 	10,
 	"Half-No-Life",
 	"Play every day for 42 days",

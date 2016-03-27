@@ -18,7 +18,9 @@ std::string ClientAchievement::getName() const
 
 std::string ClientAchievement::getPrettyName() const
 {
-	return getName() + (isUnlocked() ? " ✔" : std::string(" (") + std::to_string(getCurrentProgress()) + "/" + std::to_string(getRequiredProgress()) + ")");
+	return (isUnlocked() ? std::string("✔ ") : std::string("✘ "))
+	       + getName()
+	       + (isUnlocked() ? "" : std::string(" (") + std::to_string(getCurrentProgress()) + "/" + std::to_string(getRequiredProgress()) + ")");
 }
 
 std::string ClientAchievement::getDescription() const
