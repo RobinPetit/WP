@@ -84,20 +84,26 @@ private:
 	/// A boolean telling whether or not the big card is displayed at a very moment
 	bool _isBigCardOnBoard;
 
+	/// The panel containing the board of the opponent
 	tgui::Panel::Ptr _opponentBoardPanel;
 
+	/// The panel containing the board of the user
 	tgui::Panel::Ptr _selfBoardPanel;
 
-	std::vector<CardWidget::Ptr> _selfHand;
+	/// The cards in the user's hands
+	DisplayableCardsCollection _selfHand;
 
-	std::vector<CardWidget::Ptr> _selfBoard;
+	/// The cards on the user's board
+	DisplayableCardsCollection _selfBoard;
 
-	std::vector<CardWidget::Ptr> _opponentBoard;
+	/// The cards on the opponent's board
+	DisplayableCardsCollection _opponentBoard;
 
 	// take negative values to select nothing
 	int _currentSelfSelection;
 	int _currentOpponentSelection;
 
+	/// A value meaning that no card is currently selected
 	static constexpr int NoSelection{-1};
 
 	//////////////////// Methods
@@ -144,21 +150,33 @@ private:
 	/// Loops on events for as long as the turn is yours
 	void handleInputs();
 
+	/// Fills the screen in white
 	void clearScreen();
 
 	/// Sets the correct value on the gui cards according to the
 	/// protected inherited attributes
 	void updateGuiCardValues();
 
+	/// Interface to update the values on a whole board (player or opponent)
+	/// \see updateCard
+	/// \param dataBoard A vector of card data
+	/// \param guiBoard A vector of displayable cards
 	void updateGuiBoard(std::vector<BoardCreatureData>& dataBoard, std::vector<CardWidget::Ptr>& guiBoard);
 
+	/// Changes the values on a graphical card according to \a data
+	/// \param card A displayable card to update
+	/// \param data The values to use to replace the card
 	void updateCard(CreatureGui *card, const BoardCreatureData& data);
 
 	/// Resets the screen and then redraws the current interface
 	void refreshScreen();
 
+	/// Callback called when a card on the user's board is clicked
+	/// \param index The index of the card that's been clicked
 	void handleSelfBoardClick(int index);
 
+	/// Callback called when a card on the opponent's board is clicked
+	/// \param index The index of the card that's been clicked
 	void handleOpponentBoardClick(int index);
 
 	/// Function to allow "big card" to be displayed when mouse passes over the card
@@ -166,10 +184,18 @@ private:
 	/// \param cardData The data to create the big card
 	void connectBigCardDisplay(CardWidget::Ptr& card, const CommonCardData *cardData, const BoardCreatureData *data=nullptr);
 
+	/// Creates the new card to be displayed at the center of the screen
+	/// \param cardData The data used to create the card
 	void createBigCard(const CommonCardData *cardData);
 
+	/// Displays the big card
+	/// \see createBigCard
+	/// \param cardData The data used to create the card
 	void displayBigCard(const CommonCardData *cardData);
 
+	/// Displays the big card and updates it according to \a data
+	/// \param cardData The data used to create the prototype of the big card
+	/// \param data The data used to update the values on the card
 	void displayBigCreature(const CommonCardData *cardData, const BoardCreatureData& data);
 
 	/// Function to display the cards the user has in his hands
