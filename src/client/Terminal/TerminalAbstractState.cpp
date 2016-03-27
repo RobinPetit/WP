@@ -47,7 +47,7 @@ void TerminalAbstractState::displayNumberedEntry(const std::string& entryText, i
 	std::cout << std::string(spacesCount, ' ') << entryNumber << ". " << entryText << std::endl;
 }
 
-void TerminalAbstractState::displayCard(CardId id, bool displayId)
+void TerminalAbstractState::displayCard(CardId id, bool displayValue, int value)
 {
 	auto cardData = _context.client->getCardData(id);
 	assert(cardData->isCreature() or cardData->isSpell());
@@ -56,8 +56,8 @@ void TerminalAbstractState::displayCard(CardId id, bool displayId)
 	{
 		const ClientCreatureData* castedCardData{dynamic_cast<const ClientCreatureData*>(cardData)};
 		assert(castedCardData != nullptr);
-		if (displayId)
-			displayNumberedEntry(std::string(castedCardData->getName()) + " (creature)", static_cast<int>(id));
+		if (displayValue)
+			displayNumberedEntry(std::string(castedCardData->getName()) + " (creature)", value);
 		else
 			displayEntry(std::string(castedCardData->getName()) + " (creature)");
 		displayEntry(std::string("cost: ") + std::to_string(castedCardData->getCost())
@@ -72,13 +72,23 @@ void TerminalAbstractState::displayCard(CardId id, bool displayId)
 		const ClientSpellData* castedCardData{dynamic_cast<const ClientSpellData*>(cardData)};
 		assert(castedCardData != nullptr);
 
-		if (displayId)
-			displayNumberedEntry(std::string(castedCardData->getName()) + " (spell)", static_cast<int>(id));
+		if (displayValue)
+			displayNumberedEntry(std::string(castedCardData->getName()) + " (spell)", value);
 		else
 			displayEntry(std::string(castedCardData->getName()) + " (spell)");
 		displayEntry(std::string("cost: ") + std::to_string(castedCardData->getCost()), '-', 1);
 		displayEntry(castedCardData->getDescription(), '-', 1);
 	}
+}
+
+void TerminalAbstractState::displayCardWithIndex(CardId id, std::size_t index)
+{
+	displayCard(id, true, index);
+}
+
+void TerminalAbstractState::displayCardWithId(CardId id)
+{
+	displayCard(id, true, id);
 }
 
 void TerminalAbstractState::handleInput()

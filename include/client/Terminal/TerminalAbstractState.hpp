@@ -60,7 +60,8 @@ class TerminalAbstractState : virtual public AbstractState
 		void displayEntry(const std::string& entryText, char sep='*', std::size_t entryLevel=0);
 		void displayNumberedEntry(const std::string& entryText, int entryNumber, std::size_t entryLevel=0);
 
-		void displayCard(CardId id, bool displayId=false);
+		void displayCard(CardId id, bool displayValue=false, int value=0);
+		void displayCardWithId(CardId id);
 		void displayCardWithIndex(CardId id, std::size_t index);
 
 	private:

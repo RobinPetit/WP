@@ -22,9 +22,9 @@ void TerminalDecksManagementState::display()
 {
 	displaySeparator("Decks");
 
-	int i{0};
+	int i{1};
 	for(const auto& deck : _decks)
-		displayEntry(std::to_string(i++) + ". " + deck.getName());
+		displayNumberedEntry(deck.getName(), i++);
 
 	// Display the actions
 	TerminalAbstractState::display();
@@ -34,15 +34,16 @@ void TerminalDecksManagementState::displayDeck()
 {
 	if(_decks.empty())
 	{
-		std::cout << "There are no deck to display!\n";
+		std::cout << "There is no deck to display!\n";
 		return;
 	}
-	std::cout << "Which deck would you like to display? ";
-	const std::size_t index{askForNumber(0, _decks.size() -1)};
+	//get index of deck to display
+	std::cout << "Choose a deck to display: ";
+	const std::size_t index{askForNumber(1, _decks.size()+1) - 1};
 
 	displaySeparator(_decks[index].getName(), '~'); // display the deck's name
 	for(const auto& cardId : _decks[index])  // display the deck's content
-		displayCard(cardId);
+		displayCardWithId(cardId);
 
 	waitForEnter();
 }
@@ -54,11 +55,12 @@ void TerminalDecksManagementState::editDeck()
 		std::cout << "There is no deck to edit!\n";
 		return;
 	}
-	std::cout << "Which deck would you like to edit ? ";
+	std::cout << "Choose a deck to edit: ";
 	std::size_t deckIndex;
 	try
 	{
-		deckIndex = askForNumber(0, _decks.size() - 1);
+		//ask for a deck index
+		deckIndex = askForNumber(1, _decks.size()+1) - 1;
 	}
 	catch(const std::logic_error& e)
 	{
@@ -72,12 +74,14 @@ void TerminalDecksManagementState::editDeck()
 	{
 		try
 		{
+			//ask for the index of the card to replace
 			std::size_t replacedIndex = askForReplacedCard(deckIndex);
 			if(replacedIndex == 0)
 				break;
 			// Indices are displayed 1 greater than their actual values
 			// (for the card 0, the index 1 is shown to the user)
 			--replacedIndex;
+
 			// Ask for the replacing card put it in the deck
 			_decks[deckIndex].changeCard(replacedIndex, askForReplacingCard(deckIndex));
 		}
@@ -101,33 +105,33 @@ void TerminalDecksManagementState::editDeck()
 }
 std::size_t TerminalDecksManagementState::askForReplacedCard(std::size_t deckIndex)
 {
-	std::cout << "Content of the deck " << _decks[deckIndex].getName() << ":\n";
-
-	// display cards with their id
+	// display the deck's name and content
+	displaySeparator(_decks[deckIndex].getName(), '~');
+	std::size_t index=1;
 	for(const auto& cardId : _decks[deckIndex])
-		displayCard(cardId, true);
+		displayCardWithIndex(cardId, index++);
 
-	std::cout << "Which card do you want to replace (0 to quit)? ";
+	// ask for a card index
+	std::cout << "Choose a card index to be replaced (0 to quit): ";
 	return askForNumber(0, Deck::size + 1);
 }
 
 CardId TerminalDecksManagementState::askForReplacingCard(std::size_t deckIndex)
 {
-	std::cout << "Content of your card collection:\n";
+	displaySeparator("Your Card Collection", '~');
 
 	// display cards with their id
 	for(const auto& cardId : _cardsCollection)
-		displayCard(cardId, true);
+		displayCardWithId(cardId);
 
-	std::cout << "Which card do you want to put in you deck? ";
-	// TODO: even if *for now* database initialization ensure that card ids are consecutive
-	// we shouldn't take this for granted.
-	assert(_context.client->getMaxCardId() == _context.client->getNumberOfCards());
-	CardId replacingCard{static_cast<CardId>(askForNumber(0, static_cast<std::size_t>(_context.client->getNumberOfCards())))};
+	// ask for a card id
+	std::cout << "Choose a card id to put in your deck: ";
+	CardId replacingCard{static_cast<CardId>(askForNumber(0, static_cast<std::size_t>(_context.client->getMaxCardId()+1)))};
 
-	// Check if the given card is valid
+	// Check if user HAS this card
 	if(not _cardsCollection.contains(replacingCard))
 		throw std::logic_error("You do not have this card!");
+	// Check if deck does not contain this card twice
 	if(std::count(_decks.at(deckIndex).begin(), _decks.at(deckIndex).end(), replacingCard) > 1)
 		throw std::logic_error(std::to_string(replacingCard) + " is already two times in your deck, this is the maximum allowed.");
 
@@ -136,7 +140,7 @@ CardId TerminalDecksManagementState::askForReplacingCard(std::size_t deckIndex)
 
 void TerminalDecksManagementState::createDeck()
 {
-	std::cout << "What is the name of your new deck? ";
+	std::cout << "Choose a name for your new deck: ";
 	std::string input;
 	std::getline(std::cin, input);
 	_decks.emplace_back(input);
@@ -154,12 +158,12 @@ void TerminalDecksManagementState::deleteDeck()
 {
 	if(_decks.empty())
 	{
-		std::cout << "There are no deck to delete!\n";
+		std::cout << "There is no deck to delete!\n";
 		return;
 	}
 	try
 	{
-		std::cout << "Which deck would you like to delete? ";
+		std::cout << "Choose a deck to delete: ";
 		const std::size_t input{askForNumber(1, _decks.size() + 1) - 1};
 		_context.client->handleDeckDeletion(_decks[input].getName());
 		_decks.erase(_decks.begin() + input);
