@@ -196,6 +196,7 @@ void GuiGame::updateDisplay()
 void GuiGame::onListeningThreadCreation()
 {
 	assert(_context.window->setActive(false));
+	sf::Context context;
 }
 
 void GuiGame::displayHandCards()
