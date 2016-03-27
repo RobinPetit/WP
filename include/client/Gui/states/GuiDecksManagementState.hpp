@@ -83,7 +83,7 @@ class GuiDecksManagementState : public GuiAbstractState, public AbstractDecksMan
 
 		/// Hint that is displayed when the user has to choose a card from its
 		/// collection.
-		static constexpr char CHOOSE_CARD_FROM_COLLECTION_HINT[] = "This is the content of your collection. Click on a card that you want to put in your deck";
+		static constexpr char CHOOSE_CARD_FROM_COLLECTION_HINT[] = "These are available cards for replacement. Click on a card that you want to put in your deck";
 
 		/// Callback called when the user clicks on a card.
 		void onCardClicked(CardId id);

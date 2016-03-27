@@ -118,10 +118,11 @@ std::size_t TerminalDecksManagementState::askForReplacedCard(std::size_t deckInd
 
 CardId TerminalDecksManagementState::askForReplacingCard(std::size_t deckIndex)
 {
-	displaySeparator("Your Card Collection", '~');
+	displaySeparator("Available cards for replacement", '~');
+	auto cardsCollectionToShow(getCardsCollectionWithoutDeck(_decks[deckIndex]));
 
 	// display cards with their id
-	for(const auto& cardId : _cardsCollection)
+	for(const auto& cardId : cardsCollectionToShow)
 		displayCardWithId(cardId);
 
 	// ask for a card id
