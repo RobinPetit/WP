@@ -26,12 +26,14 @@ GuiHomeState::GuiHomeState(Context& context):
 
 	// Configure the widgets
 	_userNameLabel->setText("User name:");
+	_userNameLabel->setTextColor(sf::Color::White);
 	// Focus the password edit box when pressing enter in user name edit box
 	_userNameEditBox->connect("ReturnKeyPressed", [this]()
 	{
 		_passwordEditBox->focus();
 	});
 	_passwordLabel->setText("Password:");
+	_passwordLabel->setTextColor(sf::Color::White);
 	// Connect when pressing enter in the password edit box
 	_passwordEditBox->connect("ReturnKeyPressed", &GuiHomeState::connect, this);
 	_passwordEditBox->setPasswordCharacter('*');  // Display only stars in the edit box

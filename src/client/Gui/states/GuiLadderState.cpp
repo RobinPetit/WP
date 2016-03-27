@@ -55,10 +55,17 @@ GuiLadderState::GuiLadderEntry::GuiLadderEntry():
 	layout{std::make_shared<tgui::HorizontalLayout>()}
 {
 	layout->add(rankLabel);
+	rankLabel->setTextColor(sf::Color::White);
 	layout->setFixedSize(rankLabel, 50);
+
 	layout->add(playerNameLabel);
+	playerNameLabel->setTextColor(sf::Color::White);
+
 	layout->add(wonGamesLabel);
+	wonGamesLabel->setTextColor(sf::Color::White);
 	layout->setFixedSize(wonGamesLabel, 50);
+
 	layout->add(playedGamesLabel);
+	playedGamesLabel->setTextColor(sf::Color::White);
 	layout->setFixedSize(playedGamesLabel, 50);
 }

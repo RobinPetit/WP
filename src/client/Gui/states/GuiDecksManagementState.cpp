@@ -38,6 +38,7 @@ GuiDecksManagementState::GuiDecksManagementState(Context& context):
 	// Make the hint label
 	_hintLabel->setText(FIRST_HINT);
 	_hintLabel->setTextSize(20U);
+	_hintLabel->setTextColor(sf::Color::White);
 	_hintLabel->setPosition((windowWidth - tgui::bindWidth(_hintLabel)) / 2.f, 70);
 	_context.gui->add(_hintLabel);
 
