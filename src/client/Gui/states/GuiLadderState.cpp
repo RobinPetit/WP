@@ -16,7 +16,6 @@ GuiLadderState::GuiLadderState(Context& context):
 {
 	auto windowWidth(tgui::bindWidth(*_context.gui));
 	auto windowHeight(tgui::bindHeight(*_context.gui));
-	float scrollBarWidth = 30;
 	float lineHeight = 25;
 
 	// Make the title
@@ -29,7 +28,7 @@ GuiLadderState::GuiLadderState(Context& context):
 
 	// Make the panel
 	_panel->setPosition(windowWidth/20.f, 70.f);
-	_panel->setSize(windowWidth * 18.f/20.f - scrollBarWidth, windowHeight - 110.f);
+	_panel->setSize(windowWidth * 18.f/20.f, windowHeight - 110.f);
 	_panel->setBackgroundColor(sf::Color::Transparent);
 	_context.gui->add(_panel);
 
@@ -52,7 +51,8 @@ GuiLadderState::GuiLadderState(Context& context):
 
 	// Make the scrollbar
 	_scrollbar->setPosition(tgui::bindRight(_panel), tgui::bindTop(_panel) + lineHeight);
-	_scrollbar->setSize(scrollBarWidth, tgui::bindHeight(_panel) - lineHeight);
+	_scrollbar->setSize((windowWidth - tgui::bindRight(_panel)) / 2.f, tgui::bindHeight(_panel) - lineHeight);
+	_scrollbar->setOpacity(0.3f);
 	_scrollbar->setLowValue(static_cast<unsigned int>(_panel->getSize().y));
 	_scrollbar->setMaximum(static_cast<unsigned int>(lineHeight) * static_cast<unsigned int>(_ladder.size()));
 	_scrollbar->setArrowScrollAmount(30);
