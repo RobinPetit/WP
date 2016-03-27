@@ -6,6 +6,8 @@
 // WizardPoker header
 #include "client/Gui/CardGui.hpp"
 #include "common/CardData.hpp"
+// std-C++ headers
+#include <vector>
 
 /// Wrapper around a CardGui to be able to add them easily in TGUI containers.
 /// The implementation is inspired from the one of tgui::Canvas.
@@ -14,6 +16,8 @@ class CardWidget : public tgui::ClickableWidget
 	public:
 		typedef std::shared_ptr<CardWidget> Ptr;
 		typedef std::shared_ptr<const CardWidget> ConstPtr;
+
+		typedef std::vector<Ptr> DisplayableCardsCollection;
 
 		CardWidget();
 
@@ -32,6 +36,8 @@ class CardWidget : public tgui::ClickableWidget
 		void setOrigin(float x, float y);
 
 		void rotate(float angle);
+
+		CardGui *getCard();
 
 		//virtual tgui::Widget::Ptr clone() const override;
 
