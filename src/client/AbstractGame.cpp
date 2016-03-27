@@ -285,6 +285,7 @@ void AbstractGame::initListening()
 
 void AbstractGame::inputListening()
 {
+	onListeningThreadCreation();
 	sf::TcpSocket& listeningSocket{_client.getGameListeningSocket()};
 	_client.waitTillReadyToPlay();
 	sf::Packet receivedPacket;
@@ -312,6 +313,11 @@ void AbstractGame::inputListening()
 			updateDisplay();
 		}
 	}
+}
+
+void AbstractGame::onListeningThreadCreation()
+{
+	// Enpty body to be overriden
 }
 
 void AbstractGame::endGame(sf::Packet& transmission)

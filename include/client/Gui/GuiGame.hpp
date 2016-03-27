@@ -16,6 +16,7 @@
 #include <TGUI/Widgets/Panel.hpp>
 // std-C++ headers
 #include <vector>
+#include <atomic>
 
 /// Class representing all the interface for the game in graphical mode
 ///
@@ -129,6 +130,10 @@ private:
 
 	bool _activeCallbacks;
 
+	std::atomic_bool _displayRequest;
+
+	std::thread::id _ownerId;
+
 	//////////////////// Methods
 
 	////////// overriden methods
@@ -145,6 +150,8 @@ private:
 	void removeClickableCallbacks();
 
 	void updateDisplay() override;
+
+	void onListeningThreadCreation() override;
 
 	/// Waits for a click on a card in the vector \a cards
 	/// \param cards The collection of the clickable cards

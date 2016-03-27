@@ -91,6 +91,8 @@ class AbstractGame
 
 		virtual void updateDisplay() = 0;
 
+		virtual void onListeningThreadCreation();
+
 		virtual void displayMessage(const std::string& message) = 0;
 
 		virtual void displayAchievements(ClientAchievementList& newAchievements) = 0;

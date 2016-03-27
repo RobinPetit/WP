@@ -37,7 +37,9 @@ GuiGame::GuiGame(Context& context):
 	_selfBoardPanel{std::make_shared<tgui::Panel>()},
 	_currentSelfSelection{NoSelection},
 	_currentOpponentSelection{NoSelection},
-	_activeCallbacks{true}
+	_activeCallbacks{true},
+	_displayRequest{false},
+	_ownerId{std::this_thread::get_id()}
 {
 	// end turn button
 	_endTurnButton->setText("End turn");
@@ -145,6 +147,7 @@ void GuiGame::clearScreen()
 
 void GuiGame::refreshScreen()
 {
+	assert(std::this_thread::get_id() == _ownerId);
 	clearScreen();
 	_context.gui->draw();
 	_context.window->display();
@@ -153,20 +156,26 @@ void GuiGame::refreshScreen()
 void GuiGame::processWindowEvents()
 {
 	sf::Event event;
-	do
+	while(_context.window->pollEvent(event))
 	{
+		assert(std::this_thread::get_id() == _ownerId);
+		if(_displayRequest.load())
+		{
+			displayGame();
+			_displayRequest.store(false);
+		}
 		if(event.type == sf::Event::Closed)
 			quit();
 		else
 			_context.gui->handleEvent(event);
 	}
-	while(_context.window->pollEvent(event));
 }
 
 void GuiGame::displayGame()
 {
 	// don't forget to lock the screen!
 	std::lock_guard<std::mutex> _lock{_accessScreen};
+	assert(std::this_thread::get_id() == _ownerId);
 
 	displayHandCards();
 	displaySelfBoard();
@@ -181,7 +190,12 @@ void GuiGame::displayGame()
 void GuiGame::updateDisplay()
 {
 	if(_playing.load())
-		displayGame();
+		_displayRequest.store(true);
+}
+
+void GuiGame::onListeningThreadCreation()
+{
+	assert(_context.window->setActive(false));
 }
 
 void GuiGame::displayHandCards()
