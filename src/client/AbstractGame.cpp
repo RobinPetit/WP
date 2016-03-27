@@ -301,11 +301,13 @@ void AbstractGame::inputListening()
 		{
 			std::cerr << "Connection lost with the server\n";
 			_playing.store(false);
+			break;
 		}
 		else if(receiveStatus == sf::Socket::Error)
 		{
 			std::cerr << "Error while transmitting data\n";
 			_playing.store(false);
+			break;
 		}
 		else
 		{

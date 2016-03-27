@@ -17,6 +17,7 @@
 // std-C++ headers
 #include <vector>
 #include <atomic>
+#include <queue>
 
 /// Class representing all the interface for the game in graphical mode
 ///
@@ -134,6 +135,10 @@ private:
 
 	std::thread::id _ownerId;
 
+	std::mutex _accessMessages;
+
+	std::queue<std::string> _pendingMessages;
+
 	//////////////////// Methods
 
 	////////// overriden methods
@@ -145,6 +150,8 @@ private:
 	/// Display a verbose \a message to the user
 	/// \param message The message to show to user
 	void displayMessage(const std::string& message) override;
+
+	void popupMessage(const std::string& message);
 
 	/// Disables the callbacks
 	void removeClickableCallbacks();

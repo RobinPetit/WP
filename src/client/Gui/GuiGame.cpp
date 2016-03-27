@@ -164,6 +164,11 @@ void GuiGame::processWindowEvents()
 			displayGame();
 			_displayRequest.store(false);
 		}
+		while(not _pendingMessages.empty())
+		{
+			popupMessage(_pendingMessages.front());
+			_pendingMessages.pop();
+		}
 		if(event.type == sf::Event::Closed)
 			quit();
 		else
@@ -414,7 +419,7 @@ void GuiGame::createBigCard(const CommonCardData *cardData)
 
 // NOTE: this is copy/paste from GuiAbstractState. TODO: factorize by creating an interface
 // Messageable, GuiMessageable, TerminalMessageable to factorize this code.
-void GuiGame::displayMessage(const std::string& message)
+void GuiGame::popupMessage(const std::string& message)
 {
 	std::lock_guard<std::mutex> _lock{_accessScreen};
 	static const std::string okButtonText{"Ok"};
@@ -435,12 +440,16 @@ void GuiGame::displayMessage(const std::string& message)
 	messageBox->connect("buttonPressed", [this, messageBox](const sf::String& buttonName)
 	{
 		if(buttonName == okButtonText)
-		{
 			messageBox->destroy();
-			refreshScreen();
-		}
 	});
 	_context.gui->draw();
+}
+
+void GuiGame::displayMessage(const std::string& message)
+{
+	std::lock_guard<std::mutex> _lock{_accessMessages};
+
+	_pendingMessages.push(message);
 }
 
 int GuiGame::askIndexFromVector(DisplayableCardsCollection& cards)
