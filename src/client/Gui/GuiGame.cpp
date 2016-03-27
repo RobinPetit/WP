@@ -145,7 +145,6 @@ void GuiGame::processWindowEvents()
 		{
 			quit();
 			_context.window->close();
-			// maybe exit(0); ?
 			return;
 		}
 		_context.gui->handleEvent(event);
@@ -157,8 +156,6 @@ void GuiGame::displayGame()
 {
 	// don't forget to lock the screen!
 	std::lock_guard<std::mutex> _lock{_accessScreen};
-	//std::vector<CardWidget::Ptr> selfBoard;
-	//std::vector<CardWidget::Ptr> opponentBoard;
 
 	displayHandCards();
 	displaySelfBoard();
@@ -195,7 +192,11 @@ void GuiGame::displayHandCards()
 		////////// Set up callbacks
 
 		// If card is pressed, use the card
-		_selfHand.back()->connect("MousePressed", &GuiGame::useCard, this, i);
+		_selfHand.back()->connect("MousePressed", [this, i]()
+		{
+			useCard(i);
+			displayGame();
+		});
 		// When the mouse enters on the card area
 		connectBigCardDisplay(_selfHand.back(), cardData);
 		// Add the card to the panel
@@ -243,6 +244,11 @@ void GuiGame::displayOpponentBoard()
 
 void GuiGame::handleSelfBoardClick(int index)
 {
+	if(not _myTurn.load())
+	{
+		displayMessage("You must wait your turn!");
+		return;
+	}
 	if(_currentSelfSelection == index)
 		_currentSelfSelection = NoSelection;
 	else
@@ -251,12 +257,18 @@ void GuiGame::handleSelfBoardClick(int index)
 
 void GuiGame::handleOpponentBoardClick(int index)
 {
+	if(not _myTurn.load())
+	{
+		displayMessage("You must wait your turn!");
+		return;
+	}
 	// clicking on opponent if selection is null doesn't do anything
 	if(_currentSelfSelection == NoSelection)
 		return;
 	_currentOpponentSelection = index;
 	attackWithCreature(_currentSelfSelection, false, _currentOpponentSelection);
 	_currentSelfSelection = _currentOpponentSelection = NoSelection;
+	displayGame();
 	// TODO: allow to attack opponent
 }
 
@@ -408,6 +420,11 @@ bool GuiGame::wantToAttackOpponent()
 
 void GuiGame::chooseDeck()
 {
+	// Hide the panels and the end turn button
+	_selfBoardPanel->hide();
+	_opponentBoardPanel->hide();
+	_selfHandPanel->hide();
+	_endTurnButton->hide();
 	// get all of the decks
 	std::vector<Deck> decks{_client.getDecks()};
 
@@ -436,14 +453,19 @@ void GuiGame::chooseDeck()
 	_context.gui->add(selectButton);
 
 	// Have an inner event loop to not leave the function as long as deck has not been selected
-	while(not _decksChosen)
+	waitUntil([this]()
 	{
-		refreshScreen();
-		processWindowEvents();
-	}
+		return _decksChosen;
+	});
 	// clean the GUI
 	_context.gui->remove(selectButton);
 	_context.gui->remove(_decksListBox);
+
+	// show back in-game widgets
+	_selfBoardPanel->show();
+	_opponentBoardPanel->show();
+	_selfHandPanel->show();
+	_endTurnButton->show();
 }
 
 void GuiGame::sendDeck(const std::string& deckName)
@@ -467,8 +489,7 @@ void GuiGame::waitUntil(std::function<bool()> booleanFunction)
 {
 	while(not booleanFunction())
 	{
-		if(_display)
-			displayGame();
+		refreshScreen();
 		processWindowEvents();
 	}
 }
