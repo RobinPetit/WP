@@ -40,8 +40,10 @@ class CardWidget : public tgui::ClickableWidget
 		CardGui *getCard();
 
 		void select();
-
 		void unselect();
+
+		void aimable();
+		void unaimable();
 
 		//virtual tgui::Widget::Ptr clone() const override;
 

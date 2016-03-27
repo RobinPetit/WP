@@ -10,6 +10,8 @@ constexpr char CardGui::BACK_IMAGE_PATH[];
 constexpr char CardGui::FONT_PATH[];
 const sf::Color CardGui::_costColor(0, 0, 100);
 const sf::Color CardGui::_textColor(sf::Color::Black);
+const sf::Color CardGui::_aimColor(210, 150, 150);
+const sf::Color CardGui::_selectColor(210, 210, 210);
 
 CardGui::CardGui(const std::string& frontTexturePath, const std::string& name, std::string description, int cost):
 	_showFront{true}
@@ -68,21 +70,42 @@ sf::Vector2f CardGui::getSize()
 	return SIZE;
 }
 
-void CardGui::select()
-{
-	sf::Color color(210, 210, 210);
-	_picture.setColor(color);
-	_descriptionText.setColor(color);
-	_nameText.setColor(color);
-	_costText.setColor(color);
-}
-
-void CardGui::unselect()
+void CardGui::resetColor()
 {
 	_picture.setColor(sf::Color::White);
 	_descriptionText.setColor(_textColor);
 	_nameText.setColor(_textColor);
 	_costText.setColor(_costColor);
+}
+
+void CardGui::setColor(sf::Color color, bool colorText)
+{
+	_picture.setColor(color);
+	if(not colorText)
+		return;
+	_descriptionText.setColor(color);
+	_nameText.setColor(color);
+	_costText.setColor(color);
+}
+
+void CardGui::select()
+{
+	setColor(_selectColor);
+}
+
+void CardGui::unselect()
+{
+	resetColor();
+}
+
+void CardGui::aimable()
+{
+	setColor(_aimColor, false);
+}
+
+void CardGui::unaimable()
+{
+	resetColor();
 }
 
 void CardGui::draw(sf::RenderTarget &target, sf::RenderStates states) const

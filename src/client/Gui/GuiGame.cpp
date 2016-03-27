@@ -256,14 +256,13 @@ void GuiGame::handleSelfBoardClick(int index)
 		return;
 	}
 	if(_currentSelfSelection == index)
-	{
-		_selfBoard.at(index)->unselect();
-		_currentSelfSelection = NoSelection;
-	}
+		unselectSelfCard();
 	else
 	{
-		_selfBoard.at(index)->select();
 		_currentSelfSelection = index;
+		_selfBoard.at(index)->select();
+		for(auto& card : _opponentBoard)
+			card->aimable();
 	}
 }
 
@@ -278,10 +277,21 @@ void GuiGame::handleOpponentBoardClick(int index)
 	if(_currentSelfSelection == NoSelection)
 		return;
 	_currentOpponentSelection = index;
-	attackWithCreature(_currentSelfSelection, false, _currentOpponentSelection);
-	_currentSelfSelection = _currentOpponentSelection = NoSelection;
+	int selfSelection{_currentSelfSelection};
+	unselectSelfCard();
+	attackWithCreature(selfSelection, false, _currentOpponentSelection);
 	displayGame();
 	// TODO: allow to attack opponent
+}
+
+void GuiGame::unselectSelfCard()
+{
+	if(_currentSelfSelection == NoSelection)
+		return;
+	_selfBoard.at(_currentSelfSelection)->unselect();
+	_currentSelfSelection = NoSelection;
+	for(auto& card : _opponentBoard)
+		card->unaimable();
 }
 
 void GuiGame::displayPlayerBoard(tgui::Panel::Ptr& panel, std::vector<CardWidget::Ptr>& graphicalCards,

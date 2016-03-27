@@ -78,6 +78,18 @@ void CardWidget::unselect()
 		_card->unselect();
 }
 
+void CardWidget::aimable()
+{
+	if(_card)
+		_card->aimable();
+}
+
+void CardWidget::unaimable()
+{
+	if(_card)
+		_card->unaimable();
+}
+
 void CardWidget::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
 	if(_card)

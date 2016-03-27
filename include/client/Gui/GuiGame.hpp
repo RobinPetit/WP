@@ -201,6 +201,9 @@ private:
 	/// \param index The index of the card that's been clicked
 	void handleOpponentBoardClick(int index);
 
+	/// Reset the board when the user unselected one of his cards
+	void unselectSelfCard();
+
 	/// Function to allow "big card" to be displayed when mouse passes over the card
 	/// \param card The card to pass on to draw the big card
 	/// \param cardData The data to create the big card
