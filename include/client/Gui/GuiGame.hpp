@@ -8,6 +8,7 @@
 #include "common/Deck.hpp"
 // External headers
 #include <TGUI/Gui.hpp>
+#include <TGUI/VerticalLayout.hpp>
 #include <TGUI/Widgets/Button.hpp>
 #include <TGUI/Widgets/ListBox.hpp>
 #include <TGUI/Widgets/Panel.hpp>
@@ -71,8 +72,25 @@ private:
 	/// The layout for the player's hand cards
 	tgui::Panel::Ptr _selfHandPanel;
 
+	/// A layout that contains information labels about self, and the end turn button
+	tgui::VerticalLayout::Ptr _selfInfoLayout;
+
+	/// Various information labels
+	tgui::Label::Ptr _selfHealthLabel;
+	tgui::Label::Ptr _selfEnergyLabel;
+	tgui::Label::Ptr _selfDeckSizeLabel;
+	tgui::Label::Ptr _selfGraveyardSizeLabel;
+
 	/// The button to voluntarily end your turn
 	tgui::Button::Ptr _endTurnButton;
+
+	/// A layout that contains information labels about the opponent
+	tgui::VerticalLayout::Ptr _oppoInfoLayout;
+
+	tgui::Label::Ptr _oppoHealthLabel;
+	tgui::Label::Ptr _oppoEnergyLabel;
+	tgui::Label::Ptr _oppoDeckSizeLabel;
+	tgui::Label::Ptr _oppoGraveyardSizeLabel;
 
 	/// Length (on X axis) of the hand cards
 	const tgui::Layout _cardsLayoutWidth;
@@ -168,6 +186,9 @@ private:
 
 	/// Function to draw the opponent board
 	void displayOpponentBoard();
+
+	/// Function to draw the labels containing player's informations
+	void displayInfo();
 
 	/// Function to display a board on a panel
 	/// \param panel The panel to display the cards on

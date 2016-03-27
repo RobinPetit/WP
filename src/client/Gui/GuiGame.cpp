@@ -18,7 +18,19 @@ GuiGame::GuiGame(Context& context):
 	_width{tgui::bindWidth(*_context.gui)},
 	_height{tgui::bindHeight(*_context.gui)},
 	_selfHandPanel{std::make_shared<tgui::Panel>()},
+	// Self info labels
+	_selfInfoLayout{std::make_shared<tgui::VerticalLayout>()},
+	_selfHealthLabel{std::make_shared<tgui::Label>()},
+	_selfEnergyLabel{std::make_shared<tgui::Label>()},
+	_selfDeckSizeLabel{std::make_shared<tgui::Label>()},
+	_selfGraveyardSizeLabel{std::make_shared<tgui::Label>()},
 	_endTurnButton{std::make_shared<tgui::Button>()},
+	// Opponent info layout
+	_oppoInfoLayout{std::make_shared<tgui::VerticalLayout>()},
+	_oppoHealthLabel{std::make_shared<tgui::Label>()},
+	_oppoEnergyLabel{std::make_shared<tgui::Label>()},
+	_oppoDeckSizeLabel{std::make_shared<tgui::Label>()},
+	_oppoGraveyardSizeLabel{std::make_shared<tgui::Label>()},
 	_cardsLayoutWidth{_width/1.4f},
 	_isBigCardOnBoard{false},
 	_opponentBoardPanel{std::make_shared<tgui::Panel>()},
@@ -44,12 +56,41 @@ GuiGame::GuiGame(Context& context):
 	// remove the self hand panel
 	heightWidget -= _selfHandPanel->getSize().y + 10;
 	_selfHandPanel->setPosition({(_width - _cardsLayoutWidth) / 2.f, heightWidget});
+	_context.gui->add(_selfHandPanel);
 
-	// place it right to the cards
-	_endTurnButton->setSize((_width - _cardsLayoutWidth) / 2.f - 10.f, 40.F);
-	_endTurnButton->setPosition((_width + _cardsLayoutWidth) / 2.f + 5.f, _height - 50.f);
+	// Self info labels
+	_selfHealthLabel->setTextColor(sf::Color(200, 0, 0));  // Dark red
+	_selfHealthLabel->setTextSize(15);
+	_selfEnergyLabel->setTextColor(sf::Color(0, 0, 200));  // Dark blue
+	_selfDeckSizeLabel->setTextSize(15);
+	_selfGraveyardSizeLabel->setTextSize(15);
+	// The text of these labels is set in displayGame
+	_selfInfoLayout->add(_selfHealthLabel);
+	_selfInfoLayout->add(_selfEnergyLabel);
+	_selfInfoLayout->add(_selfDeckSizeLabel);
+	_selfInfoLayout->add(_selfGraveyardSizeLabel);
+	_selfInfoLayout->add(_endTurnButton);
+	_selfInfoLayout->setSize((_width - _cardsLayoutWidth) / 2.f - 10.f, tgui::bindHeight(_selfHandPanel));
+	_selfInfoLayout->setPosition(tgui::bindRight(_selfHandPanel), tgui::bindTop(_selfHandPanel));
+	_context.gui->add(_selfInfoLayout);
+
 	// default behaviour of button is to be disabled (re-enabled at the beginning of each turn)
 	_endTurnButton->disable();
+
+	// Oponnent info labels
+	_oppoHealthLabel->setTextColor(sf::Color(200, 0, 0));  // Dark red
+	_oppoHealthLabel->setTextSize(15);
+	_oppoEnergyLabel->setTextColor(sf::Color(0, 0, 200));  // Dark blue
+	_oppoDeckSizeLabel->setTextSize(15);
+	_oppoGraveyardSizeLabel->setTextSize(15);
+	// The text of these labels is set in displayGame
+	_oppoInfoLayout->add(_oppoHealthLabel);
+	_oppoInfoLayout->add(_oppoEnergyLabel);
+	_oppoInfoLayout->add(_oppoDeckSizeLabel);
+	_oppoInfoLayout->add(_oppoGraveyardSizeLabel);
+	_oppoInfoLayout->setSize((_width - _cardsLayoutWidth) / 2.f - 10.f, tgui::bindHeight(_selfHandPanel));
+	_oppoInfoLayout->setPosition(0.f, tgui::bindTop(_selfHandPanel));
+	_context.gui->add(_oppoInfoLayout);
 
 	// self board
 	_selfBoardPanel->setBackgroundColor(sf::Color(50, 50, 50));
@@ -57,6 +98,7 @@ GuiGame::GuiGame(Context& context):
 	// remove the self board panel
 	heightWidget -= _selfBoardPanel->getSize().y + 20;
 	_selfBoardPanel->setPosition({0.f, heightWidget});
+	_context.gui->add(_selfBoardPanel);
 
 	// opponent board
 	_opponentBoardPanel->setBackgroundColor(sf::Color(100, 100, 100));
@@ -64,6 +106,7 @@ GuiGame::GuiGame(Context& context):
 	// remove the opponent board panel
 	heightWidget -= _opponentBoardPanel->getSize().y + 20;
 	_opponentBoardPanel->setPosition({0.f, heightWidget});
+	_context.gui->add(_opponentBoardPanel);
 }
 
 void GuiGame::startTurn()
@@ -103,17 +146,10 @@ void GuiGame::displayGame()
 	//std::vector<CardWidget::Ptr> selfBoard;
 	//std::vector<CardWidget::Ptr> opponentBoard;
 
-	// start by removing everything from the current window
-	_context.gui->removeAllWidgets();
-
 	displayHandCards();
 	displaySelfBoard();
 	displayOpponentBoard();
-
-	_context.gui->add(_endTurnButton);
-
-	if(_isBigCardOnBoard)
-		_context.gui->add(_readableCard);
+	displayInfo();
 
 	refreshScreen();
 }
@@ -125,6 +161,7 @@ void GuiGame::displayHandCards()
 
 	// Clear the panel
 	_selfHandPanel->removeAllWidgets();
+	_selfHand.clear();
 
 	// do not use an iterator-for loop since i is a used counter variable
 	const float distanceBetweenCards{(availableWidth/(static_cast<float>(_selfHandCards.size()) - 1.f)).getValue()};
@@ -151,8 +188,20 @@ void GuiGame::displayHandCards()
 		// Add the card to the panel
 		_selfHandPanel->add(_selfHand.back());
 	}
-	// add the panel on the Gui to be displayed
-	_context.gui->add(_selfHandPanel);
+}
+
+void GuiGame::displayInfo()
+{
+	_selfHealthLabel->setText("Hey");
+	_selfEnergyLabel->setText("Hey");
+	_selfDeckSizeLabel->setText("Hey");
+	_selfGraveyardSizeLabel->setText("Hey");
+
+	_oppoHealthLabel->setText("Hey");
+	_oppoEnergyLabel->setText("Hey");
+	_oppoDeckSizeLabel->setText("Hey");
+	_oppoGraveyardSizeLabel->setText("Hey");
+
 }
 
 void GuiGame::connectBigCardDisplay(CardWidget::Ptr& card, const CommonCardData *cardData)
@@ -208,7 +257,6 @@ void GuiGame::displayPlayerBoard(tgui::Panel::Ptr& panel, std::vector<CardWidget
 	const float widthBetweenCards{(panel->getSize().x / static_cast<float>(nbOfPossibleCards)) - cardWidth};
 
 	panel->removeAllWidgets();
-	_context.gui->remove(panel);
 	graphicalCards.clear();
 
 	const auto nbOfCards{creatureDatas.size()};
@@ -250,8 +298,6 @@ void GuiGame::displayPlayerBoard(tgui::Panel::Ptr& panel, std::vector<CardWidget
 		// move a bit away to separate cards
 		currentWidth += widthBetweenCards;
 	}
-	// add the panel to the gui so that it is displayed
-	_context.gui->add(panel);
 }
 
 void GuiGame::displayBigCard(const CommonCardData *cardData)
@@ -371,7 +417,8 @@ void GuiGame::chooseDeck()
 		_context.gui->handleEvent(event);
 	}
 	// clean the GUI
-	_context.gui->removeAllWidgets();
+	_context.gui->remove(selectButton);
+	_context.gui->remove(_decksListBox);
 }
 
 void GuiGame::sendDeck(const std::string& deckName)
