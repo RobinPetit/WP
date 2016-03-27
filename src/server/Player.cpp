@@ -1043,9 +1043,13 @@ std::vector<int> Player::getRandomBoardIndexes(const std::vector<CardToSelect>& 
 				indices[i] = getRandomIndex(_opponent._cardBoard);
 				break;
 
-			case CardToSelect::OPPO_HAND:
+			/*case CardToSelect::OPPO_HAND:
 				indices[i] = getRandomIndex(_opponent._cardHand);
 				break;
+
+			case CardToSelect::SELF_GRAVEYARD:
+				indices[i] = getRandomIndex(_cardGraveyard);
+				break;*/
 		}
 	}
 	return indices;

@@ -39,6 +39,8 @@ GuiCardsCollectionState::GuiCardsCollectionState(Context& context):
 	// Make the scrollbar
 	_scrollbar->setPosition(tgui::bindRight(_gridPanel), tgui::bindTop(_gridPanel));
 	_scrollbar->setSize((windowWidth - tgui::bindRight(_gridPanel)) / 2.f, tgui::bindHeight(_gridPanel));
+	_scrollbar->setOpacity(0.3f);
+	_scrollbar->setAutoHide(false);
 	_scrollbar->setLowValue(static_cast<unsigned int>(_gridPanel->getSize().y));
 	_scrollbar->setMaximum(gridHeight * static_cast<unsigned int>(CardGui::getSize().y));
 	_scrollbar->setArrowScrollAmount(30);

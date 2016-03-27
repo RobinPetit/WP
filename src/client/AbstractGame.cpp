@@ -181,9 +181,13 @@ bool AbstractGame::treatAdditionnalInputs(sf::Packet& actionPacket)
 			indices.push_back(askSelfHandIndex());
 			break;
 
-		case CardToSelect::OPPO_HAND:
+		/*case CardToSelect::OPPO_HAND:
 			indices.push_back(askOppoHandIndex());
 			break;
+
+		case CardToSelect::SELF_GRAVEYARD:
+			indices.push_back(askSelfGraveyardIndex());
+			break;*/
 
 		default:
 			std::cerr << "ERROR: UNKNOWN VALUE: " << static_cast<std::underlying_type<CardToSelect>::type>(input) << std::endl;

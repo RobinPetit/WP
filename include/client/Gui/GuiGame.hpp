@@ -140,6 +140,8 @@ private:
 
 	std::queue<std::string> _pendingMessages;
 
+	std::unique_ptr<ClientAchievementList> _unlockedAchievements;
+
 	//////////////////// Methods
 
 	////////// overriden methods
@@ -161,15 +163,17 @@ private:
 
 	void onListeningThreadCreation() override;
 
+	void showAchievements();
+
 	/// Waits for a click on a card in the vector \a cards
 	/// \param cards The collection of the clickable cards
 	int askIndexFromVector(DisplayableCardsCollection& cards);
 
 	int askSelfHandIndex() override;
 	int askSelfBoardIndex() override;
-	int askSelfGraveyardIndex() override;
+	//int askSelfGraveyardIndex() override;
 	int askOppoBoardIndex() override;
-	int askOppoHandIndex() override;
+	//int askOppoHandIndex() override;
 
 	/// Displays the decks and ask to user to select the one to play with
 	void chooseDeck() override;

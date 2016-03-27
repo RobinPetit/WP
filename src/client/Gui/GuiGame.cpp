@@ -477,17 +477,18 @@ int GuiGame::askOppoBoardIndex()
 	return askIndexFromVector(_opponentBoard);
 }
 
-// <TODO>
-int GuiGame::askSelfGraveyardIndex()
+// may be used someday
+/*int GuiGame::askSelfGraveyardIndex()
 {
+	// todo
 	return -42;
 }
 
 int GuiGame::askOppoHandIndex()
 {
+	// todo
 	return -42;
-}
-// </TODO>
+}*/
 
 void GuiGame::chooseDeck()
 {
@@ -554,6 +555,14 @@ void GuiGame::receiveCard(CardId id)
 
 void GuiGame::displayAchievements(ClientAchievementList& newAchievements)
 {
+	_unlockedAchievements.reset(new ClientAchievementList(newAchievements));
+}
+
+void GuiGame::showAchievements()
+{
+	if(not _unlockedAchievements)
+		return;
+	auto& newAchievements{*_unlockedAchievements};
 	//No new achievements
 	if (newAchievements.size()==0)
 		return;
@@ -642,6 +651,7 @@ void GuiGame::updateCard(CreatureGui *card, const BoardCreatureData& data)
 
 GuiGame::~GuiGame()
 {
+	showAchievements();
 	_context.gui->remove(_selfHandPanel);
 	_context.gui->remove(_selfBoardPanel);
 	_context.gui->remove(_opponentBoardPanel);

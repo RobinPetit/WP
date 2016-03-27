@@ -40,6 +40,8 @@ GuiAchievementState::GuiAchievementState(Context& context):
 	// Make the scrollbar
 	_scrollbar->setPosition(tgui::bindRight(_panel), tgui::bindTop(_panel));
 	_scrollbar->setSize((windowWidth - tgui::bindRight(_panel)) / 2.f, tgui::bindHeight(_panel));
+	_scrollbar->setOpacity(0.3f);
+	_scrollbar->setAutoHide(false);
 	_scrollbar->setLowValue(static_cast<unsigned int>(_panel->getSize().y));
 	_scrollbar->setMaximum(gridHeight * static_cast<unsigned int>(AchievementGui::getSize().y));
 	_scrollbar->setArrowScrollAmount(30);

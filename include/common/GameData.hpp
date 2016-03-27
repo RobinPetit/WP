@@ -13,7 +13,8 @@ enum class CardToSelect : sf::Int32
 	SELF_BOARD,
 	OPPO_BOARD,
 	SELF_HAND,
-	OPPO_HAND
+	/*OPPO_HAND,
+	SELF_GRAVEYARD*/
 };
 
 struct BoardCreatureData

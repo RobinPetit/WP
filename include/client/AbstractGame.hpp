@@ -100,9 +100,10 @@ class AbstractGame
 		// game "inputs"
 		virtual int askSelfHandIndex() = 0;
 		virtual int askSelfBoardIndex() = 0;
-		virtual int askSelfGraveyardIndex() = 0;
 		virtual int askOppoBoardIndex() = 0;
-		virtual int askOppoHandIndex() = 0;
+		// may be used someday
+		//virtual int askSelfGraveyardIndex() = 0;
+		//virtual int askOppoHandIndex() = 0;
 
 		/// Start the new thread waiting for special data
 		void initListening();

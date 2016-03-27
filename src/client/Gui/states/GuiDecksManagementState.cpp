@@ -56,6 +56,7 @@ GuiDecksManagementState::GuiDecksManagementState(Context& context):
 	// Make the scrollbar
 	_scrollbar->setPosition(tgui::bindRight(_cardPanel), tgui::bindTop(_cardPanel));
 	_scrollbar->setSize((windowWidth - tgui::bindRight(_cardPanel)) / 2.f, tgui::bindHeight(_cardPanel));
+	_scrollbar->setOpacity(0.3f);
 	_scrollbar->setLowValue(static_cast<unsigned int>(_cardPanel->getSize().y));
 	// Maximum value is set in the callback methods
 	_scrollbar->setArrowScrollAmount(30);
