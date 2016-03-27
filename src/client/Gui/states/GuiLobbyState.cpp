@@ -68,10 +68,16 @@ void GuiLobbyState::findAGame()
 	{
 		_context.gui->removeAllWidgets();
 		_context.window->setTitle("WizardPoker (" + _context.client->getName() + ") in game versus " + opponentName);
-		GuiGame game{_context};
-		startGame(game);
+		// have a special block so that the constructor is directly called
+		{
+			GuiGame game{_context};
+			startGame(game);
+		}
 		_context.window->setTitle("WizardPoker (" + _context.client->getName() + ")");
-		std::cout << "Need to set back widgets\n";
+
+		registerRootWidgets({_buttonsLayout});
+		_context.gui->add(_buttonsLayout);
+		resetButtons();
 	}
 }
 

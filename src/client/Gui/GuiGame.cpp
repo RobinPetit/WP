@@ -157,12 +157,9 @@ void GuiGame::processWindowEvents()
 	do
 	{
 		if(event.type == sf::Event::Closed)
-		{
 			quit();
-			_context.window->close();
-			return;
-		}
-		_context.gui->handleEvent(event);
+		else
+			_context.gui->handleEvent(event);
 	}
 	while(_context.window->pollEvent(event));
 }
