@@ -9,7 +9,7 @@ AchievementWidget::AchievementWidget()
 }
 
 AchievementWidget::AchievementWidget(const ClientAchievement& achievement):
-	_achievement(new AchievementGui(achievement.getPrettyName(), achievement.getDescription(), achievement.isUnlocked()))
+	_achievement(new AchievementGui(achievement.getDecentName(), achievement.getDescription(), achievement.isUnlocked()))
 {
 	setSize(AchievementGui::getSize());
 }

@@ -6,7 +6,7 @@ Deck::Deck(const std::string& name):
 	_name{name}
 {
 	for(std::size_t i{0}; i < size; ++i)
-		_cards[i] = static_cast<CardId>(i);
+		_cards[i] = static_cast<CardId>(i+1);
 }
 
 Deck::Deck(const std::string& name, const std::array<CardId, size>& cards):

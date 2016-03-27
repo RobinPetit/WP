@@ -47,6 +47,11 @@ int Player::getHealth() const
 	return _health;
 }
 
+int Player::getMaxHealth()
+{
+	return _maxHealth;
+}
+
 std::vector<std::unique_ptr<Card>>::size_type Player::getHandSize() const
 {
 	return _cardHand.size();

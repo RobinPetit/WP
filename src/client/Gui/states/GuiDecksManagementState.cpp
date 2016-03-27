@@ -234,6 +234,7 @@ void GuiDecksManagementState::removeDeck()
 	{
 		Deck& selectedDeck(getSelectedDeck());
 		_context.client->handleDeckDeletion(selectedDeck.getName());
+		_decksListBox->removeItem(selectedDeck.getName());
 		_decks.erase(std::find_if(_decks.begin(), _decks.end(), [&selectedDeck](const Deck& deck)
 		{
 			return selectedDeck.getName() == deck.getName();
@@ -266,6 +267,7 @@ void GuiDecksManagementState::createDeck()
 		{
 			_decks.emplace_back(deckName);
 			_context.client->handleDeckCreation(_decks.back());
+			_decksListBox->addItem(deckName);
 		}
 		catch(std::runtime_error& e)
 		{
