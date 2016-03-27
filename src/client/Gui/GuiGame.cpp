@@ -35,7 +35,8 @@ GuiGame::GuiGame(Context& context):
 	_opponentBoardPanel{std::make_shared<tgui::Panel>()},
 	_selfBoardPanel{std::make_shared<tgui::Panel>()},
 	_currentSelfSelection{NoSelection},
-	_currentOpponentSelection{NoSelection}
+	_currentOpponentSelection{NoSelection},
+	_activeCallbacks{true}
 {
 	// end turn button
 	_endTurnButton->setText("End turn");
@@ -254,12 +255,14 @@ void GuiGame::connectBigCardDisplay(CardWidget::Ptr& card, const CommonCardData 
 
 void GuiGame::displaySelfBoard()
 {
-	displayPlayerBoard(_selfBoardPanel, _selfBoard, _selfBoardCreatures, &GuiGame::handleSelfBoardClick);
+	displayPlayerBoard(_selfBoardPanel, _selfBoard, _selfBoardCreatures,
+		_activeCallbacks ? &GuiGame::handleSelfBoardClick : nullptr);
 }
 
 void GuiGame::displayOpponentBoard()
 {
-	displayPlayerBoard(_opponentBoardPanel, _opponentBoard,  _oppoBoardCreatures, &GuiGame::handleOpponentBoardClick, true);
+	displayPlayerBoard(_opponentBoardPanel, _opponentBoard,  _oppoBoardCreatures,
+		_activeCallbacks ? &GuiGame::handleOpponentBoardClick : nullptr, true);
 }
 
 void GuiGame::handleSelfBoardClick(int index)
@@ -298,6 +301,12 @@ void GuiGame::handleOpponentBoardClick(int index)
 	displayGame();
 }
 
+void GuiGame::removeClickableCallbacks()
+{
+	_activeCallbacks = false;
+	displayGame();
+}
+
 void GuiGame::unselectSelfCard()
 {
 	if(_currentSelfSelection == NoSelection)
@@ -309,7 +318,7 @@ void GuiGame::unselectSelfCard()
 	_attackOpponentButton->hide();
 }
 
-void GuiGame::displayPlayerBoard(tgui::Panel::Ptr& panel, std::vector<CardWidget::Ptr>& graphicalCards,
+void GuiGame::displayPlayerBoard(tgui::Panel::Ptr& panel, DisplayableCardsCollection& graphicalCards,
 		std::vector<BoardCreatureData>& creatureDatas, CardCallback callback,
 		bool reversed, bool displayableWhenMouseOver)
 {
@@ -423,23 +432,47 @@ void GuiGame::displayMessage(const std::string& message)
 	_context.gui->draw();
 }
 
-// <TODO>
+int GuiGame::askIndexFromVector(DisplayableCardsCollection& cards)
+{
+	int chosenIndex;
+	bool isIndexChosen{false};
+	removeClickableCallbacks();
+	unsigned int i{0U};
+
+	for(auto& card : cards)
+	{
+		card->selectable();
+		card->connect("MousePressed", [this, &chosenIndex, &isIndexChosen, i]()
+		{
+			chosenIndex = i;
+			isIndexChosen = true;
+		});
+		++i;
+	}
+	waitUntil([&isIndexChosen]()
+	{
+		return isIndexChosen;
+	});
+	return chosenIndex;
+}
+
 int GuiGame::askSelfHandIndex()
 {
-	return -42;
+	return askIndexFromVector(_selfHand);
 }
 
 int GuiGame::askSelfBoardIndex()
 {
-	return -42;
-}
-
-int GuiGame::askSelfGraveyardIndex()
-{
-	return -42;
+	return askIndexFromVector(_selfBoard);
 }
 
 int GuiGame::askOppoBoardIndex()
+{
+	return askIndexFromVector(_opponentBoard);
+}
+
+// <TODO>
+int GuiGame::askSelfGraveyardIndex()
 {
 	return -42;
 }
@@ -533,7 +566,7 @@ void GuiGame::updateGuiCardValues()
 	updateGuiBoard(_oppoBoardCreatures, _opponentBoard);
 }
 
-void GuiGame::updateGuiBoard(std::vector<BoardCreatureData>& dataBoard, std::vector<CardWidget::Ptr>& guiBoard)
+void GuiGame::updateGuiBoard(std::vector<BoardCreatureData>& dataBoard, DisplayableCardsCollection& guiBoard)
 {
 	assert(dataBoard.size() == guiBoard.size());
 	for(auto i{0U}; i < dataBoard.size(); ++i)

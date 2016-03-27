@@ -25,7 +25,7 @@ class GuiCardsCollectionState : public GuiAbstractState, public AbstractCardsCol
 		tgui::Grid::Ptr _cardGrid;
 		tgui::Panel::Ptr _gridPanel;
 		tgui::Scrollbar::Ptr _scrollbar;
-		std::vector<CardWidget::Ptr> _cards;
+		DisplayableCardsCollection _cards;
 
 		void scrollGrid(int newScrollValue);
 };

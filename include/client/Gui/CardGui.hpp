@@ -42,8 +42,14 @@ public:
 	/// Sets the card as "aimable" which means that it will be drawn a bit red
 	void aimable();
 
-	/// Removes the "aimable status"
+	/// Removes the "aimable" status
 	void unaimable();
+
+	/// Sets the card as "selectable" which means that it will be displayed a bit blue
+	void selectable();
+
+	/// Removes the "selectable" status
+	void unselectable();
 
 	/// Draws the object to a render target.
 	virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
@@ -109,6 +115,8 @@ private:
 	static const sf::Color _aimColor;
 
 	static const sf::Color _selectColor;
+
+	static const sf::Color _selectableColor;
 
 	/// True when showing the front (with the image, title, ...), false when
 	/// showing the back.

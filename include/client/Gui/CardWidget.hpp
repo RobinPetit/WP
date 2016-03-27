@@ -17,8 +17,6 @@ class CardWidget : public tgui::ClickableWidget
 		typedef std::shared_ptr<CardWidget> Ptr;
 		typedef std::shared_ptr<const CardWidget> ConstPtr;
 
-		typedef std::vector<Ptr> DisplayableCardsCollection;
-
 		CardWidget();
 
 		CardWidget(const CommonCardData* cardData);
@@ -45,6 +43,9 @@ class CardWidget : public tgui::ClickableWidget
 		void aimable();
 		void unaimable();
 
+		void selectable();
+		void unselectable();
+
 		//virtual tgui::Widget::Ptr clone() const override;
 
 		virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
@@ -52,5 +53,8 @@ class CardWidget : public tgui::ClickableWidget
 	private:
 		std::unique_ptr<CardGui> _card;
 };
+
+
+typedef std::vector<CardWidget::Ptr> DisplayableCardsCollection;
 
 #endif  // _CARD_WIDGET_CLIENT_HPP

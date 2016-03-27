@@ -48,7 +48,7 @@ class GuiDecksManagementState : public GuiAbstractState, public AbstractDecksMan
 		/// A list of widgets for all cards of the collection, not all of them
 		/// are displayed at the same time, it depends on the selected deck
 		/// (if there is one).
-		std::vector<CardWidget::Ptr> _cardsCollectionWidgets;
+		DisplayableCardsCollection _cardsCollectionWidgets;
 
 		/// And the IDs associated with the widgets. We need this vector rather
 		/// than just using AbstractCardsCollectionState::_cardsCollection
@@ -96,7 +96,7 @@ class GuiDecksManagementState : public GuiAbstractState, public AbstractDecksMan
 		void onCardChosenFromCollection(CardId id);
 
 		/// Populates _cardGrid with the given widgets.
-		void fillGrid(const std::vector<CardWidget::Ptr>& widgetsToShow);
+		void fillGrid(const DisplayableCardsCollection& widgetsToShow);
 
 		/// Callback called when the user select another deck. Effectively
 		/// change the content of the grid to reflect the content of the newly

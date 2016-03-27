@@ -12,6 +12,7 @@ const sf::Color CardGui::_costColor(0, 0, 100);
 const sf::Color CardGui::_textColor(sf::Color::Black);
 const sf::Color CardGui::_aimColor(210, 150, 150);
 const sf::Color CardGui::_selectColor(210, 210, 210);
+const sf::Color CardGui::_selectableColor(165, 220, 220);
 
 CardGui::CardGui(CardId id, const std::string& name, std::string description, int cost):
 	_showFront{true}
@@ -105,6 +106,16 @@ void CardGui::aimable()
 }
 
 void CardGui::unaimable()
+{
+	resetColor();
+}
+
+void CardGui::selectable()
+{
+	setColor(_selectableColor);
+}
+
+void CardGui::unselectable()
 {
 	resetColor();
 }

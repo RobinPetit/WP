@@ -111,13 +111,13 @@ private:
 	tgui::Panel::Ptr _selfBoardPanel;
 
 	/// The cards in the user's hands
-	CardWidget::DisplayableCardsCollection _selfHand;
+	DisplayableCardsCollection _selfHand;
 
 	/// The cards on the user's board
-	CardWidget::DisplayableCardsCollection _selfBoard;
+	DisplayableCardsCollection _selfBoard;
 
 	/// The cards on the opponent's board
-	CardWidget::DisplayableCardsCollection _opponentBoard;
+	DisplayableCardsCollection _opponentBoard;
 
 	// take negative values to select nothing
 	int _currentSelfSelection;
@@ -125,6 +125,8 @@ private:
 
 	/// A value meaning that no card is currently selected
 	static constexpr int NoSelection{-1};
+
+	bool _activeCallbacks;
 
 	//////////////////// Methods
 
@@ -138,7 +140,14 @@ private:
 	/// \param message The message to show to user
 	void displayMessage(const std::string& message) override;
 
+	/// Disables the callbacks
+	void removeClickableCallbacks();
+
 	void updateDisplay() override;
+
+	/// Waits for a click on a card in the vector \a cards
+	/// \param cards The collection of the clickable cards
+	int askIndexFromVector(DisplayableCardsCollection& cards);
 
 	int askSelfHandIndex() override;
 	int askSelfBoardIndex() override;
@@ -181,7 +190,7 @@ private:
 	/// \see updateCard
 	/// \param dataBoard A vector of card data
 	/// \param guiBoard A vector of displayable cards
-	void updateGuiBoard(std::vector<BoardCreatureData>& dataBoard, std::vector<CardWidget::Ptr>& guiBoard);
+	void updateGuiBoard(std::vector<BoardCreatureData>& dataBoard, DisplayableCardsCollection& guiBoard);
 
 	/// Changes the values on a graphical card according to \a data
 	/// \param card A displayable card to update
@@ -246,7 +255,7 @@ private:
 	/// \param reversed A boolean telling if card must be displayed upside down
 	/// \param displayableWhenMouseOver A boolean telling if the "big card"
 	/// should be displayed when the mouse passes over the card
-	void displayPlayerBoard(tgui::Panel::Ptr& panel, std::vector<CardWidget::Ptr>& graphicalCards,
+	void displayPlayerBoard(tgui::Panel::Ptr& panel, DisplayableCardsCollection& graphicalCards,
 		std::vector<BoardCreatureData>& creatureDatas, CardCallback callback=nullptr,
 		bool reversed=false, bool displayableWhenMouseOver=true);
 };

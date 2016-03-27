@@ -122,7 +122,7 @@ void GuiDecksManagementState::onCardChosenFromDeck(CardId id)
 	                    std::back_inserter(CardIdsToShow));
 
 	// Create the corresponding vector of widgets
-	std::vector<CardWidget::Ptr> widgetsToShow;
+	DisplayableCardsCollection widgetsToShow;
 
 	// Browse all cards of the collection
 	for(std::size_t i{0}; i < _cardsCollectionWidgets.size(); ++i)
@@ -171,7 +171,7 @@ void GuiDecksManagementState::onCardChosenFromCollection(CardId id)
 	}
 }
 
-void GuiDecksManagementState::fillGrid(const std::vector<CardWidget::Ptr>& widgetsToShow)
+void GuiDecksManagementState::fillGrid(const DisplayableCardsCollection& widgetsToShow)
 {
 	_cardGrid->removeAllWidgets();
 
@@ -205,7 +205,7 @@ void GuiDecksManagementState::selectDeck()
 		// We have to use a std::vector because we need to erase elements in the loop below
 		std::vector<CardId> CardIdsToShow;
 		std::copy(selectedDeck.begin(), selectedDeck.end(), std::back_inserter(CardIdsToShow));
-		std::vector<CardWidget::Ptr> widgetsToShow;
+		DisplayableCardsCollection widgetsToShow;
 		// Browse all cards of the collection
 		for(std::size_t i{0}; i < _cardsCollectionWidgets.size(); ++i)
 		{
