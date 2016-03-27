@@ -256,9 +256,15 @@ void GuiGame::handleSelfBoardClick(int index)
 		return;
 	}
 	if(_currentSelfSelection == index)
+	{
+		_selfBoard.at(index)->unselect();
 		_currentSelfSelection = NoSelection;
+	}
 	else
+	{
+		_selfBoard.at(index)->select();
 		_currentSelfSelection = index;
+	}
 }
 
 void GuiGame::handleOpponentBoardClick(int index)

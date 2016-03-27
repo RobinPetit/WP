@@ -31,6 +31,12 @@ public:
 	/// \return the size of a card.
 	static sf::Vector2f getSize();
 
+	/// Places the card as "slected" which means that it will be drawn a bit darker
+	void select();
+
+	/// Removes the "slected" status of the card
+	void unselect();
+
 	/// Draws the object to a render target.
 	virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
@@ -87,6 +93,10 @@ private:
 
 	/// Path to the image of the back side of a card.
 	static constexpr char BACK_IMAGE_PATH[] = "../resources/client/back.png";
+
+	static const sf::Color _costColor;
+
+	static const sf::Color _textColor;
 
 	/// True when showing the front (with the image, title, ...), false when
 	/// showing the back.

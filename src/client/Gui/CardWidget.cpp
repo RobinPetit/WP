@@ -56,12 +56,26 @@ void CardWidget::setSize(const tgui::Layout2d& size)
 
 void CardWidget::setOrigin(float x, float y)
 {
-	_card->setOrigin(x, y);
+	if(_card)
+                _card->setOrigin(x, y);
 }
 
 void CardWidget::rotate(float angle)
 {
-	_card->rotate(angle);
+	if(_card)
+		_card->rotate(angle);
+}
+
+void CardWidget::select()
+{
+	if(_card)
+		_card->select();
+}
+
+void CardWidget::unselect()
+{
+	if(_card)
+		_card->unselect();
 }
 
 void CardWidget::draw(sf::RenderTarget &target, sf::RenderStates states) const

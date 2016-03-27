@@ -39,6 +39,10 @@ class CardWidget : public tgui::ClickableWidget
 
 		CardGui *getCard();
 
+		void select();
+
+		void unselect();
+
 		//virtual tgui::Widget::Ptr clone() const override;
 
 		virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;

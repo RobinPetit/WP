@@ -8,6 +8,8 @@ const sf::Vector2f CardGui::NAME_POSITION{20.f, 17.f};
 const sf::Vector2f CardGui::COST_POSITION{220.f, 17.f};
 constexpr char CardGui::BACK_IMAGE_PATH[];
 constexpr char CardGui::FONT_PATH[];
+const sf::Color CardGui::_costColor(0, 0, 100);
+const sf::Color CardGui::_textColor(sf::Color::Black);
 
 CardGui::CardGui(const std::string& frontTexturePath, const std::string& name, std::string description, int cost):
 	_showFront{true}
@@ -43,7 +45,7 @@ CardGui::CardGui(const std::string& frontTexturePath, const std::string& name, s
 
 	setupText(_costText, std::to_string(cost), COST_POSITION);
 	_costText.setStyle(sf::Text::Bold | sf::Text::Underlined);
-	_costText.setColor(sf::Color(0, 0, 100));
+	_costText.setColor(_costColor);
 
 	addNewlinesInDescription(description);
 	setupText(_descriptionText, description, {0, 0});
@@ -66,6 +68,23 @@ sf::Vector2f CardGui::getSize()
 	return SIZE;
 }
 
+void CardGui::select()
+{
+	sf::Color color(210, 210, 210);
+	_picture.setColor(color);
+	_descriptionText.setColor(color);
+	_nameText.setColor(color);
+	_costText.setColor(color);
+}
+
+void CardGui::unselect()
+{
+	_picture.setColor(sf::Color::White);
+	_descriptionText.setColor(_textColor);
+	_nameText.setColor(_textColor);
+	_costText.setColor(_costColor);
+}
+
 void CardGui::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
 	states.transform.combine(getTransform());
@@ -83,7 +102,7 @@ void CardGui::draw(sf::RenderTarget &target, sf::RenderStates states) const
 void CardGui::setupText(sf::Text& text, const std::string& string, const sf::Vector2f& position) const
 {
 	text.setString(string);
-	text.setColor(sf::Color::Black);
+	text.setColor(_textColor);
 	text.setFont(_font);
 	text.setCharacterSize(CHAR_SIZE);
 	text.setPosition(position);
