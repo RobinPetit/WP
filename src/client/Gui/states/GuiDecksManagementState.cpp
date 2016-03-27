@@ -116,24 +116,24 @@ void GuiDecksManagementState::onCardChosenFromDeck(CardId id)
 
 	// Compute the card collection without the cards of the selected deck
 	// For these lines, we just care about IDs
-	std::vector<CardId> CardIdsToShow;
-	std::set_difference(_cardsCollectionIds.begin(), _cardsCollectionIds.end(),
-	                    selectedDeck.begin(), selectedDeck.end(),
-	                    std::back_inserter(CardIdsToShow));
-
+	const std::vector<CardId> cardIdsToShow{getCardsCollectionWithoutDeck(selectedDeck)};
 	// Create the corresponding vector of widgets
 	DisplayableCardsCollection widgetsToShow;
 
-	// Browse all cards of the collection
-	for(std::size_t i{0}; i < _cardsCollectionWidgets.size(); ++i)
+	// Browse all cards of the collection to show
+	for(auto cardToShow : cardIdsToShow)
 	{
-		auto it(std::find(CardIdsToShow.begin(), CardIdsToShow.end(), _cardsCollectionIds.at(i)));
-		// If the card is also in the collection to show
-		if(it != CardIdsToShow.end())
+		// Find cardToShow in the main collection
+		auto it(std::find(_cardsCollectionIds.begin(), _cardsCollectionIds.end(), cardToShow));
+
+		// If cardToShow is also in the main collection
+		if(it != _cardsCollectionIds.end())
 		{
+			// Get the index of cardToShow in the main collection
+			const std::size_t cardIndex{static_cast<std::size_t>(it - _cardsCollectionIds.begin())};
+
 			// Add the corresponding widget to the list of widgets to show
-			widgetsToShow.push_back(_cardsCollectionWidgets.at(i));
-			CardIdsToShow.erase(it);
+			widgetsToShow.push_back(_cardsCollectionWidgets.at(cardIndex));
 		}
 	}
 

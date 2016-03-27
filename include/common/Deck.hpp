@@ -15,6 +15,7 @@ class Deck
 	public:
 		static constexpr std::size_t size{20};
 		typedef std::array<CardId, size>::iterator Iterator;
+		typedef std::array<CardId, size>::const_iterator ConstIterator;
 
 		/// Copy constructor.
 		Deck(const Deck& other) = default;
@@ -49,6 +50,14 @@ class Deck
 		Iterator begin();
 
 		Iterator end();
+
+		ConstIterator begin() const;
+
+		ConstIterator end() const;
+
+		ConstIterator cbegin() const;
+
+		ConstIterator cend() const;
 
 	private:
 		std::string _name;
