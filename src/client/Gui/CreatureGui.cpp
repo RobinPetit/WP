@@ -29,7 +29,7 @@ CreatureGui::CreatureGui(CardId id, const std::string& name, const std::string& 
 			break;
 
 		case SHIELD_LEGENDARY:
-			_healthText.setColor(sf::Color(255, 200, 200));
+			_shieldText.setColor(sf::Color(255, 200, 200));
 			break;
 
 		default:

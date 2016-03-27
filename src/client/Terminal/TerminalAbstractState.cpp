@@ -86,11 +86,6 @@ void TerminalAbstractState::displayCardWithIndex(CardId id, std::size_t index)
 	displayCard(id, true, index);
 }
 
-void TerminalAbstractState::displayCardWithId(CardId id)
-{
-	displayCard(id, true, id);
-}
-
 void TerminalAbstractState::handleInput()
 {
 	//TODO : change try/catch block for something more precise, this does NOT only catch input errors !

@@ -93,6 +93,7 @@ void GuiAbstractState::makeTitle(const std::string& title, unsigned int size, fl
 	_titleLabel.reset(new tgui::Label());
 	_titleLabel->setText(title);
 	_titleLabel->setTextSize(size);
+	_titleLabel->setTextColor(sf::Color::White);
 	_titleLabel->setPosition((tgui::bindWidth(*_context.gui) - tgui::bindWidth(_titleLabel)) / 2.f, y);
 	_context.gui->add(_titleLabel);
 	registerRootWidgets({_titleLabel});

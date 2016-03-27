@@ -84,6 +84,7 @@ private:
 	tgui::Label::Ptr _selfEnergyLabel;
 	tgui::Label::Ptr _selfDeckSizeLabel;
 	tgui::Label::Ptr _selfGraveyardSizeLabel;
+	tgui::Label::Ptr _gameInfoLabel;
 
 	/// The button to voluntarily end your turn
 	tgui::Button::Ptr _endTurnButton;
@@ -151,7 +152,7 @@ private:
 	/// \param message The message to show to user
 	void displayMessage(const std::string& message) override;
 
-	void popupMessage(const std::string& message);
+	void displayGameInfo(const std::string& message);
 
 	/// Disables the callbacks
 	void removeClickableCallbacks();

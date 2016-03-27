@@ -42,8 +42,9 @@ void TerminalDecksManagementState::displayDeck()
 	const std::size_t index{askForNumber(1, _decks.size()+1) - 1};
 
 	displaySeparator(_decks[index].getName(), '~'); // display the deck's name
+	std::size_t i=0;
 	for(const auto& cardId : _decks[index])  // display the deck's content
-		displayCardWithId(cardId);
+		displayCardWithIndex(cardId, i++);
 
 	waitForEnter();
 }
@@ -112,7 +113,7 @@ std::size_t TerminalDecksManagementState::askForReplacedCard(std::size_t deckInd
 		displayCardWithIndex(cardId, index++);
 
 	// ask for a card index
-	std::cout << "Choose a card index to be replaced (0 to quit): ";
+	std::cout << "Choose a card to be replaced (0 to quit): ";
 	return askForNumber(0, Deck::size + 1);
 }
 
@@ -121,13 +122,25 @@ CardId TerminalDecksManagementState::askForReplacingCard(std::size_t deckIndex)
 	displaySeparator("Available cards for replacement", '~');
 	auto cardsCollectionToShow(getCardsCollectionWithoutDeck(_decks[deckIndex]));
 
-	// display cards with their id
+	// display cards with their index
+	std::size_t i=1;
 	for(const auto& cardId : cardsCollectionToShow)
-		displayCardWithId(cardId);
+		displayCardWithIndex(cardId, i++);
 
-	// ask for a card id
-	std::cout << "Choose a card id to put in your deck: ";
-	CardId replacingCard{static_cast<CardId>(askForNumber(0, static_cast<std::size_t>(_context.client->getMaxCardId()+1)))};
+	// ask for a card index
+	std::cout << "Choose a card to put in your deck: ";
+	std::size_t chosenIndex;
+	try
+	{
+		//ask for an index within the card collection
+		chosenIndex = askForNumber(1, cardsCollectionToShow.size()+1) -1;
+	}
+	catch(const std::logic_error& e)
+	{
+		throw std::logic_error("Not a valid index!");
+	}
+
+	CardId replacingCard = cardsCollectionToShow.at(chosenIndex);
 
 	// Check if user HAS this card
 	if(not _cardsCollection.contains(replacingCard))

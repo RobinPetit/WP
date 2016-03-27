@@ -25,6 +25,7 @@ GuiGame::GuiGame(Context& context):
 	_selfEnergyLabel{std::make_shared<tgui::Label>()},
 	_selfDeckSizeLabel{std::make_shared<tgui::Label>()},
 	_selfGraveyardSizeLabel{std::make_shared<tgui::Label>()},
+	_gameInfoLabel{std::make_shared<tgui::Label>()},
 	_endTurnButton{std::make_shared<tgui::Button>()},
 	_attackOpponentButton{std::make_shared<tgui::Button>()},
 	// Opponent info layout
@@ -97,6 +98,11 @@ GuiGame::GuiGame(Context& context):
 	_selfBoardPanel->setSize(_width, 180);
 	// remove the self board panel
 	heightWidget -= _selfBoardPanel->getSize().y + 20;
+
+	// game messages
+	_gameInfoLabel->setPosition((_width - tgui::bindWidth(_gameInfoLabel))/2.f, tgui::bindBottom(_selfBoardPanel));
+	_context.gui->add(_gameInfoLabel);
+
 	_selfBoardPanel->setPosition({0.f, heightWidget});
 	_context.gui->add(_selfBoardPanel);
 
@@ -166,7 +172,7 @@ void GuiGame::processWindowEvents()
 		}
 		while(not _pendingMessages.empty())
 		{
-			popupMessage(_pendingMessages.front());
+			displayGameInfo(_pendingMessages.front());
 			_pendingMessages.pop();
 		}
 		if(event.type == sf::Event::Closed)
@@ -417,32 +423,12 @@ void GuiGame::createBigCard(const CommonCardData *cardData)
 				   (tgui::bindHeight(*_context.gui) - tgui::bindHeight(_readableCard)) / 2);
 }
 
-// NOTE: this is copy/paste from GuiAbstractState. TODO: factorize by creating an interface
+// TODO: factorize by creating an interface
 // Messageable, GuiMessageable, TerminalMessageable to factorize this code.
-void GuiGame::popupMessage(const std::string& message)
+void GuiGame::displayGameInfo(const std::string& message)
 {
-	std::lock_guard<std::mutex> _lock{_accessScreen};
-	static const std::string okButtonText{"Ok"};
-	tgui::MessageBox::Ptr messageBox{std::make_shared<tgui::MessageBox>()};
-
-	// Set up the message box
-	messageBox->setText(message);
-	messageBox->addButton(okButtonText);
-	messageBox->getRenderer()->setTitleBarColor({127, 127, 127});
-	_context.gui->add(messageBox);
-	messageBox->setPosition((tgui::bindWidth(*_context.gui) - tgui::bindWidth(messageBox)) / 2,
-			(tgui::bindHeight(*_context.gui) - tgui::bindHeight(messageBox)) / 2);
-
-	// Make the "Ok" button closing the message box
-	// Note: do not try to pass messageBox as reference, since this lambda will
-	// be stored elsewhere, the reference will become invalid when we'll go out
-	// of the scope of this method! We must pass it by value.
-	messageBox->connect("buttonPressed", [this, messageBox](const sf::String& buttonName)
-	{
-		if(buttonName == okButtonText)
-			messageBox->destroy();
-	});
-	_context.gui->draw();
+	_gameInfoLabel->setText(message);
+	_gameInfoLabel->setPosition((_width - tgui::bindWidth(_gameInfoLabel))/2.f, tgui::bindBottom(_selfBoardPanel));
 }
 
 void GuiGame::displayMessage(const std::string& message)
@@ -665,4 +651,5 @@ GuiGame::~GuiGame()
 	_context.gui->remove(_attackOpponentButton);
 	_context.gui->remove(_endTurnButton);
 	_context.gui->remove(_selfInfoLayout);
+	_context.gui->remove(_gameInfoLabel);
 }
