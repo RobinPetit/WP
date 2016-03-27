@@ -101,7 +101,7 @@ private:
 			const int PostGameData::*toAddValue;
 			int (ServerDatabase::*getMethod)(UserId);
 		};
-		std::array<AchievementsListItem, 11> _achievementsList
+		std::array<AchievementsListItem, 12> _achievementsList
 		{
 			{
 				AchievementsListItem {
@@ -167,6 +167,12 @@ private:
 					&ServerDatabase::addPerfectWin,
 					&PostGameData::remainingHealth,
 					&ServerDatabase::getPerfectWins
+				},
+				AchievementsListItem {
+					12,
+					&ServerDatabase::addCloseWin,
+					&PostGameData::remainingHealth,
+					&ServerDatabase::getCloseWins
 				}
 			}
 		};
@@ -215,6 +221,7 @@ private:
 	int getStartsInARow(UserId);
 	int getDaysInARow(UserId);
 	int getPerfectWins(UserId);
+	int getCloseWins(UserId);
 
 	void addToAchievementProgress(UserId id, int value, sqlite3_stmt * stmt);
 	void addTimeSpent(UserId, int seconds);
@@ -227,6 +234,8 @@ private:
 	/// add 1 to perfectWins if remainingHealth is max
 	/// (This is note the same way that other addAchievement methods, note that is addPerfectWin and not addPerfectWins)
 	void addPerfectWin(UserId, int remainingHealth);
+	/// add 1 to closeWins if remainingHealth is 1
+	void addCloseWin(UserId, int remainingHealth);
 
 	sqlite3_stmt * _friendListStmt;
 	sqlite3_stmt * _UserIdStmt;
@@ -270,6 +279,7 @@ private:
 	sqlite3_stmt * _getStartsInARowStmt;
 	sqlite3_stmt * _getDaysInARowStmt;
 	sqlite3_stmt * _getPerfectWinsStmt;
+	sqlite3_stmt * _getCloseWinsStmt;
 
 	sqlite3_stmt * _addTimeSpentStmt;
 	sqlite3_stmt * _addVictoriesStmt;
@@ -279,11 +289,12 @@ private:
 	sqlite3_stmt * _addStartsInTheCurrentRowStmt;
 	sqlite3_stmt * _updateLastDayPlayedStmt;
 	sqlite3_stmt * _setBestLadderPositionPercent;
-	sqlite3_stmt * _addPerfectWinStmt;
+	sqlite3_stmt * _addPerfectWinsStmt;
+	sqlite3_stmt * _addCloseWinsStmt;
 
 	// `constexpr std::array::size_type size() const;`
 	// -> future uses have to be _statements.size() -> 49 is written only one time
-	StatementsList<49> _statements
+	StatementsList<51> _statements
 	{
 		{
 			Statement {
@@ -560,9 +571,21 @@ private:
 				"	WHERE id == ?1;"
 			},
 			Statement { // 48
-				&_addPerfectWinStmt,
+				&_addPerfectWinsStmt,
 				"UPDATE Account "
 				"	SET perfectWins = perfectWins + ?1 "
+				"	WHERE id == ?2;"
+			},
+			Statement {
+				&_getCloseWinsStmt,
+				"SELECT closeWins "
+				"	FROM Account "
+				"	WHERE id == ?1;"
+			},
+			Statement {
+				&_addCloseWinsStmt,
+				"UPDATE Account "
+				"	SET closeWins = closeWins + ?1 "
 				"	WHERE id == ?2;"
 			}
 		}

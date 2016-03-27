@@ -580,12 +580,23 @@ int ServerDatabase::getDaysInARow(UserId user)
 void ServerDatabase::addPerfectWin(UserId user, int remainingHealth)
 {
 	if (remainingHealth == Player::getMaxHealth())
-		addToAchievementProgress(user, 1, _addPerfectWinStmt);
+		addToAchievementProgress(user, 1, _addPerfectWinsStmt);
 }
 
 int ServerDatabase::getPerfectWins(UserId user)
 {
 	return getAchievementProgress(user, _getPerfectWinsStmt);
+}
+
+void ServerDatabase::addCloseWin(UserId user, int remainingHealth)
+{
+	if (remainingHealth == 1)
+		addToAchievementProgress(user, 1, _addCloseWinsStmt);
+}
+
+int ServerDatabase::getCloseWins(UserId user)
+{
+	return getAchievementProgress(user, _getCloseWinsStmt);
 }
 
 
