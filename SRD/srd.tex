@@ -1,99 +1,102 @@
-\documentclass[12pt]{article}
+\documentclass[12pt]{article} 
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{times}
 \usepackage[cm]{fullpage}
 \usepackage[parfill]{parskip}
-\usepackage[xindy]{glossaries}
-\usepackage{glossary-mcols}
-\usepackage[french]{babel}
-\usepackage{lmodern}
-\usepackage{graphicx}
 \usepackage[bottom]{footmisc}  % notes de bas de page réellement en bas de page
+\usepackage[francais]{babel} % have to be loaded before glossaries (as many others)
+
+%%%%% fonts %%%%%
+
+\usepackage{lmodern} % if you don't like baskervad, uncomment this and comment out below
+% Baskervad
+%\usepackage[lf]{Baskervaldx} % lining figures
+%\usepackage[bigdelims,vvarbb]{newtxmath} % math italic letters from Nimbus Roman
+%\usepackage[cal=boondoxo]{mathalfa} % mathcal from STIX, unslanted a bit
+%\renewcommand*\oldstylenums[1]{\textosf{#1}}
+
+%%%%% graphicx %%%%%
+
+\usepackage{graphicx}
 
 \graphicspath{{"Diagrams/"}}
 
+%%%%% glossaries %%%%%
+
+\usepackage[
+			nogroupskip,
+			toc, 
+			numberedsection,
+			style=list]
+		{glossaries}
+\usepackage{glossary-mcols}
+
 \newglossary[glg]{glossary}{slm}{sbl}{Glossaire}
 \input{glossaire.tex}
-\makeglossaries
+\makenoidxglossaries
 
-\newglossarystyle{noIndex} {
-	\renewenvironment{theglossary}
-	{\vspace{-4em}
-	\begin{longtable}{@{}p{0.15\textwidth}@{}p{0.85\textwidth}}}
-	{\end{longtable}}
-	\renewcommand*{\glossaryheader}{}
-	\renewcommand*{\glsgroupheading}[1]{}
-	\renewcommand*{\glossaryentryfield}[5]{\textbf{\glstarget{##1}{##2}} & ##3. \\}
+\newglossarystyle{listNoIndex}{%
+	\renewcommand*{\glossaryentryfield}[5]{%
+		\item[\glsentryitem{##1}\glstarget{##1}{##2}]
+			##3\glspostdescription}%
+	\renewcommand*{\glossarysubentryfield}[6]{%
+		\glssubentryitem{##2}%
+		\glstarget{##2}{\strut}##4\glspostdescription}%
 }
 
-\newglossarystyle{Index} {
-	\renewenvironment{theglossary}
-	{\vspace{-4em}
-	\begin{longtable}{@{}p{0.15\textwidth}@{}p{0.85\textwidth}}}
-	{\end{longtable}}
-	\renewcommand*{\glossaryheader}{}
-	\renewcommand*{\glsgroupheading}[1]{}
-	\renewcommand*{\glossaryentryfield}[5]{\textbf{\glstarget{##1}{##2}} & ##5 \\}
+\newglossarystyle{indexNoDescription}{%
+	\renewcommand*{\glossaryentryfield}[5]{%
+		\item\glsentryitem{##1}\textbf{\glstarget{##1}{##2}}%
+			\ifx\relax##4\relax
+			\else
+				\space(##4)%
+			\fi % jusque là rien d'anormal
+			% ici on n'affiche pas la description
+			\space ##5}% puis on affiche la liste des utilisations
+	% meme principe ci-dessous
+	\renewcommand*{\glossarysubentryfield}[6]{%
+		\ifcase##1\relax
+			% level 0
+			\item
+		\or
+			% level 1
+			\subitem
+			\glssubentryitem{##2}%
+		\else
+			% all other levels
+			\subsubitem
+		\fi
+		\textbf{\glstarget{##2}{##3}}%
+		\ifx\relax##5\relax
+		\else
+			\space(##5)%
+		\fi
+		\space ##6}%
+}%
+
+%%%%% I hate code repetitions %%%%%
+
+\let\simplesection\section
+\renewcommand{\section}{\clearpage\simplesection}
+
+\usepackage{needspace}
+\let\simplesubsection\subsection
+\renewcommand{\subsection}{
+	\needspace{0.5\pagetotal}
+	\simplesubsection
 }
+
+\newcommand{\doit}{\textbf{doit} }
+\newcommand{\faclt}{\textbf{\gls{facultatif} : }}
 
 \begin{document}
 
 \pagenumbering{Roman}
-
-\begin{titlepage}
-
-\newcommand{\HRule}{\rule{\linewidth}{0.5mm}} % Defines a new command for the horizontal lines
-
-\center % Center everything on the page
-
-%----------------------------------------------------------------------------------------
-%	HEADING SECTIONS
-%----------------------------------------------------------------------------------------
-
-\textsc{\LARGE Université libre de Bruxelles}\\[1.5cm]
-\textsc{\Large INFO-F-209}\\[0.5cm]
-\textsc{\large Projet d'année 2}\\[0.5cm]
-
-%----------------------------------------------------------------------------------------
-%	TITLE SECTION
-%----------------------------------------------------------------------------------------
-
-\HRule \\[0.4cm]
-{ \huge \bfseries Software Requirement Document : Wizard Poker \\ Groupe 5}\\[0.4cm]
-\HRule \\[1.5cm]
-
-%----------------------------------------------------------------------------------------
-%	AUTHOR SECTION
-%----------------------------------------------------------------------------------------
-
-\Large \emph{Auteurs :}\\
-Baudoux Nicolas, Gueniffey Stanislas,  Muranovic Allan, Petit Robin, Reynouard Alexis et Verhelst Théo
-
-%----------------------------------------------------------------------------------------
-%	DATE SECTION
-%----------------------------------------------------------------------------------------
-
-{\large \today}\\[2cm]
-
-%----------------------------------------------------------------------------------------
-%	LOGO SECTION
-%----------------------------------------------------------------------------------------
-
-\includegraphics{ulb.png}\\[1cm]
-
-%----------------------------------------------------------------------------------------
-
-\vfill
-
-\end{titlepage}
-
-
+\include{titlepage}
 \tableofcontents
-\newpage
-\pagenumbering{arabic}
 
+\pagenumbering{arabic}
 \section{Introduction}
 	\subsection{But du projet}
 		L'objectif visé par ce projet d'année de BA2 en sciences informatiques est la réalisation d'une application client-serveur en C/C++. L'application visée est
@@ -120,8 +123,10 @@ Baudoux Nicolas, Gueniffey Stanislas,  Muranovic Allan, Petit Robin, Reynouard A
 
 			\begin{center}\includegraphics[scale=0.45]{Activity1_Gameplay.png}\end{center}
 
-	\subsection{Glossaire}  % doit s'agrandir avec le temps (automatiquement)
-		\printglossary[type=glossary, style=noIndex, title=]
+	\subsection{Glossaire}  
+		\printglossary[type=glossary, style=listNoIndex, title=]
+	%\setglossarysection{subsection}
+	%\printnoidxglossary[title=Glossaire,style=listNoIndex] % doit s'agrandir avec le temps (automatiquement)
 
 	\subsection{Historique}
 		\begin{itemize}
@@ -138,11 +143,11 @@ Baudoux Nicolas, Gueniffey Stanislas,  Muranovic Allan, Petit Robin, Reynouard A
 			\item[27/03/2016] mise à jour et FIN du SRD.
 		\end{itemize}
 
-\newpage
+
 
 \section{Besoins de l'utilisateur}
 	L'utilisateur de l'application, à savoir le joueur, a un certain nombre de besoins. Ces derniers doivent être satisfaits afin de garantir un confort d'utilisation
-	maximal. En utilisant l'application, le joueur \textbf{doit} avoir la possibilité de :
+	maximal. En utilisant l'application, le joueur \doit avoir la possibilité de :
 
 	\begin{itemize}
 		\item créer un compte utilisateur ;
@@ -152,9 +157,9 @@ Baudoux Nicolas, Gueniffey Stanislas,  Muranovic Allan, Petit Robin, Reynouard A
 		\item consulter les \glspl{deck} dont il dispose ;
 		\item ajouter un joueur existant en ami ;
 		\item discuter avec un ami ;
-		\item \textbf{\gls{facultatif} :} discuter avec plusieurs amis simultanément ;
+		\item \faclt discuter avec plusieurs amis simultanément ;
 		\item affronter un adversaire aléatoire ;
-		\item \textbf{\gls{facultatif} :} défier un joueur de sa liste d'amis ;
+		\item \faclt défier un joueur de sa liste d'amis ;
 		\item consulter le classement des joueurs.
 	\end{itemize}
 
@@ -263,10 +268,10 @@ Baudoux Nicolas, Gueniffey Stanislas,  Muranovic Allan, Petit Robin, Reynouard A
 			\begin{center}\includegraphics[scale=0.6]{Collaboration3_RoundDetails.png}\end{center}
 
 	\subsection{Exigences non-fonctionnelles}
-		L'application \textbf{doit} tourner sur Linux Debian (salles 008 et 009 du NO.4) et fonctionner en réseau (\textit{a priori} avec clients
+		L'application \doit tourner sur Linux Debian (salles 008 et 009 du NO.4) et fonctionner en réseau (\textit{a priori} avec clients
 		et serveurs sur des machines séparées).
 
-		De plus, l'utilisateur \textbf{doit} pouvoir discuter par messages à n'importe quel moment de l'exécution de l'application : tant pendant
+		De plus, l'utilisateur \doit pouvoir discuter par messages à n'importe quel moment de l'exécution de l'application : tant pendant
 		qu'il gère ses amis, ses cartes ou pendant qu'il est en \gls{duel}. Ces discussions ne peuvent se faire avec un joueur
 		n'étant pas ami de l'utilisateur.
 
@@ -279,16 +284,16 @@ Baudoux Nicolas, Gueniffey Stanislas,  Muranovic Allan, Petit Robin, Reynouard A
 			\item empêcher la triche dans la mesure du possible.
 		\end{itemize}
 
-\newpage
+
 
 \section{Besoins du système}
 	\subsection{Exigences fonctionnelles}
-		Dans un premier temps, l'application \textbf{doit} tourner en ligne de commande et \textbf{doit}, dans un second temps adopter une interface
+		Dans un premier temps, l'application \doit tourner en ligne de commande et \doit, dans un second temps adopter une interface
 		graphique.
-		De plus, l'application \textbf{doit} être développée en C++.
+		De plus, l'application \doit être développée en C++.
 
 	\subsection{Exigences non-fonctionnelles}
-		Le système \textbf{doit} être maintenable et pensé dans l'optique d'une future adaptation avec interface graphique et permettre la compatibilité entre un joueur ayant lancé l'interface graphique et un joueur qui joue depuis son terminal.
+		Le système \doit être maintenable et pensé dans l'optique d'une future adaptation avec interface graphique.
 
 	\subsection{Design et fonctionnement du système}
 		La structure du programme est résumée dans le diagramme de classe ci-dessous. Chaque élément sera développé par après.
@@ -296,7 +301,7 @@ Baudoux Nicolas, Gueniffey Stanislas,  Muranovic Allan, Petit Robin, Reynouard A
 
 		Nous pouvons constater que le client (Player) se connecte au serveur qui, lui, gère les parties (le tableau de jeu) ainsi que la base de donnée et tout ce que cette dernière comprend.
 
-		\newpage
+
 		\subsubsection{Diagramme de classe du \gls{deck} et des cartes}
 		\begin{center}\includegraphics[scale=0.5]{deck.png}\end{center}
 			Comme indiqué sur ce diagramme, un \gls{deck} est composé de cartes, 20 pour être précis. Les cartes sont soit des créatures
@@ -306,7 +311,7 @@ Baudoux Nicolas, Gueniffey Stanislas,  Muranovic Allan, Petit Robin, Reynouard A
 			L'application des effets est simple : chaque effet est un effet direct, que ce soit infliger X points de dégats, comme soigner un allié ou encore interdire le joueur adverse de jouer pendant Y tours.
 			Un effet plus complexe est tout aussi direct, si ce n'est qu'il va modifier la liste de contraintes de la partie et c'est cette liste qui va permettre d'appliquer des effets sur la durée, ou des effets qui respectent certaines conditions (appliquer tel effet tant que telle créature est en vie par exemple).
 	
-		\newpage
+
 		\subsubsection{Diagramme de classe du serveur et de sa base de donnée}
 		\begin{center}\includegraphics[scale=0.5]{Server.png}\end{center}
 			Ici, la structure est un peu plus complexe : le serveur est composé d'une base de donnée (SQLite) exploitée par une classe Database utilisable directement en C++ pour l'application serveur.
@@ -318,14 +323,14 @@ Baudoux Nicolas, Gueniffey Stanislas,  Muranovic Allan, Petit Robin, Reynouard A
 			les images (pour la partie graphique), etc.}.
 
 
-		\newpage
+
 		\subsubsection{Diagramme des classes intervenant dans une partie (simplifié)}
 		\begin{center}\includegraphics[scale=0.5]{Game.png}\end{center}
 			Il est à noter que c'est un diagramme de classe, et non d'activités, il regroupe juste les plus grosses classes intervenant dans la partie,
 			et non pas leur lien/fonctionnement entre elles.
 			Pour qu'une partie puisse avoir lieu, il nous faut 2 joueurs connecté au serveur qui s'occupera lui-même de modifier le plateau de jeu.
 
-		\newpage
+
 		\subsubsection{Diagramme des classes nécessaires au menu en console}
 			Toutes les métodes servant à une expérience de jeu optimal sont implémentées, mais en console.
 			L'interface graphique arrive à la prochaine étape du développement de ce projet, tout ce qui gère le fonctionnement du jeu est néanmoins présent.
@@ -342,14 +347,14 @@ Baudoux Nicolas, Gueniffey Stanislas,  Muranovic Allan, Petit Robin, Reynouard A
 				nous avons une classe abstraite héritée (\textbf{AbstractState}) ainsi que l'utilisation d'une deuxième classe (\textbf{StateStack}). C'est grâce à ces deux dernière que tout 
 				implémentation supplémentaire dans le menu ou autre est possible.
 
-			\newpage
+
 			\subsubsection{Deuxième moitié: fonctionnalités plus avancées}
 			\begin{center}\includegraphics[scale=0.5]{stack2.png}\end{center}
 				Ici, nous nous occupons un peu plus de l'expérience de jeu. Nous avons un gestionnaire de cartes, un gestionnaire de \gls{deck} ainsi qu'un classement des joueurs et tout ce qui est nécessaire au bon fonctionnement d'une partie.
 
 				La seule particularité de cette partie réside dans la classe \textbf{GameState} qui comporte des \gls{mutex}, des valeurs atomiques ainsi que des entrées non bloquantes.
 				Etant données qu'il y aura de nombreuses entrées/sorties au niveau de cette classe-là, ces différents éléments permettront d'éviter les situations de compétition lors des accès en mémoire de ses attributs.
-				
+			
 \newpage
 \section{Interface graphique (G.U.I.)}
 	Pour l'instant, le programme était prévu pour une simple utilisation en console. En effet, malgré que ce soit un jeu, le programme était plus procédurale qu'autre chose.
@@ -416,6 +421,6 @@ Baudoux Nicolas, Gueniffey Stanislas,  Muranovic Allan, Petit Robin, Reynouard A
 
 \newpage
 \section{Index}
-		\printglossary[type=glossary, style=Index, title=]
+		\printglossary[type=glossary, style=indexNoDescription, title=]
 
 \end{document}

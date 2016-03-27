@@ -9,9 +9,20 @@
 #include "common/ini/IniFile.hpp"
 // std-C++ headers
 #include <cstdlib>
+#ifdef __linux
+extern "C"
+{
+# include <X11/Xlib.h>
+}
+#else
+#endif
 
 int main()
 {
+#ifdef __linux__
+	XInitThreads();
+#else
+#endif
 	IniFile config;
 	int status = config.readFromFile(SERVER_CONFIG_FILE_PATH);
 	if(status != SUCCESS)
@@ -19,6 +30,11 @@ int main()
 	Server server;
 	if(config.find("SERVER_PORT") == config.end())
 		return WRONG_FORMAT_CONFIG_FILE;
-	int serverStatus = server.start(static_cast<sf::Uint16>(std::stoi(config["SERVER_PORT"], nullptr, AUTO_BASE)));
+	sf::Uint16 serverPort{static_cast<sf::Uint16>(std::stoi(config["SERVER_PORT"], nullptr, AUTO_BASE))};
+	int serverStatus;
+	// Same as client: loop 10 times to find an available port
+	int counter{0};
+	while(((serverStatus = server.start(serverPort++)) == UNABLE_TO_LISTEN) && ((++counter) < 10))
+		;
 	return serverStatus;
 }

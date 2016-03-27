@@ -3,16 +3,15 @@
 #include <string>
 #include <cstring>
 
-Database::Database(std::string filename)
+Database::Database(const std::string& filename)
 {
-	std::cout << filename.c_str() << std::endl;
 	sqliteThrowExcept(sqlite3_open(filename.c_str(), &_database));
 	sqliteThrowExcept(sqlite3_exec(_database, "PRAGMA foreign_keys = ON;", nullptr, nullptr, nullptr));
 }
 
 void Database::prepareStmt(Statement& statement)
 {
-	sqliteThrowExcept(sqlite3_prepare_v2(_database, statement.query(), std::strlen(statement.query()),
+	sqliteThrowExcept(sqlite3_prepare_v2(_database, statement.query(), static_cast<int>(std::strlen(statement.query())),
 	                                     statement.statement(), nullptr));
 }
 
@@ -24,53 +23,43 @@ Database::~Database()
 		std::cerr << "ERROR while closing database connection" << std::endl; // TODO error handling
 }
 
-int Database::sqliteThrowExcept(int errcode) const
+int Database::sqliteThrowExcept(int errcode)
 {
 	switch(errcode)
 	{
+	case SQLITE_ROW:
+	case SQLITE_DONE:
 	case SQLITE_OK:
 		break;
 
 	case SQLITE_CORRUPT:
 		throw std::runtime_error("Database corrupted, need reinstall");
-		break;
 
 	case SQLITE_INTERNAL:
 		throw std::runtime_error("Database engine unexpected error");
-		break;
 
 	case SQLITE_PERM:
 	case SQLITE_READONLY:
 		throw std::runtime_error("Database permissions error");
-		break;
 
 	case SQLITE_ABORT:
 	case SQLITE_INTERRUPT:
 		throw std::runtime_error("Database operation aborted");
-		break;
 
 	case SQLITE_BUSY:
 	case SQLITE_LOCKED:
 		throw std::runtime_error("Database busy/locked: is this instance the only one running?");
-		break;
 
 	case SQLITE_NOMEM:
 	case SQLITE_IOERR:
 	case SQLITE_FULL:
 		throw std::runtime_error("IO error");
-		break;
 
 	case SQLITE_CANTOPEN:
-		throw std::runtime_error("Database MS unable to open file");
-		break;
+		throw std::runtime_error("Database unable to open file");
 
 	case SQLITE_SCHEMA:
 		throw std::runtime_error("Database schema has changed, need reinstall or update");
-		break;
-
-	case SQLITE_ROW:
-	case SQLITE_DONE:
-		break;
 
 	case SQLITE_ERROR:
 	default:

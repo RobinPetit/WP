@@ -1,17 +1,17 @@
 #ifndef _STATE_STACK_CLIENT_HPP
 #define _STATE_STACK_CLIENT_HPP
 
+// std-C++ headers
 #include <stack>
 #include <queue>
-#include <string>
 #include <memory>
 #include <functional>
-#include <typeinfo>
-#include <SFML/System.hpp>
-#include "client/sockets/Client.hpp"
+// WizardPoker headers
+#include "client/Context.hpp"
+#include "client/AbstractState.hpp"
 
 //Forward declarations
-class AbstractState;
+class Context;
 
 /// States manager that holds all the states and manages them.
 /// Structuring states as a stack allows more natural browsing in the menus
@@ -26,22 +26,25 @@ class StateStack
 {
 	public:
 		/// Constructor
-		StateStack(Client& client);
+		StateStack(Context& context);
 
 		/// Destructor.
 		/// This declarations is here in order to avoid a warning about inlining.
 		~StateStack() = default;
 
-		/// Call the display() function of the top state.
+		/// Calls the display() function of the top state.
 		void display();
 
-		/// Call the handleInput() function of the top state.
-		void handleInput(const std::string& input);
+		/// Calls the handleInput() function of the top state.
+		void handleInput();
 
 		/// Add a new state of the template type to the top of the stack.
 		/// \tparam StateType The type of the state to construct.
 		template <typename StateType>
 		void push();
+
+		template <typename StateType>
+		void firstPush();
 
 		/// Delete the top state.
 		void pop();
@@ -54,28 +57,28 @@ class StateStack
 		bool isEmpty() const;
 
 	private:
-		std::vector<std::unique_ptr<AbstractState>> _stack;  ///< Vector of state.
-		std::vector<std::unique_ptr<AbstractState>>::iterator _stackIterator;  ///< Iterator on _stack.
-		Client& _client;
-		bool _empty = false;  ///< Indicates wether clear() gets called.
+		std::stack<std::unique_ptr<AbstractState>> _stack;  ///< Vector of state.
+		std::queue<std::function<void()>> _pendingChanges;
+		Context& _context;
+
+		void doPendingChanges();
 };
 
 template <typename StateType>
 void StateStack::push()
 {
-	// If we do the first push or if the iterator is at TOS
-	if(_stack.empty() or *_stackIterator == _stack.back())
+	_pendingChanges.emplace([this]()
 	{
-		_stack.emplace_back(new StateType(*this, _client));
-		_stackIterator = _stack.end() - 1;
-	}
-	// If we must store another state type at *(_stackIterator + 1)
-	else if(typeid(StateType*) != typeid((_stackIterator + 1)->get()))
-	{
-		_stackIterator++;
-		_stackIterator->reset(new StateType(*this, _client));
-	}
+		if(not _stack.empty())
+			_stack.top()->onPush();
+		_stack.emplace(new StateType(_context));
+	});
 }
 
-#endif// _STATE_STACK_CLIENT_HPP
+template <typename StateType>
+void StateStack::firstPush()
+{
+	_stack.emplace(new StateType(_context));
+}
 
+#endif  // _STATE_STACK_CLIENT_HPP
