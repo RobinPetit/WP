@@ -208,7 +208,8 @@ int TerminalGame::askSelfBoardIndex()
 	return askIndex(_selfBoardCreatures.size(), "Choose the index for a card on your board: ");
 }
 
-int TerminalGame::askSelfGraveyardIndex()
+// may be used some day
+/*int TerminalGame::askSelfGraveyardIndex()
 {
 	std::cout << "These are the cards in your graveyard:" << std::endl;
 	displayCardVector(_selfGraveCards, true);
@@ -219,7 +220,7 @@ int TerminalGame::askOppoHandIndex()
 {
 	std::cout << "Your opponent has " << _oppoHandSize << " cards in his hand." << std::endl;
 	return askIndex(_oppoHandSize, "Choose the index for a card in the opponent's hand: ");
-}
+}*/
 
 int TerminalGame::askOppoBoardIndex()
 {
