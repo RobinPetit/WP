@@ -38,7 +38,7 @@ private:
 	int askOppoBoardIndex() override;
 	int askOppoHandIndex() override;
 
-	bool wantToAttackOpponent() override;
+	bool wantToAttackOpponent();
 
 	void chooseDeck() override;
 

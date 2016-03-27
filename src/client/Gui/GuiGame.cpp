@@ -25,6 +25,7 @@ GuiGame::GuiGame(Context& context):
 	_selfDeckSizeLabel{std::make_shared<tgui::Label>()},
 	_selfGraveyardSizeLabel{std::make_shared<tgui::Label>()},
 	_endTurnButton{std::make_shared<tgui::Button>()},
+	_attackOpponentButton{std::make_shared<tgui::Button>()},
 	// Opponent info layout
 	_oppoInfoLayout{std::make_shared<tgui::VerticalLayout>()},
 	_oppoHealthLabel{std::make_shared<tgui::Label>()},
@@ -102,6 +103,19 @@ GuiGame::GuiGame(Context& context):
 	heightWidget -= _opponentBoardPanel->getSize().y + 20;
 	_opponentBoardPanel->setPosition({0.f, heightWidget});
 	_context.gui->add(_opponentBoardPanel);
+
+	// Place the button to attack directly the opponent
+	_attackOpponentButton->setText("Attack opponent");
+	_attackOpponentButton->setSize(_width * 3.f / 4.f, _opponentBoardPanel->getPosition().y - 10);
+	_attackOpponentButton->setPosition(_width / 8.f, 5);
+	_attackOpponentButton->connect("Pressed", [this]()
+	{
+		int selfSelection{_currentSelfSelection};
+		unselectSelfCard();
+		attackWithCreature(selfSelection, true, NoSelection);
+		displayGame();
+	});
+	_context.gui->add(_attackOpponentButton);
 }
 
 void GuiGame::startTurn()
@@ -263,6 +277,7 @@ void GuiGame::handleSelfBoardClick(int index)
 		_selfBoard.at(index)->select();
 		for(auto& card : _opponentBoard)
 			card->aimable();
+		_attackOpponentButton->show();
 	}
 }
 
@@ -281,7 +296,6 @@ void GuiGame::handleOpponentBoardClick(int index)
 	unselectSelfCard();
 	attackWithCreature(selfSelection, false, _currentOpponentSelection);
 	displayGame();
-	// TODO: allow to attack opponent
 }
 
 void GuiGame::unselectSelfCard()
@@ -292,6 +306,7 @@ void GuiGame::unselectSelfCard()
 	_currentSelfSelection = NoSelection;
 	for(auto& card : _opponentBoard)
 		card->unaimable();
+	_attackOpponentButton->hide();
 }
 
 void GuiGame::displayPlayerBoard(tgui::Panel::Ptr& panel, std::vector<CardWidget::Ptr>& graphicalCards,
@@ -433,11 +448,6 @@ int GuiGame::askOppoHandIndex()
 {
 	return -42;
 }
-
-bool GuiGame::wantToAttackOpponent()
-{
-	return false;
-}
 // </TODO>
 
 void GuiGame::chooseDeck()
@@ -447,6 +457,7 @@ void GuiGame::chooseDeck()
 	_opponentBoardPanel->hide();
 	_selfHandPanel->hide();
 	_endTurnButton->hide();
+	_attackOpponentButton->hide();
 	// get all of the decks
 	std::vector<Deck> decks{_client.getDecks()};
 

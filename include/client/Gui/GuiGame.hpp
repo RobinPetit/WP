@@ -85,6 +85,9 @@ private:
 	/// The button to voluntarily end your turn
 	tgui::Button::Ptr _endTurnButton;
 
+	/// The button to directly attack the opponent
+	tgui::Button::Ptr _attackOpponentButton;
+
 	/// A layout that contains information labels about the opponent
 	tgui::VerticalLayout::Ptr _oppoInfoLayout;
 
@@ -142,8 +145,6 @@ private:
 	int askSelfGraveyardIndex() override;
 	int askOppoBoardIndex() override;
 	int askOppoHandIndex() override;
-
-	bool wantToAttackOpponent() override;
 
 	/// Displays the decks and ask to user to select the one to play with
 	void chooseDeck() override;
