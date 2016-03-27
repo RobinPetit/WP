@@ -516,7 +516,7 @@ int ServerDatabase::getLadderPositionPercent(UserId user)
 	std::string name(getLogin(user));
 	UserId position;
 
-	for(position = 0; ladder.at(position).name != name; ++position)
+	for(position = 0; ladder.at(static_cast<std::size_t>(position)).name != name; ++position)
 	{}
 
 	return static_cast<int>((countAccounts() - position) * 100 / countAccounts());

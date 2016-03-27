@@ -34,7 +34,7 @@ GuiAchievementState::GuiAchievementState(Context& context):
 
 	// Make the layout
 	_layout->setPosition((_panel->getSize().x - AchievementGui::getSize().x)/2, 0.f);
-	_layout->setSize(AchievementGui::getSize().x, AchievementGui::getSize().y * gridHeight * 1.1f);
+	_layout->setSize(AchievementGui::getSize().x, AchievementGui::getSize().y * static_cast<float>(gridHeight) * 1.1f);
 	_panel->add(_layout);
 
 	// Make the scrollbar
