@@ -288,7 +288,7 @@ Baudoux Nicolas, Gueniffey Stanislas,  Muranovic Allan, Petit Robin, Reynouard A
 		De plus, l'application \textbf{doit} être développée en C++.
 
 	\subsection{Exigences non-fonctionnelles}
-		Le système \textbf{doit} être maintenable et pensé dans l'optique d'une future adaptation avec interface graphique.
+		Le système \textbf{doit} être maintenable et pensé dans l'optique d'une future adaptation avec interface graphique et permettre la compatibilité entre un joueur ayant lancé l'interface graphique et un joueur qui joue depuis son terminal.
 
 	\subsection{Design et fonctionnement du système}
 		La structure du programme est résumée dans le diagramme de classe ci-dessous. Chaque élément sera développé par après.
@@ -355,9 +355,13 @@ Baudoux Nicolas, Gueniffey Stanislas,  Muranovic Allan, Petit Robin, Reynouard A
 	Pour l'instant, le programme était prévu pour une simple utilisation en console. En effet, malgré que ce soit un jeu, le programme était plus procédurale qu'autre chose.
 	C'est avec l'arrivée du \textit{\gls{GUI}} que le programme sera enfin interactif et touchera à sa fin de développement.
 
+	\begin{center}\includegraphics[scale=0.5]{GameStruct.png}\end{center}
+	Le schéma ci-dessus nous indique la structure du jeu, tout le code est contenu dans une classe abstraite qui sera dérivée en une classe s'occupant du jeu en console et une autre s'occupant du jeu avec sa \textit{\gls{GUI}}.
 	Une chose n'empêche pas l'autre, en effet, le programme est entièrement utilisable des 2 manières, via l'interface graphique comme via la console.
 	Un joueur ayant décidé de lancer le jeu depuis la console a donc la possibilité de jouer avec un joueur ayant exécuté le programme avec le \textit{\gls{GUI}}.
-	Nous verrons brièvement l'interface du menu console, étant peu innovant et se résumant toujours à la même chose, un seul exemple est plus que suffisant.
+	Nous verrons brièvement l'interface du menu console, étant peu innovant et se résumant toujours à la même chose, un seul exemple est plus que suffisant. De plus, la partie console est déjà développée plus haut.
+
+
 	\subsection{Mise en place de l'interface des différents menus.}
 		\subsubsection{En console.}
 		\begin{center}\includegraphics[scale=0.5]{MainMenuConsole.png}\end{center}
