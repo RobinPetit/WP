@@ -83,6 +83,7 @@ private:
 	tgui::Label::Ptr _selfEnergyLabel;
 	tgui::Label::Ptr _selfDeckSizeLabel;
 	tgui::Label::Ptr _selfGraveyardSizeLabel;
+	tgui::Label::Ptr _gameInfoLabel;
 
 	/// The button to voluntarily end your turn
 	tgui::Button::Ptr _endTurnButton;
