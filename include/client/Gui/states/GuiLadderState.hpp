@@ -4,6 +4,8 @@
 // External headers
 #include <TGUI/HorizontalLayout.hpp>
 #include <TGUI/VerticalLayout.hpp>
+#include <TGUI/Animation.hpp>
+#include <TGUI/Widgets/Scrollbar.hpp>
 
 // WizardPoker headers
 #include "common/Database.hpp"  // Ladder
@@ -28,6 +30,9 @@ class GuiLadderState : public GuiAbstractState, public AbstractLadderState
 			/// Constructor.
 			GuiLadderEntry();
 
+			/// Set the color of the labels
+            void setBackgroundColor(const sf::Color&);
+
 			/// The rank field (from 1 to _ladder.size()).
 			tgui::Label::Ptr rankLabel;
 
@@ -39,6 +44,8 @@ class GuiLadderState : public GuiAbstractState, public AbstractLadderState
 
 			/// The number of games the player played.
 			tgui::Label::Ptr playedGamesLabel;
+
+			tgui::Label::Ptr ratioLabel;
 
 			/// The layoud to ties all labels together.
 			tgui::HorizontalLayout::Ptr layout;
@@ -52,7 +59,12 @@ class GuiLadderState : public GuiAbstractState, public AbstractLadderState
 		/// columns).
 		GuiLadderEntry _ladderHeader;
 
+		/// Panel contains the layout and the scrollbar
+		tgui::Panel::Ptr _panel;
+		tgui::Scrollbar::Ptr _scrollbar;
 		tgui::VerticalLayout::Ptr _ladderLayout;
+
+		void scrollGrid(int newScrollValue);
 };
 
 #endif  // _GUI_LADDER_STATE_CLIENT_HPP
