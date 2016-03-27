@@ -152,6 +152,20 @@ void TerminalGame::useCard()
 	AbstractGame::useCard(cardIndex);
 }
 
+void TerminalGame::attackWithCreature()
+{
+	displayMessage("Which creature would you like to attack with?");
+	int selfCardIndex = askSelfBoardIndex();
+	int opponentCardIndex;
+	bool attackOpponent{wantToAttackOpponent()};
+	if(not attackOpponent)
+	{
+		displayMessage("Which opponent's creature would you like to attack?");
+		opponentCardIndex = askOppoBoardIndex();
+	}
+	AbstractGame::attackWithCreature(selfCardIndex, attackOpponent, opponentCardIndex);
+}
+
 ////////////// inputs
 
 int TerminalGame::askIndex(std::size_t upperBound, const std::string& inputMessage)

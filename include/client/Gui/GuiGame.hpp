@@ -47,6 +47,7 @@ public:
 	~GuiGame();
 
 private:
+	typedef void (GuiGame::*CardCallback)(int);
 	////////// Attributes
 
 	/// The context to access the client, the gui, the window, etc.
@@ -91,6 +92,12 @@ private:
 	std::vector<CardWidget::Ptr> _selfBoard;
 
 	std::vector<CardWidget::Ptr> _opponentBoard;
+
+	// take negative values to select nothing
+	int _currentSelfSelection;
+	int _currentOpponentSelection;
+
+	static constexpr int NoSelection{-1};
 
 	//////////////////// Methods
 
@@ -141,6 +148,10 @@ private:
 	/// Resets the screen and then redraws the current interface
 	void refreshScreen();
 
+	void handleSelfBoardClick(int index);
+
+	void handleOpponentBoardClick(int index);
+
 	/// Function to allow "big card" to be displayed when mouse passes over the card
 	/// \param card The card to pass on to draw the big card
 	/// \param cardData The data to create the big card
@@ -159,14 +170,17 @@ private:
 	void displayOpponentBoard();
 
 	/// Function to display a board on a panel
-	/// \param panel The panel to display the cars on
+	/// \param panel The panel to display the cards on
 	/// \param graphicalCards The cards that will be created and displayed
 	/// \param creatureDatas The cards used to create the Gui cards
+	/// \param callback A method pointer to be called when card is clicked
+	/// (nullptr for no callback)
 	/// \param reversed A boolean telling if card must be displayed upside down
-	/// \param displayableWhenMouseOver A boolean telling if the "big card" should be displayed
-	/// when the mouse passes over the card
+	/// \param displayableWhenMouseOver A boolean telling if the "big card"
+	/// should be displayed when the mouse passes over the card
 	void displayPlayerBoard(tgui::Panel::Ptr& panel, std::vector<CardWidget::Ptr>& graphicalCards,
-		std::vector<BoardCreatureData>& creatureDatas, bool reversed=false, bool displayableWhenMouseOver=true);
+		std::vector<BoardCreatureData>& creatureDatas, CardCallback callback=nullptr,
+		bool reversed=false, bool displayableWhenMouseOver=true);
 };
 
 #endif  // _GUI_GAME_HPP_

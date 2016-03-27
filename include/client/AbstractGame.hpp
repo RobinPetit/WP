@@ -72,7 +72,7 @@ class AbstractGame
 
 		// User interface ("actions")
 		void useCard(int cardIndex);
-		void attackWithCreature();
+		void attackWithCreature(int selfCardIndex, bool attackOpponent, int opponentCardIndex);
 		void endTurn();
 		void quit();
 

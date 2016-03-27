@@ -5,6 +5,8 @@
 #include <TGUI/Widgets/MessageBox.hpp>
 #include <TGUI/Widgets/Button.hpp>
 
+constexpr int GuiGame::NoSelection;
+
 //////////////////// GuiGame
 
 GuiGame::GuiGame(Context& context):
@@ -20,7 +22,9 @@ GuiGame::GuiGame(Context& context):
 	_cardsLayoutWidth{_width/1.4f},
 	_isBigCardOnBoard{false},
 	_opponentBoardPanel{std::make_shared<tgui::Panel>()},
-	_selfBoardPanel{std::make_shared<tgui::Panel>()}
+	_selfBoardPanel{std::make_shared<tgui::Panel>()},
+	_currentSelfSelection{NoSelection},
+	_currentOpponentSelection{NoSelection}
 {
 	// end turn button
 	_endTurnButton->setText("End turn");
@@ -168,16 +172,36 @@ void GuiGame::connectBigCardDisplay(CardWidget::Ptr& card, const CommonCardData 
 
 void GuiGame::displaySelfBoard()
 {
-	displayPlayerBoard(_selfBoardPanel, _selfBoard, _selfBoardCreatures);
+	displayPlayerBoard(_selfBoardPanel, _selfBoard, _selfBoardCreatures, &GuiGame::handleSelfBoardClick);
 }
 
 void GuiGame::displayOpponentBoard()
 {
-	displayPlayerBoard(_opponentBoardPanel, _opponentBoard,  _oppoBoardCreatures, true);
+	displayPlayerBoard(_opponentBoardPanel, _opponentBoard,  _oppoBoardCreatures, &GuiGame::handleOpponentBoardClick, true);
+}
+
+void GuiGame::handleSelfBoardClick(int index)
+{
+	if(_currentSelfSelection == index)
+		_currentSelfSelection = NoSelection;
+	else
+		_currentSelfSelection = index;
+}
+
+void GuiGame::handleOpponentBoardClick(int index)
+{
+	// clicking on opponent if selection is null doesn't do anything
+	if(_currentSelfSelection == NoSelection)
+		return;
+	_currentOpponentSelection = index;
+	attackWithCreature(_currentSelfSelection, false, _currentOpponentSelection);
+	_currentSelfSelection = _currentOpponentSelection = NoSelection;
+	// TODO: allow to attack opponent
 }
 
 void GuiGame::displayPlayerBoard(tgui::Panel::Ptr& panel, std::vector<CardWidget::Ptr>& graphicalCards,
-		std::vector<BoardCreatureData>& creatureDatas, bool reversed, bool displayableWhenMouseOver)
+		std::vector<BoardCreatureData>& creatureDatas, CardCallback callback,
+		bool reversed, bool displayableWhenMouseOver)
 {
 	const auto cardHeight{panel->getSize().y};
 	const auto cardWidth{cardHeight * (CardGui::getSize().x / static_cast<float>(CardGui::getSize().y))};
@@ -207,16 +231,19 @@ void GuiGame::displayPlayerBoard(tgui::Panel::Ptr& panel, std::vector<CardWidget
 		if(reversed)
 		{
 			// set the origin on the lower right corner
-			graphicalCards.back()->setOrigin(CardGui::getSize().y, CardGui::getSize().x);
+			graphicalCards.back()->setOrigin(CardGui::getSize().x, CardGui::getSize().y);
 			graphicalCards.back()->rotate(180.f);
-			graphicalCards.back()->setPosition(currentWidth + CardGui::getSize().y/2.f - cardWidth,
-					(CardGui::getSize().x/2.f - cardHeight));
+			graphicalCards.back()->setPosition(currentWidth + CardGui::getSize().x/2.f - cardWidth,
+					(CardGui::getSize().y/2.f - cardHeight));
 		}
 		else
 			graphicalCards.back()->setPosition(currentWidth, 0.f);
 
 		if(displayableWhenMouseOver)
 			connectBigCardDisplay(graphicalCards.back(), cardData);
+
+		if(callback)
+			graphicalCards.back()->connect("MousePressed", callback, this, i);
 		// update the current position on the panel
 		currentWidth += cardWidth;
 
@@ -262,7 +289,7 @@ void GuiGame::displayMessage(const std::string& message)
 	// Note: do not try to pass messageBox as reference, since this lambda will
 	// be stored elsewhere, the reference will become invalid when we'll go out
 	// of the scope of this method! We must pass it by value.
-	messageBox->connect("buttonPressed", [messageBox](const sf::String& buttonName)
+	messageBox->connect("buttonPressed", [this, messageBox](const sf::String& buttonName)
 	{
 		if(buttonName == okButtonText)
 		{

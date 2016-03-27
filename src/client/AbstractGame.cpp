@@ -196,7 +196,7 @@ bool AbstractGame::treatAdditionnalInputs(sf::Packet& actionPacket)
 	return true;
 }
 
-void AbstractGame::attackWithCreature()
+void AbstractGame::attackWithCreature(int selfCardIndex, bool attackOpponent, int opponentCardIndex)
 {
 	if (not _myTurn)
 	{
@@ -205,25 +205,15 @@ void AbstractGame::attackWithCreature()
 	}
 	else
 	{
-		displayMessage("Which creature would you like to attack with?");
-		int selfCardIndex = askSelfBoardIndex();
-		int oppoCardIndex;
-		bool attackOpponent{wantToAttackOpponent()};
-		if(not attackOpponent)
-		{
-			displayMessage("Which opponent's creature would you like to attack?");
-			oppoCardIndex = askOppoBoardIndex();
-		}
-
 		// If there's cards on board
-		if(selfCardIndex >= 0 and (oppoCardIndex >= 0 or attackOpponent))
+		if(selfCardIndex >= 0 and (opponentCardIndex >= 0 or attackOpponent))
 		{
 			if(attackOpponent)
-				oppoCardIndex = -1;
+				opponentCardIndex = -1;
 			sf::Packet actionPacket;
 			actionPacket << TransferType::GAME_ATTACK_WITH_CREATURE
 			             << static_cast<sf::Int32>(selfCardIndex)
-			             << static_cast<sf::Int32>(oppoCardIndex);
+			             << static_cast<sf::Int32>(opponentCardIndex);
 			_client.getGameSocket().send(actionPacket);
 			_client.getGameSocket().receive(actionPacket);
 			TransferType responseHeader;
