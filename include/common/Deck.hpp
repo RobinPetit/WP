@@ -41,7 +41,9 @@ class Deck
 		std::size_t getIndex(CardId card) const;
 
 		/// Replaces the card at \a index in the deck by \a card.
-		void changeCard(std::size_t index, CardId card);
+		/// \param searchWholeDeck True to check the whole deck for count <= 2
+		/// and false to check from begin to index.
+		void changeCard(std::size_t index, CardId card, bool searchWholeDeck=true);
 
 		const std::string& getName() const;
 
