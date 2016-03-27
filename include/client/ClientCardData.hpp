@@ -15,7 +15,7 @@ private:
 
 public:
 	/// Constructor
-	ClientCreatureData(cardId, const std::string& name, int cost, const std::string& description,
+	ClientCreatureData(CardId, const std::string& name, int cost, const std::string& description,
 	                   int health, int attack, int shield, int shieldType);
 
 	/// Getters
@@ -35,7 +35,7 @@ private:
 
 public:
 	/// Constructor
-	ClientSpellData(cardId, const std::string& name, int cost, const std::string& description);
+	ClientSpellData(CardId, const std::string& name, int cost, const std::string& description);
 
 	/// Getters
 	// I don't know why I get 'W used but never defined' and 'undefined reference to' when I inline?

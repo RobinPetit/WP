@@ -4,9 +4,9 @@
 
 GuiApplication::GuiApplication():
 	AbstractApplication(true),
-	_videoMode{800, 600},
+	_videoMode{1000, 700},
 	_windowTitle{"Wizard Poker"},
-	_window{_videoMode, _windowTitle},
+	_window{_videoMode, _windowTitle, sf::Style::Titlebar | sf::Style::Close},
 	_gui{_window}
 {
 	_context.window = &_window;

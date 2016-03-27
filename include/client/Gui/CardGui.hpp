@@ -5,15 +5,17 @@
 #include <string>
 // External headers
 #include <SFML/Graphics.hpp>
+// WizardPoker headers
+#include "common/Identifiers.hpp"
 
-/// TODO: handle line wraps in the description field.
 /// Graphical representation of a card. It behaves like other SFML graphicals
 /// classes, plus some getters/setters for the card interface.
 class CardGui : public sf::Drawable, public sf::Transformable
 {
 public:
 	/// Constructor.
-	CardGui(const std::string& name, const std::string& description, int cost);
+	/// \note The description parameter is taken by value on purpose.
+	CardGui(CardId id, const std::string& name, std::string description, int cost);
 
 	/// Destructor.
 	virtual ~CardGui() = default;
@@ -39,7 +41,7 @@ protected:
 	static const sf::Vector2f SIZE;
 
 	/// The main shape that contains the texture.
-	sf::RectangleShape _picture;
+	sf::Sprite _picture;
 
 	/// The texture displayed in front of the card.
 	sf::Texture _pictureTexture;
@@ -48,15 +50,21 @@ protected:
 	/// , text size and color.
 	void setupText(sf::Text& text, const std::string& string, const sf::Vector2f& position) const;
 
-private:
-	/// Description graphical text.
-	sf::Text _descriptionText;
+	/// Sets the position of the description. This is needed because different
+	/// kind of cards may place the description in different places, so child
+	/// classes have to explicitely say where the description has to be.
+	/// \param descriptionPosition The new position of the description text.
+	void moveDescription(const sf::Vector2f& descriptionPosition);
 
+private:
 	/// Name graphical text.
 	sf::Text _nameText;
 
 	/// Cost graphical text.
 	sf::Text _costText;
+
+	/// Description graphical text.
+	sf::Text _descriptionText;
 
 	/// Text font.
 	sf::Font _font;
@@ -67,8 +75,8 @@ private:
 	/// Position of the cost relatively to the card.
 	static const sf::Vector2f COST_POSITION;
 
-	/// Position of the description relatively to the card.
-	static const sf::Vector2f DESCRIPTION_POSITION;
+	/// Width of the description frame.
+	static constexpr float DESCRIPTION_WIDTH = 208.f;
 
 	/// Character size.
 	static constexpr std::size_t CHAR_SIZE = 20;
@@ -87,10 +95,23 @@ private:
 	bool _showFront;
 
 	/// Shape that will contains the image of the back side.
-	sf::RectangleShape _backView;
+	sf::Sprite _backView;
 
 	/// Texture of the back side.
 	sf::Texture _backTexture;
+
+	/// Adds newlines in the given string (that has to be the text that will be
+	/// displayed in the description of the card) so that the width of the text
+	/// does not exceed the width of the description frame.
+	/// \param description The string that will be modified.
+	void addNewlinesInDescription(std::string& description);
+
+	/// Get the width of the given character in pixels if it is displayed in the
+	/// description frame (so the font and the character size of the description
+	/// are used in the computation.
+	/// \param character The character to test.
+	/// \return The width of the given character in pixels.
+	inline float getDescriptionCharacterWidth(char character) const;
 };
 
 

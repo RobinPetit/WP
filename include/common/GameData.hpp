@@ -18,7 +18,7 @@ enum class CardToSelect : sf::Int32
 
 struct BoardCreatureData
 {
-	cardId id;
+	CardId id;
 	int health;
 	int attack;
 	int shield;
@@ -36,7 +36,7 @@ struct BoardCreatureData
 
 struct CardData
 {
-	cardId id;
+	CardId id;
 };
 
 #endif  // _GAME_DATA_COMMON_HPP

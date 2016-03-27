@@ -6,11 +6,13 @@
 
 CardWidget::CardWidget()
 {
+	setSize(CardGui::getSize());
 }
 
 CardWidget::CardWidget(const CommonCardData* cardData)
 {
 	setCardData(cardData);
+	setSize(CardGui::getSize());
 }
 
 void CardWidget::setCardData(const CommonCardData* cardData)
@@ -20,7 +22,8 @@ void CardWidget::setCardData(const CommonCardData* cardData)
 	{
 		const ClientCreatureData* castedCardData{dynamic_cast<const ClientCreatureData*>(cardData)};
 		assert(castedCardData != nullptr);
-		_card.reset(new CreatureGui(castedCardData->getName(),
+		_card.reset(new CreatureGui(castedCardData->getId(),
+		            castedCardData->getName(),
 		            castedCardData->getDescription(),
 		            castedCardData->getCost(),
 		            castedCardData->getAttack(),
@@ -32,7 +35,8 @@ void CardWidget::setCardData(const CommonCardData* cardData)
 	{
 		const ClientSpellData* castedCardData{dynamic_cast<const ClientSpellData*>(cardData)};
 		assert(castedCardData != nullptr);
-		_card.reset(new SpellGui(castedCardData->getName(),
+		_card.reset(new SpellGui(castedCardData->getId(),
+		            castedCardData->getName(),
 		            castedCardData->getDescription(),
 		            castedCardData->getCost()));
 	}
@@ -40,14 +44,14 @@ void CardWidget::setCardData(const CommonCardData* cardData)
 
 void CardWidget::setPosition(const tgui::Layout2d& position)
 {
-	Widget::setPosition(position);
+	ClickableWidget::setPosition(position);
 	if(_card)
 		_card->setPosition(position.x.getValue(), position.y.getValue());
 }
 
 void CardWidget::setSize(const tgui::Layout2d& size)
 {
-	Widget::setSize(size);
+	ClickableWidget::setSize(size);
 	if(_card)
 		_card->setScale(size.x.getValue()/_card->getSize().x, size.y.getValue()/_card->getSize().y);
 }

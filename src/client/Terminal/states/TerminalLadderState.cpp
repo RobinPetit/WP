@@ -13,14 +13,15 @@ TerminalLadderState::TerminalLadderState(Context& context):
 
 void TerminalLadderState::display()
 {
-	std::cout << "Here is the ladder:\n";
+	displaySeparator("Ladder");
+
 	unsigned i{0};
 	for(const auto& ladderEntry : _ladder)
 		std::cout << ++i << ". " << ladderEntry.name
 		          << " (" << ladderEntry.victories + 1
 		          << "/" << (ladderEntry.defeats + 1)
 		          << ")\n";
-	std::cout << std::string(40, '*') << "\n";
+
 	// Display the actions
 	TerminalAbstractState::display();
 }

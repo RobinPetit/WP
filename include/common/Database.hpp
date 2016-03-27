@@ -69,7 +69,7 @@ protected:
 
 struct Friend
 {
-	userId id;
+	UserId id;
 	std::string name;
 };
 typedef std::vector<Friend> FriendsList;

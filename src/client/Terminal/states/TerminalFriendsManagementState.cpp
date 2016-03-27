@@ -25,6 +25,7 @@ TerminalFriendsManagementState::TerminalFriendsManagementState(Context& context)
 
 void TerminalFriendsManagementState::display()
 {
+	displaySeparator("Friends");
 	try
 	{
 		const auto& friends(_context.client->getFriends());

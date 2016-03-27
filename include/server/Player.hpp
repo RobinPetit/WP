@@ -17,7 +17,7 @@
 #include "server/ServerDatabase.hpp"
 #include "server/ServerCardData.hpp"
 #include "common/GameData.hpp"
-#include "common/Identifiers.hpp"  // userId
+#include "common/Identifiers.hpp"  // UserId
 #include "common/sockets/TransferType.hpp"
 #include "common/sockets/EndGame.hpp"
 #include "common/Deck.hpp"
@@ -35,7 +35,7 @@ public:
 
 	/*------------------------------ Methods */
 	/// Constructor
-	Player(GameThread& gameThread, ServerDatabase& database, userId id, Player& opponent, PostGameData& postGameData);
+	Player(GameThread& gameThread, ServerDatabase& database, UserId id, Player& opponent, PostGameData& postGameData);
 
 	// Interface for basic gameplay
 	/// Receive the deck sent by the client and put it in the game
@@ -73,7 +73,8 @@ public:
 	// Getters
 	int getCreatureConstraint(const Creature& subject, int constraintId) const;
 	const Card* getLastCaster() const;
-	userId getId() const;
+	UserId getId() const;
+	static int getMaxHealth();
 	sf::TcpSocket& getSocket();
 	void printVerbose(const std::string& message);
 
@@ -99,7 +100,7 @@ private:
 	ServerDatabase& _database;
 
 	Player& _opponent;
-	userId _id;
+	UserId _id;
 	std::atomic_bool _isActive; // blocks functions that are only allowed for active player
 
 	// Client communication
