@@ -13,7 +13,7 @@ const sf::Color CardGui::_textColor(sf::Color::Black);
 const sf::Color CardGui::_aimColor(210, 150, 150);
 const sf::Color CardGui::_selectColor(210, 210, 210);
 
-CardGui::CardGui(const std::string& frontTexturePath, const std::string& name, std::string description, int cost):
+CardGui::CardGui(CardId id, const std::string& name, std::string description, int cost):
 	_showFront{true}
 {
 	// Set up the back
@@ -25,6 +25,7 @@ CardGui::CardGui(const std::string& frontTexturePath, const std::string& name, s
 	_backView.setTexture(_backTexture);
 	_backTexture.setSmooth(true); // enable smooth borders
 
+	const std::string frontTexturePath{"../resources/client/cardImages/" + std::to_string(id) + ".png"};
 	// Set up the front
 	if(!_pictureTexture.loadFromFile(frontTexturePath))
 	{

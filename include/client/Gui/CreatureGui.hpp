@@ -9,7 +9,7 @@ class CreatureGui: public CardGui
 {
 public:
 	/// Constructor.
-	CreatureGui(const std::string& name, const std::string& description, int cost, int attack, int health, int shield, ShieldType shieldType);
+	CreatureGui(CardId id, const std::string& name, const std::string& description, int cost, int attack, int health, int shield, ShieldType shieldType);
 
 	/// Sets the health.
 	void setHealth(int value);
@@ -47,9 +47,6 @@ private:
 
 	/// Position of the description relatively to the card.
 	static const sf::Vector2f CREATURE_DESCRIPTION_POSITION;
-
-	/// Path of the image of the front side for a creature.
-	static constexpr char FRONT_IMAGE_PATH[] = "../resources/client/creatureFront.png";
 };
 
 #endif  // CREATURE_GUI_CLIENT_HPP

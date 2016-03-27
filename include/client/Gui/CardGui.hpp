@@ -5,6 +5,8 @@
 #include <string>
 // External headers
 #include <SFML/Graphics.hpp>
+// WizardPoker headers
+#include "common/Identifiers.hpp"
 
 /// Graphical representation of a card. It behaves like other SFML graphicals
 /// classes, plus some getters/setters for the card interface.
@@ -13,7 +15,7 @@ class CardGui : public sf::Drawable, public sf::Transformable
 public:
 	/// Constructor.
 	/// \note The description parameter is taken by value on purpose.
-	CardGui(const std::string& frontTexturePath, const std::string& name, std::string description, int cost);
+	CardGui(CardId id, const std::string& name, std::string description, int cost);
 
 	/// Destructor.
 	virtual ~CardGui() = default;
