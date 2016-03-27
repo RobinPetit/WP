@@ -19,8 +19,6 @@ class GuiMainMenuState: public GuiAbstractState, public AbstractMainMenuState
 		////////// Attributes
 		const std::vector<ButtonData<GuiMainMenuState>> _buttons;
 
-		tgui::Label::Ptr _menuLabel;
-
 		tgui::VerticalLayout::Ptr _layout;
 
 		////////// Methods
