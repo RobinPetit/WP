@@ -9,7 +9,7 @@ const sf::Vector2f CardGui::COST_POSITION{220.f, 17.f};
 constexpr char CardGui::BACK_IMAGE_PATH[];
 constexpr char CardGui::FONT_PATH[];
 
-CardGui::CardGui(const std::string& frontTexturePath, const std::string& name, std::string description, int cost):
+CardGui::CardGui(CardId id, const std::string& name, std::string description, int cost):
 	_showFront{true}
 {
 	// Set up the back
@@ -21,6 +21,7 @@ CardGui::CardGui(const std::string& frontTexturePath, const std::string& name, s
 	_backView.setTexture(_backTexture);
 	_backTexture.setSmooth(true); // enable smooth borders
 
+	const std::string frontTexturePath{"../resources/client/cardImages/" + std::to_string(id) + ".png"};
 	// Set up the front
 	if(!_pictureTexture.loadFromFile(frontTexturePath))
 	{
