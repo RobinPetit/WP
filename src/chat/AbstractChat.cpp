@@ -4,6 +4,7 @@
 #include "common/sockets/TransferType.hpp"
 // std-C++ headers
 #include <sstream>
+#include <iostream>
 
 const std::wstring AbstractChat::_quitString = L":quit";
 
@@ -56,7 +57,13 @@ void AbstractChat::connectAsCaller()
 	TransferType responseHeader;
 	dataPacket >> responseHeader;
 	if(responseHeader == TransferType::FAILURE)
-		throw std::runtime_error("Unable to start a discussion");
+	{
+		display(_friendName, L"is not connected...");
+		_friendPresence.store(false);
+		return;
+	}
+
+	_friendPresence.store(true);
 
 	// if the header is not FAILURE, then get the friend's address
 	sf::Uint32 friendAddress;
@@ -91,7 +98,6 @@ void AbstractChat::start()
 	connect();
 	// create awaiting thread
 	_inputThread = std::thread(&AbstractChat::input, this);
-	_friendPresence.store(true);
 	_running.store(true);
 	output();
 }

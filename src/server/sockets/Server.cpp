@@ -407,7 +407,6 @@ void Server::createGame(UserId Id1, UserId Id2)
 void Server::handleChatRequest(sf::Packet& packet, std::unique_ptr<sf::TcpSocket> client)
 {
 	sf::Packet responseToCaller;
-	responseToCaller << TransferType::CHAT_PLAYER_IP;
 	std::string calleeName;
 	std::string callerName;
 	sf::Uint16 callerPort;
