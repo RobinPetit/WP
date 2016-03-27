@@ -4,6 +4,7 @@
 // External headers
 #include <TGUI/Widgets/MessageBox.hpp>
 #include <TGUI/Widgets/Button.hpp>
+#include <TGUI/Animation.hpp>
 
 constexpr int GuiGame::NoSelection;
 
@@ -546,9 +547,56 @@ void GuiGame::receiveCard(CardId id)
 	displayMessage("You won the card " + getCardName(id) + ".");
 }
 
-void GuiGame::displayAchievements(ClientAchievementList& /* newAchievements */)
+void GuiGame::displayAchievements(ClientAchievementList& newAchievements)
 {
-	// TODO
+	//No new achievements
+	if (newAchievements.size()==0)
+		return;
+
+	std::lock_guard<std::mutex> _lock{_accessScreen};
+	static const std::string okButtonText{"Ok"};
+	tgui::MessageBox::Ptr messageBox{std::make_shared<tgui::MessageBox>()};
+
+	//set up message box
+	messageBox->setText("New achievements unlocked !");
+	messageBox->addButton(okButtonText);
+	messageBox->getRenderer()->setTitleBarColor({127, 127, 127});
+	_context.gui->add(messageBox);
+	messageBox->setPosition((tgui::bindWidth(*_context.gui) - AchievementGui::getSize().x) / 2,
+			(tgui::bindHeight(*_context.gui) - AchievementGui::getSize().y) / 2);
+	messageBox->setSize(AchievementGui::getSize().x, AchievementGui::getSize().y);
+
+	// Make the "Ok" button closing the message box
+	// Note: do not try to pass messageBox as reference, since this lambda will
+	// be stored elsewhere, the reference will become invalid when we'll go out
+	// of the scope of this method! We must pass it by value.
+	messageBox->connect("buttonPressed", [this, messageBox](const sf::String& buttonName)
+	{
+		if(buttonName == okButtonText)
+		{
+			messageBox->destroy();
+			refreshScreen();
+		}
+	});
+
+	// set up vertical layout
+	tgui::VerticalLayout::Ptr layout{std::make_shared<tgui::VerticalLayout>()};
+	layout->setPosition(0.f, 0.f);
+	layout->setSize(AchievementGui::getSize().x, AchievementGui::getSize().y);
+	messageBox->add(layout);
+
+	_context.gui->draw();
+
+	// create the achievement widgets
+	std::vector<std::shared_ptr<AchievementWidget>> achievementWidgets{};
+	unsigned int i{0};
+	for(auto& achievement : newAchievements)
+	{
+		achievementWidgets.push_back(std::make_shared<AchievementWidget>(achievement));
+		layout->add(achievementWidgets.back());
+		++i;
+	}
+	layout->showWithEffect(tgui::ShowAnimationType::SlideFromBottom, sf::milliseconds(500));
 }
 
 void GuiGame::waitUntil(std::function<bool()> booleanFunction)
