@@ -100,7 +100,7 @@ Baudoux Nicolas, Gueniffey Stanislas,  Muranovic Allan, Petit Robin, Reynouard A
 		un jeu de carte (appelé \textit{Wizard Poker}) au tour par tour et multijoueur en réseau. Elle est destinée à tous types de public. Elle est également
 		\textit{open source}, libre de droit et à but non commercial : c'est un projet académique.
 
-		Pour ce faire, notre équipe, composée de sept personnes, dispose de trois phases de développement qui dureront approximativement 4 semaines chacune :
+		Pour ce faire, notre équipe, composée de six personnes, dispose de trois phases de développement qui dureront approximativement 4 semaines chacune :
 		\begin{itemize}
 			\item la première portera uniquement sur la création du squelette respectant toutes les demandes effectuées par les client ;
 			\item la deuxième phase concernera l'implémentation en console uniquement ;
@@ -135,6 +135,7 @@ Baudoux Nicolas, Gueniffey Stanislas,  Muranovic Allan, Petit Robin, Reynouard A
 			\item[15/02/2016] réunion (équipe complète) ;
 			\item[22/02/2016] réunion (équipe complète) ;
 			\item[26/02/2016] mise à jour du SRD (Allan et Nicolas).
+			\item[27/03/2016] mise à jour et FIN du SRD.
 		\end{itemize}
 
 \newpage
@@ -349,6 +350,61 @@ Baudoux Nicolas, Gueniffey Stanislas,  Muranovic Allan, Petit Robin, Reynouard A
 				La seule particularité de cette partie réside dans la classe \textbf{GameState} qui comporte des \gls{mutex}, des valeurs atomiques ainsi que des entrées non bloquantes.
 				Etant données qu'il y aura de nombreuses entrées/sorties au niveau de cette classe-là, ces différents éléments permettront d'éviter les situations de compétition lors des accès en mémoire de ses attributs.
 				
+\newpage
+\section{Interface graphique (G.U.I.)}
+	Pour l'instant, le programme était prévu pour une simple utilisation en console. En effet, malgré que ce soit un jeu, le programme était plus procédurale qu'autre chose.
+	C'est avec l'arrivée du \textit{\gls{GUI}} que le programme sera enfin interactif et touchera à sa fin de développement.
+
+	Une chose n'empêche pas l'autre, en effet, le programme est entièrement utilisable des 2 manières, via l'interface graphique comme via la console.
+	Un joueur ayant décidé de lancer le jeu depuis la console a donc la possibilité de jouer avec un joueur ayant exécuté le programme avec le \textit{\gls{GUI}}.
+	Nous verrons brièvement l'interface du menu console, étant peu innovant et se résumant toujours à la même chose, un seul exemple est plus que suffisant.
+	\subsection{Mise en place de l'interface des différents menus.}
+		\subsubsection{En console.}
+		\begin{center}\includegraphics[scale=0.5]{MainMenuConsole.png}\end{center}
+		Comme nous pouvons brièvement le voir, pour naviguer dans les menus lorsque nous somme en mode console, il est nécessaires d'entrer les commandes affichés à l'écran.
+		Ceci s'avère efficace mais néanmoins peu pratique.
+
+		C'est pourquoi la possibilité d'utiliser un interface grpahique a été implémentée.
+
+		\subsubsection{Avec le \textit{\gls{GUI}}.}
+		\begin{center}\includegraphics[scale=0.5]{MainMenu.png}\end{center}
+		Le menu, certes simpliste, est plus intuitif et rapide à utilisation de cette manière.
+
+		Maintenons, obersons chacun de ces onglets.
+
+		\newpage
+		\subsubsection{Commencer une partie.}
+		\begin{center}\includegraphics[scale=0.5]{Lobby.png}\end{center}
+		Il suffit simplement de sélectionner \textit{Find a Game} pour que le serveur réunissent deux jours en attente pour commencer une partie.
+
+
+		\subsubsection{Gestion des \gls{deck}.}
+		\begin{center}\includegraphics[scale=0.5]{DecksManagement.png}\end{center}
+		Ici, l'interface graphique s'avère très efficace pour ce menu. Nous pouvons aisément modifier un deck, en créer un autre ou encore en effacer un existant.
+
+		\subsubsection{Consulter sa collection de cartes.}
+		\begin{center}\includegraphics[scale=0.5]{Cards.png}\end{center}
+		Tout est dans le titre, ici nous pouvons observer les cartes que nous possedons.
+
+		\subsubsection{Gestion des amis.}
+		\begin{center}\includegraphics[scale=0.5]{FriendsManagement.png}\end{center}
+		Ce menu nous permet rapidement d'ajouter un ami, en supprimer un, traiter une demande, commencer une conversation et de retourner au menu précédent.
+		Tout ce qui concerne le côté social du jeu (excepté commencer une partie et consulter le \textit{\gls{ladder}}) se trouve ici.
+
+		\subsubsection{Consultation du \textit{\gls{ladder}}.}
+		\begin{center}\includegraphics[scale=0.5]{Ladder.png}\end{center}
+		Comme sur une échelle (qui est la définition de \textit{\gls{ladder}} en français), le meilleur joueur se trouve en haut du classement.
+		La classification est simple, c'est le joueur possédant le ratio le plus proche ou égale à qui est premier.
+		Le ratio se calcule de cette façon : (Nombre de parties jouées/Nombre de parties gagnées)
+
+		\subsubsection{Consultation des \textit{\gls{achievements}}.}
+		\begin{center}\includegraphics[scale=0.5]{Achievements.png}\end{center}	
+		C'est ici que le joueur peut consulter ses \textit{\gls{achievements}} effectués, ceux qui sont en cours et également leur état.
+
+		Enfin, les 2 derniers onglets sont assez simples : \textit{"Log out"} permet de se déconnecter et retomber sur le menu pour se connecter avec un autre compte si on le souhaite tandis que le dernier onglet \textit{"Quit"} permet simplement de fermer le programme.
+
+
+
 \newpage
 \section{Index}
 		\printglossary[type=glossary, style=Index, title=]
