@@ -374,8 +374,17 @@ void Server::startGame(std::size_t idx)
 
 	// start the game
 	std::cout << "Game " << idx << " is starting: " + userToString(player1) + " vs. " + userToString(player2) + "\n";
-	UserId winnerId{selfThread->playGame(player1->second, player2->second)};
-	assert(winnerId==player1Id or winnerId==player2Id or winnerId==0);
+	UserId winnerId;
+	try
+	{
+		winnerId = selfThread->playGame(player1->second, player2->second);
+		assert((winnerId == player1Id) xor (winnerId == player2Id) xor (winnerId == 0));
+	}
+	catch(std::runtime_error& e)
+	{
+		std::cerr << "Game " << idx << " aborted:\n\t" << e.what();
+		return;
+	}
 
 	// display which players won, if any
 	if (winnerId == player1Id)
