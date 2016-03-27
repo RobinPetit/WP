@@ -24,13 +24,13 @@ GuiLadderState::GuiLadderState(Context& context):
 
 	// Make the button(s)
 	setupButtons(_buttons, std::static_pointer_cast<tgui::Container>(_context.gui->getContainer()));
-	_buttons[0].button->setPosition(windowWidth/5.f, windowHeight * 8.f/10.f);
+	_buttons[0].button->setPosition(windowWidth/5.f, windowHeight - 30.f);
 	_buttons[0].button->setSize(windowWidth * 3.f/5.f, 20.f);
 
 	// Make the panel
 	_panel->setPosition(windowWidth/20.f, 70.f);
 	_panel->setSize(windowWidth * 18.f/20.f - scrollBarWidth, windowHeight - 110.f);
-	_panel->setBackgroundColor(sf::Color::Green);
+	_panel->setBackgroundColor(sf::Color::Transparent);
 	_context.gui->add(_panel);
 
 	// Make the ladder header
@@ -40,15 +40,14 @@ GuiLadderState::GuiLadderState(Context& context):
 	_ladderHeader.playedGamesLabel->setText("Played");
 	_ladderHeader.ratioLabel->setText("Ratio");
 
-	_ladderHeader.layout->setPosition(tgui::bindLeft(_panel), tgui::bindTop(_panel));
-	_ladderHeader.layout->setSize(tgui::bindWidth(_panel) - scrollBarWidth, lineHeight);
+	_ladderHeader.layout->setPosition(0.f, 0.f);
+	_ladderHeader.layout->setSize(tgui::bindWidth(_panel) - 5, lineHeight);
 	_panel->add(_ladderHeader.layout);
 
 
 	// make the layout
-	_ladderLayout->setPosition(tgui::bindLeft(_panel), tgui::bindTop(_panel) + lineHeight);
-	_ladderLayout->setSize(tgui::bindWidth(_panel), lineHeight * _ladder.size());
-	_ladderLayout->setBackgroundColor(sf::Color::Blue);
+	_ladderLayout->setPosition(0.f, lineHeight);
+	_ladderLayout->setSize(tgui::bindWidth(_panel) - 5, lineHeight * _ladder.size());
 	_panel->add(_ladderLayout);
 
 	// Make the scrollbar
@@ -65,13 +64,14 @@ GuiLadderState::GuiLadderState(Context& context):
 	for(std::size_t i{0}; i < _ladder.size(); ++i)
 	{
 		GuiLadderEntry guiLadderEntry;
-		guiLadderEntry.setBackgroundColor({127,127,127});
+		if (i%2==0)
+			guiLadderEntry.setBackgroundColor({127,127,127});
 
 		guiLadderEntry.rankLabel->setText(std::to_string(i + 1) + ".");
 		guiLadderEntry.playerNameLabel->setText(_ladder[i].name);
 		guiLadderEntry.wonGamesLabel->setText(std::to_string(_ladder[i].victories));
 		guiLadderEntry.playedGamesLabel->setText(std::to_string(_ladder[i].victories + _ladder[i].defeats));
-		guiLadderEntry.ratioLabel->setText(std::to_string(static_cast<float>(_ladder[i].victories / (_ladder[i].defeats+_ladder[i].victories))));
+		guiLadderEntry.ratioLabel->setText(std::to_string(static_cast<float>(_ladder[i].victories) / (_ladder[i].defeats+_ladder[i].victories)));
 		_ladderLayout->add(guiLadderEntry.layout);
 	}
 	_ladderLayout->showWithEffect(tgui::ShowAnimationType::SlideFromBottom, sf::milliseconds(500));
@@ -88,25 +88,24 @@ GuiLadderState::GuiLadderEntry::GuiLadderEntry():
 	layout{std::make_shared<tgui::HorizontalLayout>()}
 {
 	layout->add(rankLabel);
-	layout->setFixedSize(rankLabel, 60);
+	layout->setFixedSize(rankLabel, 50);
 	layout->add(playerNameLabel);
 
 	layout->add(wonGamesLabel);
-	layout->setFixedSize(wonGamesLabel, 60);
+	layout->setFixedSize(wonGamesLabel, 70);
 	layout->add(playedGamesLabel);
-	layout->setFixedSize(playedGamesLabel, 60);
+	layout->setFixedSize(playedGamesLabel, 70);
 	layout->add(ratioLabel);
-	layout->setFixedSize(ratioLabel, 60);
+	layout->setFixedSize(ratioLabel, 70);
 }
 
 void GuiLadderState::GuiLadderEntry::setBackgroundColor(const sf::Color& color)
 {
-	/*
-	rankLabel->setBackgroundColor(color);
-	playerNameLabel->setBackgroundColor(color);
-	wonGamesLabel->setBackgroundColor(color);
-	playedGamesLabel->setBackgroundColor(color);
-	ratioLabel->setBackgroundColor(color);*/
+	rankLabel->getRenderer()->setBackgroundColor(color);
+	playerNameLabel->getRenderer()->setBackgroundColor(color);
+	wonGamesLabel->getRenderer()->setBackgroundColor(color);
+	playedGamesLabel->getRenderer()->setBackgroundColor(color);
+	ratioLabel->getRenderer()->setBackgroundColor(color);
 }
 
 void GuiLadderState::scrollGrid(int newScrollValue)
