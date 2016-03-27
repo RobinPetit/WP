@@ -22,7 +22,8 @@ void CardWidget::setCardData(const CommonCardData* cardData)
 	{
 		const ClientCreatureData* castedCardData{dynamic_cast<const ClientCreatureData*>(cardData)};
 		assert(castedCardData != nullptr);
-		_card.reset(new CreatureGui(castedCardData->getName(),
+		_card.reset(new CreatureGui(castedCardData->getId(),
+		            castedCardData->getName(),
 		            castedCardData->getDescription(),
 		            castedCardData->getCost(),
 		            castedCardData->getAttack(),
@@ -34,7 +35,8 @@ void CardWidget::setCardData(const CommonCardData* cardData)
 	{
 		const ClientSpellData* castedCardData{dynamic_cast<const ClientSpellData*>(cardData)};
 		assert(castedCardData != nullptr);
-		_card.reset(new SpellGui(castedCardData->getName(),
+		_card.reset(new SpellGui(castedCardData->getId(),
+		            castedCardData->getName(),
 		            castedCardData->getDescription(),
 		            castedCardData->getCost()));
 	}
