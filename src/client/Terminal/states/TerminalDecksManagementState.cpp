@@ -103,10 +103,9 @@ std::size_t TerminalDecksManagementState::askForReplacedCard(std::size_t deckInd
 {
 	std::cout << "Content of the deck " << _decks[deckIndex].getName() << ":\n";
 
-	// display cards with their index
-	std::size_t index = 1;
+	// display cards with their id
 	for(const auto& cardId : _decks[deckIndex])
-		displayCardWithIndex(cardId, index++);
+		displayCard(cardId, true);
 
 	std::cout << "Which card do you want to replace (0 to quit)? ";
 	return askForNumber(0, Deck::size + 1);
@@ -116,10 +115,9 @@ CardId TerminalDecksManagementState::askForReplacingCard(std::size_t deckIndex)
 {
 	std::cout << "Content of your card collection:\n";
 
-	// display cards with their index
-	std::size_t index=0;
+	// display cards with their id
 	for(const auto& cardId : _cardsCollection)
-		displayCardWithIndex(cardId, index++);
+		displayCard(cardId, true);
 
 	std::cout << "Which card do you want to put in you deck? ";
 	// TODO: even if *for now* database initialization ensure that card ids are consecutive

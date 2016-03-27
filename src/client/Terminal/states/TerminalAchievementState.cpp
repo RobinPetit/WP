@@ -17,7 +17,7 @@ void TerminalAchievementState::display()
 	for (std::size_t i=0; i<_achievements.size(); i++)
 	{
 		displayEntry(_achievements.at(i).getPrettyName());
-		displayEntry(_achievements.at(i).getDescription(), '-', 1);
+		displayEntry(_achievements.at(i).getDescription(), ' ');
 	}
 	TerminalAbstractState::display();
 }

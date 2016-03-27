@@ -58,8 +58,9 @@ class TerminalAbstractState : virtual public AbstractState
 		virtual void displayMessage(const std::string& message) override;
 		void displaySeparator(const std::string& separatorText, const char& separator=' ');
 		void displayEntry(const std::string& entryText, char sep='*', std::size_t entryLevel=0);
+		void displayNumberedEntry(const std::string& entryText, int entryNumber, std::size_t entryLevel=0);
 
-		void displayCard(CardId id, bool displayIndex=false, std::size_t index=0);
+		void displayCard(CardId id, bool displayId=false);
 		void displayCardWithIndex(CardId id, std::size_t index);
 
 	private:
