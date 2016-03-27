@@ -577,6 +577,17 @@ int ServerDatabase::getDaysInARow(UserId user)
 	return getAchievementProgress(user, _getDaysInARowStmt);
 }
 
+void ServerDatabase::addPerfectWin(UserId user, int remainingHealth)
+{
+	if (remainingHealth == Player::getMaxHealth())
+		addToAchievementProgress(user, 1, _addPerfectWinStmt);
+}
+
+int ServerDatabase::getPerfectWins(UserId user)
+{
+	return getAchievementProgress(user, _getPerfectWinsStmt);
+}
+
 
 int ServerDatabase::getAchievementProgress(UserId user, sqlite3_stmt* stmt)
 {

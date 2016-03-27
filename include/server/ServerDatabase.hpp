@@ -101,7 +101,7 @@ private:
 			const int PostGameData::*toAddValue;
 			int (ServerDatabase::*getMethod)(UserId);
 		};
-		std::array<AchievementsListItem, 10> _achievementsList
+		std::array<AchievementsListItem, 11> _achievementsList
 		{
 			{
 				AchievementsListItem {
@@ -161,6 +161,12 @@ private:
 					10,
 					nullptr, nullptr,
 					&ServerDatabase::getDaysInARow
+				},
+				AchievementsListItem {
+					11,
+					&ServerDatabase::addPerfectWin,
+					&PostGameData::remainingHealth,
+					&ServerDatabase::getPerfectWins
 				}
 			}
 		};
@@ -208,6 +214,7 @@ private:
 	int getSameCardCounter(UserId);
 	int getStartsInARow(UserId);
 	int getDaysInARow(UserId);
+	int getPerfectWins(UserId);
 
 	void addToAchievementProgress(UserId id, int value, sqlite3_stmt * stmt);
 	void addTimeSpent(UserId, int seconds);
@@ -217,6 +224,9 @@ private:
 	void addRagequits(UserId, int ragequits);
 	void addStartsInTheCurrentRow(UserId, int starts);
 	void updateBestLadderPositionPercent(UserId, int playerWon); ///\TODO playerWon should be bool
+	/// add 1 to perfectWins if remainingHealth is max
+	/// (This is note the same way that other addAchievement methods, note that is addPerfectWin and not addPerfectWins)
+	void addPerfectWin(UserId, int remainingHealth);
 
 	sqlite3_stmt * _friendListStmt;
 	sqlite3_stmt * _UserIdStmt;
@@ -259,6 +269,7 @@ private:
 	sqlite3_stmt * _getSameCardCounterStmt;
 	sqlite3_stmt * _getStartsInARowStmt;
 	sqlite3_stmt * _getDaysInARowStmt;
+	sqlite3_stmt * _getPerfectWinsStmt;
 
 	sqlite3_stmt * _addTimeSpentStmt;
 	sqlite3_stmt * _addVictoriesStmt;
@@ -268,10 +279,11 @@ private:
 	sqlite3_stmt * _addStartsInTheCurrentRowStmt;
 	sqlite3_stmt * _updateLastDayPlayedStmt;
 	sqlite3_stmt * _setBestLadderPositionPercent;
+	sqlite3_stmt * _addPerfectWinStmt;
 
 	// `constexpr std::array::size_type size() const;`
-	// -> future uses have to be _statements.size() -> 47 is written only one time
-	StatementsList<47> _statements
+	// -> future uses have to be _statements.size() -> 49 is written only one time
+	StatementsList<49> _statements
 	{
 		{
 			Statement {
@@ -539,6 +551,18 @@ private:
 				&_setBestLadderPositionPercent,
 				"UPDATE Account "
 				"	SET bestLadderPositionPercent = ?1 "
+				"	WHERE id == ?2;"
+			},
+			Statement {
+				&_getPerfectWinsStmt,
+				"SELECT perfectWins "
+				"	FROM Account "
+				"	WHERE id == ?1;"
+			},
+			Statement { // 48
+				&_addPerfectWinStmt,
+				"UPDATE Account "
+				"	SET perfectWins = perfectWins + ?1 "
 				"	WHERE id == ?2;"
 			}
 		}
