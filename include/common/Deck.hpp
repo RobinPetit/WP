@@ -14,7 +14,8 @@ class Deck
 {
 	public:
 		static constexpr std::size_t size{20};
-		typedef std::array<cardId, size>::iterator Iterator;
+		typedef std::array<CardId, size>::iterator Iterator;
+		typedef std::array<CardId, size>::const_iterator ConstIterator;
 
 		/// Copy constructor.
 		Deck(const Deck& other) = default;
@@ -33,12 +34,16 @@ class Deck
 
 		/// Constructor.
 		/// Creates a deck from an array of cards.
-		Deck(const std::string& name, const std::array<cardId, size>& cards);
+		Deck(const std::string& name, const std::array<CardId, size>& cards);
 
-		cardId getCard(std::size_t index) const;
+		CardId getCard(std::size_t index) const;
+
+		std::size_t getIndex(CardId card) const;
 
 		/// Replaces the card at \a index in the deck by \a card.
-		void changeCard(std::size_t index, cardId card);
+		/// \param searchWholeDeck True to check the whole deck for count <= 2
+		/// and false to check from begin to index.
+		void changeCard(std::size_t index, CardId card, bool searchWholeDeck=true);
 
 		const std::string& getName() const;
 
@@ -48,9 +53,17 @@ class Deck
 
 		Iterator end();
 
+		ConstIterator begin() const;
+
+		ConstIterator end() const;
+
+		ConstIterator cbegin() const;
+
+		ConstIterator cend() const;
+
 	private:
 		std::string _name;
-		std::array<cardId, size> _cards;  ///< All the cards of the deck.
+		std::array<CardId, size> _cards;  ///< All the cards of the deck.
 };
 
 #endif  // _DECK_COMMON_HPP

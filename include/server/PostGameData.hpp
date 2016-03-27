@@ -16,12 +16,14 @@ struct PostGameData
 	int playerWon;
 	int playerRageQuit; //meant for 'player broke computer instead'
 
-	cardId unlockedCard;
+	CardId unlockedCard;
 
 	int remainingHealth;
 	int gameDuration;
 	PostGameData();
 	std::string display();
+//
+//	const int noData = 0; // we use pointer to member. Point to this represents no data from PostGameData needed
 };
 
 #endif  // _POST_GAME_DATA_SERVER_HPP_

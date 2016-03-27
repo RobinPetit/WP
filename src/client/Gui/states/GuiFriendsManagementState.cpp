@@ -48,8 +48,9 @@ void GuiFriendsManagementState::addFriend()
 	static const std::string messageBoxText{"Enter the name of your\nnew friend:"};
 	InputBox::Ptr window{std::make_shared<InputBox>()};
 
-	window->setTitle("Title of the window");
+	window->setTitle("Adding a friend");
 	window->setLabelText(messageBoxText);
+	window->getRenderer()->setTitleBarColor({127, 127, 127});
 
 	auto windowWidth{tgui::bindWidth(*_context.gui)};
 	auto windowHeight{tgui::bindHeight(*_context.gui)};

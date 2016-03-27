@@ -4,15 +4,17 @@
 
 GuiApplication::GuiApplication():
 	AbstractApplication(true),
-	_videoMode{800, 600},
+	_videoMode{1000, 700},
 	_windowTitle{"Wizard Poker"},
-	_window{_videoMode, _windowTitle},
-	_gui{_window}
+	_window{_videoMode, _windowTitle, sf::Style::Titlebar | sf::Style::Close},
+	_gui{_window},
+	_backgroundPicture{std::make_shared<tgui::Picture>("../resources/client/background.jpg")}
 {
 	_context.window = &_window;
 	_context.gui = &_gui;
 	_window.setKeyRepeatEnabled(false);
 	_window.setFramerateLimit(60);
+	_gui.add(_backgroundPicture);
 }
 
 int GuiApplication::play()

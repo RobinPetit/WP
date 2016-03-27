@@ -72,6 +72,9 @@ class GuiAbstractState : virtual public AbstractState
 		/// \param y The distance from the top of the window.
 		void makeTitle(const std::string& title, unsigned int size = 30U, float y = 50.f);
 
+		/// The label related to the title of the state
+		tgui::Label::Ptr _titleLabel;
+
 	private:
 		/// See \ref registerRootWidget for explanation of this attribute.
 		std::vector<tgui::Widget::Ptr> _rootWidgets;

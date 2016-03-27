@@ -2,7 +2,9 @@
 #define _GUI_CARDS_COLLECTION_STATE_CLIENT_HPP
 
 // External headers
-#include <TGUI/TGUI.hpp>
+#include <TGUI/Widgets/Grid.hpp>
+#include <TGUI/Widgets/Panel.hpp>
+#include <TGUI/Widgets/Scrollbar.hpp>
 // WizardPoker headers
 #include "client/Gui/GuiAbstractState.hpp"
 #include "client/states/AbstractCardsCollectionState.hpp"
@@ -23,7 +25,9 @@ class GuiCardsCollectionState : public GuiAbstractState, public AbstractCardsCol
 		tgui::Grid::Ptr _cardGrid;
 		tgui::Panel::Ptr _gridPanel;
 		tgui::Scrollbar::Ptr _scrollbar;
-		std::vector<CardWidget::Ptr> _cards;
+		DisplayableCardsCollection _cards;
+
+		void scrollGrid(int newScrollValue);
 };
 
 #endif  // _GUI_CARDS_COLLECTION_STATE_CLIENT_HPP

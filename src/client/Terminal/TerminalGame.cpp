@@ -5,6 +5,14 @@
 // std-C++ headers
 #include <iostream>
 
+const std::vector<std::pair<const std::string, void (TerminalGame::*)()>> TerminalGame::_actions =
+{
+	{"Quit", &TerminalGame::quit},
+	{"Use a card from hand", &TerminalGame::useCard},
+	{"Attack with a creature", &TerminalGame::attackWithCreature},
+	{"End your turn", &TerminalGame::endTurn},
+};
+
 ///////////////////// init
 
 TerminalGame::TerminalGame(Client& client):
@@ -23,9 +31,7 @@ void TerminalGame::chooseDeck()
 	int res = askIndex(decks.size(), "Choose your deck number: ");  // Chosen deck
 
 	// Send the deck name to the server
-	sf::Packet deckNamePacket;
-	deckNamePacket << TransferType::GAME_PLAYER_GIVE_DECK_NAMES << decks.at(res).getName();
-	_client.getGameSocket().send(deckNamePacket);
+	sendDeck(decks.at(res).getName());
 }
 
 void TerminalGame::displayMessage(const std::string& message)
@@ -41,7 +47,7 @@ void TerminalGame::displayAchievements(ClientAchievementList& newAchievements)
 	{
 		for (std::size_t i=0; i<newAchievements.size(); i++)
 		{
-			std::cout << " * " << newAchievements.at(i).getPrettyName() << std::endl;
+			std::cout << " " << newAchievements.at(i).getPrettyName() << std::endl;
 			std::cout << "   " << newAchievements.at(i).getDescription() << std::endl;
 		}
 	}
@@ -54,6 +60,7 @@ void TerminalGame::displayOptions()
 	std::size_t idx{0};
 	for(const auto& action: _actions)
 		std::cout << idx++ << ". " << action.first << std::endl;
+	std::cout << "Please choose an option: \n";
 }
 
 void TerminalGame::startTurn()
@@ -61,7 +68,6 @@ void TerminalGame::startTurn()
 	NonBlockingInput input;
 	AbstractGame::startTurn();
 	displayOptions();
-	std::cout << "It is now your turn, what do you want to do? ";
 	while(true)
 	{
 		if(not input.waitForData(0.1))
@@ -80,7 +86,6 @@ void TerminalGame::startTurn()
 			break;
 		displayGame();
 		displayOptions();
-		std::cout << "What do you want to do next? ";
 	}
 }
 
@@ -110,12 +115,18 @@ void TerminalGame::displayGame()
 	std::cout << "***************" << std::endl;
 }
 
+void TerminalGame::updateDisplay()
+{
+	if(_playing.load() and not _myTurn.load())
+		displayGame();
+}
+
 void TerminalGame::displayCardVector(const std::vector<CardData>& cardVector, bool displayDescription)
 {
 	// Displays simple informations about a card vector
 	for (auto i=0U; i<cardVector.size(); i++)
 	{
-		cardId id = cardVector.at(i).id;
+		CardId id = cardVector.at(i).id;
 		std::cout << "  * " << i << " : " << getCardName(id)
 		          << " (cost: " << getCardCost(id) << ", "
 		          << (isSpell(id) ? "spell" : "creature") << ")"
@@ -131,7 +142,7 @@ void TerminalGame::displayBoardCreatureVector(const std::vector<BoardCreatureDat
 	for (auto i=0U; i<cardVector.size(); i++)
 	{
 		const BoardCreatureData& thisCreature = cardVector.at(i);
-		const cardId id = thisCreature.id;
+		const CardId id = thisCreature.id;
 		std::cout << "  * " << i << " : " << getCardName(id) << " (cost: " << getCardCost(id) <<
 		             ", attack: " << thisCreature.attack <<
 		             ", health: " << thisCreature.health <<
@@ -139,6 +150,26 @@ void TerminalGame::displayBoardCreatureVector(const std::vector<BoardCreatureDat
 		             << (displayDescription ? "\n\t" + getCardDescription(id) : "") << "\n";
 	}
 	std::cout << std::endl;
+}
+
+void TerminalGame::useCard()
+{
+	int cardIndex{askSelfHandIndex()};
+	AbstractGame::useCard(cardIndex);
+}
+
+void TerminalGame::attackWithCreature()
+{
+	displayMessage("Which creature would you like to attack with?");
+	int selfCardIndex = askSelfBoardIndex();
+	int opponentCardIndex;
+	bool attackOpponent{wantToAttackOpponent()};
+	if(not attackOpponent)
+	{
+		displayMessage("Which opponent's creature would you like to attack?");
+		opponentCardIndex = askOppoBoardIndex();
+	}
+	AbstractGame::attackWithCreature(selfCardIndex, attackOpponent, opponentCardIndex);
 }
 
 ////////////// inputs
@@ -206,7 +237,7 @@ bool TerminalGame::wantToAttackOpponent()
 	return buffer == "y";
 }
 
-void TerminalGame::receiveCard(cardId id)
+void TerminalGame::receiveCard(CardId id)
 {
 	displayMessage("You won the card '" + getCardName(id) + "'");
 }

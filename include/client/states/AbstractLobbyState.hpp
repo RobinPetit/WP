@@ -5,6 +5,7 @@
 #include <string>
 // WizardPoker headers
 #include "client/AbstractState.hpp"
+#include "client/AbstractGame.hpp"
 
 /// Abstract version of the lobby state.
 class AbstractLobbyState : virtual public AbstractState
@@ -15,6 +16,8 @@ class AbstractLobbyState : virtual public AbstractState
 
 	protected:
 		void quit();
+
+		void startGame(AbstractGame& game);
 };
 
 #endif// _ABSTRACT_LOBBY_STATE_CLIENT_HPP

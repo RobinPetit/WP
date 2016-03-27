@@ -14,9 +14,15 @@ public:
 	~TerminalGame();
 
 private:
+	//////////// static members
+
+	static const std::vector<std::pair<const std::string, void (TerminalGame::*)()>> _actions;
+
+	////////// private methods
 
 	void displayOptions();
 	void displayGame() override;
+	void updateDisplay() override;
 	void displayCardVector(const std::vector<CardData>& cardVector, bool displayDescription=false);
 	void displayBoardCreatureVector(const std::vector<BoardCreatureData>& cardVector, bool displayDescription=false);
 
@@ -32,11 +38,15 @@ private:
 	int askOppoBoardIndex() override;
 	int askOppoHandIndex() override;
 
-	bool wantToAttackOpponent() override;
+	bool wantToAttackOpponent();
 
 	void chooseDeck() override;
 
-	void receiveCard(cardId id) override;
+	void receiveCard(CardId id) override;
+
+	// overload
+	void useCard();
+	void attackWithCreature();
 };
 
 #endif  // TERMINAL_GAME_HPP

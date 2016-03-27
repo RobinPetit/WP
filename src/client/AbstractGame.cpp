@@ -15,14 +15,6 @@
 #include "client/NonBlockingInput.hpp"
 #include "client/AbstractGame.hpp"
 
-const std::vector<std::pair<const std::string, void (AbstractGame::*)()>> AbstractGame::_actions =
-{
-	{"Quit", &AbstractGame::quit},
-	{"Use a card from hand", &AbstractGame::useCard},
-	{"Attack with a creature", &AbstractGame::attackWithCreature},
-	{"End your turn", &AbstractGame::endTurn},
-};
-
 AbstractGame::AbstractGame(Client& client):
 	_client{client},
 	_playing(false)
@@ -67,11 +59,17 @@ void AbstractGame::play()
 		if(_myTurn.load())
 			startTurn();
 		else
-			while(not _myTurn.load())
-				sf::sleep(sf::milliseconds(100));
+			waitUntil([this]()
+			{
+				return _myTurn.load();
+			});
 	}
-	if(_listeningThread.joinable())
-		_listeningThread.join();
+}
+
+void AbstractGame::waitUntil(std::function<bool()> booleanFunction)
+{
+	while(not booleanFunction())
+		sf::sleep(sf::milliseconds(100));
 }
 
 void AbstractGame::startTurn()
@@ -80,52 +78,56 @@ void AbstractGame::startTurn()
 	displayGame();
 }
 
+void AbstractGame::sendDeck(const std::string& deckName)
+{
+	sf::Packet deckNamePacket;
+	deckNamePacket << TransferType::GAME_PLAYER_GIVE_DECK_NAMES << deckName;
+	_client.getGameSocket().send(deckNamePacket);
+}
 
 //PRIVATE METHODS
 
 //User actions
-void AbstractGame::useCard()
+void AbstractGame::useCard(int cardIndex)
 {
 	if (not _myTurn)
 	{
 		displayMessage("You must wait your turn!");
 		return;
 	}
-	else
+	sf::Packet actionPacket;
+	actionPacket << TransferType::GAME_USE_CARD << static_cast<sf::Int32>(cardIndex);
+	_client.getGameSocket().send(actionPacket);
+	// receive amount of selection to make
+	_client.getGameSocket().receive(actionPacket);
+	TransferType responseHeader;
+	actionPacket >> responseHeader;
+	if(handleHeader(responseHeader))
+		return;
+	assert(responseHeader == TransferType::GAME_SEND_NB_OF_EFFECTS);
+	sf::Uint32 nbOfEffects;
+	actionPacket >> nbOfEffects;
+	for(sf::Uint32 i{0}; i < nbOfEffects; ++i)
 	{
-		int cardIndex = askSelfHandIndex();
-		sf::Packet actionPacket;
-		actionPacket << TransferType::GAME_USE_CARD << static_cast<sf::Int32>(cardIndex);
-		_client.getGameSocket().send(actionPacket);
-		// receive amount of selection to make
 		_client.getGameSocket().receive(actionPacket);
-		TransferType responseHeader;
-		actionPacket >> responseHeader;
-		assert(responseHeader == TransferType::GAME_SEND_NB_OF_EFFECTS);
-		sf::Uint32 nbOfEffects;
-		actionPacket >> nbOfEffects;
-		for(sf::Uint32 i{0}; i < nbOfEffects; ++i)
-		{
-			_client.getGameSocket().receive(actionPacket);
-			// ask and send the additionnal inputs to the server
-			if(not treatAdditionnalInputs(actionPacket))
-				return;
-		}
-		// receive status of operation from server
-		_client.getGameSocket().receive(actionPacket);
-		actionPacket >> responseHeader;
-		switch(responseHeader)
-		{
-		case TransferType::ACKNOWLEDGE:
-			displayMessage("The card has been successfuly used.");
-			break;
+		// ask and send the additionnal inputs to the server
+		if(not treatAdditionnalInputs(actionPacket))
+			return;
+	}
+	// receive status of operation from server
+	_client.getGameSocket().receive(actionPacket);
+	actionPacket >> responseHeader;
+	switch(responseHeader)
+	{
+	case TransferType::ACKNOWLEDGE:
+		displayMessage("The card has been successfuly used.");
+		break;
 
-		// This line is more documentative than really needed
-		case TransferType::FAILURE:
-		default:
-			displayMessage("An error occured when using a card.");
-			break;
-		}
+	// This line is more documentative than really needed
+	case TransferType::FAILURE:
+	default:
+		displayMessage("An error occured when using a card.");
+		break;
 	}
 }
 
@@ -194,7 +196,7 @@ bool AbstractGame::treatAdditionnalInputs(sf::Packet& actionPacket)
 	return true;
 }
 
-void AbstractGame::attackWithCreature()
+void AbstractGame::attackWithCreature(int selfCardIndex, bool attackOpponent, int opponentCardIndex)
 {
 	if (not _myTurn)
 	{
@@ -203,25 +205,15 @@ void AbstractGame::attackWithCreature()
 	}
 	else
 	{
-		displayMessage("Which creature would you like to attack with?");
-		int selfCardIndex = askSelfBoardIndex();
-		int oppoCardIndex;
-		bool attackOpponent{wantToAttackOpponent()};
-		if(not attackOpponent)
-		{
-			displayMessage("Which opponent's creature would you like to attack?");
-			oppoCardIndex = askOppoBoardIndex();
-		}
-
 		// If there's cards on board
-		if(selfCardIndex >= 0 and (oppoCardIndex >= 0 or attackOpponent))
+		if(selfCardIndex >= 0 and (opponentCardIndex >= 0 or attackOpponent))
 		{
 			if(attackOpponent)
-				oppoCardIndex = -1;
+				opponentCardIndex = -1;
 			sf::Packet actionPacket;
 			actionPacket << TransferType::GAME_ATTACK_WITH_CREATURE
 			             << static_cast<sf::Int32>(selfCardIndex)
-			             << static_cast<sf::Int32>(oppoCardIndex);
+			             << static_cast<sf::Int32>(opponentCardIndex);
 			_client.getGameSocket().send(actionPacket);
 			_client.getGameSocket().receive(actionPacket);
 			TransferType responseHeader;
@@ -274,6 +266,8 @@ void AbstractGame::quit()
 	// internal ending
 	_playing.store(false);
 	_myTurn.store(false);
+	if(_listeningThread.joinable())
+		_listeningThread.join();
 }
 
 AbstractGame::~AbstractGame()
@@ -291,6 +285,7 @@ void AbstractGame::initListening()
 
 void AbstractGame::inputListening()
 {
+	onListeningThreadCreation();
 	sf::TcpSocket& listeningSocket{_client.getGameListeningSocket()};
 	_client.waitTillReadyToPlay();
 	sf::Packet receivedPacket;
@@ -306,20 +301,25 @@ void AbstractGame::inputListening()
 		{
 			std::cerr << "Connection lost with the server\n";
 			_playing.store(false);
+			break;
 		}
 		else if(receiveStatus == sf::Socket::Error)
 		{
 			std::cerr << "Error while transmitting data\n";
 			_playing.store(false);
+			break;
 		}
 		else
 		{
 			handlePacket(receivedPacket);
-			// do not re-display in game menu if game is over or if player is currently playing
-			if(_playing.load() && not _myTurn.load())
-				displayGame();
+			updateDisplay();
 		}
 	}
+}
+
+void AbstractGame::onListeningThreadCreation()
+{
+	// Enpty body to be overriden
 }
 
 void AbstractGame::endGame(sf::Packet& transmission)
@@ -351,7 +351,7 @@ void AbstractGame::endGame(sf::Packet& transmission)
 		if(not endGameInfo.applyToSelf)
 		{
 			// Get the won card
-			cardId newCard;
+			CardId newCard;
 			transmission >> newCard;
 			receiveCard(newCard);
 		}
@@ -441,7 +441,7 @@ void AbstractGame::handlePacket(sf::Packet& transmission)
 	}
 }
 
-const std::string& AbstractGame::getCardName(cardId id)
+const std::string& AbstractGame::getCardName(CardId id)
 {
 	const CommonCardData* card = _client.getCardData(id);
 	// Maybe I should have use multiple inheritance to avoid this
@@ -450,7 +450,7 @@ const std::string& AbstractGame::getCardName(cardId id)
 		: static_cast<const ClientCreatureData*>(card)->getName();
 }
 
-CostValue AbstractGame::getCardCost(cardId id)
+CostValue AbstractGame::getCardCost(CardId id)
 {
 	const CommonCardData* card = _client.getCardData(id);
 	// Maybe I should have use multiple inheritance to avoid this
@@ -459,7 +459,7 @@ CostValue AbstractGame::getCardCost(cardId id)
 		: static_cast<CostValue>(static_cast<const ClientCreatureData*>(card)->getCost());
 }
 
-const std::string& AbstractGame::getCardDescription(cardId id)
+const std::string& AbstractGame::getCardDescription(CardId id)
 {
 	const CommonCardData* card = _client.getCardData(id);
 	// Maybe I should have use multiple inheritance to avoid this
@@ -468,9 +468,31 @@ const std::string& AbstractGame::getCardDescription(cardId id)
 		: static_cast<const ClientCreatureData*>(card)->getDescription();
 }
 
-bool AbstractGame::isSpell(cardId id)
+bool AbstractGame::isSpell(CardId id)
 {
 	return _client.getCardData(id)->isSpell();
+}
+
+bool AbstractGame::handleHeader(TransferType header)
+{
+	switch(header)
+	{
+	case TransferType::GAME_NOT_ENOUGH_ENERGY:
+		displayMessage("You haven't enough energy to play this card.");
+		break;
+
+	case TransferType::FAILURE:
+		displayMessage("Error while playing the card.");
+		break;
+
+	case TransferType::GAME_CARD_LIMIT_TURN_REACHED:
+		displayMessage("You cannot play cards for this turn anymore: you reached your limit.");
+		break;
+
+	default:
+		return false;
+	}
+	return true;
 }
 
 template <typename FixedSizeIntegerType>

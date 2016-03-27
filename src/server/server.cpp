@@ -9,9 +9,20 @@
 #include "common/ini/IniFile.hpp"
 // std-C++ headers
 #include <cstdlib>
+#ifdef __linux
+extern "C"
+{
+# include <X11/Xlib.h>
+}
+#else
+#endif
 
 int main()
 {
+#ifdef __linux__
+	XInitThreads();
+#else
+#endif
 	IniFile config;
 	int status = config.readFromFile(SERVER_CONFIG_FILE_PATH);
 	if(status != SUCCESS)

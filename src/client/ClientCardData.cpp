@@ -1,7 +1,7 @@
 #include "client/ClientCardData.hpp"
 
 // ClientCreatureData
-ClientCreatureData::ClientCreatureData(cardId id, const std::string& name, int cost, const std::string& description,
+ClientCreatureData::ClientCreatureData(CardId id, const std::string& name, int cost, const std::string& description,
 		int attack, int health, int shield, int shieldType) :
 	CommonCreatureData(id, cost, attack, health, shield, shieldType),
 	_name(name), _description(description)
@@ -20,7 +20,7 @@ const std::string& ClientCreatureData::getDescription() const
 
 
 // SpellCard
-ClientSpellData::ClientSpellData(cardId id, const std::string& name, int cost, const std::string& description) :
+ClientSpellData::ClientSpellData(CardId id, const std::string& name, int cost, const std::string& description) :
 	CommonSpellData(id, cost),
 	_name(name), _description(description)
 {

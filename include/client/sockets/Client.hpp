@@ -146,13 +146,13 @@ public:
 	CardsCollection getCardsCollection();
 
 	/// Count number of card templates in database
-	cardId getNumberOfCards();
+	CardId getNumberOfCards();
 
 	/// Give greatest card id in database
-	cardId getMaxCardId();
+	CardId getMaxCardId();
 
 	/// Used by AbstractGame
-	const CommonCardData* getCardData(cardId id);
+	const CommonCardData* getCardData(CardId id);
 
 	// Others
 
@@ -166,7 +166,11 @@ public:
 	/// Used to wait sleeping until the atomic boolean readyToPlay is set to true
 	void waitTillReadyToPlay();
 
-	const Terminal& getTerminal();
+	const Terminal& getTerminal() const;
+
+	/// Gives the name of the user
+	/// \return A string containing the name (as known by the server)
+	const std::string& getName() const;
 
 private:
 	///////// Client/Server related attributes

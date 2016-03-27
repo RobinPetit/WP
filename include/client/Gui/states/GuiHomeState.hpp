@@ -2,7 +2,10 @@
 #define _GUI_HOME_STATE_CLIENT_HPP
 
 // External headers
-#include <TGUI/TGUI.hpp>
+#include <TGUI/Widgets/Label.hpp>
+#include <TGUI/Widgets/EditBox.hpp>
+#include <TGUI/Widgets/Button.hpp>
+#include <TGUI/Widgets/Grid.hpp>
 // WizardPoker headers
 #include "client/Gui/GuiAbstractState.hpp"
 #include "client/states/AbstractHomeState.hpp"
@@ -26,6 +29,7 @@ class GuiHomeState : public GuiAbstractState, public AbstractHomeState
 		tgui::Button::Ptr _connectButton;
 		tgui::Button::Ptr _createAccountButton;
 		tgui::Grid::Ptr _grid;
+		tgui::Grid::Ptr _gridBottom;
 };
 
 #endif  // _GUI_HOME_STATE_CLIENT_HPP

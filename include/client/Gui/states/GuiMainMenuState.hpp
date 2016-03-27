@@ -2,7 +2,8 @@
 #define _GUI_MAIN_MENU_STATE_CLIENT_HPP
 
 // External headers
-#include <TGUI/TGUI.hpp>
+#include <TGUI/Widgets/Label.hpp>
+#include <TGUI/VerticalLayout.hpp>
 // WizardPoker headers
 #include "client/Gui/GuiAbstractState.hpp"
 #include "client/states/AbstractMainMenuState.hpp"
@@ -18,8 +19,6 @@ class GuiMainMenuState: public GuiAbstractState, public AbstractMainMenuState
 		////////// Attributes
 		const std::vector<ButtonData<GuiMainMenuState>> _buttons;
 
-		tgui::Label::Ptr _menuLabel;
-
 		tgui::VerticalLayout::Ptr _layout;
 
 		////////// Methods
@@ -28,6 +27,7 @@ class GuiMainMenuState: public GuiAbstractState, public AbstractMainMenuState
 		void seeCards();
 		void manageFriends();
 		void seeLadder();
+		void seeAchievements();
 };
 
 #endif  // _GUI_MAIN_MENU_STATE_CLIENT_HPP

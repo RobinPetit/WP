@@ -7,6 +7,7 @@
 #include <atomic>
 #include <mutex>
 #include <thread>
+#include <functional>
 // WizardPoker headers
 #include "client/AbstractState.hpp"
 #include "client/NonBlockingInput.hpp"
@@ -56,19 +57,26 @@ class AbstractGame
 		/// Waits for special server data such as END_OF_TURN, BOARD_UPDATE, etc.
 		std::thread _listeningThread;
 
-		//////////// static members
-
-		static const std::vector<std::pair<const std::string, void (AbstractGame::*)()>> _actions;
-
 		//////////// protected methods
 
-		const std::string& getCardName(cardId id);
-		CostValue getCardCost(cardId id);
-		const std::string& getCardDescription(cardId id);
+		const std::string& getCardName(CardId id);
+		CostValue getCardCost(CardId id);
+		const std::string& getCardDescription(CardId id);
 
 		/// Check wheter the card is a spell or a creature.
 		/// \return True if the card is a spell, false if it is a creature.
-		bool isSpell(cardId id);
+		bool isSpell(CardId id);
+
+		/// Sends the chosen deck to the server
+		virtual void sendDeck(const std::string& deckName);
+
+		// User interface ("actions")
+		void useCard(int cardIndex);
+		void attackWithCreature(int selfCardIndex, bool attackOpponent, int opponentCardIndex);
+		void endTurn();
+		void quit();
+
+		virtual void waitUntil(std::function<bool()> booleanFucntion);
 
 	private:
 		//////////////// private methods
@@ -76,15 +84,14 @@ class AbstractGame
 		// called by the constructor to init the object
 		virtual void chooseDeck() = 0;
 
-		// User interface ("actions")
-		void useCard();
-		void attackWithCreature();
-		void endTurn();
-		void quit();
 		void endGame(sf::Packet& transmission);  // only used to lighten handlePacket
 
 		// Game display
 		virtual void displayGame() = 0;
+
+		virtual void updateDisplay() = 0;
+
+		virtual void onListeningThreadCreation();
 
 		virtual void displayMessage(const std::string& message) = 0;
 
@@ -97,8 +104,6 @@ class AbstractGame
 		virtual int askOppoBoardIndex() = 0;
 		virtual int askOppoHandIndex() = 0;
 
-		virtual bool wantToAttackOpponent() = 0;
-
 		/// Start the new thread waiting for special data
 		void initListening();
 		/// Called by the game listening thread: waits for server game thread special data
@@ -107,7 +112,7 @@ class AbstractGame
 		/// Handles the whole transmission until transmission.endOfPacket()
 		void handlePacket(sf::Packet& transmission);
 
-		virtual void receiveCard(cardId id) = 0;
+		virtual void receiveCard(CardId id) = 0;
 
 		/// The function used to receive from the server the informations
 		/// about the required additional inputs
@@ -115,6 +120,9 @@ class AbstractGame
 		/// \return True if card is playable (after having sent the
 		/// asked inputs) and false otherwise
 		bool treatAdditionnalInputs(sf::Packet& actionPacket);
+
+		///
+		bool handleHeader(TransferType header);
 
 		//////////// static member
 

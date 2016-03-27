@@ -11,18 +11,18 @@ TerminalLobbyState::TerminalLobbyState(Context& context):
 	AbstractLobbyState(context)
 {
 	addAction("Quit", &TerminalLobbyState::quit);
-	addAction("Find a game", &TerminalLobbyState::startGame);
+	addAction("Find a game", &TerminalLobbyState::findAGame);
 }
 
 void TerminalLobbyState::display()
 {
-	std::cout << "Welcome to the matchmaking lobby!\n";
+	displaySeparator("Matchmaking");
 
 	// Display the actions
 	TerminalAbstractState::display();
 }
 
-void TerminalLobbyState::startGame()
+void TerminalLobbyState::findAGame()
 {
 	if(not _context.client->isConnected())
 	{
@@ -49,7 +49,6 @@ void TerminalLobbyState::startGame()
 	}
         std::cout << "Opponent found: " << opponentName << std::endl;
 	TerminalGame game{*_context.client};
-	game.init();
-	game.play();
+	startGame(game);
 	waitForEnter();
 }

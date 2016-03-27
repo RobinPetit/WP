@@ -18,14 +18,14 @@ public:
 	/// \param filename: relative path to sqlite3 file.
 	explicit ClientDatabase(const std::string& filename = FILENAME);
 
-	Card getCard(cardId id);
-	const CommonCardData* getCardData(cardId id);
-	std::vector<cardId> getFirstCardIds(unsigned count);
-	cardId getGreatestCardId();
+	Card getCard(CardId id);
+	const CommonCardData* getCardData(CardId id);
+	std::vector<CardId> getFirstCardIds(unsigned count);
+	CardId getGreatestCardId();
 
-	cardId countCards() const;
-	cardId countCreatures() const;
-	cardId countSpells() const;
+	CardId countCards() const;
+	CardId countCreatures() const;
+	CardId countSpells() const;
 
 	AchievementData getAchievementData(AchievementId id) const;
 
@@ -35,7 +35,7 @@ private:
 	/// Default relative path to sqlite3 file
 	static const char FILENAME[];
 
-	std::map<const cardId, const std::unique_ptr<const CommonCardData> > _cards;
+	std::map<const CardId, const std::unique_ptr<const CommonCardData> > _cards;
 	int _cardCount;
 	int _creatureCount;
 	int _spellCount;

@@ -6,20 +6,13 @@
 const sf::Vector2f CreatureGui::HEALTH_POSITION{56.f, 217.f};
 const sf::Vector2f CreatureGui::ATTACK_POSITION{129.f, 217.f};
 const sf::Vector2f CreatureGui::SHIELD_POSITION{202.f, 217.f};
-constexpr char CreatureGui::FRONT_IMAGE_PATH[];
+const sf::Vector2f CreatureGui::CREATURE_DESCRIPTION_POSITION{26.f, 273.f};
 
-CreatureGui::CreatureGui(const std::string& name, const std::string& description, int cost, int attack, int health, int shield, ShieldType shieldType):
-	CardGui(name, description, cost),
+CreatureGui::CreatureGui(CardId id, const std::string& name, const std::string& description, int cost, int attack, int health, int shield, ShieldType shieldType):
+	CardGui(id, name, description, cost),
 	_shieldType{shieldType}
 {
-	if(!_pictureTexture.loadFromFile(FRONT_IMAGE_PATH))
-	{
-		std::cerr << "Unable to load " << FRONT_IMAGE_PATH << "\n";
-		return;
-	} // Standard SFML 2.0 error protocol (CF documentation)
-	_pictureTexture.setSmooth(true);
-	_picture.setTexture(&_pictureTexture);
-	_picture.setSize(SIZE);
+	moveDescription(CREATURE_DESCRIPTION_POSITION);
 
 	setupText(_healthText, std::to_string(health), HEALTH_POSITION);
 	_healthText.setColor(sf::Color(200, 0, 0));
@@ -36,7 +29,7 @@ CreatureGui::CreatureGui(const std::string& name, const std::string& description
 			break;
 
 		case SHIELD_LEGENDARY:
-			_healthText.setColor(sf::Color(255, 200, 200));
+			_shieldText.setColor(sf::Color(255, 200, 200));
 			break;
 
 		default:

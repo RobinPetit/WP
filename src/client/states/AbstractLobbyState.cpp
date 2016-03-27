@@ -11,3 +11,9 @@ void AbstractLobbyState::quit()
 {
 	_context.stateStack->pop();
 }
+
+void AbstractLobbyState::startGame(AbstractGame& game)
+{
+	game.init();
+	game.play();
+}

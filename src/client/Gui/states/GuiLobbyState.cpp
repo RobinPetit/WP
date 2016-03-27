@@ -1,6 +1,7 @@
 // WizardPoker headers
 #include "client/Gui/states/GuiLobbyState.hpp"
 #include "client/sockets/Client.hpp"
+#include "client/Gui/GuiGame.hpp"
 // std-C++ headers
 #include <chrono>
 
@@ -58,13 +59,24 @@ void GuiLobbyState::findAGame()
 	setButtonsAsWaiting();
 	std::string opponentName;
 	while(_play and not _context.client->isGameStarted(opponentName))
-	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 		handleInput();
-	}
 	resetButtons();
 	if(_play)
-		displayMessage("Let's start a game with " + opponentName);
+	{
+		_context.gui->remove(_buttonsLayout);
+		_context.gui->remove(_titleLabel);
+		_context.window->setTitle("WizardPoker (" + _context.client->getName() + ") in game versus " + opponentName);
+		// have a special block so that the constructor is directly called
+		{
+			GuiGame game{_context};
+			startGame(game);
+		}
+		_context.window->setTitle("WizardPoker (" + _context.client->getName() + ")");
+
+		_context.gui->add(_buttonsLayout);
+		_context.gui->add(_titleLabel);
+		resetButtons();
+	}
 }
 
 void GuiLobbyState::resetButtons()

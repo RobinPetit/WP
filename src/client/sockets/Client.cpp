@@ -237,9 +237,14 @@ void Client::waitTillReadyToPlay()
 		sf::sleep(awaitingDelay);
 }
 
-const Terminal& Client::getTerminal()
+const Terminal& Client::getTerminal() const
 {
 	return _userTerminal;
+}
+
+const std::string& Client::getName() const
+{
+	return _name;
 }
 
 /////////////////// Friends management
@@ -562,17 +567,17 @@ CardsCollection Client::getCardsCollection()
 }
 
 ////////////////// Others
-cardId Client::getNumberOfCards()
+CardId Client::getNumberOfCards()
 {
 	return _database.countCards();
 }
 
-cardId Client::getMaxCardId()
+CardId Client::getMaxCardId()
 {
 	return _database.getGreatestCardId();
 }
 
-const CommonCardData* Client::getCardData(cardId id)
+const CommonCardData* Client::getCardData(CardId id)
 {
 	return _database.getCardData(id);
 }

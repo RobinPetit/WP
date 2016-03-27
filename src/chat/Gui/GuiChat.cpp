@@ -35,6 +35,8 @@ GuiChat::GuiChat(const char * const argv[6]):
 	_mainLayout->setPosition(0, 0);
 	_gui.add(_mainLayout);
 
+	_window.setVerticalSyncEnabled(true);
+
 	// Fix a bug that occurs on Theo's computer, showing a "This window does not
 	// respond, do you wanna kill it?" prompt after a few seconds when running
 	// the application

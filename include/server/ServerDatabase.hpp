@@ -32,16 +32,16 @@ public:
 
 	//////////////// Cards
 	/// Card* to be deallocated by the caller
-	Card* getCard(cardId card, Player& player);
-	const CommonCardData* getCardData(cardId card);
+	Card* getCard(CardId card, Player& player);
+	const CommonCardData* getCardData(CardId card);
 	/// Number of card templates in database
-	cardId countCards();
+	CardId countCards();
 	/// Get a valid id of a card template
-	cardId getRandomCardId();
+	CardId getRandomCardId();
 
 	//////////////// Users
-	userId getUserId(const std::string& login);
-	std::string getLogin(userId id);
+	UserId getUserId(const std::string& login);
+	std::string getLogin(UserId id);
 	bool areIdentifiersValid(const std::string& login, const std::string& password);
 	bool isRegistered(const std::string& login);
 	void registerUser(const std::string& login, const std::string& password);
@@ -49,40 +49,40 @@ public:
 	unsigned countAccounts();
 
 	//////////////// Friends
-	inline FriendsList getFriendsList(userId id)
+	inline FriendsList getFriendsList(UserId id)
 	{
 		return getAnyFriendsList(id, _friendListStmt);
 	}
-	inline FriendsList getFriendshipRequests(userId id)
+	inline FriendsList getFriendshipRequests(UserId id)
 	{
 		return getAnyFriendsList(id, _friendshipRequestsStmt);
 	}
 
-	void addFriend(userId id1, userId id2);
-	void removeFriend(userId id1, userId id2);
-	bool areFriend(userId id1, userId id2);
+	void addFriend(UserId id1, UserId id2);
+	void removeFriend(UserId id1, UserId id2);
+	bool areFriend(UserId id1, UserId id2);
 
-	void addFriendshipRequest(userId from, userId to);
-	void removeFriendshipRequest(userId from, userId to);
-	bool isFriendshipRequestSent(userId from, userId to);
+	void addFriendshipRequest(UserId from, UserId to);
+	void removeFriendshipRequest(UserId from, UserId to);
+	bool isFriendshipRequestSent(UserId from, UserId to);
 
 	//////////////// CardCollections
-	CardsCollection getCardsCollection(userId id);
-	void addCard(userId id, cardId card);
+	CardsCollection getCardsCollection(UserId id);
+	void addCard(UserId id, CardId card);
 
 	//////////////// Decks
-	std::vector<Deck> getDecks(userId id);
-	Deck getDeckByName(userId id, const std::string& deckName);
-	void createDeck(userId id, const Deck& deck);
-	std::vector<cardId> getFirstCardIds(unsigned count); // TODO use it in Deck constructor
-	void deleteDeckByName(userId id, const std::string& deckName);
-	void editDeck(userId id, const Deck& deck); // Deck should contains the deckId
+	std::vector<Deck> getDecks(UserId id);
+	Deck getDeckByName(UserId id, const std::string& deckName);
+	void createDeck(UserId id, const Deck& deck);
+	std::vector<CardId> getFirstCardIds(unsigned count); // TODO use it in Deck constructor
+	void deleteDeckByName(UserId id, const std::string& deckName);
+	void editDeck(UserId id, const Deck& deck); // Deck should contains the DeckId
 
 	//////////////// Achievements
 	/// Unlock new card and achievements
-	AchievementList newAchievements(const PostGameData&, userId);
-	AchievementList getAchievements(userId);
-	int getWithInDaClub(userId);
+	AchievementList newAchievements(const PostGameData&, UserId);
+	AchievementList getAchievements(UserId);
+	int getWithInDaClub(UserId);
 	Ladder getLadder();
 
 	virtual ~ServerDatabase();
@@ -97,11 +97,11 @@ private:
 		struct AchievementsListItem
 		{
 			AchievementId id;
-			void (ServerDatabase::*addMethod)(userId, int);
-			int PostGameData::*toAddValue;
-			int (ServerDatabase::*getMethod)(userId);
+			void (ServerDatabase::*addMethod)(UserId, int);
+			const int PostGameData::*toAddValue;
+			int (ServerDatabase::*getMethod)(UserId);
 		};
-		std::array<AchievementsListItem, 6> _achievementsList
+		std::array<AchievementsListItem, 12> _achievementsList
 		{
 			{
 				AchievementsListItem {
@@ -118,7 +118,7 @@ private:
 				},
 				AchievementsListItem {
 					3,
-					&ServerDatabase::addVictoriesInARow,
+					&ServerDatabase::addVictoriesInTheCurrentRow,
 					&PostGameData::playerWon,
 					&ServerDatabase::getVictoriesInARow
 				},
@@ -138,57 +138,107 @@ private:
 					6,
 					nullptr, nullptr,
 					&ServerDatabase::ownAllCards
+				},
+				AchievementsListItem {
+					///\TODO: the current implementation of this achievement is HEAVY
+					7,
+					&ServerDatabase::updateBestLadderPositionPercent,
+					&PostGameData::playerWon,
+					&ServerDatabase::getBestLadderPositionPercent
+				},
+				AchievementsListItem {
+					8,
+					nullptr, nullptr,
+					&ServerDatabase::getSameCardCounter
+				},
+				AchievementsListItem {
+					9,
+					&ServerDatabase::addStartsInTheCurrentRow,
+					&PostGameData::playerStarted,
+					&ServerDatabase::getStartsInARow
+				},
+				AchievementsListItem {
+					10,
+					nullptr, nullptr,
+					&ServerDatabase::getDaysInARow
+				},
+				AchievementsListItem {
+					11,
+					&ServerDatabase::addPerfectWin,
+					&PostGameData::remainingHealth,
+					&ServerDatabase::getPerfectWins
+				},
+				AchievementsListItem {
+					12,
+					&ServerDatabase::addCloseWin,
+					&PostGameData::remainingHealth,
+					&ServerDatabase::getCloseWins
 				}
 			}
 		};
 
 	public:
 		AchievementManager(ServerDatabase&);
-
-		///\TODO use smart pointer as return type value
-		AchievementList newAchievements(const PostGameData&, userId);
-		AchievementList allAchievements(userId);
+		///\TODO For now newAchievements update lastDayPlayed information but I think it is not his purpose
+		/// Give a new card if game won and unlock others achievements (and update lastDayPlayed information)
+		AchievementList newAchievements(const PostGameData&, UserId);
+		AchievementList allAchievements(UserId);
 	};
 
 	/// Default relative path to sqlite3 file
 	static const char FILENAME[];
-	std::map<const cardId, const std::unique_ptr<const CommonCardData> > _cardData;
+	std::map<const CardId, const std::unique_ptr<const CommonCardData> > _cardData;
 	AchievementManager _achievementManager;
 
 	/// Used by getFriendsList and getAnyFriendsList
-	FriendsList getAnyFriendsList(userId id, sqlite3_stmt * stmt);
+	FriendsList getAnyFriendsList(UserId id, sqlite3_stmt * stmt);
 
 	/// Add a card to _cards (used by contructor)
 	void createSpellData();
 	/// Add a card to _cards (used by contructor)
 	void createCreatureData();
 	/// Used by createSpellData() and createCreatureData()
-	std::vector<EffectParamsCollection> createCardEffects(cardId id);
+	std::vector<EffectParamsCollection> createCardEffects(CardId id);
 
 	//////////////// Achievements
 	// this methods should be used only by the nested class AchievementManager
 	// so I put this in private and declare AchievementManager (which is usable only by the ServerDatabase class)
 	// as a friend
 	int getRequired(AchievementId);
-	bool wasNotified(userId, AchievementId);
-	void setNotified(userId, AchievementId);
+	bool wasNotified(UserId, AchievementId);
+	void setNotified(UserId, AchievementId);
 
-	int getAchievementProgress(userId id, sqlite3_stmt * stmt);
-	int getTimeSpent(userId);
-	int getVictories(userId);
-	int getVictoriesInARow(userId);
-	int getRagequits(userId);
-	int ownAllCards(userId);
+	int getAchievementProgress(UserId id, sqlite3_stmt * stmt);
+	int getTimeSpent(UserId);
+	int getVictories(UserId);
+	int getVictoriesInARow(UserId);
+	int getRagequits(UserId);
+	int ownAllCards(UserId);
+	///\except std::out_of_range if UserId doesnt exists
+	int getLadderPositionPercent(UserId);
+	int getBestLadderPositionPercent(UserId);
+	int getSameCardCounter(UserId);
+	int getStartsInARow(UserId);
+	int getDaysInARow(UserId);
+	int getPerfectWins(UserId);
+	int getCloseWins(UserId);
 
-	void addToAchievementProgress(userId id, int value, sqlite3_stmt * stmt);
-	void addTimeSpent(userId, int seconds);
-	void addVictories(userId, int victories);
-	void addVictoriesInARow(userId, int victories);
-	void addWithInDaClub(userId, int withInDaClub);
-	void addRagequits(userId, int ragequits);
+	void addToAchievementProgress(UserId id, int value, sqlite3_stmt * stmt);
+	void addTimeSpent(UserId, int seconds);
+	void addVictories(UserId, int victories);
+	void addVictoriesInTheCurrentRow(UserId, int victories);
+	void addWithInDaClub(UserId, int withInDaClub);
+	void addRagequits(UserId, int ragequits);
+	void addStartsInTheCurrentRow(UserId, int starts);
+	void updateBestLadderPositionPercent(UserId, int playerWon); ///\TODO playerWon should be bool
+	/// add 1 to perfectWins if remainingHealth is max
+	/// (This is note the same way that other addAchievement methods, note that is addPerfectWin and not addPerfectWins)
+	void addPerfectWin(UserId, int remainingHealth);
+	/// add 1 to closeWins if remainingHealth is 1
+	void addCloseWin(UserId, int remainingHealth);
 
 	sqlite3_stmt * _friendListStmt;
-	sqlite3_stmt * _userIdStmt;
+	sqlite3_stmt * _UserIdStmt;
 	sqlite3_stmt * _loginStmt;
 	sqlite3_stmt * _friendshipRequestsStmt;
 	sqlite3_stmt * _decksStmt;
@@ -224,20 +274,31 @@ private:
 	sqlite3_stmt * _getWithInDaClubStmt;
 	sqlite3_stmt * _getRagequitsStmt;
 	sqlite3_stmt * _ownAllCardsStmt;
+	sqlite3_stmt * _getBestLadderPositionPercentStmt;
+	sqlite3_stmt * _getSameCardCounterStmt;
+	sqlite3_stmt * _getStartsInARowStmt;
+	sqlite3_stmt * _getDaysInARowStmt;
+	sqlite3_stmt * _getPerfectWinsStmt;
+	sqlite3_stmt * _getCloseWinsStmt;
 
 	sqlite3_stmt * _addTimeSpentStmt;
 	sqlite3_stmt * _addVictoriesStmt;
-	sqlite3_stmt * _setVictoriesInARowStmt;
+	sqlite3_stmt * _addVictoriesInTheCurrentRowStmt;
 	sqlite3_stmt * _addWithInDaClubStmt;
 	sqlite3_stmt * _addRagequitsStmt;
+	sqlite3_stmt * _addStartsInTheCurrentRowStmt;
+	sqlite3_stmt * _updateLastDayPlayedStmt;
+	sqlite3_stmt * _setBestLadderPositionPercent;
+	sqlite3_stmt * _addPerfectWinsStmt;
+	sqlite3_stmt * _addCloseWinsStmt;
 
 	// `constexpr std::array::size_type size() const;`
-	// -> future uses have to be _statements.size() -> 33 is written only one time
-	StatementsList<40> _statements
+	// -> future uses have to be _statements.size() -> 49 is written only one time
+	StatementsList<51> _statements
 	{
 		{
 			Statement {
-				&_userIdStmt,
+				&_UserIdStmt,
 				"SELECT id FROM Account WHERE login == ?1;"
 			},
 			Statement {
@@ -423,9 +484,9 @@ private:
 				"	WHERE id == ?1;"
 			},
 			Statement {
-				&_setVictoriesInARowStmt,
+				&_addVictoriesInTheCurrentRowStmt,
 				"UPDATE Account "
-				"	SET maxVictoriesInARow = ?1 "
+				"	SET currentVictoriesInARow = currentVictoriesInARow + ?1 "
 				"	WHERE id == ?2;"
 			},
 			Statement {
@@ -434,7 +495,7 @@ private:
 				"	FROM Account "
 				"	WHERE id == ?1;"
 			},
-			Statement {
+			Statement { // 36
 				&_addWithInDaClubStmt,
 				"UPDATE Account "
 				"	SET gameWithInDaClub = gameWithInDaClub + ?1 "
@@ -457,6 +518,75 @@ private:
 				&_ownAllCardsStmt,
 				"SELECT min(Card.id IN (SELECT GivenCard.card FROM GivenCard WHERE owner == ?1)) "
 				"	FROM Card;"
+			},
+			Statement { // 40
+				&_getBestLadderPositionPercentStmt,
+				"SELECT bestLadderPositionPercent "
+				"	FROM Account "
+				"	WHERE id == ?1;"
+			},
+			Statement {
+				&_getSameCardCounterStmt,
+				"SELECT COUNT(*) AS counter "
+				"	FROM GivenCard "
+				"	WHERE owner == ?1 "
+				"	GROUP BY card "
+				"	ORDER BY counter DESC "
+				"	LIMIT 1;"
+			},
+			Statement {
+				&_getStartsInARowStmt,
+				"SELECT maxStartsInARow "
+				"	FROM Account "
+				"	WHERE id == ?1;"
+			},
+			Statement {
+				&_addStartsInTheCurrentRowStmt,
+				"UPDATE Account "
+				"	SET currentStartsInARow = currentStartsInARow + ?1 "
+				"	WHERE id == ?2;"
+			},
+			Statement { // 44
+				&_getDaysInARowStmt,
+				"SELECT maxDaysPlayedInARow "
+				"	FROM Account "
+				"	WHERE id == ?1;"
+			},
+			Statement {
+				&_updateLastDayPlayedStmt,
+				"UPDATE Account "
+				"	SET lastDayPlayed = round(julianday('now')) "
+				"	WHERE id == ?1;"
+			},
+			Statement {
+				&_setBestLadderPositionPercent,
+				"UPDATE Account "
+				"	SET bestLadderPositionPercent = ?1 "
+				"	WHERE id == ?2;"
+			},
+			Statement {
+				&_getPerfectWinsStmt,
+				"SELECT perfectWins "
+				"	FROM Account "
+				"	WHERE id == ?1;"
+			},
+			Statement { // 48
+				&_addPerfectWinsStmt,
+				"UPDATE Account "
+				"	SET perfectWins = perfectWins + ?1 "
+				"	WHERE id == ?2;"
+			},
+			Statement {
+				&_getCloseWinsStmt,
+				"SELECT closeWins "
+				"	FROM Account "
+				"	WHERE id == ?1;"
+			},
+			Statement {
+				&_addCloseWinsStmt,
+				"UPDATE Account "
+				"	SET closeWins = closeWins + ?1 "
+				"	WHERE id == ?2;"
 			}
 		}
 	};

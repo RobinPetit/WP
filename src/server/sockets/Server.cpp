@@ -108,7 +108,7 @@ void Server::connectUser(sf::Packet& connectionPacket, std::unique_ptr<sf::TcpSo
 		_socketSelector.add(*client);
 		// ask the database for the ID of the user (may throw, so keep it in
 		// a separate line from the insertion in the map),
-		const userId id{_database.getUserId(playerName)};
+		const UserId id{_database.getUserId(playerName)};
 		// and add the new socket to the clients
 		_clients[playerName] = {std::move(client), clientPort, id};
 	}
@@ -356,15 +356,15 @@ void Server::startGame(std::size_t idx)
 	std::unique_ptr<GameThread>& selfThread{_runningGames.at(idx)};
 	// If the access did not throw, we can now release the mutex
 	lockRunningGames.unlock();
-	const auto& finderById = [](userId playerId)
+	const auto& finderById = [](UserId playerId)
 	{
 		return [playerId](const std::pair<const std::string, ClientInformations>& it)
 		{
 			return it.second.id == playerId;
 		};
 	};
-	userId player1Id = selfThread->_player1Id;
-	userId player2Id = selfThread->_player2Id;
+	UserId player1Id = selfThread->_player1Id;
+	UserId player2Id = selfThread->_player2Id;
 
 	const auto& player1{std::find_if(_clients.begin(), _clients.end(), finderById(player1Id))};
 	const auto& player2{std::find_if(_clients.begin(), _clients.end(), finderById(player2Id))};
@@ -374,8 +374,17 @@ void Server::startGame(std::size_t idx)
 
 	// start the game
 	std::cout << "Game " << idx << " is starting: " + userToString(player1) + " vs. " + userToString(player2) + "\n";
-	userId winnerId{selfThread->playGame(player1->second, player2->second)};
-	assert(winnerId==player1Id or winnerId==player2Id or winnerId==0);
+	UserId winnerId;
+	try
+	{
+		winnerId = selfThread->playGame(player1->second, player2->second);
+		assert((winnerId == player1Id) xor (winnerId == player2Id) xor (winnerId == 0));
+	}
+	catch(std::runtime_error& e)
+	{
+		std::cerr << "Game " << idx << " aborted:\n\t" << e.what();
+		return;
+	}
 
 	// display which players won, if any
 	if (winnerId == player1Id)
@@ -386,7 +395,7 @@ void Server::startGame(std::size_t idx)
 		std::cout << "there was no winner amongst players " << player1Name << " and " << player2Name << "\n";
 }
 
-void Server::createGame(userId Id1, userId Id2)
+void Server::createGame(UserId Id1, UserId Id2)
 {
 	std::lock_guard<std::mutex> lockRunningGames{_accessRunningGames};
 	_runningGames.emplace_back(new GameThread(_database, Id1, Id2, &Server::startGame, this, _runningGames.size()));
@@ -398,7 +407,6 @@ void Server::createGame(userId Id1, userId Id2)
 void Server::handleChatRequest(sf::Packet& packet, std::unique_ptr<sf::TcpSocket> client)
 {
 	sf::Packet responseToCaller;
-	responseToCaller << TransferType::CHAT_PLAYER_IP;
 	std::string calleeName;
 	std::string callerName;
 	sf::Uint16 callerPort;
@@ -441,8 +449,8 @@ void Server::handleFriendshipRequest(const _iterator& it, sf::Packet& transmissi
 	transmission >> friendName;
 	try
 	{
-		const userId thisId{_database.getUserId(it->first)};
-		const userId friendId{_database.getUserId(friendName)};
+		const UserId thisId{_database.getUserId(it->first)};
+		const UserId friendId{_database.getUserId(friendName)};
 
 		// Add the request into the database
 		_database.addFriendshipRequest(thisId, friendId);
@@ -467,8 +475,8 @@ void Server::handleFriendshipRequestResponse(const _iterator& it, sf::Packet& tr
 	transmission.clear();
 	try
 	{
-		const userId askerId{_database.getUserId(askerName)};
-		const userId askedId{_database.getUserId(it->first)};
+		const UserId askerId{_database.getUserId(askerName)};
+		const UserId askedId{_database.getUserId(it->first)};
 		if(not _database.isFriendshipRequestSent(askerId, askedId))
 		{
 			transmission << TransferType::NOT_EXISTING_FRIEND;
@@ -497,7 +505,7 @@ void Server::sendFriendshipRequests(const _iterator& it)
 	sf::Packet response;
 	try
 	{
-		const userId id{_database.getUserId(it->first)};
+		const UserId id{_database.getUserId(it->first)};
 		// The follwing two lines could be gathered, but by splitting them
 		// we avoid that the packet is garbaged if ServerDatabase::getFriendshipRequests
 		// throw an exception (although I don't think this is really risky,
@@ -518,7 +526,7 @@ void Server::sendFriends(const _iterator& it)
 	sf::Packet response;
 	try
 	{
-		const userId id{_database.getUserId(it->first)};
+		const UserId id{_database.getUserId(it->first)};
 		// Same as sendFriendshipRequests for the two folling lines
 		FriendsList friends{_database.getFriendsList(id)};
 		response << TransferType::ACKNOWLEDGE << friends;
@@ -538,8 +546,8 @@ void Server::handleRemoveFriend(const _iterator& it, sf::Packet& transmission)
 	transmission.clear();
 	try
 	{
-		const userId unfriendlyUserId{_database.getUserId(it->first)};
-		const userId removedFriendId{_database.getUserId(removedFriend)};
+		const UserId unfriendlyUserId{_database.getUserId(it->first)};
+		const UserId removedFriendId{_database.getUserId(removedFriend)};
 		_database.removeFriend(unfriendlyUserId, removedFriendId);
 
 		// acknowledge to client
@@ -560,7 +568,7 @@ void Server::sendDecks(const _iterator& it)
 	sf::Packet response;
 	try
 	{
-		const userId id{_database.getUserId(it->first)};
+		const UserId id{_database.getUserId(it->first)};
 		// Same as sendFriendshipRequests for the two folling lines
 		std::vector<Deck> decks{_database.getDecks(id)};
 		response << TransferType::ACKNOWLEDGE << decks;
@@ -580,7 +588,7 @@ void Server::handleDeckEditing(const _iterator& it, sf::Packet& transmission)
 	transmission.clear();
 	try
 	{
-		const userId id{_database.getUserId(it->first)};
+		const UserId id{_database.getUserId(it->first)};
 		_database.editDeck(id, editedDeck);
 		transmission << TransferType::ACKNOWLEDGE;
 	}
@@ -599,7 +607,7 @@ void Server::handleDeckCreation(const _iterator& it, sf::Packet& transmission)
 	transmission.clear();
 	try
 	{
-		const userId id{_database.getUserId(it->first)};
+		const UserId id{_database.getUserId(it->first)};
 		_database.createDeck(id, newDeck);
 		transmission << TransferType::ACKNOWLEDGE;
 	}
@@ -618,7 +626,7 @@ void Server::handleDeckDeletion(const _iterator& it, sf::Packet& transmission)
 	transmission.clear();
 	try
 	{
-		const userId id{_database.getUserId(it->first)};
+		const UserId id{_database.getUserId(it->first)};
 		_database.deleteDeckByName(id, deletedDeckName);
 		transmission << TransferType::ACKNOWLEDGE;
 	}
@@ -635,7 +643,7 @@ void Server::sendCardsCollection(const _iterator& it)
 	sf::Packet response;
 	try
 	{
-		const userId id{_database.getUserId(it->first)};
+		const UserId id{_database.getUserId(it->first)};
 		// Same as sendFriendshipRequests for the two folling lines
 		CardsCollection cards{_database.getCardsCollection(id)};
 		response << TransferType::ACKNOWLEDGE << cards;
@@ -671,7 +679,7 @@ void Server::sendAchievements(const _iterator& it)
 	sf::Packet response;
 	try
 	{
-		const userId id{_database.getUserId(it->first)};
+		const UserId id{_database.getUserId(it->first)};
 		AchievementList achievements{_database.getAchievements(id)};
 		response << TransferType::ACKNOWLEDGE << achievements;
 	}

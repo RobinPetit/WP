@@ -2,6 +2,8 @@
 #include <iostream>
 #include <algorithm>
 // WizardPoker headers
+#include "client/sockets/Client.hpp"
+#include "client/StateStack.hpp"
 #include "client/states/AbstractAchievementState.hpp"
 
 AbstractAchievementState::AbstractAchievementState(Context& context):

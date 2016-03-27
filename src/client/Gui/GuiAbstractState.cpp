@@ -90,10 +90,11 @@ void GuiAbstractState::registerRootWidgets(std::vector<tgui::Widget::Ptr>&& widg
 
 void GuiAbstractState::makeTitle(const std::string& title, unsigned int size, float y)
 {
-	tgui::Label::Ptr titleLabel{std::make_shared<tgui::Label>()};
-	titleLabel->setText(title);
-	titleLabel->setTextSize(size);
-	titleLabel->setPosition((tgui::bindWidth(*_context.gui) - tgui::bindWidth(titleLabel)) / 2.f, y);
-	_context.gui->add(titleLabel);
-	registerRootWidgets({titleLabel});
+	_titleLabel.reset(new tgui::Label());
+	_titleLabel->setText(title);
+	_titleLabel->setTextSize(size);
+	_titleLabel->setTextColor(sf::Color::White);
+	_titleLabel->setPosition((tgui::bindWidth(*_context.gui) - tgui::bindWidth(_titleLabel)) / 2.f, y);
+	_context.gui->add(_titleLabel);
+	registerRootWidgets({_titleLabel});
 }
