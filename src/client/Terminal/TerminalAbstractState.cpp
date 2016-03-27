@@ -36,10 +36,18 @@ void TerminalAbstractState::displaySeparator(const std::string& separatorText, c
 
 void TerminalAbstractState::displayEntry(const std::string& entryText, char sep, std::size_t entryLevel)
 {
-	std::cout << std::string(entryLevel*4, ' ') << "  " << sep << " " << entryText << std::endl;
+	std::cout << std::string(entryLevel*4 + 2, ' ') << sep << " " << entryText << std::endl;
 }
 
-void TerminalAbstractState::displayCard(CardId id, bool displayIndex, std::size_t index)
+void TerminalAbstractState::displayNumberedEntry(const std::string& entryText, int entryNumber, std::size_t entryLevel)
+{
+	int spacesCount = entryLevel*4 + 2 - std::to_string(entryNumber).size();
+	if (spacesCount<0)
+		spacesCount=0;
+	std::cout << std::string(spacesCount, ' ') << entryNumber << ". " << entryText << std::endl;
+}
+
+void TerminalAbstractState::displayCard(CardId id, bool displayValue, int value)
 {
 	auto cardData = _context.client->getCardData(id);
 	assert(cardData->isCreature() or cardData->isSpell());
@@ -48,8 +56,8 @@ void TerminalAbstractState::displayCard(CardId id, bool displayIndex, std::size_
 	{
 		const ClientCreatureData* castedCardData{dynamic_cast<const ClientCreatureData*>(cardData)};
 		assert(castedCardData != nullptr);
-		if (displayIndex)
-			displayEntry(std::to_string(index) + ". " + std::string(castedCardData->getName()) + " (creature)");
+		if (displayValue)
+			displayNumberedEntry(std::string(castedCardData->getName()) + " (creature)", value);
 		else
 			displayEntry(std::string(castedCardData->getName()) + " (creature)");
 		displayEntry(std::string("cost: ") + std::to_string(castedCardData->getCost())
@@ -64,8 +72,8 @@ void TerminalAbstractState::displayCard(CardId id, bool displayIndex, std::size_
 		const ClientSpellData* castedCardData{dynamic_cast<const ClientSpellData*>(cardData)};
 		assert(castedCardData != nullptr);
 
-		if (displayIndex)
-			displayEntry(std::to_string(index) + ". " + std::string(castedCardData->getName()) + " (spell)");
+		if (displayValue)
+			displayNumberedEntry(std::string(castedCardData->getName()) + " (spell)", value);
 		else
 			displayEntry(std::string(castedCardData->getName()) + " (spell)");
 		displayEntry(std::string("cost: ") + std::to_string(castedCardData->getCost()), '-', 1);
@@ -76,6 +84,11 @@ void TerminalAbstractState::displayCard(CardId id, bool displayIndex, std::size_
 void TerminalAbstractState::displayCardWithIndex(CardId id, std::size_t index)
 {
 	displayCard(id, true, index);
+}
+
+void TerminalAbstractState::displayCardWithId(CardId id)
+{
+	displayCard(id, true, id);
 }
 
 void TerminalAbstractState::handleInput()

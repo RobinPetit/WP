@@ -8,7 +8,7 @@
 #include "common/Achievement.hpp"
 
 
-/// created by ClientDatabase::getAchievementData(AchievementId id) (\TODO)
+/// created by ClientDatabase::getAchievementData(AchievementId id)
 struct AchievementData
 {
 	AchievementId id;
@@ -25,9 +25,10 @@ class ClientAchievement
 public:
 	explicit ClientAchievement(const Achievement, const AchievementData); // TODO: reference? pointer? move?...?
 
-	std::string getName() const;
+	const std::string& getName() const;
 	std::string getPrettyName() const;
-	std::string getDescription() const;
+	std::string getDecentName() const;
+	const std::string& getDescription() const;
 	int getRequiredProgress() const;
 	int getCurrentProgress() const;
 

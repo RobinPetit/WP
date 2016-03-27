@@ -74,6 +74,7 @@ public:
 	int getCreatureConstraint(const Creature& subject, int constraintId) const;
 	const Card* getLastCaster() const;
 	UserId getId() const;
+	static int getMaxHealth();
 	sf::TcpSocket& getSocket();
 	void printVerbose(const std::string& message);
 
