@@ -10,9 +10,9 @@ GuiLadderState::GuiLadderState(Context& context):
 		{&GuiLadderState::backMainMenu, "Back to main menu"}
 	},
 	_ladderHeader(),
-	_ladderLayout{std::make_shared<tgui::VerticalLayout>()},
 	_panel{std::make_shared<tgui::Panel>()},
-	_scrollbar{std::make_shared<tgui::Scrollbar>()}
+	_scrollbar{std::make_shared<tgui::Scrollbar>()},
+	_ladderLayout{std::make_shared<tgui::VerticalLayout>()}
 {
 	auto windowWidth(tgui::bindWidth(*_context.gui));
 	auto windowHeight(tgui::bindHeight(*_context.gui));
@@ -47,14 +47,14 @@ GuiLadderState::GuiLadderState(Context& context):
 
 	// make the layout
 	_ladderLayout->setPosition(0.f, lineHeight);
-	_ladderLayout->setSize(tgui::bindWidth(_panel) - 5, lineHeight * _ladder.size());
+	_ladderLayout->setSize(tgui::bindWidth(_panel) - 5.f, lineHeight * static_cast<float>(_ladder.size()));
 	_panel->add(_ladderLayout);
 
 	// Make the scrollbar
 	_scrollbar->setPosition(tgui::bindRight(_panel), tgui::bindTop(_panel) + lineHeight);
 	_scrollbar->setSize(scrollBarWidth, tgui::bindHeight(_panel) - lineHeight);
 	_scrollbar->setLowValue(static_cast<unsigned int>(_panel->getSize().y));
-	_scrollbar->setMaximum(lineHeight * _ladder.size());
+	_scrollbar->setMaximum(static_cast<unsigned int>(lineHeight) * static_cast<unsigned int>(_ladder.size()));
 	_scrollbar->setArrowScrollAmount(30);
 	_scrollbar->connect("ValueChanged", &GuiLadderState::scrollGrid, this);
 	_scrollbar->setAutoHide(false);
@@ -64,14 +64,14 @@ GuiLadderState::GuiLadderState(Context& context):
 	for(std::size_t i{0}; i < _ladder.size(); ++i)
 	{
 		GuiLadderEntry guiLadderEntry;
-		if (i%2==0)
-			guiLadderEntry.setBackgroundColor({127,127,127});
+		if(i%2 == 0)
+			guiLadderEntry.setBackgroundColor({200, 200, 200});
 
 		guiLadderEntry.rankLabel->setText(std::to_string(i + 1) + ".");
 		guiLadderEntry.playerNameLabel->setText(_ladder[i].name);
 		guiLadderEntry.wonGamesLabel->setText(std::to_string(_ladder[i].victories));
 		guiLadderEntry.playedGamesLabel->setText(std::to_string(_ladder[i].victories + _ladder[i].defeats));
-		guiLadderEntry.ratioLabel->setText(std::to_string(static_cast<float>(_ladder[i].victories) / (_ladder[i].defeats+_ladder[i].victories)));
+		guiLadderEntry.ratioLabel->setText(std::to_string(static_cast<float>(_ladder[i].victories) / static_cast<float>(_ladder[i].defeats+_ladder[i].victories)));
 		_ladderLayout->add(guiLadderEntry.layout);
 	}
 	_ladderLayout->showWithEffect(tgui::ShowAnimationType::SlideFromBottom, sf::milliseconds(500));
