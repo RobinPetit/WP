@@ -33,6 +33,8 @@ class CardWidget : public tgui::ClickableWidget
 
 		void rotate(float angle);
 
+		CardGui *getCard();
+
 		//virtual tgui::Widget::Ptr clone() const override;
 
 		virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;

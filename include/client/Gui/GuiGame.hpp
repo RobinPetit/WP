@@ -6,6 +6,7 @@
 #include "client/Context.hpp"
 #include "client/Gui/CardWidget.hpp"
 #include "common/Deck.hpp"
+#include "client/Gui/CreatureGui.hpp"
 // External headers
 #include <TGUI/Gui.hpp>
 #include <TGUI/Widgets/Button.hpp>
@@ -145,6 +146,14 @@ private:
 
 	void clearScreen();
 
+	/// Sets the correct value on the gui cards according to the
+	/// protected inherited attributes
+	void updateGuiCardValues();
+
+	void updateGuiBoard(std::vector<BoardCreatureData>& dataBoard, std::vector<CardWidget::Ptr>& guiBoard);
+
+	void updateCard(CreatureGui *card, const BoardCreatureData& data);
+
 	/// Resets the screen and then redraws the current interface
 	void refreshScreen();
 
@@ -155,9 +164,13 @@ private:
 	/// Function to allow "big card" to be displayed when mouse passes over the card
 	/// \param card The card to pass on to draw the big card
 	/// \param cardData The data to create the big card
-	void connectBigCardDisplay(CardWidget::Ptr& card, const CommonCardData *cardData);
+	void connectBigCardDisplay(CardWidget::Ptr& card, const CommonCardData *cardData, const BoardCreatureData *data=nullptr);
+
+	void createBigCard(const CommonCardData *cardData);
 
 	void displayBigCard(const CommonCardData *cardData);
+
+	void displayBigCreature(const CommonCardData *cardData, const BoardCreatureData& data);
 
 	/// Function to display the cards the user has in his hands
 	/// Does not lock the screen.

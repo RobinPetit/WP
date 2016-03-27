@@ -69,3 +69,8 @@ void CardWidget::draw(sf::RenderTarget &target, sf::RenderStates states) const
 	if(_card)
 		target.draw(*_card, states);
 }
+
+CardGui *CardWidget::getCard()
+{
+	return _card.get();
+}

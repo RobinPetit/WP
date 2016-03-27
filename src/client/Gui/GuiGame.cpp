@@ -110,6 +110,8 @@ void GuiGame::displayGame()
 	displaySelfBoard();
 	displayOpponentBoard();
 
+	updateGuiCardValues();
+
 	_endTurnButton->setSize((_width - _cardsLayoutWidth) / 2 - 10, 40);
 	_context.gui->add(_endTurnButton);
 
@@ -143,10 +145,7 @@ void GuiGame::displayHandCards()
 		////////// Set up callbacks
 
 		// If card is pressed, use the card
-		_selfHand.back()->connect("MousePressed", [this, i]()
-		{
-			useCard(i);
-		});
+		_selfHand.back()->connect("MousePressed", &GuiGame::useCard, this, i);
 		// When the mouse enters on the card area
 		connectBigCardDisplay(_selfHand.back(), cardData);
 		// Add the card to the panel
@@ -156,9 +155,12 @@ void GuiGame::displayHandCards()
 	_context.gui->add(_selfHandPanel);
 }
 
-void GuiGame::connectBigCardDisplay(CardWidget::Ptr& card, const CommonCardData *cardData)
+void GuiGame::connectBigCardDisplay(CardWidget::Ptr& card, const CommonCardData *cardData, const BoardCreatureData *data)
 {
-	card->connect("MouseEntered", &GuiGame::displayBigCard, this, cardData);
+	if(not data)
+		card->connect("MouseEntered", &GuiGame::displayBigCard, this, cardData);
+	else
+		card->connect("MouseEntered", &GuiGame::displayBigCreature, this, cardData, *data);
 	// When the mouse leaves the card area
 	card->connect("MouseLeft", [this]()
 	{
@@ -240,7 +242,7 @@ void GuiGame::displayPlayerBoard(tgui::Panel::Ptr& panel, std::vector<CardWidget
 			graphicalCards.back()->setPosition(currentWidth, 0.f);
 
 		if(displayableWhenMouseOver)
-			connectBigCardDisplay(graphicalCards.back(), cardData);
+			connectBigCardDisplay(graphicalCards.back(), cardData, &creatureDatas.at(i));
 
 		if(callback)
 			graphicalCards.back()->connect("MousePressed", callback, this, i);
@@ -259,14 +261,30 @@ void GuiGame::displayBigCard(const CommonCardData *cardData)
 {
 	if(_isBigCardOnBoard)
 		return;
+	createBigCard(cardData);
+	_isBigCardOnBoard = true;
+	_context.gui->add(_readableCard);
+	refreshScreen();
+}
+
+void GuiGame::displayBigCreature(const CommonCardData *cardData, const BoardCreatureData& data)
+{
+	if(_isBigCardOnBoard)
+		return;
+	createBigCard(cardData);
+	_isBigCardOnBoard = true;
+	updateCard(dynamic_cast<CreatureGui *>(_readableCard->getCard()), data);
+	_context.gui->add(_readableCard);
+	refreshScreen();
+}
+
+void GuiGame::createBigCard(const CommonCardData *cardData)
+{
 	_context.gui->remove(_readableCard);
 	// make a new card, center it and then display it
 	_readableCard.reset(new CardWidget(cardData));
 	_readableCard->setPosition((tgui::bindWidth (*_context.gui) - tgui::bindWidth (_readableCard)) / 2,
 				   (tgui::bindHeight(*_context.gui) - tgui::bindHeight(_readableCard)) / 2);
-	_isBigCardOnBoard = true;
-	_context.gui->add(_readableCard);
-	refreshScreen();
 }
 
 // NOTE: this is copy/paste from GuiAbstractState. TODO: factorize by creating an interface
@@ -410,6 +428,33 @@ void GuiGame::waitUntil(std::function<bool()> booleanFunction)
 		}
 		while(_context.window->pollEvent(event));
 	}
+}
+
+void GuiGame::updateGuiCardValues()
+{
+	updateGuiBoard(_selfBoardCreatures, _selfBoard);
+	updateGuiBoard(_oppoBoardCreatures, _opponentBoard);
+}
+
+void GuiGame::updateGuiBoard(std::vector<BoardCreatureData>& dataBoard, std::vector<CardWidget::Ptr>& guiBoard)
+{
+	assert(dataBoard.size() == guiBoard.size());
+	for(auto i{0U}; i < dataBoard.size(); ++i)
+	{
+		auto& guiCreature{guiBoard.at(i)};
+		auto& creatureDatas{dataBoard.at(i)};
+		CreatureGui *currentCard{dynamic_cast<CreatureGui *>(guiCreature->getCard())};
+		assert(currentCard != nullptr);
+
+		updateCard(currentCard, creatureDatas);
+	}
+}
+
+void GuiGame::updateCard(CreatureGui *card, const BoardCreatureData& data)
+{
+	card->setHealth(data.health);
+	card->setAttack(data.attack);
+	card->setShield(data.shield);
 }
 
 GuiGame::~GuiGame()
