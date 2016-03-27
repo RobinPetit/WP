@@ -46,8 +46,8 @@ GuiGame::GuiGame(Context& context):
 	_selfHandPanel->setPosition({(_width - _cardsLayoutWidth) / 2.f, heightWidget});
 
 	// place it right to the cards
-	_endTurnButton->setSize((_width - _cardsLayoutWidth) / 2 - 10, 40);
-	_endTurnButton->setPosition((_width + _cardsLayoutWidth) / 2 + 5, _height - 50);
+	_endTurnButton->setSize((_width - _cardsLayoutWidth) / 2.f - 10.f, 40.F);
+	_endTurnButton->setPosition((_width + _cardsLayoutWidth) / 2.f + 5.f, _height - 50.f);
 	// default behaviour of button is to be disabled (re-enabled at the beginning of each turn)
 	_endTurnButton->disable();
 
@@ -110,7 +110,6 @@ void GuiGame::displayGame()
 	displaySelfBoard();
 	displayOpponentBoard();
 
-	_endTurnButton->setSize((_width - _cardsLayoutWidth) / 2 - 10, 40);
 	_context.gui->add(_endTurnButton);
 
 	if(_isBigCardOnBoard)
