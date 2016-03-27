@@ -7,6 +7,7 @@
 #include "client/Gui/CardWidget.hpp"
 #include "common/Deck.hpp"
 #include "client/Gui/CreatureGui.hpp"
+#include "client/Gui/AchievementWidget.hpp"
 // External headers
 #include <TGUI/Gui.hpp>
 #include <TGUI/VerticalLayout.hpp>
