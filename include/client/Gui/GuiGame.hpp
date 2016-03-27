@@ -88,10 +88,9 @@ private:
 	/// A layout that contains information labels about the opponent
 	tgui::VerticalLayout::Ptr _oppoInfoLayout;
 
+	/// Various information labels
 	tgui::Label::Ptr _oppoHealthLabel;
-	tgui::Label::Ptr _oppoEnergyLabel;
-	tgui::Label::Ptr _oppoDeckSizeLabel;
-	tgui::Label::Ptr _oppoGraveyardSizeLabel;
+	tgui::Label::Ptr _oppoHandSizeLabel;
 
 	/// Length (on X axis) of the hand cards
 	const tgui::Layout _cardsLayoutWidth;

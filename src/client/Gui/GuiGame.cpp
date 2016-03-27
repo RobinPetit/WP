@@ -28,9 +28,7 @@ GuiGame::GuiGame(Context& context):
 	// Opponent info layout
 	_oppoInfoLayout{std::make_shared<tgui::VerticalLayout>()},
 	_oppoHealthLabel{std::make_shared<tgui::Label>()},
-	_oppoEnergyLabel{std::make_shared<tgui::Label>()},
-	_oppoDeckSizeLabel{std::make_shared<tgui::Label>()},
-	_oppoGraveyardSizeLabel{std::make_shared<tgui::Label>()},
+	_oppoHandSizeLabel{std::make_shared<tgui::Label>()},
 	_cardsLayoutWidth{_width/1.4f},
 	_isBigCardOnBoard{false},
 	_opponentBoardPanel{std::make_shared<tgui::Panel>()},
@@ -62,6 +60,7 @@ GuiGame::GuiGame(Context& context):
 	_selfHealthLabel->setTextColor(sf::Color(200, 0, 0));  // Dark red
 	_selfHealthLabel->setTextSize(15);
 	_selfEnergyLabel->setTextColor(sf::Color(0, 0, 200));  // Dark blue
+	_selfEnergyLabel->setTextSize(15);
 	_selfDeckSizeLabel->setTextSize(15);
 	_selfGraveyardSizeLabel->setTextSize(15);
 	// The text of these labels is set in displayGame
@@ -71,7 +70,7 @@ GuiGame::GuiGame(Context& context):
 	_selfInfoLayout->add(_selfGraveyardSizeLabel);
 	_selfInfoLayout->add(_endTurnButton);
 	_selfInfoLayout->setSize((_width - _cardsLayoutWidth) / 2.f - 10.f, tgui::bindHeight(_selfHandPanel));
-	_selfInfoLayout->setPosition(tgui::bindRight(_selfHandPanel), tgui::bindTop(_selfHandPanel));
+	_selfInfoLayout->setPosition(tgui::bindRight(_selfHandPanel) + 5.f, tgui::bindTop(_selfHandPanel));
 	_context.gui->add(_selfInfoLayout);
 
 	// default behaviour of button is to be disabled (re-enabled at the beginning of each turn)
@@ -80,16 +79,12 @@ GuiGame::GuiGame(Context& context):
 	// Oponnent info labels
 	_oppoHealthLabel->setTextColor(sf::Color(200, 0, 0));  // Dark red
 	_oppoHealthLabel->setTextSize(15);
-	_oppoEnergyLabel->setTextColor(sf::Color(0, 0, 200));  // Dark blue
-	_oppoDeckSizeLabel->setTextSize(15);
-	_oppoGraveyardSizeLabel->setTextSize(15);
+	_oppoHandSizeLabel->setTextSize(15);
 	// The text of these labels is set in displayGame
 	_oppoInfoLayout->add(_oppoHealthLabel);
-	_oppoInfoLayout->add(_oppoEnergyLabel);
-	_oppoInfoLayout->add(_oppoDeckSizeLabel);
-	_oppoInfoLayout->add(_oppoGraveyardSizeLabel);
+	_oppoInfoLayout->add(_oppoHandSizeLabel);
 	_oppoInfoLayout->setSize((_width - _cardsLayoutWidth) / 2.f - 10.f, tgui::bindHeight(_selfHandPanel));
-	_oppoInfoLayout->setPosition(0.f, tgui::bindTop(_selfHandPanel));
+	_oppoInfoLayout->setPosition(5.f, tgui::bindTop(_selfHandPanel));
 	_context.gui->add(_oppoInfoLayout);
 
 	// self board
@@ -191,16 +186,13 @@ void GuiGame::displayHandCards()
 
 void GuiGame::displayInfo()
 {
-	_selfHealthLabel->setText("Hey");
-	_selfEnergyLabel->setText("Hey");
-	_selfDeckSizeLabel->setText("Hey");
-	_selfGraveyardSizeLabel->setText("Hey");
+	_selfHealthLabel->setText("Health: " + std::to_string(_selfHealth));
+	_selfEnergyLabel->setText("Energy: " + std::to_string(_selfHealth));
+	_selfDeckSizeLabel->setText("Deck size: " + std::to_string(_selfDeckSize));
+	_selfGraveyardSizeLabel->setText("Grave size: " + std::to_string(_selfGraveCards.size()));
 
-	_oppoHealthLabel->setText("Hey");
-	_oppoEnergyLabel->setText("Hey");
-	_oppoDeckSizeLabel->setText("Hey");
-	_oppoGraveyardSizeLabel->setText("Hey");
-
+	_oppoHealthLabel->setText("Opponent's health: " + std::to_string(_oppoHealth));
+	_oppoHandSizeLabel->setText("Opponent's hand size: " + std::to_string(_oppoHandSize));
 }
 
 void GuiGame::connectBigCardDisplay(CardWidget::Ptr& card, const CommonCardData *cardData, const BoardCreatureData *data)
