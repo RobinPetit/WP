@@ -148,9 +148,6 @@ void GuiDecksManagementState::onCardChosenFromCollection(CardId id)
 {
 	_decksListBox->enable();
 
-	// Show the current deck, this is the same as when we select another deck
-	selectDeck();
-
 	// Swap the cards and send the result to the server (through the client)
 	Deck& selectedDeck(getSelectedDeck());
 	try
@@ -161,6 +158,8 @@ void GuiDecksManagementState::onCardChosenFromCollection(CardId id)
 		const std::size_t replacedIndex{selectedDeck.getIndex(_selectedCardFromDeck)};
 		selectedDeck.changeCard(replacedIndex, id);
 		_context.client->handleDeckEditing(selectedDeck);
+		// Show the current deck, this is the same as when we select another deck
+		selectDeck();
 	}
 	catch(const std::out_of_range& e)
 	{

@@ -28,9 +28,12 @@ std::size_t Deck::getIndex(CardId card) const
 	return static_cast<std::size_t>(std::distance(_cards.begin(), it));
 }
 
-void Deck::changeCard(std::size_t index, CardId card)
+void Deck::changeCard(std::size_t index, CardId card, bool checkWholeDeck)
 {
-	assert(std::count(_cards.begin(), _cards.end(), card) < 2);
+	if(checkWholeDeck)
+		assert(std::count(_cards.begin(), _cards.end(), card) < 2);
+	else
+		assert(std::count(_cards.begin(), _cards.begin() + index, card) < 2);
 	_cards[index] = card;
 }
 

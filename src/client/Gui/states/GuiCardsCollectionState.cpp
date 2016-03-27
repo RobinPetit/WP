@@ -24,7 +24,7 @@ GuiCardsCollectionState::GuiCardsCollectionState(Context& context):
 	auto windowWidth(tgui::bindWidth(*_context.gui));
 	auto windowHeight(tgui::bindHeight(*_context.gui));
 
-	makeTitle("Cards collection", 30U, 20.f);
+	makeTitle("Unlocked Cards", 30U, 20.f);
 
 	setupButtons(_buttons, std::static_pointer_cast<tgui::Container>(_context.gui->getContainer()));
 	_buttons[0].button->setPosition(windowWidth/5.f, windowHeight - 30.f);
