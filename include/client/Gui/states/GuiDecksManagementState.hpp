@@ -18,19 +18,18 @@
 /// Final class for decks management with the GUI.
 /// The menu works as follow:
 /// A list of the decks is displayed in a side, and in the other side a
-/// scrollable grid with the cards of the selected deck is
-/// displayed.
+/// scrollable grid with the cards of the selected deck is displayed.
 ///
-/// To change the content of a deck, the user has to click on a card
-/// that he wants to replace (after selecting a deck in the list of course), and
-/// once he clicked the grid content is replaced with its card collection.
+/// To change the content of a deck, the user has to click on a card that he
+/// wants to replace (after selecting a deck in the list of course), and once he
+/// clicked, the grid content is replaced with its card collection.
 ///
 /// He has now to click on a card in the grid (which now represents its
 /// collection, and the two clicked cards will be swapped.
 ///
 /// In the code of this class, the term "selected deck" designates a deck (so
-/// representated by a member of _decks) whose name matches with the selected
-/// item in _decksListBox.
+/// representated by a member of _decks) whose name matches the selected item in
+/// _decksListBox.
 class GuiDecksManagementState : public GuiAbstractState, public AbstractDecksManagementState
 {
 	public:
