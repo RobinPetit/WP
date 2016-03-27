@@ -26,14 +26,14 @@ GuiHomeState::GuiHomeState(Context& context):
 	makeTitle("WizardPoker", 40U);
 
 	// Configure the widgets
-	_userNameLabel->setText("User name:");
+	_userNameLabel->setText("Username");
 	_userNameLabel->setTextColor(sf::Color::White);
 	// Focus the password edit box when pressing enter in user name edit box
 	_userNameEditBox->connect("ReturnKeyPressed", [this]()
 	{
 		_passwordEditBox->focus();
 	});
-	_passwordLabel->setText("Password:");
+	_passwordLabel->setText("Password");
 	_passwordLabel->setTextColor(sf::Color::White);
 	// Connect when pressing enter in the password edit box
 	_passwordEditBox->connect("ReturnKeyPressed", &GuiHomeState::connect, this);
@@ -53,7 +53,9 @@ GuiHomeState::GuiHomeState(Context& context):
 	_context.gui->add(_grid);
 
 	_gridBottom->setPosition(tgui::bindLeft(_grid), tgui::bindBottom(_grid));
-	_gridBottom->setSize(windowWidth/2.f, windowHeight/4.f);
+	_gridBottom->setSize(windowWidth/2.f, windowHeight/8.f);
+	_connectButton->setSize(tgui::bindWidth(_gridBottom), windowHeight/16.f);
+	_createAccountButton->setSize(tgui::bindWidth(_gridBottom), windowHeight/16.f);
 	_gridBottom->addWidget(_connectButton, 0, 0);
 	_gridBottom->addWidget(_createAccountButton, 1, 0);
 	_context.gui->add(_gridBottom);
