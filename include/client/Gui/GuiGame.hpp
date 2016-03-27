@@ -140,6 +140,8 @@ private:
 
 	std::queue<std::string> _pendingMessages;
 
+	std::unique_ptr<ClientAchievementList> _unlockedAchievements;
+
 	//////////////////// Methods
 
 	////////// overriden methods
@@ -160,6 +162,8 @@ private:
 	void updateDisplay() override;
 
 	void onListeningThreadCreation() override;
+
+	void showAchievements();
 
 	/// Waits for a click on a card in the vector \a cards
 	/// \param cards The collection of the clickable cards

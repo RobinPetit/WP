@@ -554,6 +554,14 @@ void GuiGame::receiveCard(CardId id)
 
 void GuiGame::displayAchievements(ClientAchievementList& newAchievements)
 {
+	_unlockedAchievements.reset(new ClientAchievementList(newAchievements));
+}
+
+void GuiGame::showAchievements()
+{
+	if(not _unlockedAchievements)
+		return;
+	auto& newAchievements{*_unlockedAchievements};
 	//No new achievements
 	if (newAchievements.size()==0)
 		return;
@@ -642,6 +650,7 @@ void GuiGame::updateCard(CreatureGui *card, const BoardCreatureData& data)
 
 GuiGame::~GuiGame()
 {
+	showAchievements();
 	_context.gui->remove(_selfHandPanel);
 	_context.gui->remove(_selfBoardPanel);
 	_context.gui->remove(_opponentBoardPanel);
