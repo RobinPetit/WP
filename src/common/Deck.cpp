@@ -28,9 +28,12 @@ std::size_t Deck::getIndex(CardId card) const
 	return static_cast<std::size_t>(std::distance(_cards.begin(), it));
 }
 
-void Deck::changeCard(std::size_t index, CardId card)
+void Deck::changeCard(std::size_t index, CardId card, bool checkWholeDeck)
 {
-	assert(std::count(_cards.begin(), _cards.end(), card) < 2);
+	if(checkWholeDeck)
+		assert(std::count(_cards.begin(), _cards.end(), card) < 2);
+	else
+		assert(std::count(_cards.begin(), _cards.begin() + index, card) < 2);
 	_cards[index] = card;
 }
 
@@ -52,4 +55,24 @@ Deck::Iterator Deck::begin()
 Deck::Iterator Deck::end()
 {
 	return _cards.end();
+}
+
+Deck::ConstIterator Deck::begin() const
+{
+	return _cards.cbegin();
+}
+
+Deck::ConstIterator Deck::end() const
+{
+	return _cards.cend();
+}
+
+Deck::ConstIterator Deck::cbegin() const
+{
+	return _cards.cbegin();
+}
+
+Deck::ConstIterator Deck::cend() const
+{
+	return _cards.cend();
 }

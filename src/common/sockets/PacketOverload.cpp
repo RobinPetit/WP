@@ -44,7 +44,7 @@ sf::Packet& operator >>(sf::Packet& packet, Deck& deck)
 	{
 		CardId card;
 		packet >> card;
-		deck.changeCard(i, card);
+		deck.changeCard(i, card, false);
 	}
 	return packet;
 }
