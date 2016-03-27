@@ -59,14 +59,12 @@ void GuiLobbyState::findAGame()
 	setButtonsAsWaiting();
 	std::string opponentName;
 	while(_play and not _context.client->isGameStarted(opponentName))
-	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 		handleInput();
-	}
 	resetButtons();
 	if(_play)
 	{
-		_context.gui->removeAllWidgets();
+		_context.gui->remove(_buttonsLayout);
+		_context.gui->remove(_titleLabel);
 		_context.window->setTitle("WizardPoker (" + _context.client->getName() + ") in game versus " + opponentName);
 		// have a special block so that the constructor is directly called
 		{
@@ -75,8 +73,8 @@ void GuiLobbyState::findAGame()
 		}
 		_context.window->setTitle("WizardPoker (" + _context.client->getName() + ")");
 
-		registerRootWidgets({_buttonsLayout});
 		_context.gui->add(_buttonsLayout);
+		_context.gui->add(_titleLabel);
 		resetButtons();
 	}
 }

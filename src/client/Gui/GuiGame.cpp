@@ -152,8 +152,6 @@ void GuiGame::refreshScreen()
 void GuiGame::processWindowEvents()
 {
 	sf::Event event;
-	while(not _context.window->pollEvent(event))
-		sf::sleep(sf::milliseconds(10));
 	do
 	{
 		if(event.type == sf::Event::Closed)
@@ -586,5 +584,13 @@ void GuiGame::updateCard(CreatureGui *card, const BoardCreatureData& data)
 
 GuiGame::~GuiGame()
 {
-	_context.gui->removeAllWidgets();
+	_context.gui->remove(_selfHandPanel);
+	_context.gui->remove(_selfBoardPanel);
+	_context.gui->remove(_opponentBoardPanel);
+	if(_isBigCardOnBoard)
+		_context.gui->remove(_readableCard);
+	_context.gui->remove(_oppoInfoLayout);
+	_context.gui->remove(_attackOpponentButton);
+	_context.gui->remove(_endTurnButton);
+	_context.gui->remove(_selfInfoLayout);
 }
